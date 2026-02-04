@@ -561,7 +561,7 @@ const ProductPage = () => {
                             <div className="absolute bottom-[10%] right-[-5%] w-[40%] h-[40%] bg-accent-green/5 rounded-full blur-[120px]"></div>
                         </div>
 
-                        <div className="max-w-7xl mx-auto relative z-10">
+                        <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
                             {/* Section Branding */}
                             <div className="text-center mb-24 md:mb-32">
                                 <div className="inline-flex items-center gap-4 py-2 px-6 bg-[#1A1A1A] rounded-full mb-8">

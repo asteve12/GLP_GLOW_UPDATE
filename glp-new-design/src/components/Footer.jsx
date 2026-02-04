@@ -6,12 +6,11 @@ const Footer = () => {
 
     return (
         <footer className="bg-[#050505] text-[#FAF9F6] pt-24 pb-12 px-6 border-t border-white/5">
-            <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
-
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
                     {/* Brand & Stats/Badges */}
-                    <div className="space-y-8">
-                        <div className="flex flex-col gap-1">
+                    <div className="lg:col-span-4 space-y-8">
+                        <div className="relative z-10">
                             <span className="text-3xl font-black uppercase tracking-tighter italic leading-none">GLP-GLOW</span>
                         </div>
                         <p className="text-[#FAF9F6]/50 text-sm leading-relaxed max-w-xs">
@@ -44,67 +43,69 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Products Links */}
-                    <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">Treatments</h4>
-                        <ul className="space-y-4">
-                            {[
-                                { name: 'Weight Loss', path: 'weight-loss' },
-                                { name: 'Hair Restoration', path: 'hair-restoration' },
-                                { name: 'Sexual Health', path: 'sexual-health' },
-                                { name: 'Longevity', path: 'longevity' }
-                            ].map((link) => (
-                                <li key={link.name}>
-                                    <Link to={`/products/${link.path}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
-                                        {link.name}
+                    {/* Links Sub-Grid */}
+                    <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 md:gap-16">
+                        {/* Products Links */}
+                        <div>
+                            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">Treatments</h4>
+                            <ul className="space-y-4">
+                                {[
+                                    { name: 'Weight Loss', path: 'weight-loss' },
+                                    { name: 'Hair Restoration', path: 'hair-restoration' },
+                                    { name: 'Sexual Health', path: 'sexual-health' },
+                                    { name: 'Longevity', path: 'longevity' }
+                                ].map((link) => (
+                                    <li key={link.name}>
+                                        <Link to={`/products/${link.path}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
+                                            {link.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                                <li>
+                                    <Link to="/" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openWaitlist')); }} className="text-orange-500 hover:text-orange-400 transition-colors text-sm font-black uppercase tracking-widest flex items-center gap-2 group">
+                                        Retatruide
+                                        <span className="animate-pulse">🔥</span>
                                     </Link>
                                 </li>
-                            ))}
-                            <li>
-                                <Link to="/" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openWaitlist')); }} className="text-orange-500 hover:text-orange-400 transition-colors text-sm font-black uppercase tracking-widest flex items-center gap-2 group">
-                                    Retatruide
-                                    <span className="animate-pulse">🔥</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                            </ul>
+                        </div>
 
-                    {/* Company Links */}
-                    <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">About Us</h4>
-                        <ul className="space-y-4">
-                            {['Blog', 'FAQ', 'Science', 'Reviews', 'Careers'].map((link) => (
-                                <li key={link}>
-                                    <Link to={`/${link.toLowerCase()}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
-                                        {link}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                        {/* Company Links */}
+                        <div>
+                            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">About Us</h4>
+                            <ul className="space-y-4">
+                                {['Blog', 'FAQ', 'Science', 'Reviews', 'Careers'].map((link) => (
+                                    <li key={link}>
+                                        <Link to={`/${link.toLowerCase()}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
+                                            {link}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    {/* Contact Info */}
-                    <div>
-                        <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">Contact Us</h4>
-                        <div className="space-y-6 text-sm">
-                            <div className="space-y-1">
-                                <p className="text-white font-bold">Email</p>
-                                <a href="mailto:customercare@rugiet.com" className="text-white/60 hover:text-white">customercare@rugiet.com</a>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-white font-bold">Phone</p>
-                                <a href="tel:8555819620" className="text-white/60 hover:text-white">(855) 581 9620</a>
-                            </div>
-                            <div className="space-y-2 pt-2">
-                                <p className="text-white font-bold uppercase text-[10px] tracking-widest">Support Hours</p>
-                                <div className="text-white/40 text-[12px] space-y-1">
-                                    <p>Monday – Friday, 8:30am – 5:30pm CT</p>
-                                    <p>Saturday, 11:00am – 4:00pm CT</p>
+                        {/* Contact Info */}
+                        <div>
+                            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">Contact Us</h4>
+                            <div className="space-y-6 text-sm">
+                                <div className="space-y-1">
+                                    <p className="text-white font-bold">Email</p>
+                                    <a href="mailto:customercare@rugiet.com" className="text-white/60 hover:text-white">customercare@rugiet.com</a>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-white font-bold">Phone</p>
+                                    <a href="tel:8555819620" className="text-white/60 hover:text-white">(855) 581 9620</a>
+                                </div>
+                                <div className="space-y-2 pt-2">
+                                    <p className="text-white font-bold uppercase text-[10px] tracking-widest">Support Hours</p>
+                                    <div className="text-white/40 text-[12px] space-y-1">
+                                        <p>Monday – Friday, 8:30am – 5:30pm CT</p>
+                                        <p>Saturday, 11:00am – 4:00pm CT</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 {/* Fine Print / Compliance Section */}

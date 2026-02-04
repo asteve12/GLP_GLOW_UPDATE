@@ -1761,7 +1761,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Content Area */}
-                <div className="p-6 md:p-12">
+                <div className="p-6 md:p-12 xl:px-8 2xl:px-4 3xl:px-0">
                     {/* Welcome Header */}
                     <div className="mb-12">
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-2">

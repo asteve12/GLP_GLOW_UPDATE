@@ -106,7 +106,7 @@ const QualifyNow = () => {
             <Navbar />
 
             <main className="pt-32 pb-24 px-6 md:px-12">
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
                     {/* Header Section */}
                     <div className="qualify-header mb-20 text-center">
                         <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">

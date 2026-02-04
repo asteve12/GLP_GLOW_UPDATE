@@ -157,7 +157,7 @@ const AdminOverview = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 md:gap-6">
                 {[
                     { label: 'Total Patients', value: stats.totalPatients, color: 'blue', icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 110-8 4 4 0 010 8z' },
                     { label: 'Pending Reviews', value: stats.pendingReviews, color: 'orange', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
@@ -1915,8 +1915,8 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
 
     return (
         <>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
-                <div className="w-full max-w-5xl max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-green/20">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 2xl:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
+                <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-green/20">
                     {/* Header */}
                     <div className="p-8 md:p-10 border-b border-white/5 flex items-center justify-between bg-[#080808] shrink-0">
                         <div>
@@ -2880,7 +2880,7 @@ const SubscriberAnalytics = () => {
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
             {/* Stats Header */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
                 <div
                     onClick={() => setActiveTab('active')}
                     className={`p-8 rounded-[32px] border cursor-pointer transition-all ${activeTab === 'active' ? 'bg-accent-green/10 border-accent-green' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
@@ -4682,7 +4682,7 @@ const OrderManagement = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-6">
                 {paginatedOrders.length === 0 ? (
                     <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-[40px] flex flex-col items-center">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/10 mb-4">
@@ -5005,7 +5005,7 @@ const AdminDashboard = () => {
                 />
             )}
 
-            <main className="flex-1 px-4 py-4 md:px-6 md:py-8 lg:px-4 lg:py-12 xl:px-6 pt-20 lg:pt-12 max-w-full overflow-x-hidden">
+            <main className="flex-1 px-4 py-4 md:px-6 md:py-8 lg:px-4 lg:py-12 xl:px-4 2xl:px-2 3xl:px-0 pt-20 lg:pt-12 w-full overflow-x-hidden">
                 <header className="mb-8 md:mb-16">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase italic tracking-tighter">
                         {currentTab === 'overview' && 'System Analytics'}

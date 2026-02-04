@@ -67,11 +67,43 @@ const Hero = () => {
                 ))}
             </div>
 
-            <div className="relative z-20 text-center max-w-[900px] px-5">
+            {/* Mobile Full-Screen Overlay */}
+            <div className="md:hidden absolute inset-0 z-20 bg-black/50 backdrop-blur-md flex flex-col items-center justify-center px-6 text-center">
+                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    Clinical Protocols
+                </div>
+
+                <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-8 italic leading-[0.85] drop-shadow-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                    Precision <br />
+                    <span className="text-accent-green">Biology.</span> <br />
+                    Peak <span className="text-accent-green">Performance.</span>
+                </h1>
+
+                <p className="text-lg font-medium text-white/70 mb-12 leading-relaxed max-w-xs animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
+                    Medical-grade protocols tailored to your unique genetic blueprint.
+                </p>
+
+                <div className="flex flex-col w-full max-w-[300px] gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
+                    <Link
+                        to="/qualify"
+                        className="w-full bg-accent-green text-black py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white transition-all shadow-[0_10px_40px_rgba(191,255,0,0.3)]"
+                    >
+                        Start Assessment
+                    </Link>
+                    <button
+                        onClick={() => {
+                            const statsSection = document.querySelector('#stats-section');
+                            if (statsSection) statsSection.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="w-full bg-white/5 text-white border border-white/10 py-5 rounded-full text-xs font-black uppercase tracking-widest"
+                    >
+                        View Treatments
+                    </button>
+                </div>
             </div>
 
-            <div className="absolute bottom-4 md:bottom-10 left-0 w-full z-20 px-3 md:px-5">
-                <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+            <div className="hidden md:block absolute bottom-10 left-0 w-full z-20 px-5">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
                     {[
                         { title: "Weight Loss", desc: "Semaglutide & Tirzepatide", price: "Starts at $299", path: "weight-loss" },
                         { title: "Hair Restoration", desc: "Finasteride & Minoxidil", price: "Personalized Plans", path: "hair-restoration" },
