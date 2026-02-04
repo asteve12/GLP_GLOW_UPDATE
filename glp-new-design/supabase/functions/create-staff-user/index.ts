@@ -63,11 +63,9 @@ serve(async (req) => {
         let userId: string;
 
         if (existingProfile) {
-            // User already exists - we'll add the new role to this existing user
             userId = existingProfile.id;
-            console.log(`User with email ${email} already exists, adding role ${role} to existing user ${userId}`);
+            console.log(`User ${email} exists in profiles. Checking role ${role}.`);
 
-            // Check if user already has this role
             const { data: existingRole } = await supabaseAdmin
                 .from("user_roles")
                 .select("id")
@@ -76,26 +74,10 @@ serve(async (req) => {
                 .maybeSingle();
 
             if (existingRole) {
-                throw new Error(`This user already has the ${role} role assigned.`);
-            }
-
-            // Update profile with additional info if provided
-            const { error: profileUpdateError } = await supabaseAdmin
-                .from("profiles")
-                .update({
-                    first_name: firstName || undefined,
-                    last_name: lastName || undefined,
-                    phone_number: phone || undefined,
-                    date_of_birth: dob || undefined,
-                    legal_address: address || undefined,
-                })
-                .eq("id", userId);
-
-            if (profileUpdateError) {
-                console.error("Error updating profile:", profileUpdateError);
+                console.log(`User already has the '${role}' role. Proceeding to sync profile.`);
             }
         } else {
-            // Create a new user
+            console.log(`Creating new auth user for ${email}...`);
             const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
                 email,
                 password,
@@ -106,31 +88,59 @@ serve(async (req) => {
                 },
             });
 
-            if (authError) throw authError;
-            if (!authData.user) throw new Error("Failed to create user");
+            if (authError) {
+                console.error("Auth creation failed:", authError);
+                if (authError.message.includes("already exists") || authError.status === 422) {
+                    throw new Error("A user with this email already exists in the system (Auth). If they don't have a profile, please contact an administrator.");
+                }
+                throw authError;
+            }
+            if (!authData.user) throw new Error("Critical: Auth user creation returned success but no user object.");
 
             userId = authData.user.id;
-
-            // Update profile (note: profile entry is usually created by trigger, but we update explicit fields)
-            const { error: profileError } = await supabaseAdmin
-                .from("profiles")
-                .update({
-                    phone_number: phone,
-                    date_of_birth: dob,
-                    legal_address: address,
-                })
-                .eq("id", userId);
-
-            if (profileError) throw profileError;
         }
 
-        // Assign role
-        const { error: roleError } = await supabaseAdmin.from("user_roles").insert({
-            user_id: userId,
-            role: role,
-        });
+        // 3. Ensure profile exists and has current info (UPSERT to avoid race conditions)
+        console.log(`Ensuring profile exists for ${userId}...`);
+        const { error: profileError } = await supabaseAdmin
+            .from("profiles")
+            .upsert({
+                id: userId,
+                email: email,
+                first_name: firstName,
+                last_name: lastName,
+                phone_number: phone,
+                date_of_birth: dob,
+                legal_address: address,
+            });
 
-        if (roleError) throw roleError;
+        if (profileError) {
+            console.error("Profile upsert failed:", profileError);
+            throw new Error(`Failed to initialize profile: ${profileError.message}`);
+        }
+
+        // 4. Assign the role (check first to prevent unique constraint errors)
+        const { data: checkRole } = await supabaseAdmin
+            .from("user_roles")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("role", role)
+            .maybeSingle();
+
+        if (!checkRole) {
+            console.log(`Assigning role ${role} to ${userId}...`);
+            const { error: roleError } = await supabaseAdmin.from("user_roles").insert({
+                user_id: userId,
+                role: role,
+            });
+
+            if (roleError) {
+                console.error("Role assignment failed:", roleError);
+                throw new Error(`Failed to assign role: ${roleError.message}`);
+            }
+        } else {
+            console.log(`Role ${role} already exists for ${userId}. Skipping assignment.`);
+        }
 
         // If provider data exists, create provider profile
         if (providerData) {
@@ -164,11 +174,15 @@ serve(async (req) => {
 
             const { error: providerError } = await supabaseAdmin.from("provider_profiles").insert({
                 user_id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone_number: phone,
                 license_number: providerData.licenseNumber,
                 license_type: providerData.licenseType,
                 npi_number: providerData.npiNumber,
                 dea_number: providerData.deaNumber,
-                dea_certification_url: deaUrl,
+                dea_url: deaUrl,
             });
 
             if (providerError) throw providerError;
@@ -198,8 +212,23 @@ serve(async (req) => {
         return new Response(JSON.stringify({ success: true, userId: userId }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "An error occurred";
+    } catch (error: any) {
+        console.error("Critical error in create-staff-user:", error);
+
+        // Extract meaningful error message
+        let errorMessage = "An unknown error occurred";
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (typeof error === "string") {
+            errorMessage = error;
+        } else {
+            try {
+                errorMessage = JSON.stringify(error);
+            } catch {
+                errorMessage = "An error occurred (failed to stringify error)";
+            }
+        }
+
         return new Response(JSON.stringify({ error: errorMessage }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
             status: 400,

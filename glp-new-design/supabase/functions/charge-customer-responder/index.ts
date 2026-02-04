@@ -91,6 +91,8 @@ Deno.serve(async (req) => {
           last_name,
           email,
           stripe_customer_id,
+          stripe_subscription_id,
+          subscription_status,
           current_sub_end_date,
           current_plan
         `
@@ -160,11 +162,34 @@ Deno.serve(async (req) => {
             }
             currentPlans[category_slug] = product_name || currentPlans[category_slug];
 
+            let subMap: any = {};
+            try {
+                const currentVal = profile.stripe_subscription_id || '';
+                if (currentVal.startsWith('sub_')) {
+                    subMap = { 'weight_loss': currentVal };
+                } else if (currentVal) {
+                    subMap = JSON.parse(currentVal);
+                }
+            } catch { }
+            subMap[category_slug] = newSub.id;
+
+            let statusMap: any = {};
+            try {
+                const currentStatus = profile.subscription_status;
+                if (currentStatus === true || currentStatus === 'true' || (typeof currentStatus === 'string' && !currentStatus.startsWith('{'))) {
+                    statusMap = { 'weight_loss': true };
+                } else if (currentStatus) {
+                    if (typeof currentStatus === 'object') statusMap = currentStatus;
+                    else statusMap = JSON.parse(currentStatus);
+                }
+            } catch { }
+            statusMap[category_slug] = true;
+
             await supabase
                 .from("profiles")
                 .update({
-                    stripe_subscription_id: newSub.id,
-                    subscription_status: "trialing",
+                    stripe_subscription_id: JSON.stringify(subMap),
+                    subscription_status: JSON.stringify(statusMap),
                     subscribe_status: true,
                     current_plan: JSON.stringify(currentPlans),
                     current_sub_end_date: new Date(
@@ -176,7 +201,10 @@ Deno.serve(async (req) => {
             if (form_submission_id) {
                 await supabase
                     .from("form_submissions")
-                    .update({ approval_status: "approved" })
+                    .update({
+                        approval_status: "approved",
+                        stripe_subscription_id: newSub.id
+                    })
                     .eq("id", form_submission_id);
             }
 
@@ -300,8 +328,16 @@ Deno.serve(async (req) => {
             } = profile;
 
             // Cancel existing subscription at period end
-            if (stripe_subscription_id) {
-                await stripe.subscriptions.update(stripe_subscription_id, {
+            let oldSubId = stripe_subscription_id;
+            try {
+                if (oldSubId && !oldSubId.startsWith('sub_')) {
+                    const map = JSON.parse(oldSubId);
+                    oldSubId = map[category_slug];
+                }
+            } catch { }
+
+            if (oldSubId) {
+                await stripe.subscriptions.update(oldSubId, {
                     cancel_at_period_end: true,
                     proration_behavior: "none",
                 });
@@ -350,7 +386,10 @@ Deno.serve(async (req) => {
             if (form_submission_id) {
                 await supabase
                     .from("form_submissions")
-                    .update({ approval_status: "approved" })
+                    .update({
+                        approval_status: "approved",
+                        stripe_subscription_id: newSub.id
+                    })
                     .eq("id", form_submission_id);
             }
 
@@ -589,7 +628,7 @@ Deno.serve(async (req) => {
             // Handle current_plan as JSON
             let currentPlans: any = {};
             // Fetch latest profile for plans
-            const { data: latestProfile } = await supabase.from("profiles").select("current_plan").eq("id", userId).single();
+            const { data: latestProfile } = await supabase.from("profiles").select("current_plan, stripe_subscription_id, subscription_status").eq("id", userId).single();
             if (latestProfile?.current_plan) {
                 try {
                     currentPlans = typeof latestProfile.current_plan === 'string' ? JSON.parse(latestProfile.current_plan) : latestProfile.current_plan;
@@ -600,11 +639,36 @@ Deno.serve(async (req) => {
             currentPlans[category_slug] = product_name;
 
             // Update profile
+            let subMapNew: any = {};
+            try {
+                const currentVal = latestProfile?.stripe_subscription_id || '';
+                if (currentVal.startsWith('sub_')) {
+                    subMapNew = { 'weight_loss': currentVal };
+                } else if (currentVal) {
+                    subMapNew = JSON.parse(currentVal);
+                }
+            } catch { }
+            subMapNew[category_slug] = subscription.id;
+
+            // Update Active Status Map
+            let statusMapNew: any = {};
+            try {
+                const currentStatus = latestProfile?.subscription_status;
+                if (currentStatus === true || currentStatus === 'true' || (typeof currentStatus === 'string' && !currentStatus.startsWith('{'))) {
+                    statusMapNew = { 'weight_loss': true };
+                } else if (currentStatus) {
+                    if (typeof currentStatus === 'object') statusMapNew = currentStatus;
+                    else statusMapNew = JSON.parse(currentStatus);
+                }
+            } catch { }
+            statusMapNew[category_slug] = true;
+
+            // Update profile
             await supabase
                 .from("profiles")
                 .update({
-                    stripe_subscription_id: subscription.id,
-                    subscription_status: "active",
+                    stripe_subscription_id: JSON.stringify(subMapNew),
+                    subscription_status: JSON.stringify(statusMapNew),
                     subscribe_status: true,
                     current_plan: JSON.stringify(currentPlans),
                     current_sub_end_date: new Date(
@@ -631,7 +695,10 @@ Deno.serve(async (req) => {
             // Approve form
             await supabase
                 .from("form_submissions")
-                .update({ approval_status: "approved" })
+                .update({
+                    approval_status: "approved",
+                    stripe_subscription_id: subscription.id
+                })
                 .eq("id", form_submission_id);
 
             // Send welcome email

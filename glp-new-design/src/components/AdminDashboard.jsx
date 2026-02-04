@@ -3660,16 +3660,6 @@ const SurveyManagement = () => {
         { id: 'longevity', label: 'Longevity' }
     ];
 
-    const getCategoryColor = (category) => {
-        switch (category) {
-            case 'weight-loss': return 'text-accent-green';
-            case 'hair-restoration': return 'text-blue-400';
-            case 'sexual-health': return 'text-red-400';
-            case 'longevity': return 'text-purple-400';
-            default: return 'text-white';
-        }
-    };
-
     const getRatingColor = (rating) => {
         switch (rating) {
             case 'Excellent': return 'bg-accent-green/20 text-accent-green border-accent-green/30';
@@ -3696,7 +3686,7 @@ const SurveyManagement = () => {
                     <button
                         key={cat.id}
                         onClick={() => setCategoryFilter(cat.id)}
-                        className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${categoryFilter === cat.id
+                        className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${categoryFilter === cat.id
                             ? 'bg-accent-green text-black'
                             : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white border border-white/10'
                             }`}
@@ -3706,197 +3696,174 @@ const SurveyManagement = () => {
                 ))}
             </div>
 
-            {/* Stats Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Total Responses</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">{surveys.length}</p>
-                </div>
-                <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Excellent</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">
-                        {surveys.filter(s => s.responses?.progressRating === 'Excellent').length}
-                    </p>
-                </div>
-                <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Satisfaction</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">
-                        {surveys.filter(s => s.responses?.satisfied === 'Yes').length}
-                    </p>
-                </div>
-                <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Want Changes</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-red-400">
-                        {surveys.filter(s => s.responses?.satisfied === 'No').length}
-                    </p>
+            {/* Response Table */}
+            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-white/5 bg-white/[0.02]">
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Email</th>
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Progress</th>
+                                {categoryFilter === 'weight-loss' && (
+                                    <>
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Starting Weight</th>
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Weight Lost</th>
+                                    </>
+                                )}
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Date Range</th>
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Satisfied</th>
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40">Submitted</th>
+                                <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {surveys.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8" className="p-20 text-center">
+                                        <p className="text-white/20 font-black uppercase tracking-widest text-xs">No responses logged yet</p>
+                                    </td>
+                                </tr>
+                            ) : (
+                                surveys.map(survey => (
+                                    <tr key={survey.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="p-8">
+                                            <p className="font-bold text-white group-hover:text-accent-green transition-colors">{survey.email}</p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-1">{survey.product}</p>
+                                        </td>
+                                        <td className="p-8">
+                                            <span className={`px-4 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest ${getRatingColor(survey.progress_rating)}`}>
+                                                {survey.progress_rating}
+                                            </span>
+                                        </td>
+                                        {categoryFilter === 'weight-loss' && (
+                                            <>
+                                                <td className="p-8">
+                                                    <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '—'}</p>
+                                                </td>
+                                                <td className="p-8">
+                                                    <p className={`text-sm font-black ${survey.weight_lost > 0 ? 'text-accent-green' : 'text-white/40'}`}>
+                                                        {survey.weight_lost ? `${survey.weight_lost} lbs` : '—'}
+                                                    </p>
+                                                </td>
+                                            </>
+                                        )}
+                                        <td className="p-8">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 whitespace-nowrap">
+                                                {new Date(survey.start_date).toLocaleDateString(undefined, { month: 'short', day: '2-digit' })} - {new Date(survey.end_date).toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' })}
+                                            </p>
+                                        </td>
+                                        <td className="p-8">
+                                            <span className={`text-[10px] font-black uppercase tracking-widest ${survey.satisfied_with_medication === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
+                                                {survey.satisfied_with_medication === 'Yes' ? 'yes' : 'no'}
+                                            </span>
+                                        </td>
+                                        <td className="p-8">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                                                {new Date(survey.submitted_at || survey.created_at).toLocaleDateString(undefined, { month: 'short', day: '2-digit', year: 'numeric' })}
+                                            </p>
+                                        </td>
+                                        <td className="p-8 text-right">
+                                            <button
+                                                onClick={() => setSelectedSurvey(survey)}
+                                                className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-white group-hover:bg-accent-green group-hover:text-black group-hover:border-accent-green transition-all"
+                                            >
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            {/* Survey List */}
-            {surveys.length === 0 ? (
-                <div className="text-center py-20 border border-dashed border-white/10 rounded-[40px] bg-white/[0.01]">
-                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/20">
-                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                    </div>
-                    <p className="text-white/20 font-black uppercase tracking-widest text-xs">
-                        No survey responses found for this category
-                    </p>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {surveys.map(survey => (
-                        <div
-                            key={survey.id}
-                            onClick={() => setSelectedSurvey(survey)}
-                            className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8 hover:border-white/10 transition-all cursor-pointer group"
-                        >
-                            <div className="flex items-start justify-between mb-6">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <span className={`text-sm font-black uppercase tracking-wider ${getCategoryColor(survey.category)}`}>
-                                            {survey.category?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                        </span>
-                                        <span className="text-white/20">•</span>
-                                        <span className="text-xs font-bold text-white/40">
-                                            {new Date(survey.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                    <p className="text-white font-bold">{survey.email}</p>
-                                </div>
-                                <div className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wide ${getRatingColor(survey.responses?.progressRating)}`}>
-                                    {survey.responses?.progressRating || 'N/A'}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {survey.responses?.startingWeight && (
-                                    <div className="bg-white/5 rounded-2xl p-4">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Starting Weight</p>
-                                        <p className="text-lg font-black text-white">{survey.responses.startingWeight} lbs</p>
-                                    </div>
-                                )}
-                                {survey.responses?.weightLost && (
-                                    <div className="bg-white/5 rounded-2xl p-4">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Weight Lost</p>
-                                        <p className="text-lg font-black text-accent-green">{survey.responses.weightLost} lbs</p>
-                                    </div>
-                                )}
-                                <div className="bg-white/5 rounded-2xl p-4">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Medication Satisfaction</p>
-                                    <p className={`text-lg font-black ${survey.responses?.satisfied === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
-                                        {survey.responses?.satisfied || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {survey.responses?.notes && (
-                                <div className="mt-4 p-4 bg-black/20 rounded-2xl border border-white/5">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Additional Notes</p>
-                                    <p className="text-sm text-white/60 font-medium">{survey.responses.notes}</p>
-                                </div>
-                            )}
-
-                            <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                                <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-white/20">
-                                    {survey.responses?.startDate && (
-                                        <span>Period: {new Date(survey.responses.startDate).toLocaleDateString()} - {survey.responses.endDate ? new Date(survey.responses.endDate).toLocaleDateString() : 'Ongoing'}</span>
-                                    )}
-                                </div>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/20 group-hover:text-accent-green transition-colors">
-                                    <path d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Detail Modal */}
+            {/* Detail Modal Overlay */}
             {selectedSurvey && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6" onClick={() => setSelectedSurvey(null)}>
-                    <div className="bg-[#0A0A0A] border border-white/10 rounded-[40px] p-10 max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-start justify-between mb-8">
-                            <div>
-                                <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2">
-                                    Survey <span className="text-accent-green">Details</span>
-                                </h3>
-                                <p className={`text-sm font-black uppercase tracking-wider ${getCategoryColor(selectedSurvey.category)}`}>
-                                    {selectedSurvey.category?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                </p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setSelectedSurvey(null)}>
+                    <div
+                        className="bg-[#0A0A0A] border border-white/10 rounded-[48px] p-12 max-w-2xl w-full max-h-[85vh] overflow-y-auto relative shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setSelectedSurvey(null)}
+                            className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 hover:text-white"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                        </button>
+
+                        <div className="mb-12">
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-4">Patient Encounter</p>
+                            <h3 className="text-4xl font-black uppercase italic tracking-tighter text-white mb-2 leading-none">Survey Results</h3>
+                            <p className="text-white/40 font-bold uppercase tracking-widest text-[11px]">{selectedSurvey.email}</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Protocol</p>
+                                <p className="text-sm font-black text-white uppercase italic">{selectedSurvey.product}</p>
                             </div>
-                            <button
-                                onClick={() => setSelectedSurvey(null)}
-                                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                            <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Progress</p>
+                                <span className={`inline-block px-4 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${getRatingColor(selectedSurvey.progress_rating)}`}>
+                                    {selectedSurvey.progress_rating}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="space-y-6">
-                            <div className="bg-white/5 rounded-2xl p-6">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Email</p>
-                                <p className="text-white font-bold">{selectedSurvey.email}</p>
-                            </div>
-
-                            <div className="bg-white/5 rounded-2xl p-6">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Progress Rating</p>
-                                <div className={`inline-block px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wide ${getRatingColor(selectedSurvey.responses?.progressRating)}`}>
-                                    {selectedSurvey.responses?.progressRating}
+                            <div className={`bg-white/[0.02] border border-white/5 p-8 rounded-[32px] grid ${selectedSurvey.category === 'weight-loss' ? 'grid-cols-2 gap-12' : 'grid-cols-1 gap-6'}`}>
+                                {selectedSurvey.category === 'weight-loss' && (
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Weight Tracking</p>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <p className="text-[10px] font-black text-white/40 uppercase mb-1">Start Weight</p>
+                                                <p className="text-2xl font-black italic">{selectedSurvey.starting_weight || '0'} lbs</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-white/40 uppercase mb-1">Weight Lost</p>
+                                                <p className="text-2xl font-black italic text-accent-green">-{selectedSurvey.weight_lost || '0'} lbs</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Medical Status</p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/40 uppercase mb-1">Satisfied w/ Dose</p>
+                                            <p className={`text-2xl font-black italic ${selectedSurvey.satisfied_with_medication === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
+                                                {selectedSurvey.satisfied_with_medication}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/40 uppercase mb-1">Reporting Period</p>
+                                            <p className="text-sm font-black whitespace-nowrap">
+                                                {new Date(selectedSurvey.start_date).toLocaleDateString()} - {new Date(selectedSurvey.end_date).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {selectedSurvey.responses?.startingWeight && (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white/5 rounded-2xl p-6">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Starting Weight</p>
-                                        <p className="text-2xl font-black text-white">{selectedSurvey.responses.startingWeight} lbs</p>
-                                    </div>
-                                    <div className="bg-white/5 rounded-2xl p-6">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Weight Lost</p>
-                                        <p className="text-2xl font-black text-accent-green">{selectedSurvey.responses.weightLost} lbs</p>
-                                    </div>
+                            {selectedSurvey.additional_notes && (
+                                <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[32px]">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-4">Patient Notes</p>
+                                    <p className="text-white/80 font-medium leading-relaxed italic">"{selectedSurvey.additional_notes}"</p>
                                 </div>
                             )}
 
-                            <div className="bg-white/5 rounded-2xl p-6">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Medication Satisfaction</p>
-                                <p className={`text-xl font-black ${selectedSurvey.responses?.satisfied === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
-                                    {selectedSurvey.responses?.satisfied === 'Yes' ? 'Satisfied' : 'Wants Changes'}
-                                </p>
-                            </div>
-
-                            {selectedSurvey.responses?.notes && (
-                                <div className="bg-white/5 rounded-2xl p-6">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Additional Notes</p>
-                                    <p className="text-sm text-white/80 font-medium leading-relaxed">{selectedSurvey.responses.notes}</p>
-                                </div>
-                            )}
-
-                            <div className="bg-white/5 rounded-2xl p-6">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Submitted</p>
-                                <p className="text-white font-bold">
-                                    {new Date(selectedSurvey.submitted_at).toLocaleDateString('en-US', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </p>
+                            <div className="pt-8 border-t border-white/5 flex items-center justify-between">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20">Record ID: {selectedSurvey.id.substring(0, 13)}...</p>
+                                <button
+                                    onClick={() => setSelectedSurvey(null)}
+                                    className="px-10 py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-accent-green transition-all"
+                                >
+                                    Dismiss
+                                </button>
                             </div>
                         </div>
-
-                        <button
-                            onClick={() => setSelectedSurvey(null)}
-                            className="w-full mt-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-                        >
-                            Close
-                        </button>
                     </div>
                 </div>
             )}
@@ -3940,14 +3907,52 @@ const StaffManagement = () => {
     const fetchStaff = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            // 1. Fetch authorized staff roles first
+            const { data: roles, error: rolesError } = await supabase
+                .from('user_roles')
+                .select('user_id, role')
+                .in('role', ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office']);
+
+            if (rolesError) throw rolesError;
+            if (!roles || roles.length === 0) {
+                setStaff([]);
+                return;
+            }
+
+            // 2. Extract unique user IDs
+            const userIds = roles.map(r => r.user_id);
+
+            // 3. Fetch profiles for these users
+            const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
-                .in('role', ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office'])
-                .order('created_at', { ascending: false });
+                .in('id', userIds);
 
-            if (error) throw error;
-            setStaff(data || []);
+            if (profileError) throw profileError;
+
+            // 4. Fetch provider specific data
+            const { data: providerData, error: providerError } = await supabase
+                .from('provider_profiles')
+                .select('*')
+                .in('user_id', userIds);
+
+            if (providerError) throw providerError;
+
+            // 5. Merge all data
+            const staffMembers = roles.map(roleEntry => {
+                const profile = (profileData || []).find(p => p.id === roleEntry.user_id);
+                const providerEntry = (providerData || []).find(p => p.user_id === roleEntry.user_id);
+
+                return {
+                    ...profile,
+                    ...providerEntry,
+                    id: roleEntry.user_id, // IMPORTANT: Ensure the UUID id is not overwritten by provider_profiles.id
+                    role: roleEntry.role
+                };
+            }).filter(member => member.email || member.first_name) // Ensure we have something to display
+                .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+            setStaff(staffMembers);
         } catch (err) {
             console.error('Error fetching staff:', err);
         } finally {
@@ -3958,14 +3963,26 @@ const StaffManagement = () => {
     useEffect(() => {
         fetchStaff();
 
-        // Set up realtime subscription
-        const subscription = supabase
-            .channel('staff_updates')
+        // Listen for changes across all three tables to keep staff list in sync
+        const profileSubscription = supabase
+            .channel('staff_profile_updates')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, fetchStaff)
             .subscribe();
 
+        const roleSubscription = supabase
+            .channel('staff_role_updates')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, fetchStaff)
+            .subscribe();
+
+        const providerSubscription = supabase
+            .channel('provider_profile_updates')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'provider_profiles' }, fetchStaff)
+            .subscribe();
+
         return () => {
-            subscription.unsubscribe();
+            profileSubscription.unsubscribe();
+            roleSubscription.unsubscribe();
+            providerSubscription.unsubscribe();
         };
     }, []);
 
@@ -3974,6 +3991,23 @@ const StaffManagement = () => {
         setCreating(true);
 
         try {
+            // Convert DEA file to base64 if it exists
+            let deaFileData = null;
+            if (providerForm.deaCertFile) {
+                const reader = new FileReader();
+                deaFileData = await new Promise((resolve, reject) => {
+                    reader.onload = () => {
+                        const base64String = reader.result.split(',')[1];
+                        resolve({
+                            fileData: base64String,
+                            fileExt: providerForm.deaCertFile.name.split('.').pop()
+                        });
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(providerForm.deaCertFile);
+                });
+            }
+
             // Call edge function
             const { data, error } = await supabase.functions.invoke('create-staff-user', {
                 body: {
@@ -3992,7 +4026,8 @@ const StaffManagement = () => {
                         npiNumber: providerForm.npiNumber,
                         deaNumber: providerForm.deaNumber,
                         supervisingPhysician: null
-                    }
+                    },
+                    deaFile: deaFileData
                 }
             });
 
@@ -4061,6 +4096,24 @@ const StaffManagement = () => {
             alert('Failed to create staff: ' + (err.message || 'Unknown error'));
         } finally {
             setCreating(false);
+        }
+    };
+
+    const handleDeleteStaff = async (userId, name) => {
+        if (!window.confirm(`Are you sure you want to remove ${name}? This action cannot be undone.`)) return;
+
+        try {
+            const { error } = await supabase.functions.invoke('delete-staff-user', {
+                body: { user_id: userId }
+            });
+
+            if (error) throw error;
+
+            alert('Staff member removed successfully');
+            fetchStaff();
+        } catch (err) {
+            console.error('Error deleting staff:', err);
+            alert('Failed to delete staff: ' + (err.message || 'Unknown error'));
         }
     };
 
@@ -4170,10 +4223,10 @@ const StaffManagement = () => {
                                             <p className="font-bold text-white">{member.first_name} {member.last_name}</p>
                                         </td>
                                         <td className="p-6">
-                                            <p className="text-sm text-white/60">{member.email}</p>
+                                            <p className="text-sm text-white/60">{member.email || 'N/A'}</p>
                                         </td>
                                         <td className="p-6">
-                                            <p className="text-sm text-white/60">{member.phone || 'N/A'}</p>
+                                            <p className="text-sm text-white/60">{member.phone_number || member.phone || 'N/A'}</p>
                                         </td>
                                         <td className="p-6">
                                             <span className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-wide ${getRoleBadge(member.role)}`}>
@@ -4192,9 +4245,20 @@ const StaffManagement = () => {
                                             </p>
                                         </td>
                                         <td className="p-6">
-                                            <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
-                                                View
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                                                    View
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
+                                                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
+                                                    title="Delete Staff"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -4243,7 +4307,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.dob}
                                     onChange={(e) => setProviderForm({ ...providerForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green [color-scheme:dark]"
                                 />
                             </div>
 
@@ -4297,7 +4361,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.licenseType}
                                     onChange={(e) => setProviderForm({ ...providerForm, licenseType: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-green"
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
@@ -4410,7 +4474,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.dob}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green [color-scheme:dark]"
                                 />
                             </div>
 

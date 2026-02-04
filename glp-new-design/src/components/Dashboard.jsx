@@ -9,6 +9,39 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 
 const stripePromise = loadStripe('pk_test_51RNxytRZvtknfMGgwf0Tsuvx6jguIyVph5rWBAMFzFcfpj9SuWUWIdm06eCsxwAhbeQE69EFOo7ExXCqyLBpHVvl00Kr3ycplu');
 
+// Helper to get category from drug name
+const getMedicationCategory = (drugName) => {
+    const drug = (drugName || '').toLowerCase();
+
+    // Weight Loss
+    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight')) {
+        return 'Weight Loss';
+    }
+
+    // Sexual Health
+    if (drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin') ||
+        drug.includes('pt-141') || drug.includes('sexual') || drug.includes('yohimbe') ||
+        drug.includes('scream') || drug.includes('cream')) {
+        return 'Sexual Health';
+    }
+
+    // Hair Restoration
+    if (drug.includes('finasteride') || drug.includes('minoxidil') || drug.includes('hair') ||
+        drug.includes('dutasteride') || drug.includes('spironolactone') || drug.includes('latanoprost') ||
+        drug.includes('tretinoin')) {
+        return 'Hair Restoration';
+    }
+
+    // Longevity
+    if (drug.includes('nad') || drug.includes('glutathione') || drug.includes('sermorelin') ||
+        drug.includes('longevity') || drug.includes('lipo') || drug.includes('b12') ||
+        drug.includes('methylcobalamin') || drug.includes('glycine')) {
+        return 'Longevity';
+    }
+
+    return null;
+};
+
 
 const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
     const stripe = useStripe();
@@ -102,6 +135,12 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
     const handleProceed = async (e) => {
         e.preventDefault();
 
+        // For Cancellation or Activation
+        if (type === 'cancel' || type === 'activate') {
+            onSubmit();
+            return;
+        }
+
         // Only require payment for Dosage Changes
         if (type === 'dosage') {
             setPreparingPayment(true);
@@ -145,10 +184,14 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                 <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#080808]">
                     <div>
                         <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
-                            {step === 1 ? 'Request' : 'Secure Payment'} <span className="text-accent-green">{type === 'dosage' ? 'Dosage Adjustment' : 'Medication Change'}</span>
+                            {type === 'cancel' ? 'Cancel' : type === 'activate' ? 'Reactivate' : (step === 1 ? 'Request' : 'Secure Payment')} <span className={type === 'cancel' ? 'text-red-500' : 'text-accent-green'}>
+                                {type === 'dosage' ? 'Dosage Adjustment' : (type === 'cancel' || type === 'activate') ? 'Subscription' : 'Medication Change'}
+                            </span>
                         </h3>
                         <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">
-                            {step === 1 ? medication?.selected_drug : `Confirming changes for ${medication?.selected_drug}`}
+                            {type === 'cancel' ? `Discontinuing your ${medication?.selected_drug} protocol` :
+                                type === 'activate' ? `Resuming your ${medication?.selected_drug} protocol` :
+                                    (step === 1 ? medication?.selected_drug : `Confirming changes for ${medication?.selected_drug}`)}
                         </p>
                     </div>
                     <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 hover:text-white">
@@ -159,7 +202,49 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                 </div>
 
                 <div className="p-8 overflow-y-auto">
-                    {step === 1 ? (
+                    {type === 'cancel' || type === 'activate' ? (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className={`${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-green/10 border-accent-green/20'} border rounded-3xl p-8 text-center`}>
+                                <div className={`w-16 h-16 rounded-full ${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-green/10 border-accent-green/20'} flex items-center justify-center border mx-auto mb-6`}>
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={type === 'cancel' ? 'text-red-500' : 'text-accent-green'}>
+                                        {type === 'cancel' ? (
+                                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
+                                        ) : (
+                                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        )}
+                                    </svg>
+                                </div>
+                                <h4 className="text-xl font-black uppercase tracking-tighter italic mb-4">{type === 'cancel' ? 'Are you sure?' : 'Welcome Back'}</h4>
+                                <p className="text-xs text-white/60 leading-relaxed font-bold uppercase tracking-wider mx-auto max-w-sm">
+                                    {type === 'cancel'
+                                        ? "Cancelling will pause your automatic renewals and medication deliveries. You will still have access to the protocol until the end of your current billing cycle."
+                                        : "Activating your subscription will resume your protocol and schedule your next delivery. You will be charged the monthly protocol fee immediately."}
+                                </p>
+                            </div>
+                            <div className="space-y-4 pt-4">
+                                <button
+                                    onClick={handleProceed}
+                                    disabled={loading}
+                                    className={`w-full py-6 ${type === 'cancel' ? 'bg-red-500 hover:bg-red-600' : 'bg-accent-green hover:bg-white'} text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg`}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            {type === 'cancel' ? 'Processing Cancellation...' : 'Reactivating...'}
+                                        </>
+                                    ) : (
+                                        type === 'cancel' ? 'Confirm Cancellation' : 'Confirm Reactivation'
+                                    )}
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    className="w-full py-4 bg-white/5 border border-white/10 text-white/60 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:text-white transition-all"
+                                >
+                                    {type === 'cancel' ? 'Keep My Subscription' : 'Not Now, Maybe Later'}
+                                </button>
+                            </div>
+                        </div>
+                    ) : step === 1 ? (
                         <form onSubmit={handleProceed} className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-2">
@@ -242,7 +327,10 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
     );
 };
 
-const MedicationCard = ({ submission, onAction, onRetake }) => {
+const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onRetake }) => {
+    // Determine if user can manage subscription (must be approved by provider)
+    const isApproved = submission.approval_status === 'approved';
+
     return (
         <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:border-accent-green/30 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
@@ -260,50 +348,32 @@ const MedicationCard = ({ submission, onAction, onRetake }) => {
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
                             <h3 className="text-2xl font-black uppercase tracking-tighter italic text-white">
                                 {(() => {
-                                    // Determine Category based on drug name (comprehensive mapping)
-                                    const drug = (submission.selected_drug || submission.dosage_preference || '').toLowerCase();
-
-                                    // Weight Loss
-                                    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight')) {
-                                        return 'Weight Loss';
-                                    }
-
-                                    // Sexual Health
-                                    if (drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin') ||
-                                        drug.includes('pt-141') || drug.includes('sexual') || drug.includes('yohimbe') ||
-                                        drug.includes('scream') || drug.includes('cream')) {
-                                        return 'Sexual Health';
-                                    }
-
-                                    // Hair Restoration
-                                    if (drug.includes('finasteride') || drug.includes('minoxidil') || drug.includes('hair') ||
-                                        drug.includes('dutasteride') || drug.includes('spironolactone') || drug.includes('latanoprost') ||
-                                        drug.includes('tretinoin')) {
-                                        return 'Hair Restoration';
-                                    }
-
-                                    // Longevity
-                                    if (drug.includes('nad') || drug.includes('glutathione') || drug.includes('sermorelin') ||
-                                        drug.includes('longevity') || drug.includes('lipo') || drug.includes('b12') ||
-                                        drug.includes('methylcobalamin') || drug.includes('glycine')) {
-                                        return 'Longevity';
-                                    }
-
-                                    // Default - capitalize the drug name if we can't categorize
-                                    return drug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active Protocol';
+                                    const drug = submission.selected_drug || submission.dosage_preference || '';
+                                    return getMedicationCategory(drug) || drug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active Protocol';
                                 })()}
                             </h3>
                             <div className="flex gap-2">
-                                <span className="px-3 py-1 bg-accent-green/10 border border-accent-green/20 text-accent-green text-[9px] font-black uppercase tracking-widest rounded-full">
-                                    Active
-                                </span>
-                                <span className="px-3 py-1 bg-white/5 border border-white/10 text-white/40 text-[9px] font-black uppercase tracking-widest rounded-full">
-                                    Approved
+                                {/* Subscription Status Badge - based on billing state */}
+                                {isSubscriptionActive ? (
+                                    <span className="px-3 py-1 bg-accent-green/10 border border-accent-green/20 text-accent-green text-[9px] font-black uppercase tracking-widest rounded-full">
+                                        Active
+                                    </span>
+                                ) : (
+                                    <span className="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest rounded-full">
+                                        Inactive
+                                    </span>
+                                )}
+                                {/* Approval Status Badge - based on provider decision */}
+                                <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-widest rounded-full ${submission.approval_status === 'approved' ? 'bg-white/5 border-white/10 text-white/40' :
+                                    submission.approval_status === 'pending' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' :
+                                        'bg-red-500/10 border-red-500/20 text-red-500'
+                                    }`}>
+                                    {submission.approval_status}
                                 </span>
                             </div>
                         </div>
                         <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-6">
-                            Approved on {new Date(submission.submitted_at).toLocaleDateString()}
+                            Submitted on {new Date(submission.submitted_at).toLocaleDateString()}
                         </p>
 
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
@@ -323,21 +393,44 @@ const MedicationCard = ({ submission, onAction, onRetake }) => {
                 </div>
 
                 <div className="flex flex-col gap-3 w-full md:w-auto self-center">
-                    <button
-                        onClick={() => onAction('dosage', submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
-                    >
-                        Adjust Dosage
-                    </button>
-                    <button
-                        onClick={() => onAction('medication', submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all"
-                    >
-                        Change Medication
-                    </button>
+                    {isApproved ? (
+                        isSubscriptionActive ? (
+                            <>
+                                <button
+                                    onClick={() => onAction('dosage', submission)}
+                                    className="w-full md:w-56 px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
+                                >
+                                    Adjust Dosage
+                                </button>
+                                <button
+                                    onClick={() => onAction('medication', submission)}
+                                    className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all"
+                                >
+                                    Change Medication
+                                </button>
+                                <button
+                                    onClick={() => onAction('cancel', submission)}
+                                    className="w-full md:w-56 px-8 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all"
+                                >
+                                    Cancel Subscription
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => onAction('activate', submission)}
+                                className="w-full md:w-56 px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(191,255,0,0.15)]"
+                            >
+                                Activate Subscription
+                            </button>
+                        )
+                    ) : (
+                        <div className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/40 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center">
+                            Awaiting Approval
+                        </div>
+                    )}
                     <button
                         onClick={() => onRetake && onRetake(submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all"
+                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/5 text-white/20 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white/40 transition-all opacity-50 hover:opacity-100"
                     >
                         Retake Assessment
                     </button>
@@ -610,7 +703,7 @@ const BillingView = ({ profile, user }) => {
 
     // Format the plan name (handles JSON format like {"weight_loss":"Semaglutide Injection"})
     const formatPlanName = (plan) => {
-        if (!plan || plan === 'None' || plan === '{}') return 'Monthly Maintenance';
+        if (!plan || plan === 'None' || plan === '{ }') return 'Monthly Maintenance';
 
         // If it's already an object (not a string)
         if (typeof plan === 'object' && plan !== null) {
@@ -1198,49 +1291,171 @@ const Dashboard = () => {
     const [loadingPhysician, setLoadingPhysician] = useState(false);
     const [actionModal, setActionModal] = useState({ isOpen: false, type: null, medication: null });
     const [actionLoading, setActionLoading] = useState(false);
+    const [lastOptimisticUpdate, setLastOptimisticUpdate] = useState(null);
 
     const handleActionSubmit = async (value, reason) => {
         setActionLoading(true);
         try {
             const originalSubmission = actionModal.medication;
+            const drug = originalSubmission.selected_drug || '';
+            let catSlug = 'weight_loss';
+            const dLow = drug.toLowerCase();
+            if (dLow.includes('hair') || dLow.includes('finasteride') || dLow.includes('minoxidil')) catSlug = 'hair_restoration';
+            else if (dLow.includes('sex') || dLow.includes('erectile') || dLow.includes('sildenafil') || dLow.includes('tadalafil') || dLow.includes('oxytocin')) catSlug = 'sexual_health';
+            else if (dLow.includes('longevity') || dLow.includes('nad') || dLow.includes('cjc') || dLow.includes('ipamorelin')) catSlug = 'longevity';
+            else if (dLow.includes('weight') || dLow.includes('semaglutide') || dLow.includes('tirzepatide')) catSlug = 'weight_loss';
+
+            if (actionModal.type === 'cancel') {
+                let subscriptionId = originalSubmission.stripe_subscription_id || profile?.stripe_subscription_id;
+
+                // Handle cases where stripe_subscription_id might be a JSON map in the profile
+                if (subscriptionId && typeof subscriptionId === 'string' && subscriptionId.startsWith('{')) {
+                    try {
+                        const subMap = JSON.parse(subscriptionId);
+                        subscriptionId = subMap[catSlug] || subscriptionId;
+                    } catch (e) {
+                        console.error('Error parsing subscription map:', e);
+                    }
+                } else if (subscriptionId && typeof subscriptionId === 'object') {
+                    subscriptionId = subscriptionId[catSlug] || subscriptionId;
+                }
+
+                if (!subscriptionId || (typeof subscriptionId === 'string' && subscriptionId.startsWith('{'))) {
+                    throw new Error('No active subscription ID found for this protocol.');
+                }
+
+                const { data, error } = await supabase.functions.invoke('cancel-subscription', {
+                    method: 'POST',
+                    body: {
+                        userId: user.id,
+                        subscriptionId: subscriptionId,
+                        category: catSlug
+                    }
+                });
+
+                if (error) throw error;
+
+                alert(`Your subscription for ${originalSubmission.selected_drug?.replace(/-/g, ' ')} has been canceled. Access ends: ${data.accessEnds}`);
+                setActionModal({ isOpen: false, type: null, medication: null });
+
+                // Optimistic Update for Cancel
+                if (profile) {
+                    setProfile(prev => {
+                        let currentMap = {};
+                        try {
+                            const pStatus = prev.subscription_status;
+                            if (pStatus === true || pStatus === 'true' || (typeof pStatus === 'string' && !pStatus.startsWith('{'))) {
+                                currentMap = { 'weight_loss': true };
+                            } else {
+                                currentMap = typeof pStatus === 'string' ? JSON.parse(pStatus) : (pStatus || {});
+                            }
+                        } catch { currentMap = {}; }
+
+                        currentMap[catSlug] = false;
+
+                        return {
+                            ...prev,
+                            subscription_status: JSON.stringify(currentMap)
+                        };
+                    });
+                }
+
+                // Mark that we just did an optimistic update
+                setLastOptimisticUpdate(Date.now());
+
+                fetchSubmissions();
+                // fetchProfile is handled via optimistic update + 2s guard
+                return;
+            }
+
+            if (actionModal.type === 'activate') {
+                const shippingAddress = profile ?
+                    `${profile.shipping_address || ''}, ${profile.shipping_city || ''}, ${profile.shipping_state || ''} ${profile.shipping_zip || ''}`.trim()
+                    : '';
+
+                const { data, error } = await supabase.functions.invoke('charge-customer-responder', {
+                    method: 'POST',
+                    body: {
+                        userId: user.id,
+                        product_name: `${originalSubmission.selected_drug?.replace(/-/g, ' ')} - $180`,
+                        product_price: 18000,
+                        product_category: getMedicationCategory(originalSubmission.selected_drug),
+                        request_type: "activate subscription",
+                        shipping_address: shippingAddress,
+                        form_submission_id: (originalSubmission.id && !originalSubmission.id.toString().startsWith('plan-from-profile')) ? originalSubmission.id : null
+                    }
+                });
+
+                if (error) throw error;
+                if (data?.error) throw new Error(data.error);
+
+                alert('Subscription reactivated successfully! Welcome back.');
+                setActionModal({ isOpen: false, type: null, medication: null });
+
+                // Optimistic Update for Activate
+                if (profile) {
+                    setProfile(prev => {
+                        let currentMap = {};
+                        try {
+                            const pStatus = prev.subscription_status;
+                            if (pStatus === true || pStatus === 'true' || (typeof pStatus === 'string' && !pStatus.startsWith('{'))) {
+                                currentMap = { 'weight_loss': true };
+                            } else {
+                                currentMap = typeof pStatus === 'string' ? JSON.parse(pStatus) : (pStatus || {});
+                            }
+                        } catch { currentMap = {}; }
+
+                        currentMap[catSlug] = true;
+
+                        return {
+                            ...prev,
+                            subscription_status: JSON.stringify(currentMap),
+                            subscribe_status: true
+                        };
+                    });
+                }
+
+                // Mark that we just did an optimistic update
+                setLastOptimisticUpdate(Date.now());
+
+                fetchSubmissions();
+                return;
+            }
+
             const currentDosage = originalSubmission.dosage_preference || 'Standard';
 
-            // Clone the submission data
+            // Clone the submission data for dosage/medication changes
             const newSubmissionPayload = {
                 ...originalSubmission,
-                id: undefined, // Let DB generate new ID
-                created_at: undefined, // Let DB generate
+                id: undefined,
+                created_at: undefined,
                 submitted_at: new Date().toISOString(),
-                approval_status: 'pending', // Reset status for review
+                approval_status: 'pending',
 
-                // Specific updates for this request
-                // Specific updates for this request
-                dosage_preference: actionModal.type === 'dosage' ? value : currentDosage, // Only update dosage if it IS a dosage change
-                selected_drug: actionModal.type === 'medication' ? (value.toLowerCase().replace(/\s+/g, '-')) : originalSubmission.selected_drug, // Update drug if medication change
+                dosage_preference: actionModal.type === 'dosage' ? value : currentDosage,
+                selected_drug: actionModal.type === 'medication' ? (value.toLowerCase().replace(/\s+/g, '-')) : originalSubmission.selected_drug,
                 submission_type: actionModal.type === 'dosage' ? 'dosage_change' : 'medication_change',
-                additional_health_info: `[${actionModal.type === 'dosage' ? 'DOSAGE' : 'MEDICATION'} CHANGE REQUEST] 
-${actionModal.type === 'dosage' ? 'New Dosage' : 'New Medication'}: ${value}
-Reason: ${reason}
-Previous ${actionModal.type === 'dosage' ? 'Dosage' : 'Medication'}: ${actionModal.type === 'dosage' ? currentDosage : originalSubmission.selected_drug}
-Original Submission ID: ${originalSubmission.id}`
+                additional_health_info: `[${actionModal.type === 'dosage' ? 'DOSAGE' : 'MEDICATION'} CHANGE REQUEST]
+            ${actionModal.type === 'dosage' ? 'New Dosage' : 'New Medication'}: ${value}
+            Reason: ${reason}
+            Previous ${actionModal.type === 'dosage' ? 'Dosage' : 'Medication'}: ${actionModal.type === 'dosage' ? currentDosage : originalSubmission.selected_drug}
+            Original Submission ID: ${originalSubmission.id}`
             };
 
-            // Remove internal fields that shouldn't be cloned directly if they exist
             delete newSubmissionPayload.id;
             delete newSubmissionPayload.created_at;
-            // Remove fields that might not exist in schema if we are re-using an existing object
             delete newSubmissionPayload.previous_dosage;
             delete newSubmissionPayload.submission_type;
 
-            const { error } = await supabase
+            const { error: insertError } = await supabase
                 .from('form_submissions')
                 .insert([newSubmissionPayload]);
 
-            if (error) throw error;
+            if (insertError) throw insertError;
 
-            alert('Your dosage change request has been submitted securely and is under clinical review.');
+            alert('Your request has been submitted securely and is under clinical review.');
             setActionModal({ isOpen: false, type: null, medication: null });
-            fetchSubmissions(); // Refresh list to show new pending request
+            fetchSubmissions();
         } catch (err) {
             console.error('Request error:', err);
             alert(`Failed to submit request: ${err.message}`);
@@ -1251,6 +1466,14 @@ Original Submission ID: ${originalSubmission.id}`
 
     const fetchProfile = async () => {
         if (!user) return;
+
+        // Skip fetch if we just did an optimistic update (within 2 seconds)
+        // This gives the database/edge functions time to propagate changes
+        if (lastOptimisticUpdate && (Date.now() - lastOptimisticUpdate < 2000)) {
+            console.log('[Dashboard] Skipping profile fetch - recent optimistic update');
+            return;
+        }
+
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -1448,9 +1671,15 @@ Original Submission ID: ${originalSubmission.id}`
     const approvedSubmissions = submissions.filter(s => s.approval_status === 'approved');
     const pendingSubmissions = submissions.filter(s => s.approval_status === 'pending');
 
+    // Calculate active categories
+    const activeCategories = Array.from(new Set(
+        approvedSubmissions.map(s => getMedicationCategory(s.selected_drug || s.dosage_preference))
+            .filter(Boolean)
+    ));
+
     // Only show active protocol banner if there's a real current_plan or approved submissions
     const hasActiveProtocol = (approvedSubmissions.length > 0 && approvedSubmissions[0]) ||
-        (profile?.current_plan && profile.current_plan !== 'None' && profile.current_plan !== '{}');
+        (profile?.current_plan && profile.current_plan !== 'None' && profile.current_plan !== '{ }');
 
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white font-sans">
@@ -1648,7 +1877,11 @@ Original Submission ID: ${originalSubmission.id}`
                                     <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-4 leading-none">
                                         Congratulations <br />
                                         <span className="text-white/40">
-                                            On your {approvedSubmissions[0]?.dosage_preference || approvedSubmissions[0]?.selected_drug || 'Protocol'} Approval
+                                            {activeCategories.length === 1
+                                                ? `On your ${activeCategories[0]} Approval`
+                                                : activeCategories.length > 1
+                                                    ? `On your ${activeCategories.join(' & ')} Approvals`
+                                                    : `On your ${approvedSubmissions[0]?.dosage_preference || approvedSubmissions[0]?.selected_drug || 'Protocol'} Approval`}
                                         </span>
                                     </h2>
 
@@ -1849,28 +2082,18 @@ Original Submission ID: ${originalSubmission.id}`
                                 <div className="flex items-center justify-between mb-12">
                                     <div>
                                         <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-2">
-                                            {approvedSubmissions.length > 0
-                                                ? (() => {
-                                                    const drug = (approvedSubmissions[0].selected_drug || approvedSubmissions[0].dosage_preference || '').toLowerCase();
-                                                    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight')) return 'Weight Loss';
-                                                    if (drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin') || drug.includes('pt-141') || drug.includes('sexual') || drug.includes('yohimbe')) return 'Sexual Health';
-                                                    if (drug.includes('finasteride') || drug.includes('minoxidil') || drug.includes('hair') || drug.includes('dutasteride') || drug.includes('latanoprost')) return 'Hair Restoration';
-                                                    if (drug.includes('nad') || drug.includes('glutathione') || drug.includes('sermorelin') || drug.includes('longevity') || drug.includes('lipo') || drug.includes('b12')) return 'Longevity';
-                                                    return 'My Medications';
-                                                })()
-                                                : "My Medications"}
+                                            {activeCategories.length === 1
+                                                ? activeCategories[0]
+                                                : activeCategories.length > 1
+                                                    ? 'My Protocols'
+                                                    : 'My Medications'}
                                         </h2>
                                         <p className="text-xs text-white/40 font-bold uppercase tracking-widest">
-                                            {approvedSubmissions.length > 0
-                                                ? `Managing your active ${(() => {
-                                                    const drug = (approvedSubmissions[0].selected_drug || approvedSubmissions[0].dosage_preference || '').toLowerCase();
-                                                    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight')) return 'Weight Loss';
-                                                    if (drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin') || drug.includes('pt-141') || drug.includes('sexual') || drug.includes('yohimbe')) return 'Sexual Health';
-                                                    if (drug.includes('finasteride') || drug.includes('minoxidil') || drug.includes('hair') || drug.includes('dutasteride') || drug.includes('latanoprost')) return 'Hair Restoration';
-                                                    if (drug.includes('nad') || drug.includes('glutathione') || drug.includes('sermorelin') || drug.includes('longevity') || drug.includes('lipo') || drug.includes('b12')) return 'Longevity';
-                                                    return 'Wellness';
-                                                })()} protocol`
-                                                : "Manage your active clinical protocols"}
+                                            {activeCategories.length === 1
+                                                ? `Managing your active ${activeCategories[0]} protocol`
+                                                : activeCategories.length > 1
+                                                    ? `Managing your ${activeCategories.length} active clinical protocols`
+                                                    : "Manage your active clinical protocols"}
                                         </p>
                                     </div>
                                     {submissions.length === 0 ? (
@@ -1960,14 +2183,45 @@ Original Submission ID: ${originalSubmission.id}`
                                                 )}
                                             </div>
                                         ) : (
-                                            activeDisplayList.map(submission => (
-                                                <MedicationCard
-                                                    key={submission.id}
-                                                    submission={submission}
-                                                    onAction={(type, med) => setActionModal({ isOpen: true, type, medication: med })}
-                                                    onRetake={(med) => setRetakeModal({ isOpen: true, submission: med })}
-                                                />
-                                            ))
+                                            activeDisplayList.map(submission => {
+                                                // Determine subscription active status from granular profile map
+                                                let isSubscriptionActive = true; // Default to active
+
+                                                if (profile?.subscription_status) {
+                                                    try {
+                                                        const drug = submission.selected_drug || '';
+                                                        let catSlug = 'weight_loss';
+                                                        const dLow = drug.toLowerCase();
+                                                        if (dLow.includes('hair') || dLow.includes('finasteride') || dLow.includes('minoxidil')) catSlug = 'hair_restoration';
+                                                        else if (dLow.includes('sex') || dLow.includes('erectile') || dLow.includes('sildenafil') || dLow.includes('tadalafil') || dLow.includes('oxytocin')) catSlug = 'sexual_health';
+                                                        else if (dLow.includes('longevity') || dLow.includes('nad') || dLow.includes('cjc') || dLow.includes('ipamorelin')) catSlug = 'longevity';
+                                                        else if (dLow.includes('weight') || dLow.includes('semaglutide') || dLow.includes('tirzepatide')) catSlug = 'weight_loss';
+
+                                                        let statusMap = {};
+                                                        const pStatus = profile.subscription_status;
+                                                        if (pStatus === true || pStatus === 'true' || (typeof pStatus === 'string' && !pStatus.startsWith('{'))) {
+                                                            statusMap = { 'weight_loss': true };
+                                                        } else {
+                                                            try {
+                                                                statusMap = typeof pStatus === 'string' ? JSON.parse(pStatus) : (pStatus || {});
+                                                            } catch (err) { statusMap = {}; }
+                                                        }
+
+                                                        // Check if subscription is active for this category
+                                                        isSubscriptionActive = !!statusMap[catSlug];
+                                                    } catch (e) { console.error("Error determining subscription status", e); }
+                                                }
+
+                                                return (
+                                                    <MedicationCard
+                                                        key={submission.id}
+                                                        submission={submission}
+                                                        isSubscriptionActive={isSubscriptionActive}
+                                                        onAction={(type, med) => setActionModal({ isOpen: true, type, medication: med })}
+                                                        onRetake={(med) => setRetakeModal({ isOpen: true, submission: med })}
+                                                    />
+                                                );
+                                            })
                                         );
                                     })()}
                                 </div>

@@ -23,6 +23,7 @@ import MadeInAmerica from './components/MadeInAmerica';
 import DoctorSlider from './components/DoctorSlider';
 import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
+import SatisfactionSurvey from './components/SatisfactionSurvey';
 
 const ScrollToHash = () => {
   const { hash } = useLocation();
@@ -80,6 +81,7 @@ function App() {
           <Route path="/qualify" element={<QualifyNow />} />
           <Route path="/assessment/:categoryId" element={<Assessment />} />
           <Route path="/progress/:category" element={<ProgressQuestionnaire />} />
+          <Route path="/satisfaction-survey" element={<SatisfactionSurvey />} />
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
