@@ -1,0 +1,2 @@
+[functions.validate-payment-handler]
+verify_jwt = false
