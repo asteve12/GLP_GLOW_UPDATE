@@ -798,231 +798,91 @@ const ProductDetails = () => {
                 customBgColor="#f7f8f1"
             />
 
-            {/* TOP HERO SECTION - Spaced for Navbar */}
-            <div
-                className={`flex flex-col md:flex-row border-b border-black/5 min-h-auto md:min-h-screen relative overflow-x-hidden ${product.heroBg ? (productId === 'nad-injection' ? 'mt-[0px] md:mt-[30px]' : 'mt-[0px] md:mt-[80px]') : 'pt-0 md:pt-32'}`}
-                style={{
-                    backgroundColor: '#F7F8F1'
-                }}
-            >
-                {/* Desktop Background Image - Hidden on Mobile */}
-                {product.heroBg && (
-                    <div
-                        className="hidden md:block absolute inset-0 bg-cover bg-center z-0"
-                        style={{ backgroundImage: `url("${product.heroBg}")` }}
-                    />
-                )}
+            {/* NEW HERO SECTION (FORMERLY READY SECTION) */}
+            <section className="ready-section pt-32 pb-20 md:pt-48 md:pb-32 bg-[#FCF9EE] min-h-screen flex items-center">
+                <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16">
+                    <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
 
-                {/* Mobile Background - Subtle Pattern or Gradient if needed, currently plain */}
+                        {/* Left Column - Copy */}
+                        <div className="w-full lg:w-1/2">
+                            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 mb-8 leading-[1] tracking-tighter">
+                                {product.name} <br /> {product.type}
+                            </h2>
+                            <p className="text-xl md:text-2xl font-medium text-gray-800 mb-8 leading-relaxed">
+                                {product.description}
+                            </p>
 
-                {/* Left: Info */}
-                <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full' : 'w-full md:w-1/2'} ${simplifiedHeroIds.includes(productId) ? 'px-6 pt-24 pb-12 md:px-12 lg:px-16' : 'p-6 md:p-12 lg:p-20'} flex flex-col ${simplifiedHeroIds.includes(productId) ? 'items-center md:items-end justify-center text-center md:text-right' : 'items-center md:items-start justify-center text-center md:text-left'} relative z-10 product-hero-info`}>
-                    <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full md:w-[45%] lg:w-[40%]' : 'relative pt-0 md:pt-0'}`}>
-                        <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full md:py-24' : 'max-w-md md:max-w-xl py-8'}`}>
-                            {/* Mobile Product Image - Visible only on mobile to replace the background image context */}
-                            <div className="md:hidden w-full flex justify-center mb-8">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="h-48 sm:h-64 object-contain drop-shadow-xl"
-                                />
+                            <ul className="space-y-4 mb-10">
+                                {product.highlights.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-4 text-base md:text-lg font-bold text-gray-900">
+                                        <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent-green"></span>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="mb-12">
+                                <Link to="/qualify" className="bg-gray-900 text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl text-base md:text-lg transform hover:scale-105 inline-block">
+                                    Get started
+                                </Link>
                             </div>
 
-                            {showHeroContent && (
-                                <>
-                                    {simplifiedHeroIds.includes(productId) ? (
-                                        // Simplified hero text for semaglutide-injection
-                                        <>
-                                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight mb-6 leading-none text-bg-primary text-center md:text-right">
-                                                {simplifiedHeroIds.includes(productId) ? (
-                                                    <div className="flex flex-col items-center md:items-end">
-                                                        {product.name.split(/(\s[&\/]\s|\s)/).filter(p => p.trim() !== '').map((part, i) => (
-                                                            <span key={i} className={(part.trim() === '&' || part.trim() === '/') ? 'w-full text-center py-2' : ''}>
-                                                                {part.trim()}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                ) : product.name}
-                                            </h1>
-                                            <p className="text-lg md:text-2xl font-bold text-gray-700 mb-4 leading-tight text-center md:text-right">
-                                                {product.type}
-                                            </p>
-                                            <p className="text-base md:text-xl font-semibold text-gray-600 mb-8 md:mb-12 leading-relaxed text-center md:text-right">
-                                                {hairLossIds.includes(productId)
-                                                    ? "Clinically Proven Hair Restoration • FDA-Approved • Higher Hair Count & Density"
-                                                    : sexualHealthIds.includes(productId)
-                                                        ? "Elite Performance Protocols • Rapid Onset • Sustained Vitality & Confidence"
-                                                        : "Clinically Proven Weight Loss • FDA-Approved • 15-20% Average Body Weight Reduction"}
-                                            </p>
-                                            <div className="flex justify-center md:justify-end">
-                                                <Link
-                                                    to="/qualify"
-                                                    className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
-                                                >
-                                                    Get Started
-                                                </Link>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        // Default hero content for other products
-                                        <>
-                                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight mb-4 leading-none text-center md:text-left">
-                                                {product.name}
-                                            </h1>
-                                            <p className="text-lg md:text-3xl font-medium text-gray-600 mb-6 md:mb-8 font-serif italic text-center md:text-left">{product.type}</p>
-                                            <p className="text-gray-700 text-base md:text-xl leading-relaxed mb-8 md:10 text-center md:text-left">
-                                                {product.description}
-                                            </p>
-
-                                            {/* Highlights List */}
-                                            <ul className="space-y-3 md:space-y-4 mb-8 md:mb-10 flex flex-col items-center md:items-start">
-                                                {product.highlights.map((h, i) => (
-                                                    <li key={i} className="flex items-start gap-4 text-sm md:text-lg font-bold text-gray-800 text-left">
-                                                        <span className="w-2 h-2 rounded-full bg-accent-green mt-2 flex-shrink-0"></span>
-                                                        {h}
-                                                    </li>
-                                                ))}
-                                            </ul>
-
-                                            <div className="flex justify-center md:justify-start">
-                                                <Link
-                                                    to="/qualify"
-                                                    className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
-                                                >
-                                                    Get Started
-                                                </Link>
-                                            </div>
-                                        </>
-                                    )}
-                                </>
-                            )}
-
+                            {/* Accordion/Info Tabs */}
+                            <div className="space-y-3 border-t border-black/10 pt-8">
+                                {product.readyAccordion?.map((item, i) => (
+                                    <div key={i} className="group border-b border-black/5 last:border-0">
+                                        <button
+                                            onClick={() => setOpenFaq(openFaq === `ready-${i}` ? null : `ready-${i}`)}
+                                            className="flex justify-between items-center w-full py-3 text-left font-bold text-lg text-gray-900 uppercase tracking-tight hover:text-accent-green transition-colors"
+                                        >
+                                            {item.q}
+                                            <span className="text-xl">{openFaq === `ready-${i}` ? '−' : '+'}</span>
+                                        </button>
+                                        <div className={`overflow-hidden transition-all duration-300 ${openFaq === `ready-${i}` ? 'max-h-40 opacity-100 pb-4' : 'max-h-0 opacity-0'} text-gray-700 leading-relaxed text-base`}>
+                                            {item.a}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Right: Images - Hidden for products using the simplified hero layout */}
-                {!simplifiedHeroIds.includes(productId) && (
-                    <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col items-center justify-center relative md:border-l border-black/5 z-10 product-hero-image order-first md:order-last">
-                        {showHeroContent && (
-                            <>
+                        {/* Right Column - Images */}
+                        <div className="w-full lg:w-1/2">
+                            <div className="bg-white rounded-[40px] md:rounded-[60px] overflow-hidden shadow-2xl p-8 md:p-12 lg:p-16 mb-8 relative group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <img
                                     src={product.image}
-                                    alt={product.name}
-                                    className="w-full max-w-[280px] md:max-w-[450px] object-contain drop-shadow-2xl mb-8 md:mb-12 hover:scale-105 transition-transform duration-700"
+                                    alt="Ready Product"
+                                    className="w-full h-auto object-contain drop-shadow-3xl relative z-10 transition-transform duration-700 group-hover:scale-105"
                                 />
-                                {/* Thumbnails (Mock) - Desktop Only */}
-                                <div className="hidden md:flex gap-3 justify-center">
-                                    {[1, 2, 3].map((_, i) => (
-                                        <div key={i} className={`w-16 h-16 rounded-xl border cursor-pointer overflow-hidden transition-all hover:scale-105 ${i === 0 ? 'border-accent-green ring-2 ring-accent-green ring-offset-2' : 'border-gray-200 opacity-60 hover:opacity-100'}`}>
+
+                                {/* Thumbnails */}
+                                <div className="flex gap-4 justify-center mt-12 relative z-10">
+                                    {[1, 2, 3, 4, 5].map((_, i) => (
+                                        <div key={i} className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl border-2 transition-all cursor-pointer hover:border-accent-green hover:scale-110 ${i === 0 ? 'border-accent-green bg-white' : 'border-black/5 bg-gray-50 opacity-40 hover:opacity-100'}`}>
                                             <img src={product.image} className="w-full h-full object-contain p-2" />
                                         </div>
                                     ))}
                                 </div>
-                            </>
-                        )}
+                            </div>
 
-                        {/* Desktop Only Overlay Button - Mobile uses the button in the text section */}
-                        <div className="hidden md:flex absolute bottom-12 right-1/2 translate-x-1/2 z-20 flex-col items-center w-max">
-                            <Link to="/qualify" className="bg-bg-primary text-white px-10 py-5 rounded-full font-bold uppercase tracking-wider hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-lg inline-block text-center transform hover:scale-105">
-                                Get Started
-                            </Link>
-                            <p className="text-xs text-gray-400 mt-2 font-medium text-center bg-white/50 backdrop-blur-sm px-2 rounded">
-                                *Prescription required.
-                            </p>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* PRODUCT 'READY' SECTION - Unified for all Weight Loss & Hair Loss products */}
-            {
-                allPremiumIds.includes(productId) && (
-                    <section className="ready-section py-20 md:py-32 bg-[#FCF9EE]">
-                        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
-                            <div className="flex flex-col lg:flex-row gap-16 items-start">
-
-                                {/* Left Column - Copy */}
-                                <div className="w-full lg:w-5/12">
-                                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-8 leading-[1.1] tracking-tighter">
-                                        {product.name} <br /> {product.type}
-                                    </h2>
-                                    <p className="text-xl md:text-2xl font-medium text-gray-800 mb-8 leading-relaxed">
-                                        {product.description}
-                                    </p>
-
-                                    <ul className="space-y-6 mb-12">
-                                        {product.highlights.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-4 text-lg font-bold text-gray-900">
-                                                <span className="w-2 h-2 rounded-full bg-accent-green"></span>
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <div className="mb-16">
-                                        <button className="bg-gray-900 text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl text-lg transform hover:scale-105">
-                                            Get started
-                                        </button>
-                                    </div>
-
-                                    {/* Accordion/Info Tabs */}
-                                    <div className="space-y-4 border-t border-black/10 pt-12">
-                                        {product.readyAccordion?.map((item, i) => (
-                                            <div key={i} className="group border-b border-black/5 last:border-0">
-                                                <button
-                                                    onClick={() => setOpenFaq(openFaq === `ready-${i}` ? null : `ready-${i}`)}
-                                                    className="flex justify-between items-center w-full py-4 text-left font-bold text-xl text-gray-900 uppercase tracking-tight"
-                                                >
-                                                    {item.q}
-                                                    <span className="text-2xl">{openFaq === `ready-${i}` ? '−' : '+'}</span>
-                                                </button>
-                                                <div className={`overflow-hidden transition-all duration-300 ${openFaq === `ready-${i}` ? 'max-h-40 opacity-100 pb-6' : 'max-h-0 opacity-0'} text-gray-700 leading-relaxed text-lg`}>
-                                                    {item.a}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Right Column - Images */}
-                                <div className="w-full lg:w-7/12">
-                                    <div className="bg-white rounded-[40px] md:rounded-[60px] overflow-hidden shadow-2xl p-8 md:p-12 lg:p-16 mb-8 relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <img
-                                            src={product.image}
-                                            alt="Ready Product"
-                                            className="w-full h-auto object-contain drop-shadow-3xl relative z-10 transition-transform duration-700 group-hover:scale-105"
-                                        />
-
-                                        {/* Thumbnails */}
-                                        <div className="flex gap-4 justify-center mt-12 relative z-10">
-                                            {[1, 2, 3, 4, 5].map((_, i) => (
-                                                <div key={i} className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl border-2 transition-all cursor-pointer hover:border-accent-green hover:scale-110 ${i === 0 ? 'border-accent-green bg-white' : 'border-black/5 bg-gray-50 opacity-40 hover:opacity-100'}`}>
-                                                    <img src={product.image} className="w-full h-full object-contain p-2" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Disclaimers */}
-                                    <div className="mt-12 space-y-6 px-4">
-                                        <p className="text-xs text-gray-500 italic leading-relaxed">
-                                            *Results vary by individual. Based on clinical data and internal patient surveys. Customer results have not been independently verified. Price shown with 3 month shipping option.
-                                        </p>
-                                        <p className="text-xs text-gray-400 leading-relaxed">
-                                            Prescription products require an online consultation with a healthcare provider. The featured products are compounded using FDA-approved active ingredients.
-                                        </p>
-                                    </div>
-                                </div>
-
+                            {/* Disclaimers */}
+                            <div className="mt-12 space-y-6 px-4">
+                                <p className="text-xs text-gray-500 italic leading-relaxed">
+                                    *Results vary by individual. Based on clinical data and internal patient surveys. Customer results have not been independently verified. Price shown with 3 month shipping option.
+                                </p>
+                                <p className="text-xs text-gray-400 leading-relaxed">
+                                    Prescription products require an online consultation with a healthcare provider. The featured products are compounded using FDA-approved active ingredients.
+                                </p>
                             </div>
                         </div>
 
-                        {/* SECTION FOOTER - Trust Bar Deleted */}
-                    </section>
-                )
-            }
+                    </div>
+                </div>
+
+                {/* SECTION FOOTER - Trust Bar Deleted */}
+            </section>
+
 
 
 
