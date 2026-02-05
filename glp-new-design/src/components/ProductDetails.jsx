@@ -800,7 +800,7 @@ const ProductDetails = () => {
 
             {/* NEW HERO SECTION (FORMERLY READY SECTION) */}
             <section className="ready-section pt-32 pb-20 md:pt-48 md:pb-32 bg-[#FCF9EE] min-h-screen flex items-center">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16">
                     <div className="flex flex-col-reverse lg:flex-row gap-12 lg:gap-24 items-center">
 
                         {/* Left Column - Copy */}
@@ -848,7 +848,7 @@ const ProductDetails = () => {
 
                         {/* Right Column - Images */}
                         <div className="w-full lg:w-1/2">
-                            <div className="bg-white rounded-[24px] md:rounded-[40px] lg:rounded-[60px] overflow-hidden shadow-2xl p-6 md:p-12 lg:p-16 mb-8 relative group">
+                            <div className="bg-white rounded-[24px] md:rounded-[40px] lg:rounded-[60px] overflow-hidden shadow-2xl px-8 py-6 md:p-12 lg:p-16 mb-8 relative group">
                                 <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <img
                                     src={product.image}
@@ -857,9 +857,9 @@ const ProductDetails = () => {
                                 />
 
                                 {/* Thumbnails */}
-                                <div className="flex gap-2 md:gap-4 justify-center mt-12 relative z-10">
+                                <div className="flex gap-1.5 md:gap-4 justify-center mt-12 relative z-10">
                                     {[1, 2, 3, 4, 5].map((_, i) => (
-                                        <div key={i} className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl border-2 transition-all cursor-pointer hover:border-accent-green hover:scale-110 ${i === 0 ? 'border-accent-green bg-white' : 'border-black/5 bg-gray-50 opacity-40 hover:opacity-100'}`}>
+                                        <div key={i} className={`w-12 h-12 md:w-20 md:h-20 rounded-2xl border-2 transition-all cursor-pointer hover:border-accent-green hover:scale-110 ${i === 0 ? 'border-accent-green bg-white' : 'border-black/5 bg-gray-50 opacity-40 hover:opacity-100'}`}>
                                             <img src={product.image} className="w-full h-full object-contain p-2" />
                                         </div>
                                     ))}
@@ -887,11 +887,11 @@ const ProductDetails = () => {
 
 
             {/* BENEFITS SECTION: Exceed Expectations (Signature Series Style) */}
-            <section className="bg-[#0A0A0A] text-white py-24 md:py-40 px-4 sm:px-6 relative overflow-hidden">
+            <section className="bg-[#0A0A0A] text-white py-24 md:py-40 px-6 relative overflow-hidden">
                 {/* Background decorative elements */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-green/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
 
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10 px-4 sm:px-6">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
                     {/* Header with Crown Icon */}
                     <div className="benefits-header text-center mb-24 md:mb-32">
                         <div className="flex justify-center mb-8">
@@ -961,7 +961,7 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Bottom Signature Banner - EXCEED EXPECTATIONS CARD */}
-                <div className="signature-banner mt-40 bg-yellow-400 rounded-[60px] overflow-hidden p-12 md:p-20 flex flex-col lg:flex-row items-center gap-16 relative shadow-[0_50px_100px_-20px_rgba(255,222,89,0.3)]">
+                <div className="signature-banner mt-40 bg-yellow-400 rounded-[32px] md:rounded-[60px] overflow-hidden p-8 md:p-20 flex flex-col lg:flex-row items-center gap-16 relative shadow-[0_50px_100px_-20px_rgba(255,222,89,0.3)] mx-2 md:mx-0">
                     <div className="w-full lg:w-7/12 relative z-10">
                         <h3 className="text-4xl md:text-6xl font-black text-black uppercase tracking-tighter leading-[0.85] mb-8">
                             The <br /> Signature <br /> Series
@@ -1005,7 +1005,7 @@ const ProductDetails = () => {
 
 
             {/* INGREDIENTS SECTION */}
-            <section className="ingredients-section py-20 md:py-32 px-4 sm:px-6 bg-[#F0F2EB]">
+            <section className="ingredients-section py-20 md:py-32 px-6 bg-[#F0F2EB]">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto flex flex-col md:flex-row gap-16 items-center">
                     <div className="w-full md:w-1/2">
                         <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-none">
@@ -1025,7 +1025,7 @@ const ProductDetails = () => {
             </section>
 
             {/* HOW IT WORKS */}
-            <section className="how-it-works-section py-20 md:py-32 px-4 sm:px-6 bg-white">
+            <section className="how-it-works-section py-20 md:py-32 px-6 bg-white">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
                     <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-20 text-center">How It Works</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative">
@@ -1045,7 +1045,7 @@ const ProductDetails = () => {
 
             {/* GET STARTED SLIDER - BLOG STYLE TEMPLATE */}
             <section className="getting-started-section py-24 md:py-40 bg-[#F9F8F4] overflow-hidden">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-4 sm:px-6">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6">
                     <div className="flex flex-col lg:flex-row justify-between items-end mb-16 gap-8">
                         <div className="max-w-3xl">
                             <h2 className="text-5xl md:text-7xl font-black text-bg-primary uppercase tracking-tighter leading-[0.85] mb-8">

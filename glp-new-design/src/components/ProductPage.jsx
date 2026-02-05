@@ -476,7 +476,7 @@ const ProductPage = () => {
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto w-[95%] bg-[#F7F8F1] rounded-[40px] md:rounded-[60px] overflow-hidden mt-24 md:mt-32 lg:mt-48 mb-8 md:mb-12 text-bg-primary shadow-2xl relative">
 
                     {/* HERO SECTION */}
-                    <section className="pt-8 md:pt-12 lg:pt-16 pb-8 md:pb-12 px-4 sm:px-6 md:px-12 lg:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-12 border-b border-black/5">
+                    <section className="pt-8 md:pt-12 lg:pt-16 pb-8 md:pb-12 px-6 md:px-12 lg:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-12 border-b border-black/5">
                         <div className="w-full md:w-1/2 product-hero-text">
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black uppercase tracking-tight mb-3 md:mb-4 leading-none">{data.title}</h1>
                             <p className="text-base sm:text-lg md:text-xl font-medium text-gray-700 mb-4 md:mb-6">{data.description}</p>
