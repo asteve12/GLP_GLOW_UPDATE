@@ -10,14 +10,13 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const RevenueChart = ({ data }) => {
     return (
         <div className="h-[300px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 md:p-8 lg:p-10 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter italic">Monthly Earnings</h3>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Live Revenue Stream</span>
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/20">Live Revenue Stream</span>
                 </div>
             </div>
-
-            <h3 className="text-xl font-black uppercase tracking-tighter italic mb-8">Monthly Earnings</h3>
 
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
@@ -669,7 +668,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             <p className="text-[11px] text-white/40 uppercase font-black tracking-[0.2em]">Patient Dossier • {patient.email}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="hidden md:flex items-center gap-4">
                         <button onClick={handleClose} className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 hover:text-white shrink-0">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
                         </button>
@@ -712,7 +711,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
                                         <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '—'} />
                                         <DossierRow label="Joined Data" value={new Date(patient.created_at).toLocaleDateString()} />
-                                        <DossierRow label="Stripe Customer" value={patient.stripe_customer_id || 'None'} isCode />
+
                                     </div>
                                 </div>
                                 <div>
@@ -731,12 +730,34 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             {/* Medical Summary */}
                             <div className="space-y-12">
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Active Protocol</h4>
-                                    <div className="bg-accent-green/5 border-l-4 border-accent-green p-8 rounded-tr-3xl rounded-br-3xl">
-                                        <p className="text-[10px] text-accent-green/60 uppercase font-black tracking-widest mb-2 italic">Current Selection</p>
-                                        <h5 className="text-2xl font-black uppercase italic tracking-tighter text-white">
-                                            {formatPlanName(patient.current_plan)}
-                                        </h5>
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Active Medication</h4>
+                                    <div className="bg-accent-green/5 border-l-4 border-accent-green p-8 rounded-tr-3xl rounded-br-3xl space-y-4">
+                                        {(() => {
+                                            // Get approved submissions
+                                            const approvedMeds = submissions.filter(sub => sub.approval_status === 'approved');
+
+                                            if (approvedMeds.length === 0) {
+                                                return (
+                                                    <>
+                                                        <p className="text-[10px] text-accent-green/60 uppercase font-black tracking-widest mb-2 italic">Current Plan</p>
+                                                        <h5 className="text-2xl font-black uppercase italic tracking-tighter text-white">
+                                                            {formatPlanName(patient.current_plan)}
+                                                        </h5>
+                                                    </>
+                                                );
+                                            }
+
+                                            return approvedMeds.map((med, idx) => (
+                                                <div key={med.id} className={idx > 0 ? 'pt-4 border-t border-accent-green/20' : ''}>
+                                                    <p className="text-[10px] text-accent-green/60 uppercase font-black tracking-widest mb-2 italic">
+                                                        {med.dosage_preference || med.selected_drug || 'Medication'}
+                                                    </p>
+                                                    <h5 className="text-xl font-black uppercase italic tracking-tighter text-white">
+                                                        {med.selected_drug || formatPlanName(patient.current_plan)}
+                                                    </h5>
+                                                </div>
+                                            ));
+                                        })()}
                                     </div>
                                 </div>
                                 <div>
@@ -745,7 +766,11 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Height</p>
                                             <p className="text-xl font-black text-white">
-                                                {patient.height_feet ? `${patient.height_feet}'${patient.height_inches}"` : (submissions[0]?.height || '—')}
+                                                {patient.height_feet && patient.height_inches ? `${patient.height_feet}'${patient.height_inches}"` :
+                                                    patient.height_ft && patient.height_in ? `${patient.height_ft}'${patient.height_in}"` :
+                                                        submissions[0]?.height_feet && submissions[0]?.height_inches ? `${submissions[0].height_feet}'${submissions[0].height_inches}"` :
+                                                            submissions[0]?.height_ft && submissions[0]?.height_in ? `${submissions[0].height_ft}'${submissions[0].height_in}"` :
+                                                                submissions[0]?.height || patient.height || '—'}
                                             </p>
                                         </div>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
@@ -810,7 +835,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     <div>
                                         <p className="text-[10px] text-accent-green font-black uppercase tracking-widest mb-1 italic">Current Status</p>
                                         <h5 className="text-3xl font-black uppercase italic tracking-tighter text-white">
-                                            {patient.subscribe_status ? 'Active Protocol' : 'No Active Subscription'}
+                                            {patient.subscribe_status ? 'Active Medication' : 'No Active Subscription'}
                                         </h5>
                                     </div>
                                     <div className="text-right">
@@ -819,7 +844,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    <DossierStat label="Stripe ID" value={patient.stripe_subscription_id ? `${patient.stripe_subscription_id.substring(0, 12)}...` : '—'} />
+
                                     <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '—'} />
                                     <DossierStat label="Payment" value={patient.last_four_digits_of_card ? `Ends in ${patient.last_four_digits_of_card}` : 'No Card'} />
                                     <DossierStat label="Auto-Pay" value={patient.stripe_payment_method_id ? 'Enabled' : 'Disabled'} />
@@ -937,10 +962,9 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-8 border-t border-white/5 bg-[#050505] flex items-center justify-between">
-                    <p className="text-[9px] text-white/10 uppercase font-black tracking-[0.3em]">GLP-GLOW Intelligence OS v2.0 • Data Encryption Active</p>
-                    <button onClick={handleClose} className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-all">
-                        Exit Dossier
+                <div className="p-6 md:p-8 border-t border-white/5 bg-[#050505] flex items-center justify-end">
+                    <button onClick={handleClose} className="md:hidden px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-all">
+                        Close
                     </button>
                 </div>
             </div>
@@ -2880,12 +2904,13 @@ const SubscriberAnalytics = () => {
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
             {/* Stats Header */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div
                     onClick={() => setActiveTab('active')}
-                    className={`p-8 rounded-[32px] border cursor-pointer transition-all ${activeTab === 'active' ? 'bg-accent-green/10 border-accent-green' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                    className={`p-8 rounded-[32px] border cursor-pointer transition-all relative overflow-hidden group ${activeTab === 'active' ? 'bg-accent-green/10 border-accent-green' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
                 >
-                    <div className="flex items-center justify-between mb-4">
+                    <div className={`absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 ${activeTab === 'active' ? 'bg-accent-green' : 'bg-white'}`}></div>
+                    <div className="flex items-center gap-4 mb-6">
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'active' ? 'bg-accent-green text-black' : 'bg-white/10 text-white'}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         </div>
@@ -2897,9 +2922,10 @@ const SubscriberAnalytics = () => {
 
                 <div
                     onClick={() => setActiveTab('expired')}
-                    className={`p-8 rounded-[32px] border cursor-pointer transition-all ${activeTab === 'expired' ? 'bg-red-500/10 border-red-500' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                    className={`p-8 rounded-[32px] border cursor-pointer transition-all relative overflow-hidden group ${activeTab === 'expired' ? 'bg-red-500/10 border-red-500' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
                 >
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 bg-red-500"></div>
+                    <div className="flex items-center gap-4 mb-6">
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'expired' ? 'bg-red-500 text-white' : 'bg-white/10 text-white'}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
