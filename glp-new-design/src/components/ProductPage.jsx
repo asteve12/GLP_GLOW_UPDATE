@@ -568,7 +568,7 @@ const ProductPage = () => {
                                     <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
                                     <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white">The Treatment Suite</div>
                                 </div>
-                                <h2 className="text-5xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter text-[#1A1A1A] leading-[0.85] italic mb-10">
+                                <h2 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter text-[#1A1A1A] leading-[0.85] italic mb-10 break-words">
                                     {suiteTitleTop} <br />
                                     <span className="text-accent-green">{suiteTitleBottom}</span>
                                 </h2>
