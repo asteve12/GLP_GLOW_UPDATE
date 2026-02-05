@@ -788,27 +788,42 @@ const ProductDetails = () => {
 
             {/* TOP HERO SECTION - Spaced for Navbar */}
             <div
-                className={`flex flex-col md:flex-row border-b border-black/5 min-h-screen bg-cover bg-center relative overflow-x-hidden ${product.heroBg ? (productId === 'nad-injection' ? 'mt-[30px]' : 'mt-[80px]') : 'pt-24 md:pt-32'}`}
+                className={`flex flex-col md:flex-row border-b border-black/5 min-h-auto md:min-h-screen relative overflow-x-hidden ${product.heroBg ? (productId === 'nad-injection' ? 'mt-[0px] md:mt-[30px]' : 'mt-[0px] md:mt-[80px]') : 'pt-0 md:pt-32'}`}
                 style={{
-                    backgroundImage: product.heroBg ? `url("${product.heroBg}")` : 'none',
                     backgroundColor: '#F7F8F1'
                 }}
             >
-                {/* Left: Info */}
-                {/* Left: Info */}
-                <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full' : 'w-full md:w-1/2'} ${simplifiedHeroIds.includes(productId) ? 'px-6 md:px-12 lg:px-16' : 'p-6 md:p-12 lg:p-20'} flex flex-col ${simplifiedHeroIds.includes(productId) ? 'items-end justify-center text-right' : 'justify-center'} relative z-10 product-hero-info`}>
-                    <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full md:w-[45%] lg:w-[40%]' : 'relative pt-24 md:pt-0'}`}>
+                {/* Desktop Background Image - Hidden on Mobile */}
+                {product.heroBg && (
+                    <div
+                        className="hidden md:block absolute inset-0 bg-cover bg-center z-0"
+                        style={{ backgroundImage: `url("${product.heroBg}")` }}
+                    />
+                )}
 
+                {/* Mobile Background - Subtle Pattern or Gradient if needed, currently plain */}
 
-                        <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full py-16 md:py-24' : 'max-w-md md:max-w-xl'}`}>
+                {/* Left: Info */}
+                <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full' : 'w-full md:w-1/2'} ${simplifiedHeroIds.includes(productId) ? 'px-6 pt-24 pb-12 md:px-12 lg:px-16' : 'p-6 md:p-12 lg:p-20'} flex flex-col ${simplifiedHeroIds.includes(productId) ? 'items-center md:items-end justify-center text-center md:text-right' : 'items-center md:items-start justify-center text-center md:text-left'} relative z-10 product-hero-info`}>
+                    <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full md:w-[45%] lg:w-[40%]' : 'relative pt-0 md:pt-0'}`}>
+                        <div className={`${simplifiedHeroIds.includes(productId) ? 'w-full md:py-24' : 'max-w-md md:max-w-xl py-8'}`}>
+                            {/* Mobile Product Image - Visible only on mobile to replace the background image context */}
+                            <div className="md:hidden w-full flex justify-center mb-8">
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="h-48 sm:h-64 object-contain drop-shadow-xl"
+                                />
+                            </div>
+
                             {showHeroContent && (
                                 <>
                                     {simplifiedHeroIds.includes(productId) ? (
                                         // Simplified hero text for semaglutide-injection
                                         <>
-                                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight mb-6 leading-none text-bg-primary text-right">
+                                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight mb-6 leading-none text-bg-primary text-center md:text-right">
                                                 {simplifiedHeroIds.includes(productId) ? (
-                                                    <div className="flex flex-col items-end">
+                                                    <div className="flex flex-col items-center md:items-end">
                                                         {product.name.split(/(\s[&\/]\s|\s)/).filter(p => p.trim() !== '').map((part, i) => (
                                                             <span key={i} className={(part.trim() === '&' || part.trim() === '/') ? 'w-full text-center py-2' : ''}>
                                                                 {part.trim()}
@@ -817,20 +832,20 @@ const ProductDetails = () => {
                                                     </div>
                                                 ) : product.name}
                                             </h1>
-                                            <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4 leading-tight text-right">
+                                            <p className="text-lg md:text-2xl font-bold text-gray-700 mb-4 leading-tight text-center md:text-right">
                                                 {product.type}
                                             </p>
-                                            <p className="text-lg md:text-xl font-semibold text-gray-600 mb-12 leading-relaxed text-right">
+                                            <p className="text-base md:text-xl font-semibold text-gray-600 mb-8 md:mb-12 leading-relaxed text-center md:text-right">
                                                 {hairLossIds.includes(productId)
                                                     ? "Clinically Proven Hair Restoration • FDA-Approved • Higher Hair Count & Density"
                                                     : sexualHealthIds.includes(productId)
                                                         ? "Elite Performance Protocols • Rapid Onset • Sustained Vitality & Confidence"
                                                         : "Clinically Proven Weight Loss • FDA-Approved • 15-20% Average Body Weight Reduction"}
                                             </p>
-                                            <div className="flex justify-end">
+                                            <div className="flex justify-center md:justify-end">
                                                 <Link
                                                     to="/qualify"
-                                                    className="bg-bg-primary text-white px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-lg inline-block transform hover:scale-105"
+                                                    className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
                                                 >
                                                     Get Started
                                                 </Link>
@@ -839,23 +854,32 @@ const ProductDetails = () => {
                                     ) : (
                                         // Default hero content for other products
                                         <>
-                                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight mb-4 leading-none">
+                                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight mb-4 leading-none text-center md:text-left">
                                                 {product.name}
                                             </h1>
-                                            <p className="text-xl md:text-3xl font-medium text-gray-600 mb-8 font-serif italic">{product.type}</p>
-                                            <p className="text-gray-700 text-lg md:text-xl leading-relaxed mb-10">
+                                            <p className="text-lg md:text-3xl font-medium text-gray-600 mb-6 md:mb-8 font-serif italic text-center md:text-left">{product.type}</p>
+                                            <p className="text-gray-700 text-base md:text-xl leading-relaxed mb-8 md:10 text-center md:text-left">
                                                 {product.description}
                                             </p>
 
                                             {/* Highlights List */}
-                                            <ul className="space-y-4 mb-10">
+                                            <ul className="space-y-3 md:space-y-4 mb-8 md:mb-10 flex flex-col items-center md:items-start">
                                                 {product.highlights.map((h, i) => (
-                                                    <li key={i} className="flex items-start gap-4 text-base md:text-lg font-bold text-gray-800">
-                                                        <span className="w-2 h-2 rounded-full bg-accent-green mt-2.5 flex-shrink-0"></span>
+                                                    <li key={i} className="flex items-start gap-4 text-sm md:text-lg font-bold text-gray-800 text-left">
+                                                        <span className="w-2 h-2 rounded-full bg-accent-green mt-2 flex-shrink-0"></span>
                                                         {h}
                                                     </li>
                                                 ))}
                                             </ul>
+
+                                            <div className="flex justify-center md:justify-start">
+                                                <Link
+                                                    to="/qualify"
+                                                    className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
+                                                >
+                                                    Get Started
+                                                </Link>
+                                            </div>
                                         </>
                                     )}
                                 </>
@@ -867,16 +891,16 @@ const ProductDetails = () => {
 
                 {/* Right: Images - Hidden for products using the simplified hero layout */}
                 {!simplifiedHeroIds.includes(productId) && (
-                    <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col items-center justify-center relative border-l border-black/5 z-10 product-hero-image">
+                    <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col items-center justify-center relative md:border-l border-black/5 z-10 product-hero-image order-first md:order-last">
                         {showHeroContent && (
                             <>
                                 <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="w-full max-w-[450px] object-contain drop-shadow-2xl mb-12 hover:scale-105 transition-transform duration-700"
+                                    className="w-full max-w-[280px] md:max-w-[450px] object-contain drop-shadow-2xl mb-8 md:mb-12 hover:scale-105 transition-transform duration-700"
                                 />
-                                {/* Thumbnails (Mock) */}
-                                <div className="flex gap-3 justify-center">
+                                {/* Thumbnails (Mock) - Desktop Only */}
+                                <div className="hidden md:flex gap-3 justify-center">
                                     {[1, 2, 3].map((_, i) => (
                                         <div key={i} className={`w-16 h-16 rounded-xl border cursor-pointer overflow-hidden transition-all hover:scale-105 ${i === 0 ? 'border-accent-green ring-2 ring-accent-green ring-offset-2' : 'border-gray-200 opacity-60 hover:opacity-100'}`}>
                                             <img src={product.image} className="w-full h-full object-contain p-2" />
@@ -886,8 +910,8 @@ const ProductDetails = () => {
                             </>
                         )}
 
-                        {/* Get Started Button - Bottom Center Overlay */}
-                        <div className="absolute bottom-12 right-1/2 translate-x-1/2 z-20 flex flex-col items-center w-max">
+                        {/* Desktop Only Overlay Button - Mobile uses the button in the text section */}
+                        <div className="hidden md:flex absolute bottom-12 right-1/2 translate-x-1/2 z-20 flex-col items-center w-max">
                             <Link to="/qualify" className="bg-bg-primary text-white px-10 py-5 rounded-full font-bold uppercase tracking-wider hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-lg inline-block text-center transform hover:scale-105">
                                 Get Started
                             </Link>

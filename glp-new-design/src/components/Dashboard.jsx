@@ -1239,6 +1239,7 @@ const Dashboard = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const location = useLocation();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Improved tab detection
     const getTab = () => {
@@ -1748,17 +1749,104 @@ const Dashboard = () => {
                 {/* Top Bar (Mobile) */}
                 <div className="lg:hidden sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5 px-6 py-4">
                     <div className="flex items-center justify-between">
-                        <button
-                            onClick={() => navigate('/')}
-                            className="text-xl font-black uppercase tracking-tighter italic"
-                        >
-                            GLP-<span className="text-accent-green">GLOW</span>
-                        </button>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="p-2 -ml-2 text-white/60 hover:text-white transition-colors"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => navigate('/')}
+                                className="text-xl font-black uppercase tracking-tighter italic"
+                            >
+                                GLP-<span className="text-accent-green">GLOW</span>
+                            </button>
+                        </div>
                         <div className="w-10 h-10 rounded-full bg-accent-green/10 border-2 border-accent-green/20 flex items-center justify-center font-black text-accent-green">
                             {userName.charAt(0).toUpperCase()}
                         </div>
                     </div>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                {mobileMenuOpen && (
+                    <div className="fixed inset-0 z-50 lg:hidden">
+                        <div
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                            onClick={() => setMobileMenuOpen(false)}
+                        ></div>
+                        <div className="absolute top-0 left-0 w-[80%] max-w-sm h-full bg-[#0A0A0A] border-r border-white/10 p-6 shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
+                            <div className="flex items-center justify-between mb-10">
+                                <button
+                                    onClick={() => navigate('/')}
+                                    className="text-2xl font-black uppercase tracking-tighter italic"
+                                >
+                                    GLP-<span className="text-accent-green">GLOW</span>
+                                </button>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 text-white/40 hover:text-white transition-colors"
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <nav className="space-y-2 flex-1">
+                                {[
+                                    { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+                                    { id: 'medications', label: 'Medications', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                                    { id: 'assessments', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+                                    { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+                                    { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+                                    { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+                                ].map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => {
+                                            navigate(`/dashboard/${item.id}`);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all ${currentTab === item.id
+                                            ? 'bg-accent-green text-black'
+                                            : 'text-white/40 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d={item.icon} />
+                                        </svg>
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </nav>
+
+                            <div className="pt-6 border-t border-white/10 mt-6">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 rounded-full bg-accent-green/10 border-2 border-accent-green/20 flex items-center justify-center font-black text-accent-green">
+                                        {userName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-black uppercase tracking-tight text-white">{userName}</p>
+                                        <p className="text-[9px] text-white/40 font-medium">Week {weekNumber}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Content Area */}
                 <div className="p-6 md:p-12 xl:px-8 2xl:px-4 3xl:px-0">

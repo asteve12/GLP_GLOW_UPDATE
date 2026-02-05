@@ -662,17 +662,17 @@ const Assessment = () => {
                 })}
             </div>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6">
                 <Link
                     to="/"
-                    className="px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30 flex items-center"
+                    className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30 flex justify-center items-center"
                 >
                     Back
                 </Link>
                 <button
                     onClick={handleContinue}
                     disabled={selectedImprovements.length === 0}
-                    className={`px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group ${selectedImprovements.length > 0
+                    className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group ${selectedImprovements.length > 0
                         ? 'bg-white text-black hover:bg-accent-green hover:scale-105 hover:shadow-[0_0_60px_rgba(191,255,0,0.4)]'
                         : 'bg-white/5 text-white/20 cursor-not-allowed'
                         }`}
@@ -767,16 +767,16 @@ const Assessment = () => {
                 ))}
             </div>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6">
                 <button
                     onClick={() => setStep(1)}
-                    className="px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                    className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
                 >
                     Back
                 </button>
                 <button
                     onClick={() => user ? setStep(4) : setStep(3)}
-                    className="px-20 py-8 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transform hover:scale-105"
+                    className="w-full md:w-auto px-20 py-8 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transform hover:scale-105"
                 >
                     Finalize My Plan
                 </button>
@@ -1511,7 +1511,7 @@ const Assessment = () => {
                     )}
                 </div>
 
-                <div className="mt-10 grid grid-cols-2 gap-4">
+                <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
                         onClick={() => user ? setStep(2) : setStep(3)}
                         className="w-full py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
@@ -1713,7 +1713,7 @@ const Assessment = () => {
                             )}
                     </div>
 
-                    <div className="mt-12 flex justify-between items-center gap-4">
+                    <div className="mt-12 flex flex-col md:flex-row justify-between items-center gap-4">
                         <button
                             onClick={() => {
                                 if (medicalStep > 0) {
@@ -1722,7 +1722,7 @@ const Assessment = () => {
                                     setStep(7); // Go back to Doctor Intro
                                 }
                             }}
-                            className="flex items-center gap-3 px-8 py-6 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:border-white/30 transition-all group"
+                            className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-6 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:border-white/30 transition-all group"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40 group-hover:opacity-100 transition-opacity">
                                 <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -1736,7 +1736,7 @@ const Assessment = () => {
                                 (!intakeData[question.id] && question.type !== 'text' && question.type !== 'info') ||
                                 (question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist')) && !intakeData[`${question.id}_file`])
                             }
-                            className={`flex items-center gap-3 px-10 py-6 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] transition-all group ${((!intakeData[question.id] && question.type !== 'text' && question.type !== 'info') ||
+                            className={`w-full md:w-auto flex items-center justify-center gap-3 px-10 py-6 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] transition-all group ${((!intakeData[question.id] && question.type !== 'text' && question.type !== 'info') ||
                                 (question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist')) && !intakeData[`${question.id}_file`]))
                                 ? 'bg-white/5 text-white/20 cursor-not-allowed'
                                 : 'bg-white text-black hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)]'
@@ -1851,17 +1851,17 @@ const Assessment = () => {
                     )}
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
                     <button
                         onClick={() => setStep(9)}
-                        className="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                        className="w-full md:flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(11)}
                         disabled={!idData.type || !idData.number || !idData.file_url}
-                        className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
                     >
                         Continue to Shipping
                     </button>
@@ -1972,17 +1972,17 @@ const Assessment = () => {
                         />
                     </div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
                     <button
                         onClick={() => setStep(10)}
-                        className="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                        className="w-full md:flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(12)}
                         disabled={!shippingData.address || !shippingData.city || !shippingData.zip || !shippingData.state || !shippingData.phone}
-                        className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
                     >
                         Continue to Payment
                     </button>
