@@ -473,7 +473,7 @@ const ProductPage = () => {
             <div className="relative z-10 flex flex-col items-center">
                 <Navbar />
 
-                <div className="w-[95%] sm:w-[90%] md:w-[85%] mx-auto bg-[#F7F8F1] rounded-[40px] md:rounded-[60px] overflow-hidden mt-24 md:mt-32 lg:mt-48 mb-8 md:mb-12 text-bg-primary shadow-2xl relative">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto w-[95%] bg-[#F7F8F1] rounded-[40px] md:rounded-[60px] overflow-hidden mt-24 md:mt-32 lg:mt-48 mb-8 md:mb-12 text-bg-primary shadow-2xl relative">
 
                     {/* HERO SECTION */}
                     <section className="pt-8 md:pt-12 lg:pt-16 pb-8 md:pb-12 px-4 sm:px-6 md:px-12 lg:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-12 border-b border-black/5">
@@ -707,7 +707,7 @@ const ProductPage = () => {
                 {
                     data.richDetails?.successStories && (
                         <section className="success-stories-header w-full py-20 overflow-hidden bg-bg-primary/5 backdrop-blur-sm mb-8 md:mb-12">
-                            <div className="mb-12 text-center max-w-4xl mx-auto px-4">
+                            <div className="mb-12 text-center max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-4">
                                 <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white drop-shadow-md mb-6">The results speak for themselves.</h2>
                                 <p className="text-lg md:text-xl text-white/90 font-medium leading-relaxed mb-8">
                                     Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName || 'GLP-GLOW'} patients.
@@ -763,7 +763,7 @@ const ProductPage = () => {
                             </div>
 
                             {/* SECTION FOOTER */}
-                            <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex justify-center opacity-30">
+                            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto mt-16 pt-8 border-t border-white/5 flex justify-center opacity-30">
                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">Verified Patient Results • Individual Outcomes May Vary</span>
                             </div>
                         </section>
@@ -775,7 +775,7 @@ const ProductPage = () => {
                 <section className="px-4 py-20 md:py-32 bg-transparent flex justify-center overflow-visible">
 
                     {/* Main Premium Card */}
-                    <div className="gold-standard-card bg-[#ffdc42] border border-black/5 w-full max-w-5xl rounded-[50px] md:rounded-[80px] p-8 md:p-16 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
+                    <div className="gold-standard-card bg-[#ffdc42] border border-black/5 w-full max-w-[1400px] rounded-[50px] md:rounded-[80px] p-8 md:p-16 relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
 
                         {/* Crown Icon (Floating Area) */}
                         <div className="absolute -top-10 left-1/2 -translate-x-1/2">
@@ -872,7 +872,7 @@ const ProductPage = () => {
                             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent-green/5 rounded-full blur-[150px] -mr-96 -mt-96 opacity-60"></div>
                             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-accent-green/10 rounded-full blur-[120px] -ml-96 -mb-96"></div>
 
-                            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+                            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16 relative z-10">
                                 <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
                                     {/* Left Column - Text Content */}
@@ -1009,7 +1009,7 @@ const ProductPage = () => {
                             </div>
 
                             {/* SECTION FOOTER */}
-                            <div className="max-w-7xl mx-auto mt-24 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-30">
+                            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto mt-24 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-30">
 
                                 <div className="flex gap-4">
                                 </div>
@@ -1020,7 +1020,7 @@ const ProductPage = () => {
 
                 {/* TESTIMONIAL STATS SECTION */}
                 < section className="w-full py-20 md:py-32 bg-white" >
-                    <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
                                 The change we've all been waiting for.
@@ -1125,7 +1125,7 @@ const ProductPage = () => {
 
                 {/* METABOLISM FIX SECTION (Dynamic Science Section) */}
                 <section className="metabolism-section w-full py-20 md:py-32 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-                    <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16">
                         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
 
                             {/* Left Column - Images */}
@@ -1169,7 +1169,7 @@ const ProductPage = () => {
                     <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-accent-green/10 rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
                     <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent-green/10 rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16 relative z-10">
 
                         {/* Header */}
                         <div className="text-center mb-20 md:mb-28">
@@ -1214,7 +1214,7 @@ const ProductPage = () => {
 
                 {/* BEGIN YOUR JOURNEY SECTION - PREMIUM 3-CARD GRID */}
                 <section className="w-full py-24 md:py-36 bg-[#F9F7F2] relative overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16">
 
                         {/* Section Header */}
                         <div className="text-center mb-20 md:mb-28">
@@ -1317,7 +1317,7 @@ const ProductPage = () => {
 
                 {/* MEDVI GUARANTEE SECTION */}
                 <section className="w-full py-20 md:py-32 bg-white">
-                    <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-16">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16">
 
                         <div className="bg-gradient-to-br from-[#FFF9F0] to-[#FFF5E8] rounded-[50px] md:rounded-[70px] p-12 md:p-16 lg:p-20 shadow-xl">
                             <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
@@ -1407,7 +1407,7 @@ const ProductPage = () => {
                     {/* Ambient Glow */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-accent-green/5 blur-[150px] pointer-events-none"></div>
 
-                    <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                             <div>
                                 <div className="text-xs font-black text-accent-green uppercase tracking-[0.4em] mb-4">The Suite</div>

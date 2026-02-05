@@ -65,7 +65,7 @@ const ProductShowcase = () => {
 
     return (
         <div ref={sectionRef} id="treatments" className="w-full pb-24">
-            <div className="max-w-[1200px] mx-auto px-5">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-5">
                 <div className="mb-16 text-center">
                     <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4 text-black text-center">
                         Clinical Treatments

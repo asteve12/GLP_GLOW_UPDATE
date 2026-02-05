@@ -84,7 +84,7 @@ const DoctorSlider = () => {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFC7A2]/10 rounded-full blur-[120px] -mr-32 -mt-32"></div>
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-black/40 rounded-full blur-[100px] -ml-32 -mb-32"></div>
 
-            <div className="max-w-7xl mx-auto px-6 mb-20 relative z-10">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 mb-20 relative z-10">
                 <div className="grid lg:grid-cols-12 gap-12 items-end">
                     <div className="lg:col-span-7 doctor-header-content">
                         <div className="inline-block py-2 px-4 bg-[#FFC7A2]/10 border border-[#FFC7A2]/20 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] mb-8 text-[#FFC7A2]">

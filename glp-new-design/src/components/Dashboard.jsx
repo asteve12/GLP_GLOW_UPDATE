@@ -1848,7 +1848,7 @@ const Dashboard = () => {
                 )}
 
                 {/* Content Area */}
-                <div className="p-6 md:p-12 xl:px-8 2xl:px-4 3xl:px-0">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto p-6 md:p-12">
                     {/* Welcome Header */}
                     <div className="mb-12">
                         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-2">

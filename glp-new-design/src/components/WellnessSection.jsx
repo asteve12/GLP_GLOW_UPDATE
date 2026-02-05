@@ -49,7 +49,7 @@ const WellnessSection = () => {
 
     return (
         <section ref={sectionRef} className="relative w-full py-24 pb-0 overflow-hidden bg-gradient-to-r from-[#011612] via-[#043329] to-[#011612] animate-gradient-x text-white">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 mb-24">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16 mb-24">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
 
                     {/* Left Column: Content */}
@@ -137,7 +137,7 @@ const WellnessSection = () => {
 
             {/* Full Width Trust Bar */}
             <div className="w-full border-t border-white/10 bg-black/20 backdrop-blur-sm py-8">
-                <div className="w-full px-8 md:px-16 flex flex-nowrap justify-between items-center gap-6 md:gap-12 overflow-x-auto scrollbar-hide">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-8 md:px-16 flex flex-nowrap justify-between items-center gap-6 md:gap-12 overflow-x-auto scrollbar-hide">
                     <div className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/90 whitespace-nowrap">
                         <div className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(191,255,0,0.6)]"></div>
                         LegitScript Certified

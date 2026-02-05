@@ -53,7 +53,7 @@ const MadeInAmerica = () => {
 
     return (
         <section ref={sectionRef} className="w-full py-24 bg-[#F9F7F2] text-[#1A1A1A] overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6">
 
                 {/* Header */}
                 <div ref={titleRef} className="text-center mb-16 flex flex-col items-center">

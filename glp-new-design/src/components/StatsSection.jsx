@@ -51,7 +51,7 @@ const StatsSection = ({ children }) => {
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-black/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/20 rounded-full blur-[100px] -ml-32 -mb-32"></div>
 
-            <div className="max-w-[1200px] mx-auto relative z-10">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
                 {/* Upper Content - Header and Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-center mb-16 md:mb-32">
                     <div className="lg:col-span-6">
