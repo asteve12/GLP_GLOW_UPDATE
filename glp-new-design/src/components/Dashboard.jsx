@@ -763,8 +763,8 @@ const BillingView = ({ profile, user }) => {
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 mb-16">Primary Payment Method</h3>
 
                     <div className="space-y-12">
-                        <div className="flex items-center gap-8">
-                            <div className="w-24 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black italic text-sm tracking-tighter">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
+                            <div className="w-24 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black italic text-sm tracking-tighter shrink-0">
                                 {paymentMethod.brand.toUpperCase()}
                             </div>
                             <div>
