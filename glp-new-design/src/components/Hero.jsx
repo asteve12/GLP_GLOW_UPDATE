@@ -68,7 +68,7 @@ const Hero = () => {
             </div>
 
             {/* Mobile Full-Screen Overlay */}
-            <div className="md:hidden absolute inset-0 z-20 bg-black/50 backdrop-blur-md flex flex-col items-center justify-center px-6 text-center">
+            <div className="md:hidden absolute inset-0 z-20 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center px-6 text-center">
                 <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     Clinical Protocols
                 </div>
