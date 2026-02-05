@@ -801,7 +801,7 @@ const ProductDetails = () => {
             {/* NEW HERO SECTION (FORMERLY READY SECTION) */}
             <section className="ready-section pt-32 pb-20 md:pt-48 md:pb-32 bg-[#FCF9EE] min-h-screen flex items-center">
                 <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16">
-                    <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
+                    <div className="flex flex-col-reverse lg:flex-row gap-12 lg:gap-24 items-center">
 
                         {/* Left Column - Copy */}
                         <div className="w-full lg:w-1/2">

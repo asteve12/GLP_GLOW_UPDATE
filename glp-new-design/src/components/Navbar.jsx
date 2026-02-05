@@ -90,7 +90,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
         className={`fixed top-0 left-0 w-full flex items-center z-50 transition-all duration-300 ease-out ${navClasses}`}
         style={isCustomState ? { backgroundColor: customBgColor } : {}}
       >
-        <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-5 md:px-10 lg:px-16 w-full flex justify-between items-center">
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-5 md:px-8 lg:px-10 w-full flex justify-between items-center">
           <div className={`text-xl md:text-2xl font-extrabold tracking-[2px] uppercase ${textColorClass}`}>
             <Link to="/">GLP-GLOW</Link>
           </div>
