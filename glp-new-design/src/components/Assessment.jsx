@@ -154,7 +154,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="payment-element-container bg-white/5 border border-white/10 p-6 rounded-[24px] focus-within:border-accent-green transition-all">
+            <div className="payment-element-container bg-white/5 border border-white/10 p-6 rounded-[24px] focus-within:border-accent-green transition-all w-[90%] md:w-full mx-auto">
                 <PaymentElement
                     options={{
                         layout: 'tabs',
@@ -1363,7 +1363,7 @@ const Assessment = () => {
 
     const renderDoctorIntroStep = () => (
         <div className="assessment-step max-w-6xl mx-auto py-20 px-6">
-            <div className="flex flex-col md:flex-row items-center gap-16 md:gap-24">
+            <div className="flex flex-col-reverse md:flex-row items-center gap-16 md:gap-24">
                 {/* Left Side: Content */}
                 <div className="w-full md:w-1/2">
                     <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-10">
@@ -1384,16 +1384,16 @@ const Assessment = () => {
                     </div>
 
                     <div className="space-y-8">
-                        <div className="flex gap-4">
+                        <div className="flex flex-col md:flex-row gap-4">
                             <button
                                 onClick={() => setStep(6)}
-                                className="px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                                className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
                             >
                                 Back
                             </button>
                             <button
                                 onClick={() => setStep(8)}
-                                className="flex-1 px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transform hover:scale-105"
+                                className="w-full md:flex-1 px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transform hover:scale-105"
                             >
                                 Continue to Medical Intake
                             </button>
@@ -2078,11 +2078,11 @@ const Assessment = () => {
 
                 <div className="pt-8 border-t border-white/5">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4 italic">Have an eligibility coupon code?</label>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col md:flex-row gap-4">
                         <input
                             type="text"
                             placeholder="Enter coupon code"
-                            className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full md:flex-1 bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
                             value={paymentData.coupon || ''}
                             onChange={(e) => setPaymentData({ ...paymentData, coupon: e.target.value })}
                         />
@@ -2106,7 +2106,7 @@ const Assessment = () => {
                                     alert('Could not validate coupon at this time.');
                                 }
                             }}
-                            className="px-8 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-accent-green transition-all"
+                            className="w-full md:w-auto py-5 px-8 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-accent-green transition-all"
                         >
                             Apply
                         </button>

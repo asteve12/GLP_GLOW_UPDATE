@@ -2115,12 +2115,12 @@ const Dashboard = () => {
 
                                 {/* Recent Assessments in Overview */}
                                 <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
-                                    <div className="flex items-center justify-between mb-8">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
                                         <div>
                                             <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic mb-2">Recent Records</h2>
                                             <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Your clinical journey history</p>
                                         </div>
-                                        <button onClick={() => navigate('/dashboard/assessments')} className="px-6 py-3 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
                                             View All
                                         </button>
                                     </div>
@@ -2161,6 +2161,10 @@ const Dashboard = () => {
                                             ))}
                                         </div>
                                     )}
+
+                                    <button onClick={() => navigate('/dashboard/assessments')} className="md:hidden w-full mt-8 px-6 py-3 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                                        View All
+                                    </button>
                                 </div>
                             </>
                         } />
