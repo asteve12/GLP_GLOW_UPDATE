@@ -336,7 +336,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
-                <div className="flex items-start gap-6">
+                <div className="flex flex-col md:flex-row items-start gap-6">
                     <div className="w-20 h-20 rounded-3xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 group-hover:border-accent-green/40 transition-all">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-green">
                             <path d="M10.5 21l-7.5-7.5 3.5-3.5 7.5 7.5-3.5 3.5z" />
@@ -467,7 +467,7 @@ const OrdersView = ({ orders }) => {
                             <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
-                                <div className="flex items-start gap-6">
+                                <div className="flex flex-col md:flex-row items-start gap-6">
                                     <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:text-accent-green group-hover:bg-accent-green/10 transition-all flex-shrink-0">
                                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -820,7 +820,6 @@ const BillingView = ({ profile, user }) => {
             <div className="mt-12">
                 <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40">Statement History</h3>
-                    <button className="text-[9px] font-black uppercase tracking-widest text-accent-green">Download All Receipts</button>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                     {loadingHistory ? (
@@ -1067,7 +1066,7 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
     return (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all font-sans">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col md:flex-row items-start gap-4">
                     <div className={`w-12 h-12 rounded-full bg-${status.color === 'accent-green' ? 'accent-green' : status.color}-500/10 flex items-center justify-center flex-shrink-0`}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${status.color === 'accent-green' ? 'accent-green' : status.color + '-400'}`}>
                             <path d={status.icon} />
@@ -2171,7 +2170,7 @@ const Dashboard = () => {
 
                         <Route path="medications" element={
                             <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
-                                <div className="flex items-center justify-between mb-12">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
                                         <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-2">
                                             {activeCategories.length === 1
@@ -2322,7 +2321,7 @@ const Dashboard = () => {
 
                         <Route path="assessments" element={
                             <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
-                                <div className="flex items-center justify-between mb-12">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
                                         <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-2">Assessment History</h2>
                                         <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Complete clinical log</p>
