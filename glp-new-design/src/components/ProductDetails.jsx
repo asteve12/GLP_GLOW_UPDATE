@@ -686,6 +686,18 @@ const ProductDetails = () => {
     const product = productSpecificData[productId];
     const [openFaq, setOpenFaq] = useState(null);
 
+    const getCategory = (id) => {
+        if (!id) return 'weight-loss';
+        if (id.includes('semaglutide') || id.includes('tirzepatide')) return 'weight-loss';
+        if (id.includes('finasteride') || id.includes('minoxidil')) return 'hair-restoration';
+        if (id.includes('sildenafil') || id.includes('tadalafil') || id.includes('oxytocin')) return 'sexual-health';
+        if (id.includes('nad') || id.includes('glutathione')) return 'longevity';
+        return 'weight-loss';
+    };
+
+    const category = getCategory(productId);
+    const qualifyLink = `/qualify?category=${category}&product=${productId}`;
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
@@ -844,7 +856,7 @@ const ProductDetails = () => {
                                             </p>
                                             <div className="flex justify-center md:justify-end">
                                                 <Link
-                                                    to="/qualify"
+                                                    to={qualifyLink}
                                                     className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
                                                 >
                                                     Get Started
@@ -874,7 +886,7 @@ const ProductDetails = () => {
 
                                             <div className="flex justify-center md:justify-start">
                                                 <Link
-                                                    to="/qualify"
+                                                    to={qualifyLink}
                                                     className="bg-bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-base md:text-lg inline-block transform hover:scale-105"
                                                 >
                                                     Get Started
@@ -912,7 +924,7 @@ const ProductDetails = () => {
 
                         {/* Desktop Only Overlay Button - Mobile uses the button in the text section */}
                         <div className="hidden md:flex absolute bottom-12 right-1/2 translate-x-1/2 z-20 flex-col items-center w-max">
-                            <Link to="/qualify" className="bg-bg-primary text-white px-10 py-5 rounded-full font-bold uppercase tracking-wider hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-lg inline-block text-center transform hover:scale-105">
+                            <Link to={qualifyLink} className="bg-bg-primary text-white px-10 py-5 rounded-full font-bold uppercase tracking-wider hover:bg-accent-green hover:text-bg-primary transition-all shadow-2xl text-lg inline-block text-center transform hover:scale-105">
                                 Get Started
                             </Link>
                             <p className="text-xs text-gray-400 mt-2 font-medium text-center bg-white/50 backdrop-blur-sm px-2 rounded">
@@ -949,9 +961,9 @@ const ProductDetails = () => {
                                     </ul>
 
                                     <div className="mb-16">
-                                        <button className="bg-gray-900 text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl text-lg transform hover:scale-105">
+                                        <Link to={qualifyLink} className="bg-gray-900 text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl text-lg transform hover:scale-105 inline-block text-center">
                                             Get started
-                                        </button>
+                                        </Link>
                                     </div>
 
                                     {/* Accordion/Info Tabs */}
@@ -1099,7 +1111,7 @@ const ProductDetails = () => {
                             Our Signature Series represents a <span className="text-black font-extrabold">new era of clinical care</span>. <br /> Combining high-grade compounding with personalized protocols.
                         </p>
 
-                        <Link to="/qualify" className="bg-black text-yellow-400 px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-900 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
+                        <Link to={qualifyLink} className="bg-black text-yellow-400 px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-900 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
                             Get started
                         </Link>
                     </div>
@@ -1187,7 +1199,7 @@ const ProductDetails = () => {
                                     Prescription products require an online consultation with a healthcare provider.
                                 </p>
                                 <div className="pt-4">
-                                    <Link to="/qualify" className="bg-bg-primary text-white px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
+                                    <Link to={qualifyLink} className="bg-bg-primary text-white px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
                                         Get started
                                     </Link>
                                 </div>
@@ -1218,7 +1230,7 @@ const ProductDetails = () => {
             {/* CTA BANNER - Reordered */}
             <div className="py-24 md:py-32 bg-bg-primary text-white text-center px-6">
                 <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none">Ready for <br /><span className="text-accent-green">Results?</span></h2>
-                <Link to="/qualify" className="bg-white text-bg-primary px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-2xl text-xl inline-block">
+                <Link to={qualifyLink} className="bg-white text-bg-primary px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-2xl text-xl inline-block">
                     Get Started
                 </Link>
             </div>
