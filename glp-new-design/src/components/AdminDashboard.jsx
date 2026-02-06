@@ -2710,16 +2710,18 @@ const DiscountManager = () => {
     };
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-700">
+        <div className="flex flex-col-reverse md:flex-col gap-12 animate-in fade-in duration-700">
             {/* Create Coupon Card */}
             <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-12 text-accent-green opacity-10 group-hover:opacity-20 transition-opacity">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                    </svg>
-                </div>
+                <div className="flex flex-col md:block">
+                    <div className="relative md:absolute top-0 right-0 p-0 md:p-12 mb-8 md:mb-0 text-accent-green opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                    </div>
 
-                <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-8">Generate <span className="text-accent-green">Discount Token</span></h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-8">Generate <span className="text-accent-green">Discount Token</span></h3>
+                </div>
 
                 <form onSubmit={handleCreateCoupon} className="space-y-6 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -2803,12 +2805,14 @@ const DiscountManager = () => {
 
             {/* List Table */}
             <div className="bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden">
-                <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                <div className="p-8 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Active Coupons Reservoir</h4>
                         <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Managing clinical and marketing incentives</p>
                     </div>
-                    <span className="text-[10px] text-accent-green font-bold px-3 py-1 bg-accent-green/10 rounded-full">{coupons.length} TOKENS</span>
+                    <div className="flex justify-start md:justify-end">
+                        <span className="text-[10px] text-accent-green font-bold px-3 py-1 bg-accent-green/10 rounded-full">{coupons.length} TOKENS</span>
+                    </div>
                 </div>
                 <table className="w-full text-left">
                     <thead>
@@ -3389,12 +3393,12 @@ const PatientExpressEntry = () => {
                     )}
 
                     <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12">
-                        <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
+                        <div className="flex flex-col-reverse md:flex-row md:items-center justify-between mb-12 border-b border-white/5 pb-8 gap-6 md:gap-0">
                             <div>
                                 <h3 className="text-2xl font-black uppercase italic tracking-tighter">Clinical <span className="text-accent-green">Intake</span></h3>
                                 <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mt-1">Filling as Admin for: {patientEmail}</p>
                             </div>
-                            <div className="text-right">
+                            <div className="md:text-right">
                                 <span className="bg-accent-green/10 text-accent-green px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{selectedCategory}</span>
                             </div>
                         </div>
@@ -3579,25 +3583,25 @@ const PatientExpressEntry = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 items-center">
-                            <button onClick={() => setStep('form')} className="px-8 py-4 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Back</button>
+                        <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                            <button onClick={() => setStep('form')} className="w-full md:w-auto px-8 py-4 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Back</button>
 
-                            <div className="flex-1 flex gap-4 justify-end items-center">
+                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:justify-end md:items-center">
                                 {pdfUrl && (
                                     <a
                                         href={pdfUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline mr-4"
+                                        className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline text-center md:text-right md:mr-4"
                                     >
                                         View Generated PDF
                                     </a>
                                 )}
-                                <button onClick={generatePDF} className="px-8 py-4 rounded-xl bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center gap-2">
+                                <button onClick={generatePDF} className="w-full md:w-auto px-8 py-4 rounded-xl bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center justify-center gap-2">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                     {pdfUrl ? 'Regenerate PDF' : 'Generate PDF'}
                                 </button>
-                                <button onClick={finalSubmit} disabled={submitting} className="px-12 py-4 rounded-xl bg-accent-green text-black text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all">Proceed</button>
+                                <button onClick={finalSubmit} disabled={submitting} className="w-full md:w-auto px-12 py-4 rounded-xl bg-accent-green text-black text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all">Proceed</button>
                             </div>
                         </div>
                     </div>
@@ -4303,7 +4307,7 @@ const StaffManagement = () => {
                         </h3>
 
                         <form onSubmit={handleProviderSubmit} className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Legal First Name *</label>
                                     <input
@@ -4397,7 +4401,7 @@ const StaffManagement = () => {
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">License # *</label>
                                     <input
@@ -4440,7 +4444,7 @@ const StaffManagement = () => {
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex flex-col md:flex-row gap-4 pt-4">
                                 <button
                                     type="button"
                                     onClick={() => setShowProviderModal(false)}
@@ -4470,7 +4474,7 @@ const StaffManagement = () => {
                         </h3>
 
                         <form onSubmit={handleBackOfficeSubmit} className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Legal First Name *</label>
                                     <input
@@ -4548,7 +4552,7 @@ const StaffManagement = () => {
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex flex-col md:flex-row gap-4 pt-4">
                                 <button
                                     type="button"
                                     onClick={() => setShowBackOfficeModal(false)}
@@ -4692,12 +4696,12 @@ const OrderManagement = () => {
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Header */}
             <div className="flex flex-wrap items-center justify-between gap-6 bg-white/5 border border-white/10 rounded-[32px] p-6">
-                <div className="flex gap-2">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
                     {['all', 'processing', 'shipped', 'delivered'].map(f => (
                         <button
                             key={f}
                             onClick={() => { setFilter(f); setPage(1); }}
-                            className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-white text-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                            className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-white text-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
                         >
                             {f}
                         </button>
@@ -4719,23 +4723,23 @@ const OrderManagement = () => {
                 ) : (
                     paginatedOrders.map(order => (
                         <div key={order.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col gap-8">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent-green/20 group-hover:text-accent-green transition-all">
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                <div className="flex flex-col md:flex-row md:items-center gap-6">
+                                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent-green/20 group-hover:text-accent-green transition-all shrink-0">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-3 mb-1">
+                                        <div className="flex flex-wrap items-center gap-3 mb-1">
                                             <p className="text-lg font-black uppercase tracking-tighter italic">
                                                 {order.profiles?.first_name} {order.profiles?.last_name || 'User'}
                                             </p>
-                                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-accent-green/30 text-accent-green bg-accent-green/5`}>
+                                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-accent-green/30 text-accent-green bg-accent-green/5 whitespace-nowrap`}>
                                                 {order.delivery_status || 'Processing'}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-4 text-[10px] text-white/40 uppercase font-black tracking-widest">
+                                        <div className="flex flex-wrap items-center gap-4 text-[10px] text-white/40 uppercase font-black tracking-widest">
                                             <span>#{order.id.slice(0, 8)}</span>
                                             <span className="w-1 h-1 bg-white/10 rounded-full"></span>
                                             <span>{new Date(order.created_at).toLocaleDateString()}</span>
@@ -4749,9 +4753,9 @@ const OrderManagement = () => {
                                     </div>
                                 </div>
 
-                                <div className="text-right">
+                                <div className="md:text-right pt-4 md:pt-0 border-t border-white/5 md:border-0">
                                     <p className="text-xl font-black text-white italic tracking-tighter">${parseFloat(order.drug_price || 0).toFixed(2)}</p>
-                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest max-w-[200px] truncate">{order.drug_name || 'Medical Protocol'}</p>
+                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest max-w-[200px] md:max-w-[300px] truncate">{order.drug_name || 'Medical Protocol'}</p>
                                 </div>
                             </div>
 
