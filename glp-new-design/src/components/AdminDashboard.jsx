@@ -762,8 +762,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 </div>
                                 <div>
                                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Vital Statistics</h4>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Height</p>
                                             <p className="text-xl font-black text-white">
                                                 {patient.height_feet && patient.height_inches ? `${patient.height_feet}'${patient.height_inches}"` :
@@ -773,13 +773,13 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                                 submissions[0]?.height || patient.height || '—'}
                                             </p>
                                         </div>
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
+                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Weight</p>
                                             <p className="text-xl font-black text-white">
                                                 {patient.weight || submissions[0]?.weight || '—'}
                                             </p>
                                         </div>
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
+                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">BMI</p>
                                             <p className="text-xl font-black text-accent-green">
                                                 {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '—')}
@@ -800,8 +800,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             ) : (
                                 submissions.map(sub => (
                                     <div key={sub.id} className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 hover:bg-white/[0.05] transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 group-hover:text-accent-green transition-all">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-6">
+                                            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 group-hover:text-accent-green transition-all shrink-0">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
                                             </div>
                                             <div>
@@ -831,19 +831,19 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                     {activeTab === 'subscription' && (
                         <div className="animate-in slide-in-from-bottom-4 transition-all duration-700">
                             <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-8">
-                                <div className="flex justify-between items-center border-b border-white/5 pb-8">
+                                <div className="flex flex-col md:flex-row md:justify-between md:items-center border-b border-white/5 pb-8 gap-6">
                                     <div>
                                         <p className="text-[10px] text-accent-green font-black uppercase tracking-widest mb-1 italic">Current Status</p>
                                         <h5 className="text-3xl font-black uppercase italic tracking-tighter text-white">
                                             {patient.subscribe_status ? 'Active Medication' : 'No Active Subscription'}
                                         </h5>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="md:text-right">
                                         <p className="text-[10px] text-white/20 font-black uppercase tracking-widest mb-1">Plan Name</p>
                                         <p className="text-lg font-black text-white italic">{formatPlanName(patient.current_plan)}</p>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                                     <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '—'} />
                                     <DossierStat label="Payment" value={patient.last_four_digits_of_card ? `Ends in ${patient.last_four_digits_of_card}` : 'No Card'} />
@@ -893,9 +893,9 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 <div className="text-center py-20 border-2 border-dashed border-white/5 rounded-3xl text-white/20 uppercase font-black tracking-widest text-[10px]">No transaction history recorded.</div>
                             ) : (
                                 billing.map(item => (
-                                    <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex items-center justify-between group hover:bg-white/[0.08] transition-all">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-10 h-10 bg-accent-green/10 rounded-xl flex items-center justify-center text-accent-green">
+                                    <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between group hover:bg-white/[0.08] transition-all gap-4">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                                            <div className="w-10 h-10 bg-accent-green/10 rounded-xl flex items-center justify-center text-accent-green shrink-0">
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                             </div>
                                             <div>
@@ -903,7 +903,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                 <p className="text-[9px] text-white/40 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} • {String(item.id).substring(0, 8)}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right">
+                                        <div className="md:text-right pt-2 md:pt-0 border-t border-white/5 md:border-t-0">
                                             <p className="text-sm font-black text-white">${(item.amount / 100).toFixed(2)}</p>
                                             <p className="text-[8px] font-black uppercase text-accent-green italic">Confirmed</p>
                                         </div>
@@ -1610,7 +1610,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                     />
                 )
             ) : isFile ? (
-                <div className="flex flex-wrap gap-2 mt-2 md:mt-0 justify-end">
+                <div className="flex flex-wrap gap-2 mt-2 md:mt-0 justify-start md:justify-end">
                     {Array.isArray(value) ? (
                         value.map((url, i) => (
                             <a key={i} href={url} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-green/10 text-accent-green border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
@@ -1942,7 +1942,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 2xl:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
                 <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-green/20">
                     {/* Header */}
-                    <div className="p-8 md:p-10 border-b border-white/5 flex items-center justify-between bg-[#080808] shrink-0">
+                    <div className="p-8 md:p-10 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between bg-[#080808] shrink-0 gap-8">
                         <div>
                             <div className="flex items-center gap-4 mb-2">
                                 <h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none">Submission <span className="text-accent-green">Dossier</span></h3>
@@ -1950,7 +1950,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                             </div>
                             <p className="text-[10px] text-white/40 uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
                             {!isEditing ? (
                                 <>
                                     {formData.provider_note_report ? (
@@ -2295,8 +2295,8 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
 
                                 {/* Shipping & Logistics */}
                                 <SectionHeader title="Shipping & Logistics" />
-                                <div className="p-10 bg-white/5 rounded-[40px] border border-white/5">
-                                    <div className="flex items-start gap-8">
+                                <div className="p-8 md:p-10 bg-white/5 rounded-[40px] border border-white/5">
+                                    <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8">
                                         <div className="w-16 h-16 bg-accent-green/10 rounded-3xl flex items-center justify-center border border-accent-green/20 shrink-0">
                                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#bfff00" strokeWidth="2"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
                                         </div>
@@ -2365,9 +2365,9 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     </button>
                                 </>
                             ) : (
-                                <div className="w-full flex items-center justify-between p-7 bg-white/5 rounded-[24px] border border-white/10">
+                                <div className="w-full flex flex-col md:flex-row md:items-center justify-between p-7 bg-white/5 rounded-[24px] border border-white/10 gap-6">
                                     <div className="flex items-center gap-6">
-                                        <div className={`w-4 h-4 rounded-full ${submission.approval_status === 'approved' ? 'bg-accent-green shadow-[0_0_20px_rgba(191,255,0,0.5)]' : 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]'}`}></div>
+                                        <div className={`w-4 h-4 rounded-full shrink-0 ${submission.approval_status === 'approved' ? 'bg-accent-green shadow-[0_0_20px_rgba(191,255,0,0.5)]' : 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]'}`}></div>
                                         <div>
                                             <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mb-1">Regulatory decision finalized</p>
                                             <p className="text-xl font-black uppercase italic tracking-tighter leading-none">
@@ -2378,7 +2378,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <button
                                         onClick={() => handleUpdateStatus('pending')}
                                         disabled={processing || isEditing}
-                                        className="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+                                        className="w-full md:w-auto px-10 py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
                                     >
                                         Re-open to Triage
                                     </button>
@@ -2574,15 +2574,15 @@ const ClinicalQueue = () => {
                         const catInfo = categories.find(c => c.id === item.selected_drug) || categories[0];
                         return (
                             <div key={item.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div className="flex items-center gap-6">
+                                <div className="flex flex-col md:flex-row md:items-center gap-6">
                                     <div
-                                        className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl italic border border-white/10"
+                                        className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl italic border border-white/10 shrink-0"
                                         style={{ color: catInfo.color, backgroundColor: `${catInfo.color}10` }}
                                     >
                                         {item.shipping_first_name?.charAt(0) || '?'}
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-3 mb-1">
+                                        <div className="flex flex-wrap items-center gap-3 mb-1">
                                             <p className="text-lg font-black uppercase tracking-tighter italic">{item.shipping_first_name} {item.shipping_last_name}</p>
                                             <span
                                                 className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border"
