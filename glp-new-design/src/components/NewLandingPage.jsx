@@ -155,11 +155,11 @@ const NewLandingPage = () => {
                 </section>
 
                 {/* Performance Banner */}
-                <section className="py-6 md:py-12">
-                    <div className="max-w-[1200px] mx-auto px-0 md:px-6">
-                        <div className="relative rounded-none md:rounded-[40px] overflow-hidden bg-[#0a0a0a] group min-h-[100vh] md:min-h-0 flex items-center">
-                            <img alt="Performance banner" className="w-full h-[100vh] md:h-auto object-cover md:object-contain block transition-transform duration-700 group-hover:scale-105" src={performancePromoImg} />
-                            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500"></div>
+                <section className="py-0">
+                    <div className="w-full">
+                        <div className="relative overflow-hidden bg-[#0a0a0a] group h-[218vh] md:h-[133vh] flex items-center">
+                            <img alt="Performance banner" className="w-full h-full object-cover block transition-transform duration-700 group-hover:scale-105" src={performancePromoImg} />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
                             <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
                                 <Link to="/qualify?category=sexual-health" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
                             </div>
@@ -186,7 +186,7 @@ const NewLandingPage = () => {
                                 </div>
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 10 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
-                                    <h3 className="text-2xl font-bold mb-4">1. Account Registration</h3>
+                                    <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>1. Account Registration</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Complete a quick online evaluation to determine if this prescription medication is right for you. Our team of licensed professionals will review your information and provide approval within 24-48 business hours.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
@@ -201,7 +201,7 @@ const NewLandingPage = () => {
                                 </div>
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 50 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pr-4 md:pl-12 text-center md:text-left">
-                                    <h3 className="text-2xl font-bold mb-4">2. Get Prescribed</h3>
+                                    <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>2. Get Prescribed</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Once approved, you'll receive personalized care and a prescription to support your weight loss and health goals. Your care plan is designed to help you achieve lasting results safely and effectively.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
@@ -216,7 +216,7 @@ const NewLandingPage = () => {
                                 </div>
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 90 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
-                                    <h3 className="text-2xl font-bold mb-4">3. Rx Shipment Arrived</h3>
+                                    <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>3. Rx Shipment Arrived</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With uGlowMD, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
