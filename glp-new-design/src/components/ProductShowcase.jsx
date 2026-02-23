@@ -90,13 +90,13 @@ const ProductShowcase = () => {
 
                             {/* Content */}
                             <div className="relative z-10 p-8 h-full flex flex-col justify-end min-h-[400px]">
-                                <h3 className="text-3xl font-bold mb-2 text-white group-hover:text-accent-green transition-colors">{cat.title}</h3>
+                                <h3 className="text-3xl font-bold mb-2 text-white group-hover:text-accent-blue transition-colors">{cat.title}</h3>
                                 <p className="text-white/60 mb-6 text-lg">{cat.description}</p>
 
                                 <div className="space-y-2 mb-8 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                                     {cat.products.map((p, i) => (
                                         <div key={i} className="flex items-center gap-2 text-sm font-medium text-white/80">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-accent-green"></span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue"></span>
                                             {p}
                                         </div>
                                     ))}
@@ -104,7 +104,7 @@ const ProductShowcase = () => {
 
                                 <button
                                     onClick={() => window.location.href = `/qualify?category=${cat.id}`}
-                                    className="w-full py-4 bg-white/5 border border-white/10 text-white hover:bg-accent-green hover:border-accent-green hover:text-black rounded text-sm uppercase font-bold tracking-widest transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                                    className="w-full py-4 bg-white/5 border border-white/10 text-white hover:bg-accent-blue hover:border-accent-blue hover:text-black rounded text-sm uppercase font-bold tracking-widest transition-all duration-300 flex items-center justify-center gap-2 group/btn"
                                 >
                                     Qualify Now <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
                                 </button>

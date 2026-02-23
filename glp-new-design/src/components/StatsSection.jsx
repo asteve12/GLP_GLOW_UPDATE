@@ -46,7 +46,7 @@ const StatsSection = ({ children }) => {
     };
 
     return (
-        <section id="stats-section" ref={sectionRef} className="relative bg-accent-green text-black py-16 md:py-32 px-5 overflow-hidden">
+        <section id="stats-section" ref={sectionRef} className="relative bg-accent-black text-white py-16 md:py-32 px-5 overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-black/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/20 rounded-full blur-[100px] -ml-32 -mb-32"></div>
@@ -62,7 +62,7 @@ const StatsSection = ({ children }) => {
                             Redefining <br />
                             <span className="text-white drop-shadow-sm">Wellness</span>
                         </h2>
-                        <p ref={textRef} className="text-base md:text-xl font-medium text-black/80 max-w-xl leading-relaxed transform will-change-transform">
+                        <p ref={textRef} className="text-base md:text-xl font-medium text-white/80 max-w-xl leading-relaxed transform will-change-transform">
                             We bridge the gap between rigorous clinical science and premium lifestyle medicine.
                             Our protocols are engineered for those who refuse to settle for average health.
                         </p>
@@ -91,8 +91,8 @@ const StatsSection = ({ children }) => {
 
                 {/* Vertical Divider */}
                 <div className="w-full h-px bg-black/10 mb-16 md:mb-32 relative">
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent-green px-6 py-2">
-                        <div className="w-3 h-3 bg-black rounded-full animate-pulse"></div>
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent-black px-6 py-2">
+                        <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                     </div>
                 </div>
 

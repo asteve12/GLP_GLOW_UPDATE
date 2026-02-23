@@ -13,7 +13,7 @@ const RevenueChart = ({ data }) => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
                 <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter italic">Monthly Earnings</h3>
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-accent-black rounded-full animate-pulse"></div>
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/20">Live Revenue Stream</span>
                 </div>
             </div>
@@ -160,14 +160,14 @@ const AdminOverview = () => {
                 {[
                     { label: 'Total Patients', value: stats.totalPatients, color: 'blue', icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 110-8 4 4 0 010 8z' },
                     { label: 'Pending Reviews', value: stats.pendingReviews, color: 'orange', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                    { label: 'Active Subs', value: stats.activeSubscriptions, color: 'accent-green', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+                    { label: 'Active Subs', value: stats.activeSubscriptions, color: 'accent-black', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
                     { label: 'Est. MRR', value: `$${stats.monthlyRevenue.toLocaleString()}`, color: 'purple', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
                 ].map((stat, i) => (
                     <div key={i} className="bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
-                        <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${stat.color === 'accent-green' ? 'accent-green' : stat.color}-500/5 blur-3xl transition-opacity group-hover:opacity-10 opacity-0`}></div>
+                        <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-500/5 blur-3xl transition-opacity group-hover:opacity-10 opacity-0`}></div>
                         <div className="flex items-center justify-between mb-4">
-                            <div className={`w-12 h-12 rounded-2xl bg-${stat.color === 'accent-green' ? 'accent-green' : stat.color}-500/10 flex items-center justify-center`}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color === 'accent-green' ? 'accent-green' : stat.color}-400`}>
+                            <div className={`w-12 h-12 rounded-2xl bg-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-500/10 flex items-center justify-center`}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-400`}>
                                     <path d={stat.icon} />
                                 </svg>
                             </div>
@@ -334,7 +334,7 @@ const PatientPortalManager = () => {
 
     if (loading) return (
         <div className="py-32 flex flex-col items-center justify-center gap-6 animate-pulse">
-            <div className="w-12 h-12 border-4 border-accent-green/20 border-t-accent-green rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-accent-black/20 border-t-accent-black rounded-full animate-spin"></div>
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Decrypting Patient Records...</p>
         </div>
     );
@@ -384,9 +384,9 @@ const PatientPortalManager = () => {
                         placeholder="Search by name or email..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-5 text-sm font-bold text-white focus:outline-none focus:border-accent-green focus:bg-white/[0.08] transition-all placeholder:text-white/20 shadow-2xl"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-5 text-sm font-bold text-white focus:outline-none focus:border-accent-black focus:bg-white/[0.08] transition-all placeholder:text-white/20 shadow-2xl"
                     />
-                    <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-accent-green transition-colors">
+                    <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-accent-black transition-colors">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                     </div>
                 </div>
@@ -396,7 +396,7 @@ const PatientPortalManager = () => {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-green hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[120px] md:min-w-[160px]"
+                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-black hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[120px] md:min-w-[160px]"
                     >
                         <option value="all" className="bg-[#0A0A0A]">All Statuses</option>
                         <option value="active" className="bg-[#0A0A0A]">Active Only</option>
@@ -406,7 +406,7 @@ const PatientPortalManager = () => {
                     <select
                         value={cardFilter}
                         onChange={(e) => setCardFilter(e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-green hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[120px] md:min-w-[160px]"
+                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-black hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[120px] md:min-w-[160px]"
                     >
                         <option value="all" className="bg-[#0A0A0A]">All Cards</option>
                         <option value="vaulted" className="bg-[#0A0A0A]">Card Vaulted</option>
@@ -416,7 +416,7 @@ const PatientPortalManager = () => {
                     <select
                         value={planFilter}
                         onChange={(e) => setPlanFilter(e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-green hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[140px] md:min-w-[180px]"
+                        className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-black hover:bg-white/10 transition-all cursor-pointer appearance-none flex-1 min-w-[140px] md:min-w-[180px]"
                     >
                         <option value="all" className="bg-[#0A0A0A]">All Plans</option>
                         <option value="Monthly Maintenance" className="bg-[#0A0A0A]">Monthly Maintenance</option>
@@ -450,7 +450,7 @@ const PatientPortalManager = () => {
                                 </td>
                                 <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/60">{p.email}</td>
                                 <td className="py-4 md:py-6">
-                                    <span className={`px-2 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase ${p.subscribe_status ? 'bg-accent-green/10 text-accent-green' : 'bg-white/5 text-white/40'}`}>
+                                    <span className={`px-2 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase ${p.subscribe_status ? 'bg-accent-black/10 text-accent-black' : 'bg-white/5 text-white/40'}`}>
                                         {p.subscribe_status ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
@@ -462,8 +462,8 @@ const PatientPortalManager = () => {
                                 </td>
                                 <td className="py-4 md:py-6">
                                     {p.stripe_payment_method_id || p.last_four_digits_of_card ? (
-                                        <span className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black uppercase text-accent-green">
-                                            <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+                                        <span className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black uppercase text-accent-black">
+                                            <div className="w-1.5 h-1.5 bg-accent-black rounded-full"></div>
                                             •••• {p.last_four_digits_of_card || 'VAULT'}
                                         </span>
                                     ) : (
@@ -483,7 +483,7 @@ const PatientPortalManager = () => {
                                             setSelectedPatientId(id);
                                             setIsDossierOpen(true);
                                         }}
-                                        className="text-[9px] md:text-[10px] font-black uppercase text-accent-green hover:text-white transition-all bg-accent-green/10 px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl border border-accent-green/20 whitespace-nowrap"
+                                        className="text-[9px] md:text-[10px] font-black uppercase text-accent-black hover:text-white transition-all bg-accent-black/10 px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl border border-accent-black/20 whitespace-nowrap"
                                     >
                                         View More
                                     </button>
@@ -628,7 +628,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
     if (loading) return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-3xl">
             <div className="flex flex-col items-center gap-4">
-                <div className="w-12 h-12 border-4 border-accent-green/20 border-t-accent-green rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-accent-black/20 border-t-accent-black rounded-full animate-spin"></div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Accessing Archive...</p>
             </div>
         </div>
@@ -649,19 +649,19 @@ const PatientDossierModal = ({ patientId, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 md:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
-            <div className="w-full max-w-6xl max-h-[90vh] bg-[#0A0A0A] border border-white/10 rounded-[48px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-green/20">
+            <div className="w-full max-w-6xl max-h-[90vh] bg-[#0A0A0A] border border-white/10 rounded-[48px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-black/20">
                 {/* Header */}
                 <div className="p-8 md:p-12 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-8 bg-[#080808]">
                     <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-accent-green/10 border border-accent-green/20 rounded-3xl flex items-center justify-center text-3xl font-black italic text-accent-green shrink-0">
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-accent-black/10 border border-accent-black/20 rounded-3xl flex items-center justify-center text-3xl font-black italic text-accent-black shrink-0">
                             {patient.first_name?.[0]}{patient.last_name?.[0]}
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
                                 <h3 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-none italic">
-                                    {patient.first_name} <span className="text-accent-green">{patient.last_name}</span>
+                                    {patient.first_name} <span className="text-accent-black">{patient.last_name}</span>
                                 </h3>
-                                <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${patient.subscribe_status ? 'bg-accent-green text-black' : 'bg-white/10 text-white/40'}`}>
+                                <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${patient.subscribe_status ? 'bg-accent-black text-black' : 'bg-white/10 text-white/40'}`}>
                                     {patient.subscribe_status ? 'Active' : 'Inactive'}
                                 </div>
                             </div>
@@ -693,7 +693,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             className={`text-[9px] font-black uppercase tracking-[0.2em] transition-all relative py-4 whitespace-nowrap ${activeTab === tab.id ? 'text-white' : 'text-white/20 hover:text-white/40'}`}
                         >
                             {tab.label}
-                            {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-green shadow-[0_0_20px_rgba(191,255,0,0.5)]"></div>}
+                            {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-black shadow-[0_0_20px_rgba(191,255,0,0.5)]"></div>}
                         </button>
                     ))}
                 </div>
@@ -705,7 +705,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             {/* Personal Info */}
                             <div className="space-y-12">
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Personal Identity</h4>
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-black mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Personal Identity</h4>
                                     <div className="space-y-6">
                                         <DossierRow label="Gender" value={patient.sex || patient.gender || submissions[0]?.sex || 'Not Specified'} />
                                         <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
@@ -715,7 +715,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Contact & Shipping</h4>
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-black mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Contact & Shipping</h4>
                                     <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-4">
                                         <p className="text-[10px] text-white/20 uppercase font-black tracking-widest leading-none">Registered Address</p>
                                         <p className="text-sm font-bold text-white/80 leading-relaxed uppercase tracking-widest">
@@ -730,8 +730,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             {/* Medical Summary */}
                             <div className="space-y-12">
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Active Medication</h4>
-                                    <div className="bg-accent-green/5 border-l-4 border-accent-green p-8 rounded-tr-3xl rounded-br-3xl space-y-4">
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-black mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Active Medication</h4>
+                                    <div className="bg-accent-black/5 border-l-4 border-accent-black p-8 rounded-tr-3xl rounded-br-3xl space-y-4">
                                         {(() => {
                                             // Get approved submissions
                                             const approvedMeds = submissions.filter(sub => sub.approval_status === 'approved');
@@ -739,7 +739,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                             if (approvedMeds.length === 0) {
                                                 return (
                                                     <>
-                                                        <p className="text-[10px] text-accent-green/60 uppercase font-black tracking-widest mb-2 italic">Current Plan</p>
+                                                        <p className="text-[10px] text-accent-black/60 uppercase font-black tracking-widest mb-2 italic">Current Plan</p>
                                                         <h5 className="text-2xl font-black uppercase italic tracking-tighter text-white">
                                                             {formatPlanName(patient.current_plan)}
                                                         </h5>
@@ -748,8 +748,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                             }
 
                                             return approvedMeds.map((med, idx) => (
-                                                <div key={med.id} className={idx > 0 ? 'pt-4 border-t border-accent-green/20' : ''}>
-                                                    <p className="text-[10px] text-accent-green/60 uppercase font-black tracking-widest mb-2 italic">
+                                                <div key={med.id} className={idx > 0 ? 'pt-4 border-t border-accent-black/20' : ''}>
+                                                    <p className="text-[10px] text-accent-black/60 uppercase font-black tracking-widest mb-2 italic">
                                                         {med.dosage_preference || med.selected_drug || 'Medication'}
                                                     </p>
                                                     <h5 className="text-xl font-black uppercase italic tracking-tighter text-white">
@@ -761,7 +761,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 bg-accent-green/5 py-3 px-6 rounded-xl inline-block">Vital Statistics</h4>
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-black mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Vital Statistics</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Height</p>
@@ -781,7 +781,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         </div>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">BMI</p>
-                                            <p className="text-xl font-black text-accent-green">
+                                            <p className="text-xl font-black text-accent-black">
                                                 {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '—')}
                                             </p>
                                         </div>
@@ -801,13 +801,13 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 submissions.map(sub => (
                                     <div key={sub.id} className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 hover:bg-white/[0.05] transition-all group flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div className="flex flex-col md:flex-row md:items-center gap-6">
-                                            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 group-hover:text-accent-green transition-all shrink-0">
+                                            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 group-hover:text-accent-black transition-all shrink-0">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-3 mb-1">
                                                     <h5 className="text-sm font-black uppercase text-white">{sub.selected_drug || 'General Consult'}</h5>
-                                                    <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase ${sub.approval_status === 'approved' ? 'bg-accent-green/10 text-accent-green' : sub.approval_status === 'pending' ? 'bg-orange-500/10 text-orange-500' : 'bg-red-500/10 text-red-500'}`}>
+                                                    <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase ${sub.approval_status === 'approved' ? 'bg-accent-black/10 text-accent-black' : sub.approval_status === 'pending' ? 'bg-orange-500/10 text-orange-500' : 'bg-red-500/10 text-red-500'}`}>
                                                         {sub.approval_status}
                                                     </span>
                                                 </div>
@@ -816,8 +816,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         </div>
                                         <div className="flex items-center gap-4">
                                             {sub.approval_status === 'approved' && (
-                                                <span className="flex items-center gap-2 text-[10px] font-black uppercase text-accent-green bg-accent-green/5 px-4 py-2 rounded-xl">
-                                                    <div className="w-1.5 h-1.5 bg-accent-green rounded-full"></div>
+                                                <span className="flex items-center gap-2 text-[10px] font-black uppercase text-accent-black bg-accent-black/5 px-4 py-2 rounded-xl">
+                                                    <div className="w-1.5 h-1.5 bg-accent-black rounded-full"></div>
                                                     Clinically Cleared
                                                 </span>
                                             )}
@@ -833,7 +833,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                             <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-8">
                                 <div className="flex flex-col md:flex-row md:justify-between md:items-center border-b border-white/5 pb-8 gap-6">
                                     <div>
-                                        <p className="text-[10px] text-accent-green font-black uppercase tracking-widest mb-1 italic">Current Status</p>
+                                        <p className="text-[10px] text-accent-black font-black uppercase tracking-widest mb-1 italic">Current Status</p>
                                         <h5 className="text-3xl font-black uppercase italic tracking-tighter text-white">
                                             {patient.subscribe_status ? 'Active Medication' : 'No Active Subscription'}
                                         </h5>
@@ -873,13 +873,13 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 orders.map(order => (
                                     <div key={order.id} className="bg-[#0D0D0D] border border-white/10 rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] text-accent-green font-black uppercase tracking-[0.2em] italic">GLP-1 RX SHIPPED</p>
+                                            <p className="text-[10px] text-accent-black font-black uppercase tracking-[0.2em] italic">GLP-1 RX SHIPPED</p>
                                             <h5 className="text-2xl font-black uppercase italic tracking-tighter text-white">{order.product_name}</h5>
                                             <p className="text-[11px] text-white/30 uppercase font-black tracking-[0.2em]">FEDEX: {order.tracking_id || 'PENDING ASSIGNMENT'}</p>
                                         </div>
                                         <div className="px-6 py-3 bg-white/5 rounded-2xl border border-white/10 text-center">
                                             <p className="text-[9px] text-white/40 uppercase font-black tracking-widest mb-1">Status</p>
-                                            <p className="text-[10px] font-black uppercase text-accent-green italic">{order.delivery_status || 'PROCESSING'}</p>
+                                            <p className="text-[10px] font-black uppercase text-accent-black italic">{order.delivery_status || 'PROCESSING'}</p>
                                         </div>
                                     </div>
                                 ))
@@ -895,7 +895,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 billing.map(item => (
                                     <div key={item.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between group hover:bg-white/[0.08] transition-all gap-4">
                                         <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                                            <div className="w-10 h-10 bg-accent-green/10 rounded-xl flex items-center justify-center text-accent-green shrink-0">
+                                            <div className="w-10 h-10 bg-accent-black/10 rounded-xl flex items-center justify-center text-accent-black shrink-0">
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                             </div>
                                             <div>
@@ -905,7 +905,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         </div>
                                         <div className="md:text-right pt-2 md:pt-0 border-t border-white/5 md:border-t-0">
                                             <p className="text-sm font-black text-white">${(item.amount / 100).toFixed(2)}</p>
-                                            <p className="text-[8px] font-black uppercase text-accent-green italic">Confirmed</p>
+                                            <p className="text-[8px] font-black uppercase text-accent-black italic">Confirmed</p>
                                         </div>
                                     </div>
                                 ))
@@ -926,11 +926,11 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         <div>
                                             <div className="flex items-center gap-3 mb-2">
                                                 <h6 className="text-sm font-black uppercase text-white tracking-widest">Dosage Adjustment Request</h6>
-                                                <span className="text-[8px] px-2 py-0.5 bg-accent-green/10 text-accent-green rounded-full font-black uppercase">Pending Review</span>
+                                                <span className="text-[8px] px-2 py-0.5 bg-accent-black/10 text-accent-black rounded-full font-black uppercase">Pending Review</span>
                                             </div>
                                             <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Requested on {new Date(req.created_at).toLocaleDateString()}</p>
                                         </div>
-                                        <button className="px-6 py-2 bg-accent-green/10 border border-accent-green/20 rounded-xl text-[9px] font-black uppercase text-accent-green hover:bg-accent-green transition-all hover:text-black">
+                                        <button className="px-6 py-2 bg-accent-black/10 border border-accent-black/20 rounded-xl text-[9px] font-black uppercase text-accent-black hover:bg-accent-black transition-all hover:text-black">
                                             Process Request
                                         </button>
                                     </div>
@@ -951,7 +951,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                 <h6 className="text-xs font-black uppercase text-white tracking-widest mb-1">{q.survey_name || 'Patient Feedback'}</h6>
                                                 <p className="text-[9px] text-white/40 uppercase font-black tracking-widest">{new Date(q.created_at).toLocaleDateString()}</p>
                                             </div>
-                                            <span className="text-[8px] px-2 py-1 bg-accent-green/10 text-accent-green rounded-full font-black uppercase">Captured</span>
+                                            <span className="text-[8px] px-2 py-1 bg-accent-black/10 text-accent-black rounded-full font-black uppercase">Captured</span>
                                         </div>
                                         <p className="text-xs text-white/60 leading-relaxed line-clamp-2 italic">{q.response_summary || 'View full response in clinical history...'}</p>
                                     </div>
@@ -1115,7 +1115,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                 <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#080808] shrink-0">
                     <div>
                         <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-none mb-1">
-                            Generate <span className="text-accent-green">Provider Report</span>
+                            Generate <span className="text-accent-black">Provider Report</span>
                         </h3>
                         <p className="text-[10px] text-white/40 uppercase font-black tracking-[0.2em]">
                             Enter lab test results for {submission.shipping_first_name} {submission.shipping_last_name}
@@ -1131,7 +1131,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
 
                     {/* Provider Information */}
                     <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                        <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-green mb-6">Provider Information</h4>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-black mb-6">Provider Information</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">First Name</label>
@@ -1140,7 +1140,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                                     value={reportData.provider_first_name}
                                     onChange={(e) => handleChange('provider_first_name', e.target.value)}
                                     placeholder="John"
-                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
                             <div>
@@ -1150,7 +1150,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                                     value={reportData.provider_last_name}
                                     onChange={(e) => handleChange('provider_last_name', e.target.value)}
                                     placeholder="Smith"
-                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
                             <div>
@@ -1158,7 +1158,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                                 <select
                                     value={reportData.provider_type}
                                     onChange={(e) => handleChange('provider_type', e.target.value)}
-                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 >
                                     <option value="MD" className="bg-[#0A0A0A]">MD</option>
                                     <option value="DO" className="bg-[#0A0A0A]">DO</option>
@@ -1176,25 +1176,25 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Lipid Panel */}
                         <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-green mb-6">Lipid Panel</h4>
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-black mb-6">Lipid Panel</h4>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Total Cholesterol (mg/dL)</label>
-                                    <input type="number" value={reportData.total_cholesterol} onChange={(e) => handleChange('total_cholesterol', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                    <input type="number" value={reportData.total_cholesterol} onChange={(e) => handleChange('total_cholesterol', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">LDL</label>
-                                        <input type="number" value={reportData.ldl} onChange={(e) => handleChange('ldl', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                        <input type="number" value={reportData.ldl} onChange={(e) => handleChange('ldl', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black" />
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">HDL</label>
-                                        <input type="number" value={reportData.hdl} onChange={(e) => handleChange('hdl', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                        <input type="number" value={reportData.hdl} onChange={(e) => handleChange('hdl', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Triglycerides (mg/dL)</label>
-                                    <input type="number" value={reportData.triglycerides} onChange={(e) => handleChange('triglycerides', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                    <input type="number" value={reportData.triglycerides} onChange={(e) => handleChange('triglycerides', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 </div>
                             </div>
                         </div>
@@ -1202,20 +1202,20 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                         {/* A1C & Notes */}
                         <div className="space-y-6">
                             <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-green mb-6">A1C Test</h4>
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-black mb-6">A1C Test</h4>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">A1C Value (%)</label>
-                                    <input type="number" step="0.1" value={reportData.a1c_value} onChange={(e) => handleChange('a1c_value', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                    <input type="number" step="0.1" value={reportData.a1c_value} onChange={(e) => handleChange('a1c_value', e.target.value)} placeholder="0" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 </div>
                             </div>
                             <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-green mb-4">Internal Notes</h4>
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-black mb-4">Internal Notes</h4>
                                 <textarea
                                     value={reportData.notes}
                                     onChange={(e) => handleChange('notes', e.target.value)}
                                     placeholder="Provider comments..."
                                     rows={3}
-                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green resize-none"
+                                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black resize-none"
                                 />
                             </div>
                         </div>
@@ -1235,7 +1235,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                     <button
                         onClick={handleGenerateReport}
                         disabled={generating}
-                        className="flex-[2] py-5 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                        className="flex-[2] py-5 bg-accent-black text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                     >
                         {generating ? (
                             <>
@@ -1369,10 +1369,10 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden flex flex-col shadow-2xl border-glow border-accent-green/20">
+            <div className="w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden flex flex-col shadow-2xl border-glow border-accent-black/20">
                 {/* Header */}
                 <div className="p-8 border-b border-white/5 bg-[#080808]">
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Create <span className="text-accent-green">Order</span></h3>
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Create <span className="text-accent-black">Order</span></h3>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest mt-1">
                         Fill in the order details for <span className="text-white">{submission.shipping_first_name} {submission.shipping_last_name}</span>
                     </p>
@@ -1386,7 +1386,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                         <select
                             value={product}
                             onChange={(e) => setProduct(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green cursor-pointer"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black cursor-pointer"
                         >
                             <option value="">Select a product</option>
 
@@ -1471,7 +1471,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                             type="text"
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                         />
                     </div>
 
@@ -1493,7 +1493,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 placeholder="Enter coupon code"
                                 value={coupon}
                                 onChange={(e) => setCoupon(e.target.value)}
-                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                             />
                             <button className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white transition-all border border-white/5">Apply</button>
                         </div>
@@ -1501,7 +1501,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
                     {/* Provider Information Section */}
                     <div className="pt-4 border-t border-white/5">
-                        <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-accent-green/60 mb-6">Provider Information</label>
+                        <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-accent-black/60 mb-6">Provider Information</label>
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">First Name</label>
@@ -1509,7 +1509,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     type="text"
                                     value={orderData.provider_first_name}
                                     onChange={(e) => handleDataChange('provider_first_name', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
                             <div>
@@ -1518,7 +1518,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     type="text"
                                     value={orderData.provider_last_name}
                                     onChange={(e) => handleDataChange('provider_last_name', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
                         </div>
@@ -1529,7 +1529,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     type="text"
                                     value={orderData.provider_type}
                                     onChange={(e) => handleDataChange('provider_type', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
                             <div>
@@ -1537,7 +1537,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 <select
                                     value={orderData.delivery_status}
                                     onChange={(e) => handleDataChange('delivery_status', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-accent-green focus:outline-none focus:border-accent-green cursor-pointer"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-accent-black focus:outline-none focus:border-accent-black cursor-pointer"
                                 >
                                     <option value="Not Delivered" className="bg-[#0A0A0A]">Not Delivered</option>
                                     <option value="Packaging" className="bg-[#0A0A0A]">Packaging</option>
@@ -1560,7 +1560,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                     <button
                         onClick={handleCharge}
                         disabled={charging}
-                        className="flex-[2] py-5 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_40px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                        className="flex-[2] py-5 bg-accent-black text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_40px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                     >
                         {charging ? (
                             <>
@@ -1577,7 +1577,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
 // --- Submission Review Modal ---
 const SectionHeader = ({ title }) => (
-    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-green mb-6 mt-12 bg-accent-green/5 py-3 px-6 rounded-lg inline-block whitespace-nowrap">{title}</h4>
+    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-accent-black mb-6 mt-12 bg-accent-black/5 py-3 px-6 rounded-lg inline-block whitespace-nowrap">{title}</h4>
 );
 
 const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isEditing, formData, onChange }) => (
@@ -1589,7 +1589,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                     <select
                         value={formData[field] || ''}
                         onChange={(e) => onChange(field, e.target.value)}
-                        className="bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-green w-full md:w-auto"
+                        className="bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto"
                     >
                         <option value="">Select...</option>
                         {options.map((opt, i) => {
@@ -1606,19 +1606,19 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                         value={formData[field] || ''}
                         onChange={(e) => onChange(field, e.target.value)}
                         onBlur={(e) => onChange(field, e.target.value)} // Ensure value is committed on blur
-                        className="bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-green w-full md:w-auto text-right"
+                        className="bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto text-right"
                     />
                 )
             ) : isFile ? (
                 <div className="flex flex-wrap gap-2 mt-2 md:mt-0 justify-start md:justify-end">
                     {Array.isArray(value) ? (
                         value.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-green/10 text-accent-green border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                            <a key={i} href={url} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-black/10 text-accent-black border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent-black hover:text-black transition-all">
                                 View {value.length > 1 ? `Doc ${i + 1}` : 'Document'}
                             </a>
                         ))
                     ) : (
-                        <a href={value} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-green/10 text-accent-green border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                        <a href={value} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-black/10 text-accent-black border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent-black hover:text-black transition-all">
                             View Document
                         </a>
                     )}
@@ -1940,12 +1940,12 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
     return (
         <>
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 2xl:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
-                <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-green/20">
+                <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-black/20">
                     {/* Header */}
                     <div className="p-8 md:p-10 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between bg-[#080808] shrink-0 gap-8">
                         <div>
                             <div className="flex items-center gap-4 mb-2">
-                                <h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none">Submission <span className="text-accent-green">Dossier</span></h3>
+                                <h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none">Submission <span className="text-accent-black">Dossier</span></h3>
                                 <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-black text-white/40 uppercase tracking-widest">{String(submission.id).substring(0, 8)}</span>
                             </div>
                             <p className="text-[10px] text-white/40 uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
@@ -1959,7 +1959,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 href={formData.provider_note_report}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="px-6 py-2 bg-accent-green/10 border border-accent-green/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green hover:text-black transition-all flex items-center gap-2"
+                                                className="px-6 py-2 bg-accent-black/10 border border-accent-black/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black hover:text-black transition-all flex items-center gap-2"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                                                 View Report
@@ -1985,7 +1985,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     )}
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="px-6 py-2 bg-accent-green border border-accent-green rounded-xl text-[10px] font-black uppercase tracking-widest text-black hover:bg-white hover:text-black transition-all shadow-[0_0_20px_rgba(191,255,0,0.3)]"
+                                        className="px-6 py-2 bg-accent-black border border-accent-black rounded-xl text-[10px] font-black uppercase tracking-widest text-black hover:bg-white hover:text-black transition-all shadow-[0_0_20px_rgba(191,255,0,0.3)]"
                                     >
                                         Edit Details
                                     </button>
@@ -2003,7 +2003,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         type="button"
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSaveChanges(); }}
                                         disabled={processing}
-                                        className="px-6 py-2 bg-accent-green rounded-xl text-[10px] font-black uppercase tracking-widest text-black hover:bg-white transition-all disabled:opacity-50"
+                                        className="px-6 py-2 bg-accent-black rounded-xl text-[10px] font-black uppercase tracking-widest text-black hover:bg-white transition-all disabled:opacity-50"
                                     >
                                         {processing ? 'Saving...' : 'Save'}
                                     </button>
@@ -2063,14 +2063,14 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                     placeholder="Ft"
                                                     value={formData.height_feet || ''}
                                                     onChange={(e) => handleChange('height_feet', e.target.value)}
-                                                    className="w-16 bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-green text-right"
+                                                    className="w-16 bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
                                                 />
                                                 <input
                                                     type="number"
                                                     placeholder="In"
                                                     value={formData.height_inches || ''}
                                                     onChange={(e) => handleChange('height_inches', e.target.value)}
-                                                    className="w-16 bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-green text-right"
+                                                    className="w-16 bg-white/10 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
                                                 />
                                             </div>
                                         </div>
@@ -2085,13 +2085,13 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Weight (lbs)" field="weight" value={formData.weight || intake.weight || 'N/A'} type="number" isEditing={isEditing} formData={formData} onChange={handleChange} />
 
                                     <div className="md:col-span-2 mt-4">
-                                        <div className="flex items-center justify-between p-8 bg-accent-green/[0.03] border border-accent-green/10 rounded-[32px]">
+                                        <div className="flex items-center justify-between p-8 bg-accent-black/[0.03] border border-accent-black/10 rounded-[32px]">
                                             <div>
-                                                <p className="text-[10px] text-accent-green uppercase font-black tracking-widest mb-1">Advanced Metric</p>
+                                                <p className="text-[10px] text-accent-black uppercase font-black tracking-widest mb-1">Advanced Metric</p>
                                                 <h5 className="text-sm font-black uppercase text-white/80">Body Mass Index (BMI)</h5>
                                             </div>
                                             <div className="text-center">
-                                                <p className="text-4xl font-black italic tracking-tighter text-accent-green leading-none mb-1">
+                                                <p className="text-4xl font-black italic tracking-tighter text-accent-black leading-none mb-1">
                                                     {/* Recalculate BMI if editing */}
                                                     {(() => {
                                                         const h = (Number(formData.height_feet) * 12) + Number(formData.height_inches);
@@ -2100,7 +2100,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                         return formData.bmi || 'N/A';
                                                     })()}
                                                 </p>
-                                                <p className="text-[8px] font-black uppercase tracking-widest text-accent-green/40">Clinical Grade</p>
+                                                <p className="text-[8px] font-black uppercase tracking-widest text-accent-black/40">Clinical Grade</p>
                                             </div>
                                         </div>
                                     </div>
@@ -2151,7 +2151,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                     href={formData.prescription_pdf_url}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="text-sm font-bold text-accent-green hover:underline break-all"
+                                                    className="text-sm font-bold text-accent-black hover:underline break-all"
                                                 >
                                                     Prescription PDF: {formData.prescription_pdf_url}
                                                 </a>
@@ -2169,7 +2169,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 <select
                                                     value={formData.seen_pcp}
                                                     onChange={(e) => handleChange('seen_pcp', e.target.value)}
-                                                    className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-green w-full"
+                                                    className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                 >
                                                     <option value="Yes">Yes</option>
                                                     <option value="No">No</option>
@@ -2190,7 +2190,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                             </p>
                                             <div className="flex flex-wrap gap-2">
                                                 {(Array.isArray(formData.lab_results_url) ? formData.lab_results_url : [formData.lab_results_url]).map((url, i) => (
-                                                    <a key={i} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-green/10 border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green hover:text-black transition-all">
+                                                    <a key={i} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black hover:text-black transition-all">
                                                         View Lab Report {i + 1}
                                                     </a>
                                                 ))}
@@ -2222,7 +2222,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                             <select
                                                                 value={answer || ''}
                                                                 onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-green w-full"
+                                                                className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                             >
                                                                 <option value="">Select...</option>
                                                                 {q.options ? q.options.map(opt => (
@@ -2240,13 +2240,13 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                             <textarea
                                                                 value={answer || ''}
                                                                 onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-green w-full h-24"
+                                                                className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
                                                             />
                                                         )
                                                     ) : (
                                                         <div className="text-sm font-bold text-white/90 leading-relaxed">
                                                             {Array.isArray(answer) ? (
-                                                                <ul className="list-disc list-inside space-y-1 marker:text-accent-green">
+                                                                <ul className="list-disc list-inside space-y-1 marker:text-accent-black">
                                                                     {answer.map((item, i) => <li key={i}>{item}</li>)}
                                                                 </ul>
                                                             ) : (
@@ -2257,13 +2257,13 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
 
                                                     {/* Edit details if applicable */}
                                                     {(q.details || answers[`${q.id}_details`]) && (
-                                                        <div className="mt-3 pl-4 border-l-2 border-accent-green/30">
-                                                            <p className="text-[9px] text-accent-green font-bold uppercase tracking-wider mb-1">Details:</p>
+                                                        <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
+                                                            <p className="text-[9px] text-accent-black font-bold uppercase tracking-wider mb-1">Details:</p>
                                                             {isEditing ? (
                                                                 <textarea
                                                                     value={answers[`${q.id}_details`] || ''}
                                                                     onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
-                                                                    className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-green w-full"
+                                                                    className="bg-white/10 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                                 />
                                                             ) : (
                                                                 <p className="text-sm text-white/80">{answers[`${q.id}_details`]}</p>
@@ -2274,7 +2274,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                     {/* Files (e.g. current_meds upload) */}
                                                     {q.upload && (answers[`${q.id}_file`] || formData.glp1_prescription_url) && (
                                                         <div className="mt-3">
-                                                            <a href={answers[`${q.id}_file`] || (Array.isArray(formData.glp1_prescription_url) ? formData.glp1_prescription_url[0] : formData.glp1_prescription_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-green/10 border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green hover:text-black transition-all">
+                                                            <a href={answers[`${q.id}_file`] || (Array.isArray(formData.glp1_prescription_url) ? formData.glp1_prescription_url[0] : formData.glp1_prescription_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black hover:text-black transition-all">
                                                                 View Document
                                                             </a>
                                                         </div>
@@ -2297,7 +2297,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                 <SectionHeader title="Shipping & Logistics" />
                                 <div className="p-8 md:p-10 bg-white/5 rounded-[40px] border border-white/5">
                                     <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8">
-                                        <div className="w-16 h-16 bg-accent-green/10 rounded-3xl flex items-center justify-center border border-accent-green/20 shrink-0">
+                                        <div className="w-16 h-16 bg-accent-black/10 rounded-3xl flex items-center justify-center border border-accent-black/20 shrink-0">
                                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#bfff00" strokeWidth="2"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
                                         </div>
                                         {isEditing ? (
@@ -2323,7 +2323,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 <p className="text-[11px] text-white/70 leading-[1.8] font-bold uppercase tracking-widest">
                                                     {formData.shipping_street || formData.shipping_address}<br />
                                                     {formData.shipping_city}, {formData.shipping_state} {formData.shipping_zip}<br />
-                                                    <span className="text-accent-green">PH: {formData.shipping_phone}</span><br />
+                                                    <span className="text-accent-black">PH: {formData.shipping_phone}</span><br />
                                                     <span className="text-white/40">{formData.shipping_email}</span>
                                                 </p>
                                             </div>
@@ -2359,7 +2359,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <button
                                         onClick={() => setShowOrderModal(true)}
                                         disabled={processing || isEditing || !hasPaymentMethod}
-                                        className="flex-[2] py-7 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
+                                        className="flex-[2] py-7 bg-accent-black text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
                                     >
                                         {processing ? 'Clinical Verification...' : 'Verify & Approve Submission'}
                                     </button>
@@ -2367,11 +2367,11 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                             ) : (
                                 <div className="w-full flex flex-col md:flex-row md:items-center justify-between p-7 bg-white/5 rounded-[24px] border border-white/10 gap-6">
                                     <div className="flex items-center gap-6">
-                                        <div className={`w-4 h-4 rounded-full shrink-0 ${submission.approval_status === 'approved' ? 'bg-accent-green shadow-[0_0_20px_rgba(191,255,0,0.5)]' : 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]'}`}></div>
+                                        <div className={`w-4 h-4 rounded-full shrink-0 ${submission.approval_status === 'approved' ? 'bg-accent-black shadow-[0_0_20px_rgba(191,255,0,0.5)]' : 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]'}`}></div>
                                         <div>
                                             <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mb-1">Regulatory decision finalized</p>
                                             <p className="text-xl font-black uppercase italic tracking-tighter leading-none">
-                                                Clinical Status: <span className={submission.approval_status === 'approved' ? 'text-accent-green' : 'text-red-500'}>{submission.approval_status}</span>
+                                                Clinical Status: <span className={submission.approval_status === 'approved' ? 'text-accent-black' : 'text-red-500'}>{submission.approval_status}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -2506,7 +2506,7 @@ const ClinicalQueue = () => {
 
     if (loading) return (
         <div className="py-20 flex flex-col items-center justify-center gap-4">
-            <div className="w-10 h-10 border-2 border-accent-green border-t-transparent animate-spin rounded-full"></div>
+            <div className="w-10 h-10 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
             <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Syncing Clinical Reservoir...</p>
         </div>
     );
@@ -2612,7 +2612,7 @@ const ClinicalQueue = () => {
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => setReviewingSubmission(item)}
-                                        className="px-8 py-5 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)] transition-all"
+                                        className="px-8 py-5 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-black hover:shadow-[0_0_40px_rgba(191,255,0,0.3)] transition-all"
                                     >
                                         {statusFilter === 'pending' ? 'Review Submission' : 'View Record'}
                                     </button>
@@ -2714,13 +2714,13 @@ const DiscountManager = () => {
             {/* Create Coupon Card */}
             <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
                 <div className="flex flex-col md:block">
-                    <div className="relative md:absolute top-0 right-0 p-0 md:p-12 mb-8 md:mb-0 text-accent-green opacity-10 group-hover:opacity-20 transition-opacity">
+                    <div className="relative md:absolute top-0 right-0 p-0 md:p-12 mb-8 md:mb-0 text-accent-black opacity-10 group-hover:opacity-20 transition-opacity">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                         </svg>
                     </div>
 
-                    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-8">Generate <span className="text-accent-green">Discount Token</span></h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-8">Generate <span className="text-accent-black">Discount Token</span></h3>
                 </div>
 
                 <form onSubmit={handleCreateCoupon} className="space-y-6 relative z-10">
@@ -2732,7 +2732,7 @@ const DiscountManager = () => {
                                 value={newCoupon.code}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
                                 placeholder="GLOW50"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2743,14 +2743,14 @@ const DiscountManager = () => {
                                 value={newCoupon.discount_value}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, discount_value: e.target.value })}
                                 placeholder="25"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
                         <div>
                             <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-2">Type</label>
                             <div className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm font-bold opacity-60 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-accent-green"></span>
+                                <span className="w-2 h-2 rounded-full bg-accent-black"></span>
                                 Percent (%)
                             </div>
                         </div>
@@ -2759,7 +2759,7 @@ const DiscountManager = () => {
                             <select
                                 value={newCoupon.coupon_type}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, coupon_type: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all appearance-none"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all appearance-none"
                             >
                                 <option value="eligibility" className="bg-[#0A0A0A]">Eligibility Fee</option>
                                 <option value="product" className="bg-[#0A0A0A]">Product Discount</option>
@@ -2775,7 +2775,7 @@ const DiscountManager = () => {
                                 value={newCoupon.description}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, description: e.target.value })}
                                 placeholder="Summer campaign discount for weight loss eligibility"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2785,7 +2785,7 @@ const DiscountManager = () => {
                                 type="date"
                                 value={newCoupon.expiration_date}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, expiration_date: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2795,7 +2795,7 @@ const DiscountManager = () => {
                         <button
                             type="submit"
                             disabled={adding}
-                            className="px-12 py-5 bg-accent-green text-black rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
+                            className="px-12 py-5 bg-accent-black text-black rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
                         >
                             {adding ? 'Synchronizing Archive...' : 'Launch Promo Code →'}
                         </button>
@@ -2811,7 +2811,7 @@ const DiscountManager = () => {
                         <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Managing clinical and marketing incentives</p>
                     </div>
                     <div className="flex justify-start md:justify-end">
-                        <span className="text-[10px] text-accent-green font-bold px-3 py-1 bg-accent-green/10 rounded-full">{coupons.length} TOKENS</span>
+                        <span className="text-[10px] text-accent-black font-bold px-3 py-1 bg-accent-black/10 rounded-full">{coupons.length} TOKENS</span>
                     </div>
                 </div>
                 <table className="w-full text-left">
@@ -2833,7 +2833,7 @@ const DiscountManager = () => {
                                 <tr key={coupon.id} className="group hover:bg-white/[0.02] transition-colors">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-3 mb-1">
-                                            <div className="w-2 h-2 rounded-full bg-accent-green shadow-[0_0_10px_rgba(191,255,0,0.5)]"></div>
+                                            <div className="w-2 h-2 rounded-full bg-accent-black shadow-[0_0_10px_rgba(191,255,0,0.5)]"></div>
                                             <span className="text-sm font-black tracking-widest italic">{coupon.code}</span>
                                             <span className="text-[8px] font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded text-white/40">{coupon.coupon_type}</span>
                                         </div>
@@ -2911,14 +2911,14 @@ const SubscriberAnalytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div
                     onClick={() => setActiveTab('active')}
-                    className={`p-8 rounded-[32px] border cursor-pointer transition-all relative overflow-hidden group ${activeTab === 'active' ? 'bg-accent-green/10 border-accent-green' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                    className={`p-8 rounded-[32px] border cursor-pointer transition-all relative overflow-hidden group ${activeTab === 'active' ? 'bg-accent-black/10 border-accent-black' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
                 >
-                    <div className={`absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 ${activeTab === 'active' ? 'bg-accent-green' : 'bg-white'}`}></div>
+                    <div className={`absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 ${activeTab === 'active' ? 'bg-accent-black' : 'bg-white'}`}></div>
                     <div className="flex items-center gap-4 mb-6">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'active' ? 'bg-accent-green text-black' : 'bg-white/10 text-white'}`}>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'active' ? 'bg-accent-black text-black' : 'bg-white/10 text-white'}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'active' ? 'text-accent-green' : 'text-white/40'}`}>Tracking Active</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'active' ? 'text-accent-black' : 'text-white/40'}`}>Tracking Active</span>
                     </div>
                     <p className={`text-4xl font-black italic tracking-tighter ${activeTab === 'active' ? 'text-white' : 'text-white/60'}`}>{activeSubs.length}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">Active Subscriptions</p>
@@ -2999,7 +2999,7 @@ const SubscriberAnalytics = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === 'active'
-                                                ? 'bg-accent-green/10 text-accent-green border border-accent-green/20'
+                                                ? 'bg-accent-black/10 text-accent-black border border-accent-black/20'
                                                 : 'bg-red-500/10 text-red-500 border border-red-500/20'
                                                 }`}>
                                                 {activeTab === 'active' ? 'Active' : 'Expired'}
@@ -3315,11 +3315,11 @@ const PatientExpressEntry = () => {
         <div className="space-y-8 animate-in fade-in duration-700 max-w-4xl mx-auto">
             {/* Header / Breadcrumbs */}
             <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/40 mb-8 max-w-2xl mx-auto">
-                <span className={step === 'category' ? 'text-accent-green' : ''}>1. Select Category</span>
+                <span className={step === 'category' ? 'text-accent-black' : ''}>1. Select Category</span>
                 <span>/</span>
-                <span className={step === 'email' ? 'text-accent-green' : ''}>2. Patient ID</span>
+                <span className={step === 'email' ? 'text-accent-black' : ''}>2. Patient ID</span>
                 <span>/</span>
-                <span className={step === 'form' ? 'text-accent-green' : ''}>3. Clinical Assessment</span>
+                <span className={step === 'form' ? 'text-accent-black' : ''}>3. Clinical Assessment</span>
             </div>
 
             {step === 'category' && (
@@ -3328,9 +3328,9 @@ const PatientExpressEntry = () => {
                         <button
                             key={cat.id}
                             onClick={() => handleCategorySelect(cat.id)}
-                            className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:bg-white/10 hover:border-accent-green/50 hover:scale-[1.02] transition-all group text-left"
+                            className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:bg-white/10 hover:border-accent-black/50 hover:scale-[1.02] transition-all group text-left"
                         >
-                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white/60 mb-6 group-hover:bg-accent-green group-hover:text-black transition-colors">
+                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white/60 mb-6 group-hover:bg-accent-black group-hover:text-black transition-colors">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={cat.icon} /></svg>
                             </div>
                             <h3 className="text-xl font-black uppercase italic tracking-tighter mb-2">{cat.label}</h3>
@@ -3342,7 +3342,7 @@ const PatientExpressEntry = () => {
 
             {step === 'email' && (
                 <div className="max-w-md mx-auto bg-white/5 border border-white/10 rounded-[40px] p-12 text-center">
-                    <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Patient <span className="text-accent-green">Identity</span></h3>
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Patient <span className="text-accent-black">Identity</span></h3>
                     <p className="text-[10px] uppercase tracking-widest text-white/40 mb-8 font-bold">Enter patient email to verify records</p>
 
                     <form onSubmit={checkEmail} className="space-y-6">
@@ -3352,7 +3352,7 @@ const PatientExpressEntry = () => {
                             placeholder="patient@example.com"
                             value={patientEmail}
                             onChange={(e) => setPatientEmail(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-green transition-all"
+                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
                         />
                         <div className="flex gap-4">
                             <button
@@ -3365,7 +3365,7 @@ const PatientExpressEntry = () => {
                             <button
                                 type="submit"
                                 disabled={checking}
-                                className="flex-[2] py-4 bg-accent-green text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50"
+                                className="flex-[2] py-4 bg-accent-black text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all disabled:opacity-50"
                             >
                                 {checking ? 'Verifying...' : 'Proceed to Intake'}
                             </button>
@@ -3395,11 +3395,11 @@ const PatientExpressEntry = () => {
                     <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12">
                         <div className="flex flex-col-reverse md:flex-row md:items-center justify-between mb-12 border-b border-white/5 pb-8 gap-6 md:gap-0">
                             <div>
-                                <h3 className="text-2xl font-black uppercase italic tracking-tighter">Clinical <span className="text-accent-green">Intake</span></h3>
+                                <h3 className="text-2xl font-black uppercase italic tracking-tighter">Clinical <span className="text-accent-black">Intake</span></h3>
                                 <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mt-1">Filling as Admin for: {patientEmail}</p>
                             </div>
                             <div className="md:text-right">
-                                <span className="bg-accent-green/10 text-accent-green px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{selectedCategory}</span>
+                                <span className="bg-accent-black/10 text-accent-black px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{selectedCategory}</span>
                             </div>
                         </div>
 
@@ -3426,7 +3426,7 @@ const PatientExpressEntry = () => {
                                                 value={answers[q.id] || ''}
                                                 onChange={(e) => handleAnswerChange(q.id, e.target.value, 'text')}
                                                 placeholder={q.placeholder || "Enter details..."}
-                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green transition-all"
+                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black transition-all"
                                             />
                                         )}
 
@@ -3436,7 +3436,7 @@ const PatientExpressEntry = () => {
                                                     <div
                                                         key={opt}
                                                         onClick={() => handleAnswerChange(q.id, opt, 'choice')}
-                                                        className={`p-4 rounded-xl border cursor-pointer transition-all ${answers[q.id] === opt ? 'bg-accent-green text-black border-accent-green font-bold' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
+                                                        className={`p-4 rounded-xl border cursor-pointer transition-all ${answers[q.id] === opt ? 'bg-accent-black text-black border-accent-black font-bold' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
                                                     >
                                                         <span className="text-xs uppercase tracking-wide">{opt}</span>
                                                     </div>
@@ -3450,9 +3450,9 @@ const PatientExpressEntry = () => {
                                                     <div
                                                         key={opt}
                                                         onClick={() => handleAnswerChange(q.id, opt, 'multiselect')}
-                                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${answers[q.id]?.includes(opt) ? 'bg-white/10 border-accent-green text-white' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
+                                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${answers[q.id]?.includes(opt) ? 'bg-white/10 border-accent-black text-white' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
                                                     >
-                                                        <div className={`w-4 h-4 rounded border flex items-center justify-center ${answers[q.id]?.includes(opt) ? 'border-accent-green bg-accent-green text-black' : 'border-white/30'}`}>
+                                                        <div className={`w-4 h-4 rounded border flex items-center justify-center ${answers[q.id]?.includes(opt) ? 'border-accent-black bg-accent-black text-black' : 'border-white/30'}`}>
                                                             {answers[q.id]?.includes(opt) && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
                                                         </div>
                                                         <span className="text-xs uppercase tracking-wide">{opt}</span>
@@ -3475,7 +3475,7 @@ const PatientExpressEntry = () => {
                             <button
                                 onClick={handleSubmit}
                                 disabled={submitting}
-                                className="flex-[3] py-5 bg-accent-green text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_30px_rgba(191,255,0,0.5)] transition-all disabled:opacity-50"
+                                className="flex-[3] py-5 bg-accent-black text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_30px_rgba(191,255,0,0.5)] transition-all disabled:opacity-50"
                             >
                                 {submitting ? 'Submitting to Clinical Queue...' : 'Finalize Express Entry'}
                             </button>
@@ -3488,24 +3488,24 @@ const PatientExpressEntry = () => {
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12">
                         <div className="mb-12 border-b border-white/5 pb-8">
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Digital <span className="text-accent-green">Prescription</span></h3>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Digital <span className="text-accent-black">Prescription</span></h3>
                             <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Fill in to generate PDF record</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div className="space-y-4">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60">Provider Information</h4>
-                                <input placeholder="Provider Full Name" value={prescription.providerName} onChange={e => handlePrescriptionChange('providerName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <input type="date" value={prescription.date} onChange={e => handlePrescriptionChange('date', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                <input placeholder="Provider Full Name" value={prescription.providerName} onChange={e => handlePrescriptionChange('providerName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input type="date" value={prescription.date} onChange={e => handlePrescriptionChange('date', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                             </div>
                             <div className="space-y-4">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60">Patient Information</h4>
-                                <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
-                                <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green h-24" />
+                                <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black h-24" />
                             </div>
                         </div>
 
@@ -3517,7 +3517,7 @@ const PatientExpressEntry = () => {
                                     <button
                                         key={med}
                                         onClick={() => handlePrescriptionChange('medication', med)}
-                                        className={`flex-1 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${prescription.medication === med ? 'bg-accent-green text-black border-accent-green' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                        className={`flex-1 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${prescription.medication === med ? 'bg-accent-black text-black border-accent-black' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
                                         {med}
                                     </button>
@@ -3528,10 +3528,10 @@ const PatientExpressEntry = () => {
                                     <div
                                         key={opt.label}
                                         onClick={() => handlePrescriptionChange('titration', opt.label)}
-                                        className={`p-4 rounded-xl border cursor-pointer transition-all ${prescription.titration === opt.label ? 'bg-white/10 border-accent-green' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                        className={`p-4 rounded-xl border cursor-pointer transition-all ${prescription.titration === opt.label ? 'bg-white/10 border-accent-black' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                                     >
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${prescription.titration === opt.label ? 'text-accent-green' : 'text-white/40'}`}>{opt.label}</span>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest ${prescription.titration === opt.label ? 'text-accent-black' : 'text-white/40'}`}>{opt.label}</span>
                                             <span className="text-[10px] font-bold text-white/40">{opt.qty}</span>
                                         </div>
                                         <p className="text-xs text-white/80 leading-relaxed">{opt.dose}</p>
@@ -3546,7 +3546,7 @@ const PatientExpressEntry = () => {
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Diagnosis (Select at least one)</h4>
                                 {['E11.8 Type 2 Diabetes Mellitus', 'E66.9 Obesity', 'E66.3 Overweight'].map(item => (
                                     <label key={item} className="flex items-center gap-3 mb-3 cursor-pointer group">
-                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${prescription.diagnosis.includes(item) ? 'bg-accent-green border-accent-green' : 'border-white/20 group-hover:border-white/40'}`}>
+                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${prescription.diagnosis.includes(item) ? 'bg-accent-black border-accent-black' : 'border-white/20 group-hover:border-white/40'}`}>
                                             {prescription.diagnosis.includes(item) && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
                                         </div>
                                         <input type="checkbox" className="hidden" checked={prescription.diagnosis.includes(item)} onChange={() => toggleCheckbox('diagnosis', item)} />
@@ -3558,7 +3558,7 @@ const PatientExpressEntry = () => {
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Medical Necessity (Select at least one)</h4>
                                 {['Vit B12 Deficiency', 'Lack of Adequate Food', 'Adverse Effect of Appetite Suppressant', 'Adverse Effect of Medication'].map(item => (
                                     <label key={item} className="flex items-center gap-3 mb-3 cursor-pointer group">
-                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${prescription.medicalNecessity.includes(item) ? 'bg-accent-green border-accent-green' : 'border-white/20 group-hover:border-white/40'}`}>
+                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${prescription.medicalNecessity.includes(item) ? 'bg-accent-black border-accent-black' : 'border-white/20 group-hover:border-white/40'}`}>
                                             {prescription.medicalNecessity.includes(item) && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
                                         </div>
                                         <input type="checkbox" className="hidden" checked={prescription.medicalNecessity.includes(item)} onChange={() => toggleCheckbox('medicalNecessity', item)} />
@@ -3572,9 +3572,9 @@ const PatientExpressEntry = () => {
                         <div className="bg-black/20 border border-white/10 rounded-2xl p-6 mb-8">
                             <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Dispense As Written – Prescriber Electronic Signature</h4>
                             <div className="space-y-4">
-                                <input placeholder="Type your full legal name to sign" value={prescription.signature} onChange={e => handlePrescriptionChange('signature', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green" />
+                                <input placeholder="Type your full legal name to sign" value={prescription.signature} onChange={e => handlePrescriptionChange('signature', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <p className="text-[10px] text-white/40">By typing your name above, you are electronically signing this prescription and certifying that you are the authorized prescriber.</p>
-                                <input type="date" value={prescription.signatureDate} onChange={e => handlePrescriptionChange('signatureDate', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-green max-w-[200px]" />
+                                <input type="date" value={prescription.signatureDate} onChange={e => handlePrescriptionChange('signatureDate', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black max-w-[200px]" />
                             </div>
                             <div className="mt-4 pt-4 border-t border-white/10">
                                 <p className="text-[10px] italic text-white/30 leading-relaxed">
@@ -3592,7 +3592,7 @@ const PatientExpressEntry = () => {
                                         href={pdfUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline text-center md:text-right md:mr-4"
+                                        className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline text-center md:text-right md:mr-4"
                                     >
                                         View Generated PDF
                                     </a>
@@ -3601,7 +3601,7 @@ const PatientExpressEntry = () => {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                     {pdfUrl ? 'Regenerate PDF' : 'Generate PDF'}
                                 </button>
-                                <button onClick={finalSubmit} disabled={submitting} className="w-full md:w-auto px-12 py-4 rounded-xl bg-accent-green text-black text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all">Proceed</button>
+                                <button onClick={finalSubmit} disabled={submitting} className="w-full md:w-auto px-12 py-4 rounded-xl bg-accent-black text-black text-[10px] font-black uppercase tracking-widest hover:bg-white hover:shadow-[0_0_20px_rgba(191,255,0,0.4)] transition-all">Proceed</button>
                             </div>
                         </div>
                     </div>
@@ -3610,14 +3610,14 @@ const PatientExpressEntry = () => {
 
             {step === 'success' && (
                 <div className="text-center py-20 bg-white/5 border border-white/10 rounded-[40px]">
-                    <div className="w-20 h-20 bg-accent-green rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(191,255,0,0.4)]">
+                    <div className="w-20 h-20 bg-accent-black rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(191,255,0,0.4)]">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
                     </div>
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Submission <span className="text-accent-green">Success</span></h3>
+                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-4">Submission <span className="text-accent-black">Success</span></h3>
                     <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-12">The assessment has been added to the clinical queue.</p>
                     <button
                         onClick={reset}
-                        className="px-12 py-4 bg-white text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-accent-green transition-all"
+                        className="px-12 py-4 bg-white text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-accent-black transition-all"
                     >
                         Start New Entry
                     </button>
@@ -3628,7 +3628,7 @@ const PatientExpressEntry = () => {
             {generatingPdf && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-12 text-center max-w-sm mx-4 shadow-2xl">
-                        <div className="w-16 h-16 border-4 border-white/10 border-t-accent-green rounded-full animate-spin mx-auto mb-8"></div>
+                        <div className="w-16 h-16 border-4 border-white/10 border-t-accent-black rounded-full animate-spin mx-auto mb-8"></div>
                         <h4 className="text-xl font-black uppercase italic tracking-tighter mb-2">Generating PDF</h4>
                         <p className="text-xs uppercase tracking-widest text-white/40 font-bold">Please wait while we prepare the prescription document...</p>
                     </div>
@@ -3692,7 +3692,7 @@ const SurveyManagement = () => {
 
     const getRatingColor = (rating) => {
         switch (rating) {
-            case 'Excellent': return 'bg-accent-green/20 text-accent-green border-accent-green/30';
+            case 'Excellent': return 'bg-accent-black/20 text-accent-black border-accent-black/30';
             case 'Good': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'Fair': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
             case 'Poor': return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -3703,7 +3703,7 @@ const SurveyManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-12 h-12 border-4 border-white/10 border-t-accent-green rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-white/10 border-t-accent-black rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -3717,7 +3717,7 @@ const SurveyManagement = () => {
                         key={cat.id}
                         onClick={() => setCategoryFilter(cat.id)}
                         className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${categoryFilter === cat.id
-                            ? 'bg-accent-green text-black'
+                            ? 'bg-accent-black text-black'
                             : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white border border-white/10'
                             }`}
                     >
@@ -3757,7 +3757,7 @@ const SurveyManagement = () => {
                                 surveys.map(survey => (
                                     <tr key={survey.id} className="hover:bg-white/[0.02] transition-colors group">
                                         <td className="p-8">
-                                            <p className="font-bold text-white group-hover:text-accent-green transition-colors">{survey.email}</p>
+                                            <p className="font-bold text-white group-hover:text-accent-black transition-colors">{survey.email}</p>
                                             <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-1">{survey.product}</p>
                                         </td>
                                         <td className="p-8">
@@ -3771,7 +3771,7 @@ const SurveyManagement = () => {
                                                     <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '—'}</p>
                                                 </td>
                                                 <td className="p-8">
-                                                    <p className={`text-sm font-black ${survey.weight_lost > 0 ? 'text-accent-green' : 'text-white/40'}`}>
+                                                    <p className={`text-sm font-black ${survey.weight_lost > 0 ? 'text-accent-black' : 'text-white/40'}`}>
                                                         {survey.weight_lost ? `${survey.weight_lost} lbs` : '—'}
                                                     </p>
                                                 </td>
@@ -3783,7 +3783,7 @@ const SurveyManagement = () => {
                                             </p>
                                         </td>
                                         <td className="p-8">
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${survey.satisfied_with_medication === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest ${survey.satisfied_with_medication === 'Yes' ? 'text-accent-black' : 'text-red-400'}`}>
                                                 {survey.satisfied_with_medication === 'Yes' ? 'yes' : 'no'}
                                             </span>
                                         </td>
@@ -3795,7 +3795,7 @@ const SurveyManagement = () => {
                                         <td className="p-8 text-right">
                                             <button
                                                 onClick={() => setSelectedSurvey(survey)}
-                                                className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-white group-hover:bg-accent-green group-hover:text-black group-hover:border-accent-green transition-all"
+                                                className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-white group-hover:bg-accent-black group-hover:text-black group-hover:border-accent-black transition-all"
                                             >
                                                 View
                                             </button>
@@ -3823,7 +3823,7 @@ const SurveyManagement = () => {
                         </button>
 
                         <div className="mb-12">
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-4">Patient Encounter</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-4">Patient Encounter</p>
                             <h3 className="text-4xl font-black uppercase italic tracking-tighter text-white mb-2 leading-none">Survey Results</h3>
                             <p className="text-white/40 font-bold uppercase tracking-widest text-[11px]">{selectedSurvey.email}</p>
                         </div>
@@ -3853,7 +3853,7 @@ const SurveyManagement = () => {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-black text-white/40 uppercase mb-1">Weight Lost</p>
-                                                <p className="text-2xl font-black italic text-accent-green">-{selectedSurvey.weight_lost || '0'} lbs</p>
+                                                <p className="text-2xl font-black italic text-accent-black">-{selectedSurvey.weight_lost || '0'} lbs</p>
                                             </div>
                                         </div>
                                     </div>
@@ -3863,7 +3863,7 @@ const SurveyManagement = () => {
                                     <div className="space-y-4">
                                         <div>
                                             <p className="text-[10px] font-black text-white/40 uppercase mb-1">Satisfied w/ Dose</p>
-                                            <p className={`text-2xl font-black italic ${selectedSurvey.satisfied_with_medication === 'Yes' ? 'text-accent-green' : 'text-red-400'}`}>
+                                            <p className={`text-2xl font-black italic ${selectedSurvey.satisfied_with_medication === 'Yes' ? 'text-accent-black' : 'text-red-400'}`}>
                                                 {selectedSurvey.satisfied_with_medication}
                                             </p>
                                         </div>
@@ -3888,7 +3888,7 @@ const SurveyManagement = () => {
                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/20">Record ID: {selectedSurvey.id.substring(0, 13)}...</p>
                                 <button
                                     onClick={() => setSelectedSurvey(null)}
-                                    className="px-10 py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-accent-green transition-all"
+                                    className="px-10 py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-accent-black transition-all"
                                 >
                                     Dismiss
                                 </button>
@@ -4150,7 +4150,7 @@ const StaffManagement = () => {
     const getRoleBadge = (role) => {
         switch (role) {
             case 'physician':
-                return 'bg-accent-green/20 text-accent-green border-accent-green/30';
+                return 'bg-accent-black/20 text-accent-black border-accent-black/30';
             case 'nurse_practitioner':
                 return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'physician_assistant':
@@ -4175,7 +4175,7 @@ const StaffManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-12 h-12 border-4 border-white/10 border-t-accent-green rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-white/10 border-t-accent-black rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -4186,7 +4186,7 @@ const StaffManagement = () => {
             <div className="flex gap-4">
                 <button
                     onClick={() => setShowProviderModal(true)}
-                    className="px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(191,255,0,0.2)]"
+                    className="px-8 py-4 bg-accent-black text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(191,255,0,0.2)]"
                 >
                     + Add Provider
                 </button>
@@ -4202,11 +4202,11 @@ const StaffManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Total Staff</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">{staff.length}</p>
+                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-black">{staff.length}</p>
                 </div>
                 <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Providers</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">
+                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-black">
                         {staff.filter(s => ['physician', 'nurse_practitioner', 'physician_assistant'].includes(s.role)).length}
                     </p>
                 </div>
@@ -4218,7 +4218,7 @@ const StaffManagement = () => {
                 </div>
                 <div className="bg-white/[0.03] border border-white/5 rounded-[32px] p-8">
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Active Today</p>
-                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-green">
+                    <p className="text-4xl font-black uppercase italic tracking-tighter text-accent-black">
                         {staff.filter(s => s.last_sign_in_at && new Date(s.last_sign_in_at).toDateString() === new Date().toDateString()).length}
                     </p>
                 </div>
@@ -4264,7 +4264,7 @@ const StaffManagement = () => {
                                             </span>
                                         </td>
                                         <td className="p-6">
-                                            <span className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-wide ${member.otp_verified ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
+                                            <span className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-wide ${member.otp_verified ? 'bg-accent-black/20 text-accent-black border-accent-black/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
                                                 }`}>
                                                 {member.otp_verified ? 'Verified' : 'Pending'}
                                             </span>
@@ -4303,7 +4303,7 @@ const StaffManagement = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6" onClick={() => setShowProviderModal(false)}>
                     <div className="bg-[#0A0A0A] border border-white/10 rounded-[40px] p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-8">
-                            Add Licensed <span className="text-accent-green">Provider</span>
+                            Add Licensed <span className="text-accent-black">Provider</span>
                         </h3>
 
                         <form onSubmit={handleProviderSubmit} className="space-y-6">
@@ -4315,7 +4315,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.firstName}
                                         onChange={(e) => setProviderForm({ ...providerForm, firstName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4325,7 +4325,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.lastName}
                                         onChange={(e) => setProviderForm({ ...providerForm, lastName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4337,7 +4337,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.dob}
                                     onChange={(e) => setProviderForm({ ...providerForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green [color-scheme:dark]"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black [color-scheme:dark]"
                                 />
                             </div>
 
@@ -4348,7 +4348,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.address}
                                     onChange={(e) => setProviderForm({ ...providerForm, address: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4359,7 +4359,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.phone}
                                     onChange={(e) => setProviderForm({ ...providerForm, phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4370,7 +4370,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.email}
                                     onChange={(e) => setProviderForm({ ...providerForm, email: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4381,7 +4381,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.password}
                                     onChange={(e) => setProviderForm({ ...providerForm, password: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4391,7 +4391,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.licenseType}
                                     onChange={(e) => setProviderForm({ ...providerForm, licenseType: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-black"
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
@@ -4409,7 +4409,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.licenseNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, licenseNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4419,7 +4419,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.npiNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, npiNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4429,7 +4429,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.deaNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, deaNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4440,7 +4440,7 @@ const StaffManagement = () => {
                                     type="file"
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     onChange={(e) => setProviderForm({ ...providerForm, deaCertFile: e.target.files[0] })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-green file:text-black file:font-bold file:text-xs file:uppercase"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-black file:text-black file:font-bold file:text-xs file:uppercase"
                                 />
                             </div>
 
@@ -4455,7 +4455,7 @@ const StaffManagement = () => {
                                 <button
                                     type="submit"
                                     disabled={creating}
-                                    className="flex-1 py-4 bg-accent-green text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+                                    className="flex-1 py-4 bg-accent-black text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
                                 >
                                     {creating ? 'Creating...' : 'Create Provider'}
                                 </button>
@@ -4470,7 +4470,7 @@ const StaffManagement = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6" onClick={() => setShowBackOfficeModal(false)}>
                     <div className="bg-[#0A0A0A] border border-white/10 rounded-[40px] p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-8">
-                            Add Back Office <span className="text-accent-green">Staff</span>
+                            Add Back Office <span className="text-accent-black">Staff</span>
                         </h3>
 
                         <form onSubmit={handleBackOfficeSubmit} className="space-y-6">
@@ -4482,7 +4482,7 @@ const StaffManagement = () => {
                                         required
                                         value={backOfficeForm.firstName}
                                         onChange={(e) => setBackOfficeForm({ ...backOfficeForm, firstName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4492,7 +4492,7 @@ const StaffManagement = () => {
                                         required
                                         value={backOfficeForm.lastName}
                                         onChange={(e) => setBackOfficeForm({ ...backOfficeForm, lastName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4504,7 +4504,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.dob}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green [color-scheme:dark]"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black [color-scheme:dark]"
                                 />
                             </div>
 
@@ -4515,7 +4515,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.address}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, address: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4526,7 +4526,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.phone}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4537,7 +4537,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.email}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, email: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4548,7 +4548,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.password}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, password: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-green"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4563,7 +4563,7 @@ const StaffManagement = () => {
                                 <button
                                     type="submit"
                                     disabled={creating}
-                                    className="flex-1 py-4 bg-accent-green text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+                                    className="flex-1 py-4 bg-accent-black text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
                                 >
                                     {creating ? 'Creating...' : 'Create Staff Member'}
                                 </button>
@@ -4687,7 +4687,7 @@ const OrderManagement = () => {
 
     if (loading) return (
         <div className="py-24 flex flex-col items-center justify-center gap-4">
-            <div className="w-10 h-10 border-2 border-accent-green border-t-transparent animate-spin rounded-full"></div>
+            <div className="w-10 h-10 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
             <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Syncing Fulfillment Records...</p>
         </div>
     );
@@ -4725,7 +4725,7 @@ const OrderManagement = () => {
                         <div key={order.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col gap-8">
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                                 <div className="flex flex-col md:flex-row md:items-center gap-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent-green/20 group-hover:text-accent-green transition-all shrink-0">
+                                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent-black/20 group-hover:text-accent-black transition-all shrink-0">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
@@ -4735,7 +4735,7 @@ const OrderManagement = () => {
                                             <p className="text-lg font-black uppercase tracking-tighter italic">
                                                 {order.profiles?.first_name} {order.profiles?.last_name || 'User'}
                                             </p>
-                                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-accent-green/30 text-accent-green bg-accent-green/5 whitespace-nowrap`}>
+                                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-accent-black/30 text-accent-black bg-accent-black/5 whitespace-nowrap`}>
                                                 {order.delivery_status || 'Processing'}
                                             </span>
                                         </div>
@@ -4763,14 +4763,14 @@ const OrderManagement = () => {
                                 {(order.tracking_id && editingTrackingId !== order.id) ? (
                                     <>
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-accent-green/10 flex items-center justify-center text-accent-green">
+                                            <div className="w-10 h-10 rounded-xl bg-accent-black/10 flex items-center justify-center text-accent-black">
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                                 </svg>
                                             </div>
                                             <div>
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">FedEx Tracking ID</p>
-                                                <p className="text-xs font-black text-accent-green tracking-widest">{order.tracking_id}</p>
+                                                <p className="text-xs font-black text-accent-black tracking-widest">{order.tracking_id}</p>
                                             </div>
                                         </div>
                                         <div className="flex gap-4 w-full md:w-auto">
@@ -4800,7 +4800,7 @@ const OrderManagement = () => {
                                             <input
                                                 type="text"
                                                 placeholder="Enter FedEx Tracking Number..."
-                                                className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 py-3 text-xs font-bold tracking-widest placeholder:text-white/10 focus:outline-none focus:border-accent-green/40"
+                                                className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 py-3 text-xs font-bold tracking-widest placeholder:text-white/10 focus:outline-none focus:border-accent-black/40"
                                                 value={trackingInputs[order.id] || ''}
                                                 onChange={(e) => setTrackingInputs({ ...trackingInputs, [order.id]: e.target.value.trim() })}
                                             />
@@ -4816,7 +4816,7 @@ const OrderManagement = () => {
                                         <button
                                             disabled={updatingId === order.id}
                                             onClick={() => handleUpdateTracking(order, trackingInputs[order.id])}
-                                            className="w-full md:w-auto px-8 py-3 bg-accent-green text-black rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            className="w-full md:w-auto px-8 py-3 bg-accent-black text-black rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
                                             {updatingId === order.id ? (
                                                 <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
@@ -4833,7 +4833,7 @@ const OrderManagement = () => {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleUpdateStatus(order.id, { processing_status: order.processing_status === 'processed' ? 'not processed' : 'processed' })}
-                                            className={`px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${order.processing_status === 'processed' ? 'bg-accent-green text-black' : 'bg-white/5 text-white/40 border border-white/10 hover:border-white/20'}`}
+                                            className={`px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${order.processing_status === 'processed' ? 'bg-accent-black text-black' : 'bg-white/5 text-white/40 border border-white/10 hover:border-white/20'}`}
                                         >
                                             {order.processing_status === 'processed' ? '✓ Processed' : 'Mark Processed'}
                                         </button>
@@ -4951,7 +4951,7 @@ const AdminDashboard = () => {
 
     const currentTab = location.pathname.split('/').pop() || 'overview';
 
-    if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-accent-green">LOADING OS...</div>;
+    if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-accent-black">LOADING OS...</div>;
     if (role !== 'admin' && role !== 'provider') return <Navigate to="/dashboard" replace />;
 
     return (
@@ -4959,7 +4959,7 @@ const AdminDashboard = () => {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/5 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase italic tracking-tighter" onClick={() => navigate('/')}>
-                    GLP-<span className="text-accent-green">GLOW</span>
+                    GLP-<span className="text-accent-black">GLOW</span>
                 </h1>
                 <button
                     onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -4975,7 +4975,7 @@ const AdminDashboard = () => {
             <aside className={`w-72 border-r border-white/5 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 md:p-8 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
                 <div className="mb-8 md:mb-12 pt-16 lg:pt-0">
                     <h1 className="text-2xl font-black uppercase italic tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
-                        GLP-<span className="text-accent-green">GLOW</span>
+                        GLP-<span className="text-accent-black">GLOW</span>
                     </h1>
                 </div>
                 <nav className="space-y-1">
@@ -5016,7 +5016,7 @@ const AdminDashboard = () => {
                                 navigate('/dashboard');
                                 setMobileSidebarOpen(false);
                             }}
-                            className="w-full flex items-center gap-2 md:gap-3 px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green/10 transition-all"
+                            className="w-full flex items-center gap-2 md:gap-3 px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black/10 transition-all"
                         >
                             <svg width="16" height="16" className="md:w-[18px] md:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />

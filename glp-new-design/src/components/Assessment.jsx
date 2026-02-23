@@ -145,22 +145,22 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId }) => {
 
     if (!stripe || !elements) {
         return (
-            <div className="p-12 bg-white/5 border border-white/10 rounded-[32px] animate-pulse flex flex-col items-center justify-center gap-4">
-                <div className="w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Securing Connection...</p>
+            <div className="p-12 bg-black/5 border border-white/10 rounded-[32px] animate-pulse flex flex-col items-center justify-center gap-4">
+                <div className="w-8 h-8 border-2 border-accent-black border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Securing Connection...</p>
             </div>
         );
     }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="payment-element-container bg-white/5 border border-white/10 p-6 rounded-[24px] focus-within:border-accent-green transition-all w-[90%] md:w-full mx-auto">
+            <div className="payment-element-container bg-black/5 border border-white/10 p-6 rounded-[24px] focus-within:border-yellow-400 transition-all w-[90%] md:w-full mx-auto">
                 <PaymentElement
                     options={{
                         layout: 'tabs',
                         theme: 'night',
                         variables: {
-                            colorPrimary: '#bfff00',
+                            colorPrimary: '#FFDE59',
                             colorBackground: 'transparent',
                             colorText: '#ffffff',
                             colorDanger: '#df1b41',
@@ -186,8 +186,8 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId }) => {
                 type="submit"
                 disabled={!stripe || processing}
                 className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all relative overflow-hidden group ${processing
-                    ? 'bg-white/5 text-white/20 cursor-wait'
-                    : 'bg-white text-black hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transform hover:scale-[1.02]'
+                    ? 'bg-black/5 text-gray-300 cursor-wait'
+                    : 'bg-white text-black hover:bg-yellow-400 hover:shadow-[0_0_60px_rgba(255,222,89,0.5)] transform hover:scale-[1.02]'
                     }`}
             >
                 <span className="relative z-10">
@@ -575,19 +575,19 @@ const Assessment = () => {
 
     if (hasExistingSubmission) {
         return (
-            <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-20 h-20 bg-accent-green/10 rounded-full flex items-center justify-center mb-6 border border-accent-green/20">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#bfff00" strokeWidth="2">
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center text-[#1a1a1a]">
+                <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center mb-6 border border-black/20">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2">
                         <path d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Already <span className="text-accent-green">Submitted</span></h2>
-                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest max-w-xs mb-8">
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Already <span className="text-black">Submitted</span></h2>
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest max-w-xs mb-8">
                     You have an active record for this category. Please check your dashboard for updates.
                 </p>
                 <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Go Home</button>
-                    <button onClick={() => navigate('/dashboard')} className="px-8 py-4 bg-accent-green text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">Dashboard</button>
+                    <button onClick={() => navigate('/')} className="px-8 py-4 bg-black/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Go Home</button>
+                    <button onClick={() => navigate('/dashboard')} className="px-8 py-4 bg-accent-black text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">Dashboard</button>
                 </div>
             </div>
         );
@@ -610,14 +610,14 @@ const Assessment = () => {
     const renderStep0 = () => (
         <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
             <div className="text-center mb-16">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black border border-accent-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-8">
                     {categoryData.title} • Module 01
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6 italic">
                     {categoryData.question[0]} <br />
-                    <span className="text-accent-green text-opacity-80">{categoryData.question[1]}</span>
+                    <span className="text-[#1a1a1a]">{categoryData.question[1]}</span>
                 </h1>
-                <p className="text-white/40 font-medium uppercase tracking-[0.3em] text-[10px]">
+                <p className="text-gray-600 font-medium uppercase tracking-[0.3em] text-[10px]">
                     Select all that apply
                 </p>
             </div>
@@ -630,21 +630,21 @@ const Assessment = () => {
                             key={opt.id}
                             onClick={() => toggleImprovement(opt.id)}
                             className={`group relative p-8 rounded-[40px] cursor-pointer transition-all duration-700 border-2 overflow-hidden ${isSelected
-                                ? 'border-accent-green bg-accent-green/5 shadow-[0_0_50px_rgba(191,255,0,0.1)]'
-                                : 'border-white/5 bg-white/[0.02] hover:border-white/20'
+                                ? 'border-accent-black bg-accent-black/[0.03] shadow-[0_0_50px_rgba(19,91,236,0.1)]'
+                                : 'border-black/10 bg-white hover:border-black/20'
                                 }`}
                         >
                             <div className="relative z-10">
-                                <h3 className={`text-2xl font-black uppercase tracking-tighter italic mb-3 transition-colors duration-500 ${isSelected ? 'text-accent-green' : 'text-white'}`}>
+                                <h3 className={`text-2xl font-black uppercase tracking-tighter italic mb-3 transition-colors duration-500 text-black`}>
                                     {opt.name}
                                 </h3>
-                                <p className="text-white/40 text-sm font-medium leading-relaxed">
+                                <p className="text-gray-600 text-sm font-medium leading-relaxed">
                                     {opt.desc}
                                 </p>
                             </div>
 
                             {/* Selection indicator */}
-                            <div className={`absolute top-8 right-8 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-accent-green border-accent-green scale-110' : 'border-white/10 opacity-30 group-hover:opacity-100'
+                            <div className={`absolute top-8 right-8 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-accent-black border-accent-black scale-110' : 'border-black/10 opacity-30 group-hover:opacity-100'
                                 }`}>
                                 {isSelected && (
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
@@ -655,7 +655,7 @@ const Assessment = () => {
 
                             {/* Subtle Background Glow */}
                             <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isSelected ? 'opacity-10' : 'opacity-0'}`}>
-                                <div className="absolute inset-0 bg-accent-green blur-[80px]"></div>
+                                <div className="absolute inset-0 bg-accent-black blur-[80px]"></div>
                             </div>
                         </div>
                     );
@@ -665,7 +665,7 @@ const Assessment = () => {
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
                 <Link
                     to="/"
-                    className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30 flex justify-center items-center"
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
                 >
                     Back
                 </Link>
@@ -673,8 +673,8 @@ const Assessment = () => {
                     onClick={handleContinue}
                     disabled={selectedImprovements.length === 0}
                     className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group ${selectedImprovements.length > 0
-                        ? 'bg-white text-black hover:bg-accent-green hover:scale-105 hover:shadow-[0_0_60px_rgba(191,255,0,0.4)]'
-                        : 'bg-white/5 text-white/20 cursor-not-allowed'
+                        ? 'bg-black text-white hover:bg-accent-black hover:text-black hover:scale-105 hover:shadow-[0_0_60px_rgba(19,91,236,0.4)]'
+                        : 'bg-black/5 text-black/20 cursor-not-allowed'
                         }`}
                 >
                     <span className="relative z-10 flex items-center gap-4">
@@ -698,33 +698,33 @@ const Assessment = () => {
                     alt="Statistical validation"
                     className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent-green/40 to-transparent mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-accent-black/40 to-transparent mix-blend-overlay"></div>
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
             </div>
 
             {/* Right Content Section */}
             <div className="flex-1 text-left">
-                <h2 className="text-white font-black leading-[0.85] mb-12 tracking-tighter">
+                <h2 className="text-black font-black leading-[0.85] mb-12 tracking-tighter">
                     <span className="text-8xl md:text-[160px] block mb-4 italic">{categoryData.stat.pct}</span>
                     <span className="text-4xl md:text-7xl uppercase block opacity-90">{categoryData.stat.text}</span>
-                    <span className="text-4xl md:text-7xl uppercase inline-block bg-accent-green text-black px-4 mt-2 italic">{categoryData.stat.highlight}</span>
+                    <span className="text-4xl md:text-7xl uppercase inline-block bg-accent-black text-black px-4 mt-2 italic">{categoryData.stat.highlight}</span>
                 </h2>
 
                 <div className="flex flex-col md:flex-row items-center gap-6">
                     <button
                         onClick={() => setStep(0)}
-                        className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                        className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(2)} // Continue to the review step
-                        className="w-full md:w-auto px-24 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_50px_rgba(191,255,0,0.5)] transform hover:scale-[1.02]"
+                        className="w-full md:w-auto px-24 py-8 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-black hover:text-black hover:shadow-[0_0_50px_rgba(19,91,236,0.5)] transform hover:scale-[1.02]"
                     >
                         Continue
                     </button>
                 </div>
-                <p className="text-white/20 text-xs font-medium tracking-wide uppercase italic text-left mt-10">
+                <p className="text-gray-400 text-xs font-medium tracking-wide uppercase italic text-left mt-10">
                     {categoryData.stat.disclaimer}
                 </p>
             </div>
@@ -734,35 +734,35 @@ const Assessment = () => {
     const renderReviewStep = () => (
         <div className="assessment-step max-w-6xl mx-auto py-20 px-6">
             <div className="text-center mb-16">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black border border-accent-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-8">
                     Member Journeys
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6">
-                    Tremendous <span className="text-accent-green">Results.</span>
+                    Tremendous <span className="text-accent-black">Results.</span>
                 </h2>
-                <p className="text-white/40 font-medium uppercase tracking-[0.3em] text-[10px]">
-                    Real people achieving clinical breakthroughs with our {categoryId.replace('-', ' ')} Medication .
+                <p className="text-gray-500 font-medium uppercase tracking-[0.3em] text-[10px]">
+                    Real people achieving clinical breakthroughs with our {categoryId.replace('-', ' ')} Medication.
                 </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
                 {categoryData.stat.reviews.map((rev, i) => (
-                    <div key={i} className="bg-white/[0.03] border border-white/5 p-10 rounded-[40px] hover:border-accent-green/30 transition-all duration-700 group relative overflow-hidden">
+                    <div key={i} className="bg-gray-50 border border-black/5 p-10 rounded-[40px] hover:border-accent-black/30 transition-all duration-700 group relative overflow-hidden">
                         <div className="relative z-10">
-                            <div className="inline-block bg-accent-green text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
+                            <div className="inline-block bg-accent-black text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
                                 {rev.result}
                             </div>
-                            <p className="text-2xl font-serif italic text-white/90 leading-tight mb-8">
+                            <p className="text-2xl font-serif italic text-black opacity-90 leading-tight mb-8">
                                 "{rev.text}"
                             </p>
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-accent-green/20 border border-accent-green/30 flex items-center justify-center font-black text-accent-green text-xs">
+                                <div className="w-10 h-10 rounded-full bg-accent-black/20 border border-accent-black/30 flex items-center justify-center font-black text-accent-black text-xs">
                                     {rev.name.charAt(0)}
                                 </div>
-                                <span className="text-white/40 font-black uppercase tracking-widest text-[10px]">{rev.name}</span>
+                                <span className="text-gray-600 font-black uppercase tracking-widest text-[10px]">{rev.name}</span>
                             </div>
                         </div>
-                        <div className="absolute inset-0 bg-accent-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div className="absolute inset-0 bg-accent-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     </div>
                 ))}
             </div>
@@ -770,13 +770,13 @@ const Assessment = () => {
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
                 <button
                     onClick={() => setStep(1)}
-                    className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30"
                 >
                     Back
                 </button>
                 <button
                     onClick={() => user ? setStep(4) : setStep(3)}
-                    className="w-full md:w-auto px-20 py-8 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transform hover:scale-105"
+                    className="w-full md:w-auto px-20 py-8 bg-black text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-black hover:text-black hover:shadow-[0_0_60px_rgba(19,91,236,0.5)] transform hover:scale-105"
                 >
                     Finalize My Plan
                 </button>
@@ -789,49 +789,49 @@ const Assessment = () => {
             return (
                 <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700">
                     <div className="text-center mb-12">
-                        <div className="w-24 h-24 rounded-full bg-accent-green/10 border border-accent-green/20 flex items-center justify-center mx-auto mb-8">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-green animate-pulse">
+                        <div className="w-24 h-24 rounded-full bg-accent-black/10 border border-accent-black/20 flex items-center justify-center mx-auto mb-8">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-black animate-pulse">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
                         </div>
                         <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic mb-4">
-                            Check Your <span className="text-accent-green">Email.</span>
+                            Check Your <span className="text-accent-black">Email.</span>
                         </h2>
-                        <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto">
+                        <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto">
                             Clinical verification link transmitted to: <br />
-                            <span className="text-white font-black">{authData.email}</span>
+                            <span className="text-[#1a1a1a] font-black">{authData.email}</span>
                         </p>
                     </div>
 
-                    <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl text-center">
+                    <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl text-center">
                         <div className="space-y-6 mb-10 text-left">
-                            <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <span className="text-accent-green font-black">01.</span>
-                                <p className="text-xs text-white/60 font-medium">Open the email from GLP-GLOW and click the verification link.</p>
+                            <div className="flex gap-4 p-4 bg-black/5 rounded-2xl border border-black/5">
+                                <span className="text-accent-black font-black">01.</span>
+                                <p className="text-xs text-gray-600 font-medium">Open the email from GLP-GLOW and click the verification link.</p>
                             </div>
-                            <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <span className="text-accent-green font-black">02.</span>
-                                <p className="text-xs text-white/60 font-medium">Verify your ownership to unlock the medical intake portal.</p>
+                            <div className="flex gap-4 p-4 bg-black/5 rounded-2xl border border-black/5">
+                                <span className="text-accent-black font-black">02.</span>
+                                <p className="text-xs text-gray-600 font-medium">Verify your ownership to unlock the medical intake portal.</p>
                             </div>
                         </div>
 
                         <div className="space-y-4">
                             <button
                                 onClick={() => window.open(`https://${authData.email.split('@')[1]}`, '_blank')}
-                                className="w-full py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)]"
+                                className="w-full py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]"
                             >
                                 Open Mailbox
                             </button>
                             <button
                                 onClick={() => setShowVerificationSent(false)}
-                                className="w-full py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
+                                className="w-full py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
                             >
                                 Back to Sign Up
                             </button>
                         </div>
 
-                        <p className="mt-8 text-[9px] font-black uppercase tracking-[0.3em] text-white/20 italic">
+                        <p className="mt-8 text-[9px] font-black uppercase tracking-[0.3em] text-gray-300 italic">
                             Waiting for secure confirmation...
                         </p>
                     </div>
@@ -842,19 +842,19 @@ const Assessment = () => {
         return (
             <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
                 <div className="text-center mb-12">
-                    <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                         Secure Clinical Portal
                     </div>
                     <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic mb-4">
                         {authMode === 'signup' ? 'Create' : 'Access'} <br />
-                        <span className="text-accent-green">Your Account.</span>
+                        <span className="text-accent-black">Your Account.</span>
                     </h2>
-                    <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px]">
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
                         To view your customized {categoryId.replace('-', ' ')} protocol.
                     </p>
                 </div>
 
-                <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
                     {authError && (
                         <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
                             {authError}
@@ -864,68 +864,68 @@ const Assessment = () => {
                         {authMode === 'signup' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">First Name</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">First Name</label>
                                     <input
                                         type="text"
                                         placeholder="John"
                                         value={authData.firstName}
                                         onChange={(e) => setAuthData({ ...authData, firstName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Last Name</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Last Name</label>
                                     <input
                                         type="text"
                                         placeholder="Doe"
                                         value={authData.lastName}
                                         onChange={(e) => setAuthData({ ...authData, lastName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                                     />
                                 </div>
                             </div>
                         )}
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Email Address</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Email Address</label>
                             <input
                                 type="email"
                                 placeholder="name@email.com"
                                 value={authData.email}
                                 onChange={(e) => setAuthData({ ...authData, email: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                                className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Password</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Password</label>
                             <input
                                 type="password"
                                 placeholder="••••••••"
                                 value={authData.password}
                                 onChange={(e) => setAuthData({ ...authData, password: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                                className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             />
                         </div>
 
                         <div className="flex gap-4 mt-4">
                             <button
                                 onClick={() => setStep(2)}
-                                className="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
+                                className="flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
                             >
                                 Back
                             </button>
                             <button
                                 onClick={handleAuthSubmit}
                                 disabled={authLoading}
-                                className="flex-[2] py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)] disabled:opacity-50"
+                                className="flex-[2] py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)] disabled:opacity-50"
                             >
                                 {authLoading ? 'Verifying...' : (authMode === 'signup' ? 'Continue' : 'Enter Medical Portal')}
                             </button>
                         </div>
 
                         <div className="flex items-center gap-4 py-2">
-                            <div className="h-px flex-1 bg-white/5"></div>
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20">OR</span>
-                            <div className="h-px flex-1 bg-white/5"></div>
+                            <div className="h-px flex-1 bg-black/5"></div>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">OR</span>
+                            <div className="h-px flex-1 bg-black/5"></div>
                         </div>
 
                         {/* Social Logins */}
@@ -939,7 +939,7 @@ const Assessment = () => {
                                         setAuthError(err.message);
                                     }
                                 }}
-                                className="flex items-center justify-center gap-3 bg-white/5 border border-white/10 hover:border-white/30 transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white"
+                                className="flex items-center justify-center gap-3 bg-black/5 border border-black/5 hover:border-white/30 transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white"
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -949,7 +949,7 @@ const Assessment = () => {
                                 </svg>
                                 Google
                             </button>
-                            <button className="flex items-center justify-center gap-3 bg-white text-black hover:bg-accent-green transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed cursor-not-allowed opacity-50" disabled title="Coming Soon">
+                            <button className="flex items-center justify-center gap-3 bg-[#1a1a1a] text-white hover:bg-black transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed cursor-not-allowed opacity-50" disabled title="Coming Soon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2.001-.156-3.314 1.091-4.21 1.091zM15.503 2.496c.844-1.026 1.404-2.455 1.248-3.87-1.221.052-2.704.818-3.58 1.844-.78.896-1.456 2.364-1.272 3.741 1.35.104 2.755-.701 3.604-1.715z" />
                                 </svg>
@@ -957,12 +957,12 @@ const Assessment = () => {
                             </button>
                         </div>
 
-                        <div className="pt-8 text-center border-t border-white/5">
-                            <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                        <div className="pt-8 text-center border-t border-black/5">
+                            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">
                                 {authMode === 'signup' ? 'Already a member?' : 'New to GLP-GLOW?'} <br />
                                 <button
                                     onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
-                                    className="text-accent-green mt-2 hover:underline"
+                                    className="text-accent-black mt-2 hover:underline"
                                 >
                                     {authMode === 'signup' ? 'Sign In Here' : 'Create Clinical Account'}
                                 </button>
@@ -972,7 +972,7 @@ const Assessment = () => {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <button onClick={() => setStep(2)} className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-colors">
+                    <button onClick={() => setStep(2)} className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-colors">
                         ← Back to results
                     </button>
                 </div>
@@ -983,24 +983,24 @@ const Assessment = () => {
     const renderEligibilityStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
             <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Eligibility Check
                 </div>
                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
                     Let's make sure you're <br />
-                    <span className="text-accent-green">eligible for treatment.</span>
+                    <span className="text-accent-black">eligible for treatment.</span>
                 </h2>
-                <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px]">
+                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
                     It's just like intake forms at the doctor.
                 </p>
 
             </div>
 
-            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
                 <div className="space-y-8">
                     {/* Sex Selection */}
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4 text-center">Sex assigned at birth</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4 text-center">Sex assigned at birth</label>
                         <div className="grid grid-cols-2 gap-4">
                             {['male', 'female'].map(s => (
                                 <button
@@ -1008,7 +1008,7 @@ const Assessment = () => {
                                     onClick={() => setEligibilityData({ ...eligibilityData, sex: s })}
                                     className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${eligibilityData.sex === s
                                         ? 'bg-white text-black border-white'
-                                        : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
+                                        : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20'
                                         } border`}
                                 >
                                     {s}
@@ -1022,10 +1022,10 @@ const Assessment = () => {
 
                     {/* Date of Birth */}
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Date of Birth</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Date of Birth</label>
                         <input
                             type="date"
-                            className={`w-full bg-white/5 border ${triedToContinue && !eligibilityData.dob ? 'border-red-500/50' : 'border-white/10'} rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold`}
+                            className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.dob ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
                             value={eligibilityData.dob}
                             onChange={(e) => setEligibilityData({ ...eligibilityData, dob: e.target.value })}
                         />
@@ -1037,12 +1037,12 @@ const Assessment = () => {
                     {/* State & Phone */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="relative">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">State</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">State</label>
                             <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="Search state..."
-                                    className={`w-full bg-white/5 border ${triedToContinue && !eligibilityData.state ? 'border-red-500/50' : 'border-white/10'} rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold placeholder:text-white/20`}
+                                    className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.state ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold placeholder:text-gray-300`}
                                     value={showStateDropdown ? stateSearch : (eligibilityData.state ? stateFullNames[eligibilityData.state] : stateSearch)}
                                     onChange={(e) => {
                                         setStateSearch(e.target.value);
@@ -1060,7 +1060,7 @@ const Assessment = () => {
                                 </div>
 
                                 {showStateDropdown && (
-                                    <div className="absolute z-50 left-0 right-0 mt-2 max-h-60 overflow-y-auto bg-black border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
+                                    <div className="absolute z-50 left-0 right-0 mt-2 max-h-60 overflow-y-auto bg-white border border-black/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
                                         {Object.entries(stateFullNames)
                                             .filter(([code, name]) =>
                                                 name.toLowerCase().includes(stateSearch.toLowerCase()) ||
@@ -1074,7 +1074,7 @@ const Assessment = () => {
                                                         setStateSearch('');
                                                         setShowStateDropdown(false);
                                                     }}
-                                                    className="px-8 py-4 hover:bg-accent-green hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between items-center"
+                                                    className="px-8 py-4 text-[#1a1a1a] hover:bg-accent-black hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between items-center"
                                                 >
                                                     <span>{name}</span>
                                                     <span className="opacity-40">{code}</span>
@@ -1085,7 +1085,7 @@ const Assessment = () => {
                                             name.toLowerCase().includes(stateSearch.toLowerCase()) ||
                                             code.toLowerCase().includes(stateSearch.toLowerCase())
                                         ).length === 0 && (
-                                                <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-white/20 italic text-center">
+                                                <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-300 italic text-center">
                                                     No matches found
                                                 </div>
                                             )}
@@ -1105,11 +1105,11 @@ const Assessment = () => {
                             )}
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Phone Number</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number</label>
                             <input
                                 type="tel"
                                 placeholder="(XXX) XXX-XXXX"
-                                className={`w-full bg-white/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-white/10'} rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold`}
+                                className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
                                 value={eligibilityData.phone}
                                 onChange={(e) => {
                                     const rawValue = e.target.value.replace(/\D/g, '');
@@ -1136,15 +1136,15 @@ const Assessment = () => {
 
                     {/* PCP Visit */}
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4">Have you seen your primary care provider in the past 12 months?</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Have you seen your primary care provider in the past 12 months?</label>
                         <div className="grid grid-cols-2 gap-4">
                             {['Yes', 'No'].map(v => (
                                 <button
                                     key={v}
                                     onClick={() => setEligibilityData({ ...eligibilityData, pcpVisitLast6Months: v })}
                                     className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${eligibilityData.pcpVisitLast6Months === v
-                                        ? 'bg-accent-green text-black border-accent-green'
-                                        : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-white/5 text-white/40 border-red-500/50' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30')
+                                        ? 'bg-accent-black text-black border-accent-black'
+                                        : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-black/5 text-gray-400 border-red-500/50' : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20')
                                         } border`}
                                 >
                                     {v}
@@ -1156,8 +1156,8 @@ const Assessment = () => {
                         )}
 
                         {eligibilityData.pcpVisitLast6Months && (
-                            <div className="mt-6 p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
-                                <p className="text-[11px] font-bold uppercase tracking-widest text-white/40 leading-relaxed italic">
+                            <div className="mt-6 p-6 bg-white/[0.02] border border-black/5 rounded-3xl">
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed italic">
                                     {eligibilityData.pcpVisitLast6Months === 'Yes'
                                         ? 'Since you have selected "Yes", please upload the lab results that include your "Lipid" and "A1c" values:'
                                         : 'Since you have selected "No", you could possibly be ordered/recommended to do a Lab Test (Lipid, A1c).'}
@@ -1168,15 +1168,15 @@ const Assessment = () => {
                                         {Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0 && (
                                             <div className="space-y-3 mb-6">
                                                 {eligibilityData.labResults.map((url, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl group/file">
+                                                    <div key={idx} className="flex items-center justify-between p-4 bg-black/5 border border-black/5 rounded-2xl group/file">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 bg-accent-green/10 rounded-lg flex items-center justify-center text-accent-green">
+                                                            <div className="w-8 h-8 bg-accent-black/10 rounded-lg flex items-center justify-center text-accent-black">
                                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                                             </div>
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Lab Document {idx + 1}</span>
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Lab Document {idx + 1}</span>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline">View</a>
+                                                            <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">View</a>
                                                             <button
                                                                 onClick={() => {
                                                                     const newResults = [...eligibilityData.labResults];
@@ -1206,18 +1206,18 @@ const Assessment = () => {
                                         <button
                                             onClick={() => document.getElementById('lab-upload').click()}
                                             disabled={uploading === 'lab-results'}
-                                            className={`w-full flex items-center justify-center gap-4 px-8 py-6 bg-white/5 border-2 border-dashed ${triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) ? 'border-red-500/50' : 'border-white/10'} rounded-2xl hover:border-accent-green transition-all group`}
+                                            className={`w-full flex items-center justify-center gap-4 px-8 py-6 bg-black/5 border-2 border-dashed ${triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) ? 'border-red-500/50' : 'border-black/5'} rounded-2xl hover:border-accent-black transition-all group`}
                                         >
                                             {uploading === 'lab-results' ? (
-                                                <div className="w-5 h-5 border-2 border-accent-green border-t-transparent animate-spin rounded-full"></div>
+                                                <div className="w-5 h-5 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
                                             ) : (
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
                                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                     <polyline points="17 8 12 3 7 8"></polyline>
                                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                                 </svg>
                                             )}
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60 group-hover:text-white">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-white">
                                                 {eligibilityData.labResults?.length > 0 ? 'Upload Another Lab Result' : 'Upload Lab Results'}
                                             </span>
                                         </button>
@@ -1225,7 +1225,7 @@ const Assessment = () => {
                                             <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">At least one lab result is REQUIRED</p>
                                         )}
                                         {eligibilityData.labResults?.length > 0 && (
-                                            <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-green opacity-60 ml-4 italic text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
+                                            <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 italic text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
                                         )}
                                     </div>
                                 )}
@@ -1234,7 +1234,7 @@ const Assessment = () => {
                     </div>
 
                     {/* Consent Text */}
-                    <div className={`p-6 bg-white/[0.02] border ${triedToContinue && !eligibilityData.consent ? 'border-red-500/50' : 'border-white/5'} rounded-3xl`}>
+                    <div className={`p-6 bg-white/[0.02] border ${triedToContinue && !eligibilityData.consent ? 'border-red-500/50' : 'border-black/5'} rounded-3xl`}>
                         <label className="flex gap-4 cursor-pointer group">
                             <div className="relative flex-shrink-0 mt-1">
                                 <input
@@ -1243,12 +1243,12 @@ const Assessment = () => {
                                     checked={eligibilityData.consent}
                                     onChange={(e) => setEligibilityData({ ...eligibilityData, consent: e.target.checked })}
                                 />
-                                <div className="w-6 h-6 border-2 border-white/10 rounded peer-checked:bg-accent-green peer-checked:border-accent-green transition-all"></div>
+                                <div className="w-6 h-6 border-2 border-black/5 rounded peer-checked:bg-accent-black peer-checked:border-accent-black transition-all"></div>
                                 <svg className="absolute top-1 left-1 w-4 h-4 text-black opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <span className="text-[10px] text-white/40 font-bold uppercase leading-relaxed tracking-wide group-hover:text-white/60 transition-colors">
+                            <span className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-wide group-hover:text-gray-600 transition-colors">
                                 I agree to receive text messages from GLP-GLOW with important updates, including prescription reminders, order updates, exclusive offers and information about new products. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out.
                             </span>
                         </label>
@@ -1260,7 +1260,7 @@ const Assessment = () => {
                     <div className="flex gap-4 mt-4">
                         <button
                             onClick={() => setStep(4)}
-                            className="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
+                            className="flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
                         >
                             Back
                         </button>
@@ -1282,7 +1282,7 @@ const Assessment = () => {
                                     setStep(6);
                                 }
                             }}
-                            className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-white text-black hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)]`}
+                            className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]`}
                         >
                             Continue
                         </button>
@@ -1301,8 +1301,8 @@ const Assessment = () => {
             <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
                 <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
                     {/* Left Side: Map Representation */}
-                    <div className="w-full md:w-1/2 aspect-square relative bg-white/[0.02] border border-white/5 rounded-[60px] flex items-center justify-center overflow-hidden group">
-                        <div className="absolute inset-0 bg-accent-green/5 blur-[100px] group-hover:bg-accent-green/10 transition-all duration-1000"></div>
+                    <div className="w-full md:w-1/2 aspect-square relative bg-white/[0.02] border border-black/5 rounded-[60px] flex items-center justify-center overflow-hidden group">
+                        <div className="absolute inset-0 bg-accent-black/5 blur-[100px] group-hover:bg-accent-black/10 transition-all duration-1000"></div>
 
                         {/* Premium Map Image */}
                         <img
@@ -1311,9 +1311,9 @@ const Assessment = () => {
                             className="w-[90%] h-[90%] object-contain relative z-10 transition-transform duration-1000 group-hover:scale-105"
                         />
 
-                        <div className="absolute bottom-10 left-10 right-10 p-6 bg-black/40 backdrop-blur-md rounded-3xl border border-white/10">
+                        <div className="absolute bottom-10 left-10 right-10 p-6 bg-black/40 backdrop-blur-md rounded-3xl border border-black/5">
                             <div className="flex items-center gap-4">
-                                <div className="w-3 h-3 rounded-full bg-accent-green animate-pulse"></div>
+                                <div className="w-3 h-3 rounded-full bg-accent-black animate-pulse"></div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-white">Coverage confirmed: {stateName}</span>
                             </div>
                         </div>
@@ -1321,36 +1321,36 @@ const Assessment = () => {
 
                     {/* Right Side: Content */}
                     <div className="w-full md:w-1/2 text-left">
-                        <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                        <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                             Logistics Locked
                         </div>
                         <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-8 leading-[0.9]">
                             GLP-GLOW IS <br />
                             AVAILABLE IN <br />
-                            <span className="text-accent-green">{stateName.toUpperCase()}</span>
+                            <span className="text-accent-black">{stateName.toUpperCase()}</span>
                         </h2>
 
                         <div className="space-y-6 mb-12">
                             <div className="flex gap-4">
-                                <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0 text-accent-green">✓</div>
-                                <p className="text-white/60 text-sm font-medium leading-relaxed">Our clinicians are licensed and able to ship to your state.</p>
+                                <div className="w-6 h-6 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0 text-accent-black">✓</div>
+                                <p className="text-gray-600 text-sm font-medium leading-relaxed">Our clinicians are licensed and able to ship to your state.</p>
                             </div>
                             <div className="flex gap-4">
-                                <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0 text-accent-green">✓</div>
-                                <p className="text-white/60 text-sm font-medium leading-relaxed">Medication ships to <span className="text-white">{stateName}</span> addresses within 48 hours of approval.</p>
+                                <div className="w-6 h-6 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0 text-accent-black">✓</div>
+                                <p className="text-gray-600 text-sm font-medium leading-relaxed">Medication ships to <span className="text-[#1a1a1a] font-bold">{stateName}</span> addresses within 48 hours of approval.</p>
                             </div>
                         </div>
 
                         <div className="flex gap-4">
                             <button
                                 onClick={() => setStep(5)}
-                                className="px-10 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                                className="px-10 py-8 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
                             >
                                 Back
                             </button>
                             <button
                                 onClick={() => setStep(7)}
-                                className="flex-1 px-10 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transform hover:scale-105"
+                                className="flex-1 px-10 py-8 bg-[#1a1a1a] text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:shadow-[0_0_60px_rgba(0,0,0,0.2)] transform hover:scale-105"
                             >
                                 Finalize Medical Review
                             </button>
@@ -1366,19 +1366,19 @@ const Assessment = () => {
             <div className="flex flex-col-reverse md:flex-row items-center gap-16 md:gap-24">
                 {/* Left Side: Content */}
                 <div className="w-full md:w-1/2">
-                    <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-10">
+                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-10">
                         Medical Consultation Prep
                     </div>
 
                     <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-8 leading-[0.9]">
                         Answer a few <br />
                         questions about <br />
-                        <span className="text-accent-green text-opacity-80">your health.</span>
+                        <span className="text-accent-black">your health.</span>
                     </h2>
 
                     <div className="mb-12">
-                        <div className="text-xs font-black uppercase tracking-[0.3em] text-white/20 mb-4 italic">Doctor</div>
-                        <p className="text-white/60 text-lg font-medium leading-relaxed max-w-md">
+                        <div className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4 italic">Doctor</div>
+                        <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-md">
                             Our board-certified doctors use the information in the following questions to tailor your treatment.
                         </p>
                     </div>
@@ -1387,20 +1387,20 @@ const Assessment = () => {
                         <div className="flex flex-col md:flex-row gap-4">
                             <button
                                 onClick={() => setStep(6)}
-                                className="w-full md:w-auto px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                                className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
                             >
                                 Back
                             </button>
                             <button
                                 onClick={() => setStep(8)}
-                                className="w-full md:flex-1 px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.4)] transform hover:scale-105"
+                                className="w-full md:flex-1 px-12 py-8 bg-[#1a1a1a] text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:shadow-[0_0_60px_rgba(0,0,0,0.2)] transform hover:scale-105"
                             >
                                 Continue to Medical Intake
                             </button>
                         </div>
 
                         <div className="flex items-center gap-4 opacity-40">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
@@ -1413,7 +1413,7 @@ const Assessment = () => {
 
                 {/* Right Side: Doctor Profile */}
                 <div className="w-full md:w-1/2 relative group">
-                    <div className="aspect-square rounded-[60px] overflow-hidden relative border border-white/10 shadow-2xl">
+                    <div className="aspect-square rounded-[60px] overflow-hidden relative border border-black/5 shadow-2xl">
                         <img
                             src={smilingDoctorImg}
                             alt="Dr. Anya Sharma"
@@ -1422,20 +1422,20 @@ const Assessment = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
 
                         {/* Doctor ID Card */}
-                        <div className="absolute bottom-10 left-10 right-10 p-8 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[40px] transform group-hover:-translate-y-2 transition-transform duration-700">
+                        <div className="absolute bottom-10 left-10 right-10 p-8 bg-gray-50 backdrop-blur-xl border border-black/5 rounded-[40px] transform group-hover:-translate-y-2 transition-transform duration-700">
                             <div className="flex items-center gap-6">
-                                <div className="w-12 h-px bg-accent-green"></div>
+                                <div className="w-12 h-px bg-accent-black"></div>
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic text-white mb-1">Dr. Anya Sharma</h3>
-                                    <p className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-green">Chief Clinical Advisor</p>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic text-[#1a1a1a] mb-1">Dr. Anya Sharma</h3>
+                                    <p className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-black">Chief Clinical Advisor</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Decorative Elements */}
-                    <div className="absolute -top-6 -right-6 w-32 h-32 border border-accent-green/20 rounded-full animate-pulse"></div>
-                    <div className="absolute -bottom-10 -left-10 w-48 h-48 border border-white/5 rounded-full"></div>
+                    <div className="absolute -top-6 -right-6 w-32 h-32 border border-accent-black/20 rounded-full animate-pulse"></div>
+                    <div className="absolute -bottom-10 -left-10 w-48 h-48 border border-black/5 rounded-full"></div>
                 </div>
             </div>
         </div>
@@ -1444,39 +1444,39 @@ const Assessment = () => {
     const renderBMIAndDrugStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
             <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Biometrics & Selection
                 </div>
                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
                     Establish your <br />
-                    <span className="text-accent-green">clinical baseline.</span>
+                    <span className="text-accent-black">clinical baseline.</span>
                 </h2>
             </div>
-            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl space-y-10">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl space-y-10">
                 <div className="grid grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Height (Ft/In)</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Height (Ft/In)</label>
                         <input
                             type="text"
                             placeholder="5'10&quot;"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={intakeData.height || ''}
                             onChange={(e) => setIntakeData({ ...intakeData, height: e.target.value })}
                         />
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Weight (Lbs)</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Weight (Lbs)</label>
                         <input
                             type="number"
                             placeholder="185"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={intakeData.weight || ''}
                             onChange={(e) => setIntakeData({ ...intakeData, weight: e.target.value })}
                         />
                     </div>
                 </div>
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4">Medication Interest</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Medication Interest</label>
                     <div className="grid grid-cols-1 gap-3">
                         {(() => {
                             const optionsMap = {
@@ -1490,7 +1490,7 @@ const Assessment = () => {
                                 <button
                                     key={drug}
                                     onClick={() => setIntakeData({ ...intakeData, medication_interest: drug })}
-                                    className={`w-full py-5 rounded-2xl border font-black text-[10px] uppercase tracking-widest transition-all ${intakeData.medication_interest === drug ? 'bg-accent-green border-accent-green text-black' : 'bg-white/5 border-white/10 text-white hover:border-accent-green'}`}
+                                    className={`w-full py-5 rounded-2xl border font-black text-[10px] uppercase tracking-widest transition-all ${intakeData.medication_interest === drug ? 'bg-accent-black border-accent-black text-black' : 'bg-black/5 border-black/5 text-[#1a1a1a] hover:border-accent-black'}`}
                                 >
                                     {drug}
                                 </button>
@@ -1500,10 +1500,10 @@ const Assessment = () => {
 
                     {intakeData.medication_interest === 'Other / Not Sure' && (
                         <div className="mt-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Please specify / Describe your goals</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Please specify / Describe your goals</label>
                             <textarea
                                 placeholder="Tell us more about what you're looking for..."
-                                className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold resize-none"
+                                className="w-full h-32 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold resize-none"
                                 value={intakeData.other_medication_details || ''}
                                 onChange={(e) => setIntakeData({ ...intakeData, other_medication_details: e.target.value })}
                             />
@@ -1514,14 +1514,14 @@ const Assessment = () => {
                 <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
                         onClick={() => user ? setStep(2) : setStep(3)}
-                        className="w-full py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
+                        className="w-full py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-white/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(5)}
                         disabled={!intakeData.medication_interest || (intakeData.medication_interest === 'Other / Not Sure' && !intakeData.other_medication_details)}
-                        className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 ${intakeData.medication_interest && (intakeData.medication_interest !== 'Other / Not Sure' || intakeData.other_medication_details) ? 'bg-white text-black hover:bg-accent-green hover:shadow-[0_0_50px_rgba(191,255,0,0.3)]' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 ${intakeData.medication_interest && (intakeData.medication_interest !== 'Other / Not Sure' || intakeData.other_medication_details) ? 'bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_50px_rgba(19,91,236,0.3)]' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue
                     </button>
@@ -1569,8 +1569,8 @@ const Assessment = () => {
             <div className="assessment-step max-w-3xl mx-auto py-20 px-6">
 
 
-                <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-16 backdrop-blur-xl">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-6">{question.title}</h3>
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-16 backdrop-blur-xl">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">{question.title}</h3>
                     <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic mb-12 leading-tight">
                         {question.question}
                     </h2>
@@ -1583,7 +1583,7 @@ const Assessment = () => {
                     <div className="space-y-4">
                         {question.type === 'info' ? (
                             <div className="space-y-6">
-                                <p className="text-white/60 text-lg font-medium leading-relaxed italic">
+                                <p className="text-gray-600 text-lg font-medium leading-relaxed italic">
                                     {question.content}
                                 </p>
                             </div>
@@ -1601,8 +1601,8 @@ const Assessment = () => {
                                             }
                                         }}
                                         className={`w-full py-6 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
-                                            ? 'bg-accent-green border-accent-green text-black'
-                                            : 'bg-white/5 border-white/10 text-white/40 hover:border-white/20'
+                                            ? 'bg-accent-black border-accent-black text-black'
+                                            : 'bg-black/5 border-black/5 text-gray-400 hover:border-black/10'
                                             }`}
                                     >
                                         {opt}
@@ -1612,16 +1612,16 @@ const Assessment = () => {
                         ) : (
                             <textarea
                                 placeholder={question.placeholder}
-                                className="w-full h-48 bg-white/5 border border-white/10 rounded-3xl py-8 px-10 text-white focus:outline-none focus:border-accent-green transition-all font-bold resize-none underline-none"
+                                className="w-full h-48 bg-black/5 border border-black/5 rounded-3xl py-8 px-10 text-black focus:outline-none focus:border-accent-black transition-all font-bold resize-none underline-none"
                                 value={intakeData[question.id] || ''}
                                 onChange={(e) => setIntakeData({ ...intakeData, [question.id]: e.target.value })}
                             />
                         )}
 
                         {question.info && (
-                            <div className="mt-8 p-6 bg-accent-green/10 border border-accent-green/20 rounded-2xl">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-green mb-2">Why we ask</h4>
-                                <p className="text-[11px] font-bold text-white/60 leading-relaxed italic">
+                            <div className="mt-8 p-6 bg-accent-black/10 border border-accent-black/20 rounded-2xl">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-black mb-2">Why we ask</h4>
+                                <p className="text-[11px] font-bold text-gray-600 leading-relaxed italic">
                                     {question.info}
                                 </p>
                             </div>
@@ -1629,21 +1629,21 @@ const Assessment = () => {
 
                         {question.upload && intakeData[question.id] && (
                             <div className="mt-8">
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4">
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">
                                     {question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist'))
                                         ? 'Upload RX / Proof (Compulsory)'
                                         : 'Upload RX / Proof (Optional)'}
                                 </label>
 
                                 {intakeData[`${question.id}_file`] ? (
-                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[30px] flex items-center justify-between group/upload transition-all hover:border-accent-green/30">
+                                    <div className="p-6 bg-black/5 border border-black/5 rounded-[30px] flex items-center justify-between group/upload transition-all hover:border-accent-black/30">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-accent-green/10 rounded-2xl flex items-center justify-center text-accent-green">
+                                            <div className="w-12 h-12 bg-accent-black/10 rounded-2xl flex items-center justify-center text-accent-black">
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-white">Document Uploaded</p>
-                                                <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-green hover:underline">View File</a>
+                                                <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-black hover:underline">View File</a>
                                             </div>
                                         </div>
                                         <button
@@ -1652,7 +1652,7 @@ const Assessment = () => {
                                                 delete newData[`${question.id}_file`];
                                                 setIntakeData(newData);
                                             }}
-                                            className="w-10 h-10 rounded-full flex items-center justify-center text-white/20 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover/upload:opacity-100"
+                                            className="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover/upload:opacity-100"
                                         >
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                                         </button>
@@ -1671,18 +1671,18 @@ const Assessment = () => {
                                         <button
                                             onClick={() => document.getElementById(`upload-${question.id}`).click()}
                                             disabled={uploading === 'prescriptions'}
-                                            className="w-full flex items-center justify-center gap-4 py-8 bg-white/5 border-2 border-dashed border-white/10 rounded-[30px] hover:border-accent-green transition-all group"
+                                            className="w-full flex items-center justify-center gap-4 py-8 bg-black/5 border-2 border-dashed border-black/5 rounded-[30px] hover:border-accent-black transition-all group"
                                         >
                                             {uploading === 'prescriptions' ? (
-                                                <div className="w-6 h-6 border-2 border-accent-green border-t-transparent animate-spin rounded-full"></div>
+                                                <div className="w-6 h-6 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
                                             ) : (
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
                                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                     <polyline points="17 8 12 3 7 8"></polyline>
                                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                                 </svg>
                                             )}
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-[#1a1a1a]/40 group-hover:text-[#1a1a1a]">
                                                 Choose prescription file
                                             </span>
                                         </button>
@@ -1690,7 +1690,7 @@ const Assessment = () => {
                                 )}
 
                                 {intakeData[`${question.id}_file`] && (
-                                    <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-green text-center opacity-60">Success: Prescription linked to medical profile</p>
+                                    <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-black text-center opacity-60">Success: Prescription linked to medical profile</p>
                                 )}
                             </div>
                         )}
@@ -1702,10 +1702,10 @@ const Assessment = () => {
                             return val === 'Yes' || val === 'I have a specific treatment in mind';
                         })() && (
                                 <div className="mt-8">
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4">Provide Details</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Provide Details</label>
                                     <textarea
                                         placeholder="Enter details here..."
-                                        className="w-full h-32 bg-white/5 border border-white/10 rounded-3xl py-6 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold resize-none"
+                                        className="w-full h-32 bg-black/5 border border-black/5 rounded-3xl py-6 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold resize-none"
                                         value={intakeData[`${question.id}_details`] || ''}
                                         onChange={(e) => setIntakeData({ ...intakeData, [`${question.id}_details`]: e.target.value })}
                                     />
@@ -1722,7 +1722,7 @@ const Assessment = () => {
                                     setStep(7); // Go back to Doctor Intro
                                 }
                             }}
-                            className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-6 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:border-white/30 transition-all group"
+                            className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-6 rounded-2xl bg-black/5 border border-black/5 text-[10px] font-black uppercase tracking-widest text-[#1a1a1a] hover:border-black/20 transition-all group"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40 group-hover:opacity-100 transition-opacity">
                                 <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -1738,8 +1738,8 @@ const Assessment = () => {
                             }
                             className={`w-full md:w-auto flex items-center justify-center gap-3 px-10 py-6 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] transition-all group ${((!intakeData[question.id] && question.type !== 'text' && question.type !== 'info') ||
                                 (question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist')) && !intakeData[`${question.id}_file`]))
-                                ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                                : 'bg-white text-black hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)]'
+                                ? 'bg-black/5 text-gray-300 cursor-not-allowed'
+                                : 'bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]'
                                 }`}
                         >
                             {medicalStep === medicalQuestions.length - 1 ? 'Finish Intake' : 'Forward'}
@@ -1756,20 +1756,20 @@ const Assessment = () => {
     const renderIdentificationStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
             <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Step 24: Identification
                 </div>
                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
-                    Verify your <span className="text-accent-green">Identity.</span>
+                    Verify your <span className="text-accent-black">Identity.</span>
                 </h2>
-                <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px]">
+                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
                     Required for prescription medication fulfillment.
                 </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-12 backdrop-blur-xl space-y-8">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-8">
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4">ID Type</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">ID Type</label>
                     <div className="grid grid-cols-2 gap-4">
                         {["Driver's License", "Passport"].map(type => (
                             <button
@@ -1779,7 +1779,7 @@ const Assessment = () => {
                                         setIdData({ ...idData, type, file_url: '' });
                                     }
                                 }}
-                                className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${idData.type === type ? 'bg-white text-black border-white' : 'bg-white/5 text-white/40 border-white/10'}`}
+                                className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${idData.type === type ? 'bg-white text-black border-white' : 'bg-black/5 text-gray-400 border-black/5'}`}
                             >
                                 {type}
                             </button>
@@ -1788,11 +1788,11 @@ const Assessment = () => {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">ID Number</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">ID Number</label>
                     <input
                         type="text"
                         placeholder="Enter ID number..."
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                         value={idData.number}
                         onChange={(e) => setIdData({ ...idData, number: e.target.value })}
                     />
@@ -1809,19 +1809,19 @@ const Assessment = () => {
                         })}
                     />
                     {idData.file_url ? (
-                        <div className="p-6 bg-white/5 border border-white/10 rounded-[30px] flex items-center justify-between group/upload transition-all hover:border-accent-green/30">
+                        <div className="p-6 bg-black/5 border border-black/5 rounded-[30px] flex items-center justify-between group/upload transition-all hover:border-accent-black/30">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-accent-green/10 rounded-2xl flex items-center justify-center text-accent-green">
+                                <div className="w-12 h-12 bg-accent-black/10 rounded-2xl flex items-center justify-center text-accent-black">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-white">ID Front Uploaded</p>
-                                    <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-green hover:underline">View Document</a>
+                                    <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-black hover:underline">View Document</a>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIdData({ ...idData, file_url: '' })}
-                                className="w-10 h-10 rounded-full flex items-center justify-center text-white/20 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover/upload:opacity-100"
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover/upload:opacity-100"
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                             </button>
@@ -1830,38 +1830,38 @@ const Assessment = () => {
                         <button
                             onClick={() => document.getElementById('id-upload').click()}
                             disabled={uploading === 'id-verification'}
-                            className="w-full py-8 border-2 border-dashed border-white/10 rounded-[30px] flex flex-col items-center justify-center gap-4 hover:border-accent-green transition-all group"
+                            className="w-full py-8 border-2 border-dashed border-black/5 rounded-[30px] flex flex-col items-center justify-center gap-4 hover:border-accent-black transition-all group"
                         >
                             {uploading === 'id-verification' ? (
-                                <div className="w-8 h-8 border-2 border-accent-green border-t-transparent animate-spin rounded-full"></div>
+                                <div className="w-8 h-8 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
                             ) : (
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
                             )}
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-white">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-white">
                                 Upload Front of ID
                             </span>
                         </button>
                     )}
                     {idData.file_url && (
-                        <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-green text-center opacity-60 italic">Identity document securely processed</p>
+                        <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-black text-center opacity-60 italic">Identity document securely processed</p>
                     )}
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4">
                     <button
                         onClick={() => setStep(9)}
-                        className="w-full md:flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(11)}
                         disabled={!idData.type || !idData.number || !idData.file_url}
-                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-[#1a1a1a] text-white hover:bg-black' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue to Shipping
                     </button>
@@ -1873,41 +1873,41 @@ const Assessment = () => {
     const renderShippingStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
             <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Step 25: Delivery
                 </div>
                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
-                    Where should we <span className="text-accent-green">ship?</span>
+                    Where should we <span className="text-accent-black">ship?</span>
                 </h2>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-12 backdrop-blur-xl space-y-6">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-6">
                 <div>
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Street Address</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Street Address</label>
                     <input
                         type="text"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                         value={shippingData.address}
                         onChange={(e) => setShippingData({ ...shippingData, address: e.target.value })}
                     />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">City</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">City</label>
                         <input
                             type="text"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={shippingData.city}
                             onChange={(e) => setShippingData({ ...shippingData, city: e.target.value })}
                         />
                     </div>
                     <div className="relative">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">State</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">State</label>
                         <div className="relative">
                             <input
                                 type="text"
                                 placeholder={shippingData.state ? stateFullNames[shippingData.state] : "Search..."}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold placeholder:text-white/20"
+                                className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold placeholder:text-gray-300"
                                 value={stateSearch}
                                 onChange={(e) => {
                                     setStateSearch(e.target.value);
@@ -1916,7 +1916,7 @@ const Assessment = () => {
                                 onFocus={() => setShowStateDropdown(true)}
                             />
                             {showStateDropdown && (
-                                <div className="absolute z-50 left-0 right-0 mt-2 max-h-40 overflow-y-auto bg-black border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
+                                <div className="absolute z-50 left-0 right-0 mt-2 max-h-40 overflow-y-auto bg-black border border-black/5 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
                                     {Object.entries(stateFullNames)
                                         .filter(([code, name]) =>
                                             name.toLowerCase().includes(stateSearch.toLowerCase()) ||
@@ -1930,7 +1930,7 @@ const Assessment = () => {
                                                     setStateSearch('');
                                                     setShowStateDropdown(false);
                                                 }}
-                                                className="px-6 py-3 hover:bg-accent-green hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between"
+                                                className="px-6 py-3 hover:bg-accent-black hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between"
                                             >
                                                 <span>{name}</span>
                                                 <span className="opacity-40">{code}</span>
@@ -1944,20 +1944,20 @@ const Assessment = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Zip Code</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Zip Code</label>
                         <input
                             type="text"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={shippingData.zip}
                             onChange={(e) => setShippingData({ ...shippingData, zip: e.target.value })}
                         />
                     </div>
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 ml-4">Phone Number</label>
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number</label>
                         <input
                             type="tel"
                             placeholder="(XXX) XXX-XXXX"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={shippingData.phone}
                             onChange={(e) => {
                                 const rawValue = e.target.value.replace(/\D/g, '');
@@ -1975,14 +1975,14 @@ const Assessment = () => {
                 <div className="flex flex-col md:flex-row gap-4">
                     <button
                         onClick={() => setStep(10)}
-                        className="w-full md:flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
                     </button>
                     <button
                         onClick={() => setStep(12)}
                         disabled={!shippingData.address || !shippingData.city || !shippingData.zip || !shippingData.state || !shippingData.phone}
-                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-white text-black hover:bg-accent-green' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-[#1a1a1a] text-white hover:bg-black' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue to Payment
                     </button>
@@ -1994,29 +1994,29 @@ const Assessment = () => {
     const renderPaymentStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
             <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Secure Checkout
                 </div>
                 <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
-                    Complete Your <span className="text-accent-green">Payment.</span>
+                    Complete Your <span className="text-accent-black">Payment.</span>
                 </h2>
-                <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px]">
+                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
                     Clinical assessment fee for professional provider review.
                 </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/5 rounded-[40px] p-12 backdrop-blur-xl space-y-10">
-                <div className="flex justify-between items-start pb-8 border-b border-white/5">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-10">
+                <div className="flex justify-between items-start pb-8 border-b border-black/5">
                     <div>
                         <h3 className="text-white text-xl font-black uppercase tracking-tighter italic mb-2">Eligibility Verification Fee</h3>
-                        <p className="text-white/40 text-[10px] font-medium uppercase tracking-widest leading-relaxed max-w-xs">
+                        <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest leading-relaxed max-w-xs">
                             A healthcare provider will review and verify your eligibility for the program.
                         </p>
                     </div>
-                    <span className="text-accent-green text-3xl font-black italic">
+                    <span className="text-accent-black text-3xl font-black italic">
                         {paymentData.appliedDiscount ? (
                             <>
-                                <span className="line-through text-white/20 text-xl mr-2">$25.00</span>
+                                <span className="line-through text-gray-300 text-xl mr-2">$25.00</span>
                                 ${(() => {
                                     const base = 25.00;
                                     const disc = paymentData.appliedDiscount;
@@ -2034,7 +2034,7 @@ const Assessment = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 ml-4 italic">Payment Details</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 italic">Payment Details</label>
                     {(() => {
                         const baseCents = 2500;
                         const disc = paymentData.appliedDiscount;
@@ -2051,7 +2051,7 @@ const Assessment = () => {
                             return (
                                 <button
                                     onClick={() => handleSubmitAssessment()}
-                                    className="w-full py-6 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
+                                    className="w-full py-6 bg-accent-black text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white transition-all shadow-[0_0_50px_rgba(19,91,236,0.2)]"
                                 >
                                     Complete Activation →
                                 </button>
@@ -2076,13 +2076,13 @@ const Assessment = () => {
                     })()}
                 </div>
 
-                <div className="pt-8 border-t border-white/5">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-4 italic">Have an eligibility coupon code?</label>
+                <div className="pt-8 border-t border-black/5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4 italic">Have an eligibility coupon code?</label>
                     <div className="flex flex-col md:flex-row gap-4">
                         <input
                             type="text"
                             placeholder="Enter coupon code"
-                            className="w-full md:flex-1 bg-white/5 border border-white/10 rounded-2xl py-5 px-8 text-white focus:outline-none focus:border-accent-green transition-all font-bold"
+                            className="w-full md:flex-1 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
                             value={paymentData.coupon || ''}
                             onChange={(e) => setPaymentData({ ...paymentData, coupon: e.target.value })}
                         />
@@ -2106,21 +2106,21 @@ const Assessment = () => {
                                     alert('Could not validate coupon at this time.');
                                 }
                             }}
-                            className="w-full md:w-auto py-5 px-8 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-accent-green transition-all"
+                            className="w-full md:w-auto py-5 px-8 bg-black/5 border border-black/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-accent-black transition-all"
                         >
                             Apply
                         </button>
                     </div>
                 </div>
 
-                <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-white/20 px-8">
+                <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-8">
                     Secure 256-bit SSL encrypted payment. By clicking "Process Activation", you agree to our clinical terms of service.
                 </p>
 
-                <div className="pt-4 text-center border-t border-white/5">
+                <div className="pt-4 text-center border-t border-black/5">
                     <button
                         onClick={() => setStep(11)}
-                        className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-colors"
+                        className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-[#1a1a1a] transition-colors"
                     >
                         ← Back to Shipping
                     </button>
@@ -2131,29 +2131,29 @@ const Assessment = () => {
 
     const renderSuccessStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6 text-center">
-            <div className="w-24 h-24 bg-accent-green/10 border border-accent-green/20 rounded-full flex items-center justify-center mx-auto mb-10">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green">
+            <div className="w-24 h-24 bg-accent-black/10 border border-accent-black/20 rounded-full flex items-center justify-center mx-auto mb-10">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
             </div>
             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6 leading-tight">
                 Assessment <br />
-                <span className="text-accent-green">Complete.</span>
+                <span className="text-accent-black">Complete.</span>
             </h2>
-            <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mb-12 max-w-md mx-auto leading-relaxed">
+            <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px] mb-12 max-w-md mx-auto leading-relaxed">
                 Your medical profile has been encrypted and submitted to our clinical board. A licensed provider will review your case within 24 hours.
             </p>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center">
                 <button
                     onClick={() => navigate('/')}
-                    className="px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all duration-500"
+                    className="px-12 py-8 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all duration-500"
                 >
                     Home Page
                 </button>
                 <button
                     onClick={() => navigate('/dashboard')}
-                    className="px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-accent-green hover:shadow-[0_0_50px_rgba(191,255,0,0.3)] transition-all duration-500"
+                    className="px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-accent-black hover:shadow-[0_0_50px_rgba(19,91,236,0.3)] transition-all duration-500"
                 >
                     Enter Dashboard
                 </button>
@@ -2176,70 +2176,70 @@ const Assessment = () => {
         return (
             <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
                 <div className="text-center mb-16">
-                    <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8">
+                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                         Final Review
                     </div>
                     <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6">
-                        Review Your <span className="text-accent-green">Profile.</span>
+                        Review Your <span className="text-accent-black">Profile.</span>
                     </h2>
-                    <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px]">
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
                         Verify your information before clinical board submission.
                     </p>
                 </div>
 
                 {/* Personal Information Section */}
-                <div className="mb-8 bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12">
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-green mb-8 pb-4 border-b border-white/5">
+                <div className="mb-8 bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12">
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-black mb-8 pb-4 border-b border-black/5">
                         Personal Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Date of Birth</p>
-                            <p className="text-white font-bold">{eligibilityData.dob || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Date of Birth</p>
+                            <p className="text-black">{eligibilityData.dob || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Sex</p>
-                            <p className="text-white font-bold capitalize">{eligibilityData.sex || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Sex</p>
+                            <p className="text-black capitalize">{eligibilityData.sex || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">State</p>
-                            <p className="text-white font-bold">{stateFullNames[eligibilityData.state] || eligibilityData.state || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">State</p>
+                            <p className="text-black">{stateFullNames[eligibilityData.state] || eligibilityData.state || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Phone Number</p>
-                            <p className="text-white font-bold">{eligibilityData.phone || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Phone Number</p>
+                            <p className="text-black">{eligibilityData.phone || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Height</p>
-                            <p className="text-white font-bold">{intakeData.height || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Height</p>
+                            <p className="text-black">{intakeData.height || 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Weight</p>
-                            <p className="text-white font-bold">{intakeData.weight ? `${intakeData.weight} lbs` : 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Weight</p>
+                            <p className="text-black">{intakeData.weight ? `${intakeData.weight} lbs` : 'Not provided'}</p>
                         </div>
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Medication Interest</p>
-                            <p className="text-white font-bold">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Medication Interest</p>
+                            <p className="text-black">
                                 {intakeData.medication_interest === 'Other / Not Sure'
                                     ? `Other: ${intakeData.other_medication_details || 'No details'}`
                                     : (intakeData.medication_interest || 'Not provided')}
                             </p>
                         </div>
                         <div className="md:col-span-2">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Primary Care Visit (Last 12 Months)</p>
-                            <p className="text-white font-bold">{eligibilityData.pcpVisitLast6Months || 'Not provided'}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Primary Care Visit (Last 12 Months)</p>
+                            <p className="text-black">{eligibilityData.pcpVisitLast6Months || 'Not provided'}</p>
                         </div>
                         {Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0 && (
                             <div className="md:col-span-2 space-y-4">
                                 {eligibilityData.labResults.map((url, idx) => (
-                                    <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-between">
+                                    <div key={idx} className="bg-black/5 border border-black/5 p-4 rounded-2xl flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-accent-green/20 rounded-lg flex items-center justify-center text-accent-green">
+                                            <div className="w-8 h-8 bg-accent-black/20 rounded-lg flex items-center justify-center text-accent-black">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                                             </div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white">Lab Results {idx + 1}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-[#1a1a1a]">Lab Results {idx + 1}</p>
                                         </div>
-                                        <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline">View Upload</a>
+                                        <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">View Upload</a>
                                     </div>
                                 ))}
                             </div>
@@ -2249,17 +2249,17 @@ const Assessment = () => {
 
                 {/* Selected Goals Section */}
                 {selectedImprovements.length > 0 && (
-                    <div className="mb-8 bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-green mb-8 pb-4 border-b border-white/5">
+                    <div className="mb-8 bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-black mb-8 pb-4 border-b border-black/5">
                             Your Goals - {categoryId.toUpperCase()} Program
                         </h3>
                         <div className="space-y-4">
                             {selectedImprovements.map(impId => {
                                 const improvement = categoryData.improvements.find(imp => imp.id === impId);
                                 return improvement ? (
-                                    <div key={impId} className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                                        <p className="text-white font-bold mb-1">{improvement.name}</p>
-                                        <p className="text-white/60 text-sm">{improvement.desc}</p>
+                                    <div key={impId} className="p-4 bg-white/[0.02] border border-black/5 rounded-2xl">
+                                        <p className="text-black mb-1">{improvement.name}</p>
+                                        <p className="text-gray-600 text-sm">{improvement.desc}</p>
                                     </div>
                                 ) : null;
                             })}
@@ -2269,36 +2269,36 @@ const Assessment = () => {
 
                 {/* Medical Intake Responses Section */}
                 {Object.keys(intakeData).length > 0 && (
-                    <div className="mb-8 bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-green mb-8 pb-4 border-b border-white/5">
+                    <div className="mb-8 bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-black mb-8 pb-4 border-b border-black/5">
                             Medical Intake Responses
                         </h3>
                         <div className="space-y-6">
                             {medicalQuestions
                                 .filter(q => q.type !== 'info' && intakeData[q.id])
                                 .map((question, idx) => (
-                                    <div key={question.id} className="pb-6 border-b border-white/5 last:border-0">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-3">
+                                    <div key={question.id} className="pb-6 border-b border-black/5 last:border-0">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-3">
                                             {question.title}
                                         </p>
-                                        <p className="text-white/80 text-sm mb-2 italic">{question.question}</p>
+                                        <p className="text-gray-800 text-sm mb-2 italic">{question.question}</p>
                                         <div className="mt-3 p-4 bg-white/[0.02] rounded-xl">
-                                            <p className="text-white font-bold">
+                                            <p className="text-black">
                                                 {formatAnswer(intakeData[question.id])}
                                             </p>
                                         </div>
                                         {/* Show prescription file if it exists */}
                                         {intakeData[`${question.id}_file`] && (
-                                            <div className="mt-3 p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between">
-                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/40 italic">Attached: Medical Document</span>
-                                                <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[8px] font-black uppercase tracking-widest text-accent-green hover:underline">Preview</a>
+                                            <div className="mt-3 p-3 bg-black/5 border border-black/5 rounded-xl flex items-center justify-between">
+                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">Attached: Medical Document</span>
+                                                <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[8px] font-black uppercase tracking-widest text-accent-black hover:underline">Preview</a>
                                             </div>
                                         )}
                                         {/* Show details if they exist */}
                                         {intakeData[`${question.id}_details`] && (
-                                            <div className="mt-3 p-4 bg-accent-green/5 border border-accent-green/10 rounded-xl">
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-accent-green mb-2">Additional Details</p>
-                                                <p className="text-white/80 text-sm">{intakeData[`${question.id}_details`]}</p>
+                                            <div className="mt-3 p-4 bg-accent-black/5 border border-accent-black/10 rounded-xl">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-accent-black mb-2">Additional Details</p>
+                                                <p className="text-gray-800 text-sm">{intakeData[`${question.id}_details`]}</p>
                                             </div>
                                         )}
                                     </div>
@@ -2309,29 +2309,29 @@ const Assessment = () => {
 
                 {/* Identification Section */}
                 {(idData.type || idData.number) && (
-                    <div className="mb-8 bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-green mb-8 pb-4 border-b border-white/5">
+                    <div className="mb-8 bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-black mb-8 pb-4 border-b border-black/5">
                             Identification
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">ID Type</p>
-                                <p className="text-white font-bold">{idData.type || 'Not provided'}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">ID Type</p>
+                                <p className="text-black">{idData.type || 'Not provided'}</p>
                             </div>
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">ID Number</p>
-                                <p className="text-white font-bold">{idData.number ? '••••••' + idData.number.slice(-4) : 'Not provided'}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">ID Number</p>
+                                <p className="text-black">{idData.number ? '••••••' + idData.number.slice(-4) : 'Not provided'}</p>
                             </div>
                         </div>
                         {idData.file_url && (
-                            <div className="mt-6 bg-accent-green/5 border border-accent-green/10 p-4 rounded-2xl flex items-center justify-between">
+                            <div className="mt-6 bg-accent-black/5 border border-accent-black/10 p-4 rounded-2xl flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-accent-green/20 rounded-lg flex items-center justify-center text-accent-green">
+                                    <div className="w-8 h-8 bg-accent-black/20 rounded-lg flex items-center justify-center text-accent-black">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                     </div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white">Identity Document Verified</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#1a1a1a]">Identity Document Verified</p>
                                 </div>
-                                <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline">Review Document</a>
+                                <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">Review Document</a>
                             </div>
                         )}
                     </div>
@@ -2339,27 +2339,27 @@ const Assessment = () => {
 
                 {/* Shipping Information Section */}
                 {(shippingData.address || shippingData.city) && (
-                    <div className="mb-8 bg-white/[0.03] border border-white/5 rounded-[40px] p-8 md:p-12">
-                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-green mb-8 pb-4 border-b border-white/5">
+                    <div className="mb-8 bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-accent-black mb-8 pb-4 border-b border-black/5">
                             Shipping Address
                         </h3>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Street Address</p>
-                                <p className="text-white font-bold">{shippingData.address || 'Not provided'}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Street Address</p>
+                                <p className="text-black">{shippingData.address || 'Not provided'}</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">City</p>
-                                    <p className="text-white font-bold">{shippingData.city || 'Not provided'}</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">City</p>
+                                    <p className="text-black">{shippingData.city || 'Not provided'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">State</p>
-                                    <p className="text-white font-bold">{stateFullNames[shippingData.state] || shippingData.state || 'Not provided'}</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">State</p>
+                                    <p className="text-black">{stateFullNames[shippingData.state] || shippingData.state || 'Not provided'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Zip Code</p>
-                                    <p className="text-white font-bold">{shippingData.zip || 'Not provided'}</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Zip Code</p>
+                                    <p className="text-black">{shippingData.zip || 'Not provided'}</p>
                                 </div>
                             </div>
                         </div>
@@ -2367,27 +2367,27 @@ const Assessment = () => {
                 )}
 
                 {/* Certification and Actions */}
-                <div className="p-8 bg-accent-green/10 border border-accent-green/20 rounded-[40px] text-center">
-                    <p className="text-xs font-bold text-accent-green uppercase tracking-widest mb-8">I certify that all medical information provided is accurate and truthful.</p>
+                <div className="p-8 bg-accent-black/10 border border-accent-black/20 rounded-[40px] text-center">
+                    <p className="text-xs font-bold text-accent-black uppercase tracking-widest mb-8">I certify that all medical information provided is accurate and truthful.</p>
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                         <button
                             onClick={() => setStep(8)}
                             disabled={submitLoading}
-                            className="px-12 py-8 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:border-white/30 transition-all disabled:opacity-50"
+                            className="px-12 py-8 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:border-white/30 transition-all disabled:opacity-50"
                         >
                             Back to Intake
                         </button>
                         <button
                             onClick={() => setStep(10)}
                             disabled={submitLoading}
-                            className="flex-1 px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-accent-green hover:shadow-[0_0_60px_rgba(191,255,0,0.5)] transition-all disabled:opacity-50"
+                            className="flex-1 px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-accent-black hover:shadow-[0_0_60px_rgba(19,91,236,0.5)] transition-all disabled:opacity-50"
                         >
                             {submitLoading ? 'Submitting...' : 'Confirm & Continue'}
                         </button>
                     </div>
                     <button
                         onClick={() => window.print()}
-                        className="mt-6 text-[9px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-colors"
+                        className="mt-6 text-[9px] font-black uppercase tracking-[0.3em] text-gray-300 hover:text-white transition-colors"
                     >
                         Generate Assessment PDF
                     </button>
@@ -2397,18 +2397,18 @@ const Assessment = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-accent-green selection:text-black">
+        <div className="min-h-screen bg-white text-[#1a1a1a] font-sans selection:bg-accent-black selection:text-black">
             {/* Minimal Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-xl border-b border-white/5 px-8 py-6">
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 py-6">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors">
+                    <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors text-black">
                         GLP-GLOW
                     </Link>
 
                     {step > 0 && step < 13 && (
                         <button
                             onClick={handleClearProgress}
-                            className="text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-red-500 transition-all border border-white/5 hover:border-red-500/30 px-4 py-2 rounded-full pointer-events-auto"
+                            className="text-[9px] font-black uppercase tracking-widest text-black/20 hover:text-red-500 transition-all border border-black/5 hover:border-red-500/30 px-4 py-2 rounded-full pointer-events-auto"
                         >
                             Stop & Clear Progress
                         </button>
@@ -2440,7 +2440,7 @@ const Assessment = () => {
                 <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
                     <button
                         onClick={handleClearProgress}
-                        className="w-full bg-black/80 backdrop-blur-xl border border-white/5 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-red-500 transition-all"
+                        className="w-full bg-black/80 backdrop-blur-xl border border-black/5 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest text-black/20 hover:text-red-500 transition-all"
                     >
                         Reset Progress & Exit
                     </button>
@@ -2457,18 +2457,18 @@ const Assessment = () => {
                     50% { transform: translateY(-10px); }
                 }
                 input[type="date"]::-webkit-calendar-picker-indicator {
-                    filter: invert(1);
+                    filter: invert(0);
                     cursor: pointer;
                 }
                 ::placeholder {
-                    color: rgba(255, 255, 255, 0.5) !important;
+                    color: rgba(0, 0, 0, 0.4) !important;
                     opacity: 1;
                 }
                 :-ms-input-placeholder {
-                    color: rgba(255, 255, 255, 0.5) !important;
+                    color: rgba(0, 0, 0, 0.4) !important;
                 }
                 ::-ms-input-placeholder {
-                    color: rgba(255, 255, 255, 0.5) !important;
+                    color: rgba(0, 0, 0, 0.4) !important;
                 }
             `}} />
         </div>

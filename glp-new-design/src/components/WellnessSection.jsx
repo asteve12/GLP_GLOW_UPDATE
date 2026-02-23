@@ -48,7 +48,7 @@ const WellnessSection = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full py-24 pb-0 overflow-hidden bg-gradient-to-r from-[#011612] via-[#043329] to-[#011612] animate-gradient-x text-white">
+        <section ref={sectionRef} className="relative w-full py-24 pb-0 overflow-hidden bg-gradient-to-r from-[#050505] via-[#0a0a0a] to-[#050505] animate-gradient-x text-white">
             <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6 md:px-12 lg:px-16 mb-24">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
 
@@ -57,7 +57,7 @@ const WellnessSection = () => {
                         <div className="space-y-4">
                             <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">
                                 Personalized health <br />
-                                <span className="text-accent-green">made simple</span>
+                                <span className="text-accent-black">made simple</span>
                             </h2>
                             <p className="text-xl text-text-muted font-medium mb-8">
                                 Specialized care for Weight Loss, Hair Restoration, Sexual Health, and Longevity.
@@ -66,8 +66,8 @@ const WellnessSection = () => {
 
                         <div className="space-y-8">
                             <div className="flex gap-6 group">
-                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 group-hover:bg-accent-green/20 transition-colors">
-                                    <span className="text-accent-green font-bold text-xl">01</span>
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-black/10 flex items-center justify-center border border-accent-black/20 group-hover:bg-accent-black/20 transition-colors">
+                                    <span className="text-accent-black font-bold text-xl">01</span>
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold mb-2 uppercase tracking-wide">100% online experience</h3>
@@ -78,8 +78,8 @@ const WellnessSection = () => {
                             </div>
 
                             <div className="flex gap-6 group">
-                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 group-hover:bg-accent-green/20 transition-colors">
-                                    <span className="text-accent-green font-bold text-xl">02</span>
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-black/10 flex items-center justify-center border border-accent-black/20 group-hover:bg-accent-black/20 transition-colors">
+                                    <span className="text-accent-black font-bold text-xl">02</span>
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold mb-2 uppercase tracking-wide">Expert medical support</h3>
@@ -90,8 +90,8 @@ const WellnessSection = () => {
                             </div>
 
                             <div className="flex gap-6 group">
-                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 group-hover:bg-accent-green/20 transition-colors">
-                                    <span className="text-accent-green font-bold text-xl">03</span>
+                                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent-black/10 flex items-center justify-center border border-accent-black/20 group-hover:bg-accent-black/20 transition-colors">
+                                    <span className="text-accent-black font-bold text-xl">03</span>
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold mb-2 uppercase tracking-wide">Tailored medications</h3>
@@ -102,14 +102,14 @@ const WellnessSection = () => {
                             </div>
                         </div>
 
-                        <Link to="/qualify" className="bg-white text-bg-primary px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-green transition-all shadow-2xl transform hover:scale-105 active:scale-95 inline-block">
+                        <Link to="/qualify" className="bg-white text-bg-primary px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all shadow-2xl transform hover:scale-105 active:scale-95 inline-block">
                             Start My Assessment
                         </Link>
                     </div>
 
                     {/* Right Column: Image */}
                     <div ref={imageRef} className="relative">
-                        <div className="absolute -inset-4 bg-accent-green/20 blur-3xl rounded-full opacity-30"></div>
+                        <div className="absolute -inset-4 bg-accent-black/20 blur-3xl rounded-full opacity-30"></div>
                         <div className="relative rounded-[40px] overflow-hidden shadow-2xl border border-white/10 group">
                             <img
                                 src={happyPeopleImg}
@@ -119,7 +119,7 @@ const WellnessSection = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/80 to-transparent opacity-60"></div>
 
                             <div className="absolute bottom-8 left-8 right-8 bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-2xl transform flex items-center gap-4">
-                                <div className="w-12 h-12 bg-accent-green rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
+                                <div className="w-12 h-12 bg-accent-black rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -139,19 +139,19 @@ const WellnessSection = () => {
             <div className="w-full border-t border-white/10 bg-black/20 backdrop-blur-sm py-8">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-8 md:px-16 flex flex-nowrap justify-between items-center gap-6 md:gap-12 overflow-x-auto scrollbar-hide">
                     <div className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/90 whitespace-nowrap">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(191,255,0,0.6)]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-black shadow-[0_0_8px_rgba(19,91,236,0.6)]"></div>
                         LegitScript Certified
                     </div>
                     <div className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/90 whitespace-nowrap">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(191,255,0,0.6)]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-black shadow-[0_0_8px_rgba(19,91,236,0.6)]"></div>
                         HIPAA Compliant
                     </div>
                     <div className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/90 whitespace-nowrap">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(191,255,0,0.6)]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-black shadow-[0_0_8px_rgba(19,91,236,0.6)]"></div>
                         FDA-regulated Pharmacies
                     </div>
                     <div className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/90 whitespace-nowrap">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(191,255,0,0.6)]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-black shadow-[0_0_8px_rgba(19,91,236,0.6)]"></div>
                         Eligible HSA/FSA expense
                     </div>
                 </div>
