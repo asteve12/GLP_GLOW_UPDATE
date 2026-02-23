@@ -1702,7 +1702,7 @@ const ProductDetails = () => {
                                             onClick={() => setIsCompareOpen(true)}
                                             className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-gray-100 text-[9px] font-black uppercase tracking-[0.2em] text-[#1a1a1a] hover:bg-gray-50 hover:border-gray-200 transition-all group mb-1"
                                         >
-                                            Compare Options
+                                            Compare
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="opacity-40 group-hover:opacity-100 transition-opacity"><path d="m9 18 6-6-6-6" /></svg>
                                         </button>
                                     </div>
