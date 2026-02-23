@@ -340,18 +340,31 @@ const NewLandingPage = () => {
                 </section>
 
                 {/* Lab Testing Section */}
-                <section className="py-24 bg-[#fcfbfa] border-y border-gray-100">
+                <section className="py-32 bg-[#fcfbfa] border-y border-gray-100">
                     <div className="max-w-[1200px] mx-auto px-6 text-center">
-                        <p className="text-xs tracking-widest uppercase mb-8 font-bold text-gray-400">LABS BY</p>
-                        <div className="flex justify-center mb-12">
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center w-24 h-10 overflow-visible transition-transform hover:scale-105 duration-300">
-                                <img src={logo} alt="Lab Logo" className="h-24 w-auto drop-shadow-sm" />
+                        <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-300">LABS BY</p>
+
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-transform hover:scale-105 duration-500">
+                                <div className="flex items-center">
+                                    <span className="text-lg font-serif italic text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>uGlow</span>
+                                    <span className="text-[8px] font-black text-black ml-0.5 mb-1.5">MD</span>
+                                </div>
                             </div>
                         </div>
-                        <h2 className="text-4xl md:text-5xl italic mb-10" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Get your labs.<br />Go for your optimal.</h2>
-                        <div className="flex justify-center gap-4 mb-24">
-                            <button className="bg-black text-white px-10 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-all shadow-lg">Start my labs</button>
-                            <button className="bg-white border border-gray-200 text-black px-10 py-3 rounded-md text-sm font-bold hover:border-black transition-all">Learn more</button>
+
+                        <h2 className="text-4xl md:text-5xl mb-8 tracking-tight leading-[1.15]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                            <span className="text-black font-bold block">Get your labs.</span>
+                            <span className="text-gray-400 italic">Go for your optimal.</span>
+                        </h2>
+
+                        <div className="flex flex-col md:flex-row justify-center items-center gap-5 mb-24">
+                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black hover:shadow-2xl transition-all duration-300 min-w-[160px]">
+                                Start my labs
+                            </button>
+                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 transition-all duration-300 min-w-[160px]">
+                                Learn more
+                            </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mb-24 max-w-4xl mx-auto">
