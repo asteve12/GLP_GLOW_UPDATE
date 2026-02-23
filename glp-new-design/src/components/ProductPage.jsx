@@ -13,7 +13,7 @@ import longevityImg from '../assets/longevity.png';
 import prdDetailBg from '../assets/prd_detial_bg_image.png';
 import weightLossBanner from '../assets/weight-loss-banner.png';
 import semaglutideInjection from '../assets/semaglutide-injection.png';
-import tirzepetideInjection from '../assets/tirzepetide_injection.webp';
+import tirzepetideInjection from '../assets/tirzepetide_injection.png';
 import semaglutideDrops from '../assets/semaglutide_drops.png';
 import tirzepatideDrops from '../assets/tirzepatide_drops.png';
 import medicationDelivery from '../assets/medication_delivery.png';
@@ -484,13 +484,13 @@ const ProductPage = () => {
                             <div className="space-y-2 mb-6 md:mb-8">
                                 {data.valueProps.map((prop, i) => (
                                     <div key={i} className="flex items-center gap-2 md:gap-3 text-xs sm:text-sm font-bold text-gray-800">
-                                        <span className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-accent-green flex items-center justify-center text-xs text-black flex-shrink-0">✓</span>
+                                        <span className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-accent-black flex items-center justify-center text-xs text-white flex-shrink-0">✓</span>
                                         {prop}
                                     </div>
                                 ))}
                             </div>
 
-                            <Link to={`/qualify?category=${categoryId}`} className="bg-bg-primary text-white w-full md:w-auto px-6 md:px-8 lg:px-10 py-3 md:py-4 text-sm md:text-base uppercase font-bold tracking-widest hover:bg-accent-green hover:text-bg-primary transition-all rounded-full shadow-lg inline-block text-center">
+                            <Link to={`/qualify?category=${categoryId}`} className="bg-bg-primary text-white w-full md:w-auto px-6 md:px-8 lg:px-10 py-3 md:py-4 text-sm md:text-base uppercase font-bold tracking-widest hover:bg-accent-black hover:text-white transition-all rounded-full shadow-lg inline-block text-center">
                                 Get Started
                             </Link>
                         </div>
@@ -534,7 +534,7 @@ const ProductPage = () => {
                                             key={index}
                                             onClick={() => setSliderPosition(index * 33.33)}
                                             className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${Math.floor(sliderPosition / 33.33) % 3 === index
-                                                ? 'bg-accent-green w-8'
+                                                ? 'bg-accent-black w-8'
                                                 : 'bg-white/40 hover:bg-white/80'
                                                 }`}
                                         />
@@ -544,7 +544,7 @@ const ProductPage = () => {
                                 {/* Verified Badge */}
                                 <div className="absolute top-6 right-6 z-20 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-black/5 shadow-sm">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
+                                        <div className="w-2 h-2 rounded-full bg-accent-black animate-pulse"></div>
                                         <span className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">Verified Progress</span>
                                     </div>
                                 </div>
@@ -557,20 +557,20 @@ const ProductPage = () => {
                     <section className="explore-treatments px-6 sm:px-12 md:px-16 py-24 md:py-40 bg-white relative overflow-hidden">
                         {/* Background Accents */}
                         <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-                            <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] bg-accent-green/5 rounded-full blur-[120px]"></div>
-                            <div className="absolute bottom-[10%] right-[-5%] w-[40%] h-[40%] bg-accent-green/5 rounded-full blur-[120px]"></div>
+                            <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] bg-accent-black/5 rounded-full blur-[120px]"></div>
+                            <div className="absolute bottom-[10%] right-[-5%] w-[40%] h-[40%] bg-accent-black/5 rounded-full blur-[120px]"></div>
                         </div>
 
                         <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
                             {/* Section Branding */}
                             <div className="text-center mb-24 md:mb-32">
                                 <div className="inline-flex items-center gap-4 py-2 px-6 bg-[#1A1A1A] rounded-full mb-8">
-                                    <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
+                                    <div className="w-2 h-2 rounded-full bg-accent-black animate-pulse"></div>
                                     <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white">The Treatment Suite</div>
                                 </div>
                                 <h2 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter text-[#1A1A1A] leading-[0.85] italic mb-10 break-words">
                                     {suiteTitleTop} <br />
-                                    <span className="text-accent-green">{suiteTitleBottom}</span>
+                                    <span className="text-accent-black">{suiteTitleBottom}</span>
                                 </h2>
                                 <p className="text-xl md:text-2xl text-[#4A4A4A] leading-relaxed max-w-3xl mx-auto font-medium font-serif italic">
                                     {suiteQuote}
@@ -594,17 +594,17 @@ const ProductPage = () => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
                                         {data.items.filter(item => group1Filter(item.type)).map((item, i) => (
-                                            <div key={i} className="product-card group relative bg-white border border-[#1A1A1A]/5 rounded-[40px] md:rounded-[60px] p-8 md:p-14 transition-all duration-700 hover:border-accent-green/30 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)]">
+                                            <div key={i} className="product-card group relative bg-white border border-[#1A1A1A]/5 rounded-[40px] md:rounded-[60px] p-8 md:p-14 transition-all duration-700 hover:border-accent-black/30 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)]">
                                                 {/* Best For Tag */}
                                                 <div className="absolute top-10 right-10 z-20">
-                                                    <div className="bg-[#1A1A1A] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl group-hover:bg-accent-green group-hover:text-[#1A1A1A] transition-colors">
+                                                    <div className="bg-[#1A1A1A] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl group-hover:bg-accent-black group-hover:text-white transition-colors">
                                                         Best for: {item.bestFor || (i === 0 ? (isWeightLoss ? "Efficient Loss" : "Standard") : (isWeightLoss ? "Maximum Response" : "Premium"))}
                                                     </div>
                                                 </div>
 
                                                 {/* Display Pedestal */}
                                                 <div className="mb-12 relative aspect-square bg-[#F9F7F2] rounded-[30px] md:rounded-[50px] overflow-hidden flex items-center justify-center p-12 group-hover:bg-[#f3f1eb] transition-colors duration-500">
-                                                    <div className="absolute inset-0 bg-gradient-to-tr from-accent-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-accent-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                                                     <img src={item.image || item.productImage || data.image} alt={item.name} className="w-full h-auto max-h-[80%] object-contain z-10 transition-all duration-700 group-hover:scale-110 group-hover:-rotate-3 drop-shadow-3xl" />
                                                     <div className="absolute bottom-[-20%] left-[-20%] w-[140%] h-[40%] bg-black/5 blur-[50px] rounded-[100%]"></div>
                                                 </div>
@@ -613,16 +613,16 @@ const ProductPage = () => {
                                                     <div className="text-xs font-bold text-[#4A4A4A] uppercase tracking-[0.3em] mb-4">Compound Protocol</div>
                                                     <h4 className="text-3xl md:text-4xl font-black text-[#1A1A1A] mb-4 uppercase tracking-tight italic leading-none">{item.name}</h4>
                                                     <div className="flex items-center justify-center gap-4 mb-10">
-                                                        <div className="h-px w-8 bg-accent-green"></div>
-                                                        <div className="text-lg font-medium text-[#1A1A1A]">Starts at <span className="font-black underline decoration-accent-green decoration-4 underline-offset-4">{item.price}</span></div>
-                                                        <div className="h-px w-8 bg-accent-green"></div>
+                                                        <div className="h-px w-8 bg-accent-black"></div>
+                                                        <div className="text-lg font-medium text-[#1A1A1A]">Starts at <span className="font-black underline decoration-accent-black decoration-4 underline-offset-4">{item.price}</span></div>
+                                                        <div className="h-px w-8 bg-accent-black"></div>
                                                     </div>
 
                                                     <div className="flex flex-col gap-4">
-                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-green hover:text-[#1A1A1A] transition-all transform active:scale-95 shadow-lg group-hover:shadow-accent-green/20 block">
+                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg group-hover:shadow-accent-black/20 block">
                                                             Start Evaluation
                                                         </Link>
-                                                        <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-green transition-all inline-block mx-auto">
+                                                        <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-black transition-all inline-block mx-auto">
                                                             View more →
                                                         </Link>
                                                     </div>
@@ -643,10 +643,10 @@ const ProductPage = () => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
                                         {data.items.filter(item => group2Filter(item.type)).map((item, i) => (
-                                            <div key={i} className="product-card group relative bg-white border border-[#1A1A1A]/5 rounded-[40px] md:rounded-[60px] p-8 md:p-14 transition-all duration-700 hover:border-accent-green/30 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)]">
+                                            <div key={i} className="product-card group relative bg-white border border-[#1A1A1A]/5 rounded-[40px] md:rounded-[60px] p-8 md:p-14 transition-all duration-700 hover:border-accent-black/30 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)]">
                                                 {/* Best For Tag */}
                                                 <div className="absolute top-10 right-10 z-20">
-                                                    <div className="bg-[#1A1A1A] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl group-hover:bg-accent-green group-hover:text-[#1A1A1A] transition-colors">
+                                                    <div className="bg-[#1A1A1A] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl group-hover:bg-accent-black group-hover:text-white transition-colors">
                                                         Best for: {item.bestFor || (i === 0 ? (isWeightLoss ? "Maintenance" : "Standard") : (isWeightLoss ? "Rapid Absorption" : "Premium"))}
                                                     </div>
                                                 </div>
@@ -660,14 +660,14 @@ const ProductPage = () => {
                                                     <div className="text-xs font-bold text-[#4A4A4A] uppercase tracking-[0.3em] mb-4">Non-Invasive Protocol</div>
                                                     <h4 className="text-3xl md:text-4xl font-black text-[#1A1A1A] mb-4 uppercase tracking-tight italic leading-none">{item.name}</h4>
                                                     <div className="flex items-center justify-center gap-4 mb-10">
-                                                        <div className="text-lg font-medium text-[#1A1A1A]">Starts at <span className="font-black underline decoration-accent-green decoration-2 underline-offset-4">{item.price}</span></div>
+                                                        <div className="text-lg font-medium text-[#1A1A1A]">Starts at <span className="font-black underline decoration-accent-black decoration-2 underline-offset-4">{item.price}</span></div>
                                                     </div>
 
                                                     <div className="flex flex-col gap-4">
-                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-green hover:text-[#1A1A1A] transition-all transform active:scale-95 shadow-lg block">
+                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg block">
                                                             Start Evaluation
                                                         </Link>
-                                                        <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-green transition-all inline-block mx-auto">
+                                                        <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-black transition-all inline-block mx-auto">
                                                             View more →
                                                         </Link>
                                                     </div>
@@ -682,7 +682,7 @@ const ProductPage = () => {
                         {/* SECTION FOOTER - Trust Bar */}
                         <div className="w-full mt-24 pt-12 border-t border-[#1A1A1A]/5 flex flex-wrap justify-between items-center gap-6">
                             <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#1A1A1A]">
-                                <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse shadow-[0_0_10px_rgba(191,255,0,0.5)]"></div>
+                                <div className="w-2 h-2 rounded-full bg-accent-black animate-pulse shadow-[0_0_10px_rgba(19,91,236,0.5)]"></div>
                                 Clinical Suite Active
                             </div>
                             <div className="flex gap-4 text-[9px] font-bold text-[#1A1A1A]/30 uppercase tracking-[0.2em]">
@@ -712,7 +712,7 @@ const ProductPage = () => {
                                 <p className="text-lg md:text-xl text-white/90 font-medium leading-relaxed mb-8">
                                     Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName || 'GLP-GLOW'} patients.
                                 </p>
-                                <button className="bg-accent-green text-bg-primary px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl transform hover:scale-105">
+                                <button className="bg-accent-black text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl transform hover:scale-105">
                                     I'm ready, Let's Go
                                 </button>
                             </div>
@@ -732,12 +732,12 @@ const ProductPage = () => {
                                                 </div>
                                                 <div className="w-1/2 h-full relative">
                                                     <img src={story.afterImage} alt="After" className="w-full h-full object-cover" />
-                                                    <span className="absolute bottom-2 right-2 bg-accent-green text-black text-xs font-bold px-2 py-1 rounded">After</span>
+                                                    <span className="absolute bottom-2 right-2 bg-accent-black text-white text-xs font-bold px-2 py-1 rounded">After</span>
                                                 </div>
                                             </div>
                                             {/* Content */}
                                             <div className="p-6 text-center bg-[#F7F8F1]">
-                                                <div className="inline-block bg-accent-green text-bg-primary font-black text-xl px-4 py-1 rounded-full mb-3 transform -rotate-2">
+                                                <div className="inline-block bg-accent-black text-white font-black text-xl px-4 py-1 rounded-full mb-3 transform -rotate-2">
                                                     {story.lost}
                                                 </div>
                                                 <h3 className="font-bold text-lg text-gray-900 mb-1">{story.name}</h3>
@@ -745,7 +745,7 @@ const ProductPage = () => {
 
                                                 <div className="border-t border-black/5 pt-4">
                                                     <p className="text-lg font-serif italic text-gray-800 leading-tight mb-1">"{story.quote}"</p>
-                                                    <p className="text-sm text-accent-green font-bold">{story.subQuote}</p>
+                                                    <p className="text-sm text-accent-black font-bold">{story.subQuote}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1053,7 +1053,7 @@ const ProductPage = () => {
                                 </div>
 
                                 {/* Image 3 - Large (spans 2 rows) */}
-                                <div className="col-span-4 md:col-span-5 row-span-2 rounded-[40px] overflow-hidden aspect-[3/5] bg-gradient-to-br from-blue-100 to-blue-200 group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:scale-105">
+                                <div className="col-span-4 md:col-span-5 row-span-2 rounded-[40px] overflow-hidden aspect-[3/5] bg-gradient-to-br from-gray-100 to-gray-200 group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:scale-105">
                                     <img
                                         src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=900&fit=crop&crop=faces"
                                         alt="Happy patient"

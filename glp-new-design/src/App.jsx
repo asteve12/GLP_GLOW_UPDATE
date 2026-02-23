@@ -3,7 +3,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import StatsSection from './components/StatsSection';
 import ProductShowcase from './components/ProductShowcase';
-import ProductPage from './components/ProductPage';
+
 import ProductDetails from './components/ProductDetails';
 import QualifyNow from './components/QualifyNow';
 import Assessment from './components/Assessment';
@@ -24,6 +24,7 @@ import DoctorSlider from './components/DoctorSlider';
 import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
 import SatisfactionSurvey from './components/SatisfactionSurvey';
+import NewLandingPage from './components/NewLandingPage';
 
 const ScrollToHash = () => {
   const { hash } = useLocation();
@@ -39,18 +40,7 @@ const ScrollToHash = () => {
 };
 
 const HomePage = () => (
-  <>
-    <Navbar />
-    <Hero />
-    <StatsSection>
-      <ProductShowcase />
-    </StatsSection>
-    <ReviewSlider />
-    <WellnessSection />
-    <MadeInAmerica />
-    <DoctorSlider />
-    <Footer />
-  </>
+  <NewLandingPage />
 );
 
 function App() {
@@ -76,7 +66,7 @@ function App() {
         <ScrollToHash />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/products/:categoryId" element={<ProductPage />} />
+
           <Route path="/product/:productId" element={<ProductDetails />} />
           <Route path="/qualify" element={<QualifyNow />} />
           <Route path="/assessment/:categoryId" element={<Assessment />} />

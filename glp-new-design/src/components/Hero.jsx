@@ -69,14 +69,14 @@ const Hero = () => {
 
             {/* Mobile Full-Screen Overlay */}
             <div className="md:hidden absolute inset-0 z-20 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center px-6 text-center">
-                <div className="inline-block py-2 px-6 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-green mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     Clinical Protocols
                 </div>
 
                 <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-8 italic leading-[0.85] drop-shadow-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                     Precision <br />
-                    <span className="text-accent-green">Biology.</span> <br />
-                    Peak <span className="text-accent-green">Performance.</span>
+                    <span className="text-accent-black">Biology.</span> <br />
+                    Peak <span className="text-accent-black">Performance.</span>
                 </h1>
 
                 <p className="text-lg font-medium text-white/70 mb-12 leading-relaxed max-w-xs animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
@@ -86,7 +86,7 @@ const Hero = () => {
                 <div className="flex flex-col w-full max-w-[300px] gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
                     <Link
                         to="/qualify"
-                        className="w-full bg-accent-green text-black py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white transition-all shadow-[0_10px_40px_rgba(191,255,0,0.3)]"
+                        className="w-full bg-accent-black text-black py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white transition-all shadow-[0_10px_40px_rgba(191,255,0,0.3)]"
                     >
                         Start Assessment
                     </Link>
@@ -109,12 +109,12 @@ const Hero = () => {
                         { title: "Hair Restoration", desc: "Finasteride & Minoxidil", price: "Personalized Plans", path: "hair-restoration" },
                         { title: "Sexual Health", desc: "Sildenafil & Oxytocin", price: "Discreet Shipping", path: "sexual-health" }
                     ].map((product, index) => (
-                        <Link key={index} to={`/qualify?category=${product.path}`} className="block bg-black/40 backdrop-blur-md border border-white/10 p-4 md:p-6 rounded-xl hover:border-accent-green transition-all duration-300 group cursor-pointer hover:-translate-y-1 text-left">
-                            <h3 className="text-base md:text-xl font-bold text-white mb-1 group-hover:text-accent-green transition-colors">{product.title}</h3>
+                        <Link key={index} to={`/qualify?category=${product.path}`} className="block bg-black/40 backdrop-blur-md border border-white/10 p-4 md:p-6 rounded-xl hover:border-accent-black transition-all duration-300 group cursor-pointer hover:-translate-y-1 text-left">
+                            <h3 className="text-base md:text-xl font-bold text-white mb-1 group-hover:text-accent-black transition-colors">{product.title}</h3>
                             <p className="text-text-muted text-xs md:text-sm mb-2 md:mb-3">{product.desc}</p>
                             <div className="flex justify-between items-center flex-wrap gap-2">
-                                <span className="text-accent-blue font-semibold text-xs md:text-sm">{product.price}</span>
-                                <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-white group-hover:text-accent-green flex items-center gap-1 md:gap-2">
+                                <span className="text-accent-black font-semibold text-xs md:text-sm">{product.price}</span>
+                                <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-white group-hover:text-accent-black flex items-center gap-1 md:gap-2">
                                     Start Assessment <span className="text-sm md:text-lg">→</span>
                                 </span>
                             </div>
@@ -129,7 +129,7 @@ const Hero = () => {
                     <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-accent-green w-8' : 'bg-white/50'}`}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-accent-black w-8' : 'bg-white/50'}`}
                     />
                 ))}
             </div>

@@ -97,7 +97,7 @@ const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
             <button
                 type="submit"
                 disabled={!stripe || processing}
-                className="w-full py-5 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                className="w-full py-5 bg-accent-blue text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
                 {processing ? (
                     <>
@@ -184,7 +184,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                 <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#080808]">
                     <div>
                         <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
-                            {type === 'cancel' ? 'Cancel' : type === 'activate' ? 'Reactivate' : (step === 1 ? 'Request' : 'Secure Payment')} <span className={type === 'cancel' ? 'text-red-500' : 'text-accent-green'}>
+                            {type === 'cancel' ? 'Cancel' : type === 'activate' ? 'Reactivate' : (step === 1 ? 'Request' : 'Secure Payment')} <span className={type === 'cancel' ? 'text-red-500' : 'text-accent-blue'}>
                                 {type === 'dosage' ? 'Dosage Adjustment' : (type === 'cancel' || type === 'activate') ? 'Subscription' : 'Medication Change'}
                             </span>
                         </h3>
@@ -204,9 +204,9 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                 <div className="p-8 overflow-y-auto">
                     {type === 'cancel' || type === 'activate' ? (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className={`${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-green/10 border-accent-green/20'} border rounded-3xl p-8 text-center`}>
-                                <div className={`w-16 h-16 rounded-full ${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-green/10 border-accent-green/20'} flex items-center justify-center border mx-auto mb-6`}>
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={type === 'cancel' ? 'text-red-500' : 'text-accent-green'}>
+                            <div className={`${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-blue/10 border-accent-blue/20'} border rounded-3xl p-8 text-center`}>
+                                <div className={`w-16 h-16 rounded-full ${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-blue/10 border-accent-blue/20'} flex items-center justify-center border mx-auto mb-6`}>
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={type === 'cancel' ? 'text-red-500' : 'text-accent-blue'}>
                                         {type === 'cancel' ? (
                                             <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
                                         ) : (
@@ -225,7 +225,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                 <button
                                     onClick={handleProceed}
                                     disabled={loading}
-                                    className={`w-full py-6 ${type === 'cancel' ? 'bg-red-500 hover:bg-red-600' : 'bg-accent-green hover:bg-white'} text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg`}
+                                    className={`w-full py-6 ${type === 'cancel' ? 'bg-red-500 hover:bg-red-600' : 'bg-accent-blue hover:bg-white'} text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg`}
                                 >
                                     {loading ? (
                                         <>
@@ -257,7 +257,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                             type="button"
                                             onClick={() => setValue(opt)}
                                             className={`py-4 rounded-2xl font-bold text-xs transition-all border ${value === opt
-                                                ? 'bg-accent-green text-black border-accent-green'
+                                                ? 'bg-accent-blue text-black border-accent-blue'
                                                 : 'bg-white/5 text-white/60 border-white/5 hover:border-white/20'
                                                 }`}
                                         >
@@ -281,9 +281,9 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                             </div>
 
                             {type === 'dosage' && (
-                                <div className="bg-accent-green/10 border border-accent-green/20 rounded-2xl p-5">
+                                <div className="bg-accent-blue/10 border border-accent-blue/20 rounded-2xl p-5">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-accent-green">Dosage Change Fee</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-accent-blue">Dosage Change Fee</span>
                                         <span className="text-lg font-black text-white">$5.00</span>
                                     </div>
                                     <p className="text-[10px] text-white/40 leading-relaxed font-medium">
@@ -332,13 +332,13 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
     const isApproved = submission.approval_status === 'approved';
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:border-accent-green/30 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
+        <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:border-accent-blue/30 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
                 <div className="flex flex-col md:flex-row items-start gap-6">
-                    <div className="w-20 h-20 rounded-3xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 group-hover:border-accent-green/40 transition-all">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-green">
+                    <div className="w-20 h-20 rounded-3xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20 group-hover:border-accent-blue/40 transition-all">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue">
                             <path d="M10.5 21l-7.5-7.5 3.5-3.5 7.5 7.5-3.5 3.5z" />
                             <path d="M14.5 7L21 13.5l-3.5 3.5L11 10.5 14.5 7z" />
                             <path d="M12 12l2.5-2.5" strokeLinecap="round" />
@@ -355,7 +355,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <div className="flex gap-2">
                                 {/* Subscription Status Badge - based on billing state */}
                                 {isSubscriptionActive ? (
-                                    <span className="px-3 py-1 bg-accent-green/10 border border-accent-green/20 text-accent-green text-[9px] font-black uppercase tracking-widest rounded-full">
+                                    <span className="px-3 py-1 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue text-[9px] font-black uppercase tracking-widest rounded-full">
                                         Active
                                     </span>
                                 ) : (
@@ -398,7 +398,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <>
                                 <button
                                     onClick={() => onAction('dosage', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
+                                    className="w-full md:w-56 px-8 py-4 bg-accent-blue text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
                                 >
                                     Adjust Dosage
                                 </button>
@@ -418,7 +418,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                         ) : (
                             <button
                                 onClick={() => onAction('activate', submission)}
-                                className="w-full md:w-56 px-8 py-4 bg-accent-green text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(191,255,0,0.15)]"
+                                className="w-full md:w-56 px-8 py-4 bg-accent-blue text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(92,225,230,0.15)]"
                             >
                                 Activate Subscription
                             </button>
@@ -445,7 +445,7 @@ const OrdersView = ({ orders }) => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Order <span className="text-accent-green">History</span></h2>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Order <span className="text-accent-blue">History</span></h2>
                 <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Track your clinical shipments and deliveries</p>
             </div>
 
@@ -468,14 +468,14 @@ const OrdersView = ({ orders }) => {
 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
                                 <div className="flex flex-col md:flex-row items-start gap-6">
-                                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:text-accent-green group-hover:bg-accent-green/10 transition-all flex-shrink-0">
+                                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all flex-shrink-0">
                                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full ${order.delivery_status === 'delivered' ? 'bg-accent-green/10 text-accent-green' :
+                                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full ${order.delivery_status === 'delivered' ? 'bg-accent-blue/10 text-accent-blue' :
                                                 order.delivery_status === 'cancelled' ? 'bg-red-500/10 text-red-500' :
                                                     'bg-blue-500/10 text-blue-400'
                                                 }`}>{order.delivery_status}</p>
@@ -496,7 +496,7 @@ const OrdersView = ({ orders }) => {
                                             href={order.tracking_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-green transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+                                            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-blue transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
                                         >
                                             Track Package
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -662,7 +662,7 @@ const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
                     className="py-6 bg-white text-black rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-accent-green transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] relative overflow-hidden group"
                 >
                     <span className="relative z-10">{loading ? 'Processing...' : 'Confirm Update'}</span>
-                    <div className="absolute inset-0 bg-accent-green translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                    <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
                 </button>
             </div>
         </form>
@@ -744,7 +744,7 @@ const BillingView = ({ profile, user }) => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Financial <span className="text-accent-green">Portal</span></h2>
+                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Financial <span className="text-accent-blue">Portal</span></h2>
                     <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Manage your payment methods and history</p>
                 </div>
             </div>
@@ -753,8 +753,8 @@ const BillingView = ({ profile, user }) => {
                 {/* Active Payment Method */}
                 <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 md:p-12">
-                        <div className="w-16 h-16 rounded-3xl bg-accent-green/5 flex items-center justify-center border border-accent-green/10">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-green opacity-40">
+                        <div className="w-16 h-16 rounded-3xl bg-accent-blue/5 flex items-center justify-center border border-accent-blue/10">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue opacity-40">
                                 <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
                         </div>
@@ -776,7 +776,7 @@ const BillingView = ({ profile, user }) => {
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-green transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+                                className="px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-blue transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
                             >
                                 Update Method
                             </button>
@@ -795,7 +795,7 @@ const BillingView = ({ profile, user }) => {
                             <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Current Plan</p>
                             <div className="flex items-center justify-between">
                                 <p className="text-sm font-black uppercase italic">{formatPlanName(profile?.current_plan)}</p>
-                                <span className={`px-2 py-0.5 ${profile?.subscribe_status ? 'bg-accent-green' : 'bg-red-500/20 text-red-400'} text-black text-[8px] font-black uppercase rounded-sm`}>
+                                <span className={`px-2 py-0.5 ${profile?.subscribe_status ? 'bg-accent-blue' : 'bg-red-500/20 text-red-400'} text-black text-[8px] font-black uppercase rounded-sm`}>
                                     {profile?.subscribe_status ? 'Active' : 'Inactive'}
                                 </span>
                             </div>
@@ -2088,7 +2088,7 @@ const Dashboard = () => {
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
                                                     <div className="absolute bottom-6 left-6 right-6">
-                                                        <div className={`w-8 h-8 rounded-full bg-${product.color === 'accent-green' ? 'accent-green' : product.color}-500 mb-3 flex items-center justify-center shadow-lg border border-white/20`}>
+                                                        <div className={`w-8 h-8 rounded-full bg-${product.color === 'accent-green' ? 'accent-blue' : product.color}-500 mb-3 flex items-center justify-center shadow-lg border border-white/20`}>
                                                             {isDisabled ? (
                                                                 <div className={`w-2 h-2 rounded-full ${isApproved ? 'bg-black' : 'bg-black animate-pulse'}`}></div>
                                                             ) : (
@@ -2098,7 +2098,7 @@ const Dashboard = () => {
                                                             )}
                                                         </div>
                                                         <h3 className="text-lg font-black uppercase tracking-tighter italic mb-1 leading-tight">{product.title}</h3>
-                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : isApproved ? 'text-accent-green' : 'text-white/60'}`}>
+                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : isApproved ? 'text-accent-blue' : 'text-white/60'}`}>
                                                             {desc}
                                                         </p>
                                                     </div>
@@ -2119,7 +2119,7 @@ const Dashboard = () => {
                                             <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic mb-2">Recent Records</h2>
                                             <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Your clinical journey history</p>
                                         </div>
-                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue hover:text-black transition-all">
                                             View All
                                         </button>
                                     </div>
@@ -2135,14 +2135,14 @@ const Dashboard = () => {
                                             {submissions.length === 0 ? (
                                                 <button
                                                     onClick={() => navigate('/qualify')}
-                                                    className="px-10 py-4 bg-accent-green text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(191,255,0,0.1)]"
+                                                    className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]"
                                                 >
                                                     Start Assessment →
                                                 </button>
                                             ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                 <button
                                                     onClick={() => navigate('/qualify')}
-                                                    className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green transition-all"
+                                                    className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
                                                 >
                                                     Retake Assessment
                                                 </button>
@@ -2161,7 +2161,7 @@ const Dashboard = () => {
                                         </div>
                                     )}
 
-                                    <button onClick={() => navigate('/dashboard/assessments')} className="md:hidden w-full mt-8 px-6 py-3 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:text-black transition-all">
+                                    <button onClick={() => navigate('/dashboard/assessments')} className="md:hidden w-full mt-8 px-6 py-3 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue hover:text-black transition-all">
                                         View All
                                     </button>
                                 </div>
@@ -2188,7 +2188,7 @@ const Dashboard = () => {
                                         </p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-green text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(191,255,0,0.2)]">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
                                             Request New Consultation
                                         </button>
                                     ) : (submissions[0]?.approval_status === 'pending' || submissions[0]?.approval_status === 'under_review') ? (
@@ -2247,14 +2247,14 @@ const Dashboard = () => {
                                                 {submissions.length === 0 ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-accent-green text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
+                                                        className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
                                                     >
                                                         Start Assessment
                                                     </button>
                                                 ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-accent-green text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(191,255,0,0.2)]"
+                                                        className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.2)]"
                                                     >
                                                         Retake Assessment
                                                     </button>
@@ -2266,7 +2266,7 @@ const Dashboard = () => {
                                                         </div>
                                                         <button
                                                             onClick={() => navigate('/dashboard/assessments')}
-                                                            className="text-[9px] font-black uppercase tracking-widest text-accent-green hover:text-white transition-all"
+                                                            className="text-[9px] font-black uppercase tracking-widest text-accent-blue hover:text-white transition-all"
                                                         >
                                                             View Assessment Status →
                                                         </button>
@@ -2327,11 +2327,11 @@ const Dashboard = () => {
                                         <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Complete clinical log</p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-green text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
                                             New Assessment +
                                         </button>
                                     ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-green text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(191,255,0,0.1)]">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]">
                                             Retake Assessment
                                         </button>
                                     ) : (
@@ -2412,7 +2412,7 @@ const Dashboard = () => {
                             <div className="p-8 border-b border-white/5 flex items-center justify-between">
                                 <div>
                                     <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
-                                        Assessment <span className="text-accent-green">Record</span>
+                                        Assessment <span className="text-accent-blue">Record</span>
                                     </h3>
                                     <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">
                                         Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
@@ -2434,7 +2434,7 @@ const Dashboard = () => {
                                     {/* Left Column: Core Info */}
                                     <div className="space-y-8">
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-green mb-6 border-b border-accent-green/20 pb-2">Protocol Details</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Protocol Details</h4>
                                             <div className="space-y-4">
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Target Treatment</p>
@@ -2442,7 +2442,7 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Status</p>
-                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-accent-green text-black' : 'bg-orange-500/10 text-orange-400'
+                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-accent-blue text-black' : 'bg-orange-500/10 text-orange-400'
                                                         }`}>
                                                         {selectedAssessment.approval_status}
                                                     </span>
@@ -2451,7 +2451,7 @@ const Dashboard = () => {
                                         </section>
 
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-green mb-6 border-b border-accent-green/20 pb-2">Clinical Biometrics</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Clinical Biometrics</h4>
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Sex</p>
@@ -2476,7 +2476,7 @@ const Dashboard = () => {
                                     {/* Right Column: Goals & Shipping */}
                                     <div className="space-y-8">
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-green mb-6 border-b border-accent-green/20 pb-2">Wellness Goals</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Wellness Goals</h4>
                                             <div className="flex flex-wrap gap-2">
                                                 {selectedAssessment.goals?.map((goal, i) => (
                                                     <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
@@ -2487,7 +2487,7 @@ const Dashboard = () => {
                                         </section>
 
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-green mb-6 border-b border-accent-green/20 pb-2">Fulfillment Details</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Fulfillment Details</h4>
                                             <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
                                                 <div className="space-y-4">
                                                     <div>
@@ -2509,7 +2509,7 @@ const Dashboard = () => {
 
                                 {/* Clinical Intake Responses */}
                                 <div className="mt-12 pt-12 border-t border-white/5">
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-green mb-8 border-b border-accent-green/20 pb-2">Clinical Intake Responses</h4>
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-8 border-b border-accent-blue/20 pb-2">Clinical Intake Responses</h4>
 
                                     {(() => {
                                         const answers = selectedAssessment.medical_responses || selectedAssessment.intake_data || {};
@@ -2546,7 +2546,7 @@ const Dashboard = () => {
                                                     return (
                                                         <div key={q.id} className="space-y-3 p-6 bg-white/5 border border-white/5 rounded-3xl hover:border-white/10 transition-all">
                                                             <p className="text-[10px] font-black uppercase tracking-widest text-white/40 leading-snug">{q.question}</p>
-                                                            <div className="text-xs font-bold text-accent-green leading-relaxed">
+                                                            <div className="text-xs font-bold text-accent-blue leading-relaxed">
                                                                 {Array.isArray(answer) ? (
                                                                     <ul className="list-disc list-inside space-y-1">
                                                                         {answer.map((item, i) => <li key={i}>{item}</li>)}
@@ -2574,7 +2574,7 @@ const Dashboard = () => {
                             <div className="p-8 border-t border-white/5 bg-[#050505]/50">
                                 <button
                                     onClick={() => setSelectedAssessment(null)}
-                                    className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-green transition-all"
+                                    className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
                                 >
                                     Close Record
                                 </button>
@@ -2637,12 +2637,12 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
                     <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
                         <div className="text-center mb-10">
-                            <div className="w-20 h-20 rounded-full bg-accent-green/10 border border-accent-green/20 flex items-center justify-center mx-auto mb-6">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-green">
+                            <div className="w-20 h-20 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-6">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue">
                                     <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-2">Prescribing <span className="text-accent-green">Authority</span></h3>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-2">Prescribing <span className="text-accent-blue">Authority</span></h3>
                             <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">Official Clinical Credentials</p>
                         </div>
 
@@ -2655,11 +2655,11 @@ const Dashboard = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-5 bg-white/5 border border-white/5 rounded-3xl">
                                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">License #</p>
-                                    <p className="text-xs font-black tracking-widest text-accent-green">{selectedPhysician.supervising_license_number}</p>
+                                    <p className="text-xs font-black tracking-widest text-accent-blue">{selectedPhysician.supervising_license_number}</p>
                                 </div>
                                 <div className="p-5 bg-white/5 border border-white/5 rounded-3xl">
                                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">NPI #</p>
-                                    <p className="text-xs font-black tracking-widest text-accent-green">{selectedPhysician.supervising_npi_number}</p>
+                                    <p className="text-xs font-black tracking-widest text-accent-blue">{selectedPhysician.supervising_npi_number}</p>
                                 </div>
                             </div>
 
@@ -2671,7 +2671,7 @@ const Dashboard = () => {
 
                         <button
                             onClick={() => setSelectedPhysician(null)}
-                            className="w-full mt-10 py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-green transition-all"
+                            className="w-full mt-10 py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
                         >
                             Dismiss
                         </button>

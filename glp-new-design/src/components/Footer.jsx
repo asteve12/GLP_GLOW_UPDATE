@@ -28,9 +28,9 @@ const Footer = () => {
                                         <span className="text-[8px] font-bold tracking-widest uppercase text-white/30">Certified</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl group hover:border-accent-green/30 transition-colors">
-                                    <div className="w-8 h-8 rounded-full bg-accent-green/10 flex items-center justify-center border border-accent-green/20">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-green">
+                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl group hover:border-accent-blue/30 transition-colors">
+                                    <div className="w-8 h-8 rounded-full bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-blue">
                                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                         </svg>
                                     </div>
@@ -50,13 +50,13 @@ const Footer = () => {
                             <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">Treatments</h4>
                             <ul className="space-y-4">
                                 {[
-                                    { name: 'Weight Loss', path: 'weight-loss' },
-                                    { name: 'Hair Restoration', path: 'hair-restoration' },
-                                    { name: 'Sexual Health', path: 'sexual-health' },
-                                    { name: 'Longevity', path: 'longevity' }
+                                    { name: 'Weight Loss', path: 'semaglutide-injection' },
+                                    { name: 'Hair Restoration', path: 'finasteride-tablets' },
+                                    { name: 'Sexual Health', path: 'sildenafil-tadalafil-troche' },
+                                    { name: 'Longevity', path: 'nad-injection' }
                                 ].map((link) => (
                                     <li key={link.name}>
-                                        <Link to={`/products/${link.path}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
+                                        <Link to={`/product/${link.path}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
                                             {link.name}
                                         </Link>
                                     </li>

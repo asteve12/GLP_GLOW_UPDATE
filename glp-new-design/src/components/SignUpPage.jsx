@@ -66,38 +66,38 @@ const SignUpPage = () => {
 
             <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
                 {/* Background Atmosphere */}
-                <div className="signup-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent-green/10 rounded-full blur-[150px] pointer-events-none"></div>
+                <div className="signup-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent-black/10 rounded-full blur-[150px] pointer-events-none"></div>
 
                 <div className="signup-content w-full max-w-[480px] relative z-10">
                     {showVerificationMessage ? (
                         /* Verification Success Message */
                         <div className="text-center">
-                            <div className="w-20 h-20 rounded-full bg-accent-green/10 border border-accent-green/20 flex items-center justify-center mx-auto mb-8">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-green">
+                            <div className="w-20 h-20 rounded-full bg-accent-black/10 border border-accent-black/20 flex items-center justify-center mx-auto mb-8">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-black">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                 </svg>
                             </div>
                             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4">
-                                Check Your <span className="text-accent-green">Email</span>
+                                Check Your <span className="text-accent-black">Email</span>
                             </h1>
                             <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-md mx-auto">
-                                We've sent a verification link to <span className="text-accent-green font-bold">{email}</span>.
+                                We've sent a verification link to <span className="text-accent-black font-bold">{email}</span>.
                                 Click the link in the email to verify your account and access your dashboard.
                             </p>
                             <div className="bg-[#0A0A0A] border border-white/5 rounded-[24px] p-6 mb-8">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-4">Next Steps:</p>
                                 <ol className="text-left text-sm text-white/60 space-y-3">
                                     <li className="flex gap-3">
-                                        <span className="text-accent-green font-black">1.</span>
+                                        <span className="text-accent-black font-black">1.</span>
                                         <span>Open the email from GLP-GLOW</span>
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="text-accent-green font-black">2.</span>
+                                        <span className="text-accent-black font-black">2.</span>
                                         <span>Click the verification link</span>
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="text-accent-green font-black">3.</span>
+                                        <span className="text-accent-black font-black">3.</span>
                                         <span>You'll be redirected to your dashboard</span>
                                     </li>
                                 </ol>
@@ -106,14 +106,14 @@ const SignUpPage = () => {
                                 Didn't receive the email? Check your spam folder or{' '}
                                 <button
                                     onClick={() => setShowVerificationMessage(false)}
-                                    className="text-accent-green hover:underline font-bold"
+                                    className="text-accent-black hover:underline font-bold"
                                 >
                                     try again
                                 </button>
                             </p>
                             <Link
                                 to="/login"
-                                className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-accent-green hover:text-accent-green transition-all"
+                                className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-accent-black hover:text-accent-black transition-all"
                             >
                                 Back to Login
                             </Link>
@@ -122,11 +122,11 @@ const SignUpPage = () => {
                         <>
                             {/* Header */}
                             <div className="text-center mb-12">
-                                <div className="inline-block py-1.5 px-4 bg-accent-green/10 border border-accent-green/20 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-accent-green mb-6">
+                                <div className="inline-block py-1.5 px-4 bg-accent-black/10 border border-accent-black/20 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">
                                     Start Your Journey
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4">
-                                    Create <span className="text-accent-green font-black">Account</span>
+                                    Create <span className="text-accent-black font-black">Account</span>
                                 </h1>
                                 <p className="text-white/40 font-medium">
                                     Join GLP-GLOW to manage your transformative health journey.
@@ -135,7 +135,7 @@ const SignUpPage = () => {
 
                             {/* Form Container */}
                             <div className="bg-[#0A0A0A] border border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl backdrop-blur-xl relative group">
-                                <div className="absolute inset-0 bg-gradient-to-br from-accent-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[40px]"></div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-accent-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[40px]"></div>
 
                                 {error && (
                                     <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-medium text-center">
@@ -154,7 +154,7 @@ const SignUpPage = () => {
                                                 value={firstName}
                                                 onChange={(e) => setFirstName(e.target.value)}
                                                 placeholder="John"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-green focus:bg-white/10 transition-all outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                                 required
                                             />
                                         </div>
@@ -167,7 +167,7 @@ const SignUpPage = () => {
                                                 value={lastName}
                                                 onChange={(e) => setLastName(e.target.value)}
                                                 placeholder="Doe"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-green focus:bg-white/10 transition-all outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                                 required
                                             />
                                         </div>
@@ -183,7 +183,7 @@ const SignUpPage = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter your email"
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-green focus:bg-white/10 transition-all outline-none"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                             required
                                         />
                                     </div>
@@ -199,7 +199,7 @@ const SignUpPage = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="Create a strong password"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-green focus:bg-white/10 transition-all outline-none pr-12"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none pr-12"
                                                 required
                                             />
                                             <button
@@ -220,7 +220,7 @@ const SignUpPage = () => {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-5 bg-accent-green text-black rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-white hover:shadow-[0_0_40px_rgba(191,255,0,0.3)] mt-4 disabled:opacity-50"
+                                        className="w-full py-5 bg-accent-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-white hover:text-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)] mt-4 disabled:opacity-50"
                                     >
                                         {loading ? 'Creating Account...' : 'Create Account'}
                                     </button>
@@ -243,7 +243,7 @@ const SignUpPage = () => {
                                                 setError(err.message);
                                             }
                                         }}
-                                        className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-green transition-all"
+                                        className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -263,7 +263,7 @@ const SignUpPage = () => {
                                 </p>
                                 <Link
                                     to="/login"
-                                    className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-accent-green hover:text-accent-green transition-all"
+                                    className="inline-block bg-white/5 border border-white/10 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:border-accent-black hover:text-accent-black transition-all"
                                 >
                                     Sign In
                                 </Link>
