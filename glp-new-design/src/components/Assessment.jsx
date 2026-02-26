@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import Navbar from './Navbar';
@@ -22,6 +23,9 @@ import smilingDoctorImg from '../assets/smiling_doctor.png';
 import happyPatientImg from '../assets/happy_patient.webp';
 
 import { categoryQuestions as baseCategoryQuestions, intakeQuestions } from '../data/questions';
+import logo from '../assets/logo.png';
+import weightlossQuoteImg from '../assets/weightloss-quote-img.png';
+import quoteTargetImg from '../assets/quote-target.png';
 
 const categoryQuestions = {
     ...baseCategoryQuestions,
@@ -178,7 +182,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId }) => {
                 />
             </div>
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center italic">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center">
                     {error}
                 </div>
             )}
@@ -203,22 +207,40 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId }) => {
 const Assessment = () => {
     const { categoryId } = useParams();
     const navigate = useNavigate();
-    const { signUp, signIn, user } = useAuth();
+    const { signUp, signIn, signOut, user, verifyOtp, updateUser } = useAuth();
     const [step, setStep] = useState(0);
+    const [showQuote, setShowQuote] = useState(true);
+    const [showBMI, setShowBMI] = useState(false);
+    const [showQuote2, setShowQuote2] = useState(false);
+    const [bmiHeightFeet, setBmiHeightFeet] = useState('');
+    const [bmiHeightInches, setBmiHeightInches] = useState('0');
+    const [bmiWeight, setBmiWeight] = useState('');
     const [selectedImprovements, setSelectedImprovements] = useState([]);
+    const [otherGoalText, setOtherGoalText] = useState('');
     const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'signin'
     const [authData, setAuthData] = useState({
         email: '',
         password: '',
         firstName: '',
-        lastName: ''
+        lastName: '',
+        countryCode: '+1',
+        phoneNumber: ''
     });
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [acceptedRisks, setAcceptedRisks] = useState(false);
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [verifying, setVerifying] = useState(false);
     const [medicalStep, setMedicalStep] = useState(0);
     const [intakeData, setIntakeData] = useState({});
     const [summaryData, setSummaryData] = useState({});
     const [eligibilityData, setEligibilityData] = useState({
         sex: 'male',
+        genderOther: '',
         dob: '',
+        dobMonth: '',
+        dobDay: '',
+        dobYear: '',
         state: '',
         phone: '',
         consent: false,
@@ -319,7 +341,7 @@ const Assessment = () => {
             { opacity: 0, y: 30, scale: 0.98 },
             { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power4.out" }
         );
-    }, [step, medicalStep]);
+    }, [step, medicalStep, showQuote]);
 
     useEffect(() => {
         const checkExisting = async () => {
@@ -372,14 +394,18 @@ const Assessment = () => {
                 return { feet: 0, inches: 0 };
             };
 
-            const h = parseHeight(intakeData.height);
-            const weightVal = parseFloat(intakeData.weight) || 0;
+            // Prepared polymorphic field resolution
+            const resolvedHeight = intakeData.height || intakeData.height_intake || intakeData.height_longevity;
+            const h = parseHeight(resolvedHeight);
+
+            const resolvedWeight = intakeData.weight || intakeData.weight_intake || intakeData.weight_longevity;
+            const weightVal = parseFloat(resolvedWeight) || 0;
+
             const heightInInches = (h.feet * 12) + h.inches;
             const bmiVal = heightInInches > 0 ? (weightVal / (heightInInches * heightInInches)) * 703 : 0;
 
             const firstName = user?.user_metadata?.first_name || authData.firstName || '';
             const lastName = user?.user_metadata?.last_name || authData.lastName || '';
-            const fullName = user?.user_metadata?.full_name || `${firstName} ${lastName}`.trim();
 
             // Prepare submission data mapping
             const submissionData = {
@@ -394,20 +420,22 @@ const Assessment = () => {
                 bmi: parseFloat(bmiVal.toFixed(1)),
 
                 // Basics
-                sex: eligibilityData.sex,
+                sex: eligibilityData.sex || intakeData.assigned_sex_intake,
                 birthday: eligibilityData.dob,
-                state: eligibilityData.state,
-                seen_pcp: eligibilityData.pcpVisitLast6Months,
+                state: eligibilityData.state || shippingData.state,
+                seen_pcp: eligibilityData.pcpVisitLast6Months || intakeData.has_pcp_long,
                 email: user?.email || authData.email,
 
-                // Medical Conditions (Weight Loss Mapping)
-                heart_conditions: Array.isArray(intakeData.heart) ? intakeData.heart : (intakeData.heart ? [intakeData.heart] : []),
+                // Medical Conditions (Polymorphic Mapping)
+                heart_conditions: Array.isArray(intakeData.heart) ? intakeData.heart : (intakeData.heart_condition_dx_sh || (intakeData.heart ? [intakeData.heart] : [])),
                 atrial_fib_change: intakeData.afib_follow || null,
                 hormone_conditions: Array.isArray(intakeData.hormone) ? intakeData.hormone : (intakeData.hormone ? [intakeData.hormone] : []),
-                cancer_history: intakeData.cancer === 'Yes' ? [`Yes: ${intakeData.cancer_details || ''}`] : (intakeData.cancer ? [intakeData.cancer] : []),
-                diabetes_status: intakeData.diabetes || null,
+                cancer_history: intakeData.cancer === 'Yes' || intakeData.personal_cancer_hx === 'Yes'
+                    ? [`Yes: ${intakeData.cancer_details || intakeData.personal_cancer_hx_details || ''}`]
+                    : (intakeData.cancer || intakeData.personal_cancer_hx ? [intakeData.cancer || intakeData.personal_cancer_hx] : []),
+                diabetes_status: intakeData.diabetes || (intakeData.med_diagnostics_sh?.includes('BP/Diabetes/Cholesterol') ? 'Diabetes (from SH)' : null),
                 gi_conditions: Array.isArray(intakeData.gi) ? intakeData.gi : (intakeData.gi ? [intakeData.gi] : []),
-                mental_health_conditions: Array.isArray(intakeData.mental) ? intakeData.mental : (intakeData.mental ? [intakeData.mental] : []),
+                mental_health_conditions: Array.isArray(intakeData.mental) ? intakeData.mental : (intakeData.mental_health_list_sh || (intakeData.mental ? [intakeData.mental] : [])),
                 anxiety_severity: intakeData.anxiety_sev || null,
                 additional_conditions: Array.isArray(intakeData.additional) ? intakeData.additional : (intakeData.additional ? [intakeData.additional] : []),
 
@@ -416,9 +444,9 @@ const Assessment = () => {
                 weight_impact_details: Array.isArray(intakeData.qol_details) ? intakeData.qol_details : (intakeData.qol_details ? [intakeData.qol_details] : []),
 
                 // Medications & Allergies
-                allergies: intakeData.allergies || null,
-                current_medications: Array.isArray(intakeData.current_meds) ? intakeData.current_meds : (intakeData.current_meds ? [intakeData.current_meds] : []),
-                other_medications: intakeData.supplements || null,
+                allergies: intakeData.allergies || intakeData.allergies_sh_sh || intakeData.allergies_list_long,
+                current_medications: Array.isArray(intakeData.current_meds) ? intakeData.current_meds : (intakeData.cardio_meds_list_sh || (intakeData.current_meds ? [intakeData.current_meds] : [])),
+                other_medications: intakeData.supplements || intakeData.meds_list_long,
                 past_weight_loss_methods: Array.isArray(intakeData.past_methods) ? intakeData.past_methods : (intakeData.past_methods ? [intakeData.past_methods] : []),
                 past_prescription_meds: Array.isArray(intakeData.past_rx) ? intakeData.past_rx : (intakeData.past_rx ? [intakeData.past_rx] : []),
 
@@ -426,7 +454,7 @@ const Assessment = () => {
                 race_ethnicity: intakeData.ethnicity ? [intakeData.ethnicity] : [],
                 other_health_goals: Array.isArray(intakeData.other_goals) ? intakeData.other_goals : (intakeData.other_goals ? [intakeData.other_goals] : []),
                 has_additional_info: intakeData.additional_info || "No",
-                additional_health_info: intakeData.additional_info_details || null,
+                additional_health_info: intakeData.additional_info_details || intakeData.symptom_detail_sh || intakeData.anything_else_long || null,
 
                 // Identification
                 identification_type: idData.type,
@@ -436,11 +464,11 @@ const Assessment = () => {
                 // Shipping
                 shipping_first_name: firstName,
                 shipping_last_name: lastName,
-                shipping_street: shippingData.address,
+                shipping_address: shippingData.address,
                 shipping_city: shippingData.city,
                 shipping_state: shippingData.state,
                 shipping_zip: shippingData.zip,
-                shipping_phone: shippingData.phone,
+                shipping_phone: shippingData.phone || eligibilityData.phone,
                 shipping_email: user?.email || authData.email,
 
                 // Metadata
@@ -455,8 +483,6 @@ const Assessment = () => {
                 glp1_prescription_url: intakeData.current_meds_file ? [intakeData.current_meds_file] : [],
 
                 // POLYMORPHIC CATCH-ALL:
-                // Ensures specialized data for Hair, Sexual Health, and Longevity 
-                // is NEVER lost even if it doesn't have a dedicated column above.
                 medical_responses: intakeData
             };
 
@@ -534,9 +560,53 @@ const Assessment = () => {
     const handleAuthSubmit = async () => {
         setAuthLoading(true);
         setAuthError(null);
-        try {
-            if (authMode === 'signup') {
-                const { error } = await signUp({
+
+        // Validation for signup
+        if (authMode === 'signup') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(authData.email)) {
+                toast.error('Please enter a valid email address.');
+                setAuthLoading(false);
+                return;
+            }
+
+            let formattedPhone = `${authData.countryCode.trim()}${authData.phoneNumber.replace(/\D/g, '')}`;
+            if (!formattedPhone.startsWith('+')) {
+                formattedPhone = `+${formattedPhone}`;
+            }
+
+            const totalDigits = formattedPhone.replace(/\D/g, '').length;
+            if (totalDigits < 7 || totalDigits > 15) {
+                toast.error('Please enter a valid phone number.');
+                setAuthLoading(false);
+                return;
+            }
+
+            if (!authData.firstName.trim() || !authData.lastName.trim()) {
+                toast.error('Please enter your first and last name.');
+                setAuthLoading(false);
+                return;
+            }
+
+            try {
+                // Check if email already exists in profiles
+                const { data: existingUser, error: checkError } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('email', authData.email)
+                    .maybeSingle();
+
+                if (checkError) {
+                    console.warn('Email check error:', checkError);
+                }
+
+                if (existingUser) {
+                    toast.error('This email is already registered. Please sign in instead.');
+                    setAuthLoading(false);
+                    return;
+                }
+
+                const { data: signUpData, error: signUpError } = await signUp({
                     email: authData.email,
                     password: authData.password,
                     options: {
@@ -544,26 +614,92 @@ const Assessment = () => {
                             full_name: `${authData.firstName} ${authData.lastName}`,
                             first_name: authData.firstName,
                             last_name: authData.lastName,
-                            email: authData.email
+                            email: authData.email,
+                            phone_number: formattedPhone
                         },
                         emailRedirectTo: `${window.location.origin}/dashboard`
                     }
                 });
-                if (error) throw error;
+                if (signUpError) throw signUpError;
+
+                // Create/Update Profile record immediately
+                if (signUpData?.user) {
+                    try {
+                        const { error: profileError } = await supabase
+                            .from('profiles')
+                            .upsert({
+                                id: signUpData.user.id,
+                                email: authData.email,
+                                first_name: authData.firstName,
+                                last_name: authData.lastName,
+                                phone_number: formattedPhone,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'id' });
+
+                        if (profileError) {
+                            console.warn('Initial profile sync warning:', profileError.message);
+                        }
+                    } catch (err) {
+                        console.warn('Profile upsert failed:', err);
+                    }
+                }
+
+                toast.success('Account created! Please verify your email to continue.');
                 setShowVerificationSent(true);
                 return;
-            } else {
+            } catch (err) {
+                toast.error(err.message);
+            } finally {
+                setAuthLoading(false);
+            }
+        } else {
+            // Minimal validation for signin
+            if (!authData.email || !authData.password) {
+                toast.error('Please enter your email and password.');
+                setAuthLoading(false);
+                return;
+            }
+
+            try {
                 const { error } = await signIn({
                     email: authData.email,
                     password: authData.password
                 });
                 if (error) throw error;
+                setStep(4);
+            } catch (err) {
+                toast.error(err.message);
+            } finally {
+                setAuthLoading(false);
             }
-            setStep(4);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        setVerifying(true);
+        setAuthError(null);
+
+        let formattedPhone = `${authData.countryCode.trim()}${authData.phoneNumber.replace(/\D/g, '')}`;
+        if (!formattedPhone.startsWith('+')) {
+            formattedPhone = `+${formattedPhone}`;
+        }
+
+        try {
+            const { error } = await verifyOtp({
+                phone: formattedPhone,
+                token: otp,
+                type: 'sms'
+            });
+
+            if (error) throw error;
+
+            setShowOtpInput(false);
+            setShowVerificationSent(true);
+            toast.success('Phone number verified successfully!');
         } catch (err) {
-            setAuthError(err.message);
+            toast.error(err.message);
         } finally {
-            setAuthLoading(false);
+            setVerifying(false);
         }
     };
 
@@ -581,7 +717,7 @@ const Assessment = () => {
                         <path d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Already <span className="text-black">Submitted</span></h2>
+                <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">Already <span className="text-black">Submitted</span></h2>
                 <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest max-w-xs mb-8">
                     You have an active record for this category. Please check your dashboard for updates.
                 </p>
@@ -603,17 +739,308 @@ const Assessment = () => {
 
     const handleContinue = () => {
         if (selectedImprovements.length > 0) {
-            setStep(1); // Move to the new stat step
+            setStep(3); // Go directly to Registration (Auth Step)
         }
     };
+
+    // Compute BMI from imperial inputs
+    const computedBMI = (() => {
+        const totalInches = (parseInt(bmiHeightFeet) || 0) * 12 + (parseInt(bmiHeightInches) || 0);
+        const lbs = parseFloat(bmiWeight) || 0;
+        if (totalInches <= 0 || lbs <= 0) return null;
+        return ((lbs * 703) / (totalInches * totalInches)).toFixed(1);
+    })();
+
+    const getBMICategory = (bmi) => {
+        const v = parseFloat(bmi);
+        if (v < 18.5) return { label: 'Underweight', color: '#3B82F6', bg: '#EFF6FF', eligible: false };
+        if (v < 25) return { label: 'Healthy Weight', color: '#22C55E', bg: '#F0FDF4', eligible: false };
+        if (v < 30) return { label: 'Overweight', color: '#F59E0B', bg: '#FFFBEB', eligible: true };
+        if (v < 35) return { label: 'Obese Class I', color: '#EF4444', bg: '#FEF2F2', eligible: true };
+        if (v < 40) return { label: 'Obese Class II', color: '#DC2626', bg: '#FEF2F2', eligible: true };
+        return { label: 'Obese Class III', color: '#991B1B', bg: '#FEF2F2', eligible: true };
+    };
+
+    const bmiCategory = computedBMI ? getBMICategory(computedBMI) : null;
+
+    const renderBMICalculatorStep = () => (
+        <div className="max-w-4xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+            {/* Header */}
+            <div className="text-center mb-14">
+
+                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] text-[#1a1a1a] mb-4">
+                    Your BMI<br /><span style={{ color: '#1a1a1a' }}>Calculator</span>
+                </h2>
+                <p className="text-gray-500 text-sm font-medium max-w-md mx-auto">
+                    GLP-1 medications are clinically indicated for BMI ≥ 27 with a health condition, or BMI ≥ 30. Let's see where you stand.
+                </p>
+            </div>
+
+            {/* Calculator Card */}
+            <div className="bg-white border-2 border-black/8 rounded-[40px] p-10 shadow-sm mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    {/* Height */}
+                    <div>
+                        <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-3">Height</label>
+                        <div className="flex gap-3">
+                            <div className="flex-1">
+                                <select
+                                    value={bmiHeightFeet}
+                                    onChange={e => setBmiHeightFeet(e.target.value)}
+                                    className="w-full px-4 py-4 rounded-2xl border-2 border-black/10 bg-gray-50 text-[#1a1a1a] font-black text-sm focus:outline-none focus:border-black transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="">ft</option>
+                                    {[4, 5, 6, 7].map(f => <option key={f} value={f}>{f} ft</option>)}
+                                </select>
+                            </div>
+                            <div className="flex-1">
+                                <select
+                                    value={bmiHeightInches}
+                                    onChange={e => setBmiHeightInches(e.target.value)}
+                                    className="w-full px-4 py-4 rounded-2xl border-2 border-black/10 bg-gray-50 text-[#1a1a1a] font-black text-sm focus:outline-none focus:border-black transition-all appearance-none cursor-pointer"
+                                >
+                                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => <option key={i} value={i}>{i} in</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Weight */}
+                    <div>
+                        <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-3">Weight (lbs)</label>
+                        <input
+                            type="number"
+                            min="50" max="700"
+                            placeholder="e.g. 185"
+                            value={bmiWeight}
+                            onChange={e => setBmiWeight(e.target.value)}
+                            className="w-full px-4 py-4 rounded-2xl border-2 border-black/10 bg-gray-50 text-[#1a1a1a] font-black text-sm focus:outline-none focus:border-black transition-all"
+                        />
+                    </div>
+                </div>
+
+                {/* BMI Result */}
+                {computedBMI && bmiCategory && (
+                    <div
+                        className="rounded-[24px] p-8 transition-all duration-500 flex flex-col md:flex-row items-center gap-8"
+                        style={{ backgroundColor: bmiCategory.bg, border: `2px solid ${bmiCategory.color}20` }}
+                    >
+                        {/* BMI Number */}
+                        <div className="text-center md:text-left flex-shrink-0">
+                            <div className="text-7xl font-black leading-none" style={{ color: bmiCategory.color }}>{computedBMI}</div>
+                            <div className="text-[11px] font-black uppercase tracking-[0.3em] mt-1" style={{ color: bmiCategory.color }}>BMI Score</div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="hidden md:block w-px h-20 bg-black/10"></div>
+
+                        {/* Category Info */}
+                        <div className="flex-1 text-center md:text-left">
+                            <div className="text-2xl font-black uppercase tracking-tight mb-2" style={{ color: bmiCategory.color }}>
+                                {bmiCategory.label}
+                            </div>
+                            <p className="text-sm text-gray-600 font-medium mb-4 leading-relaxed">
+                                {bmiCategory.eligible
+                                    ? '✓ Based on your BMI, you may qualify for GLP-1 weight loss medication through our clinical program.'
+                                    : 'Your current BMI is below the clinical threshold for GLP-1 medications. You may still qualify with certain health conditions.'}
+                            </p>
+                            {/* BMI Scale Bar */}
+                            <div className="relative h-2 rounded-full bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-600 overflow-hidden">
+                                <div
+                                    className="absolute top-0 w-3 h-3 rounded-full border-2 border-white shadow-md -mt-0.5 transition-all duration-700"
+                                    style={{
+                                        backgroundColor: bmiCategory.color,
+                                        left: `${Math.min(Math.max(((parseFloat(computedBMI) - 15) / 25) * 100, 2), 96)}%`
+                                    }}
+                                ></div>
+                            </div>
+                            <div className="flex justify-between text-[9px] font-black uppercase tracking-wider text-gray-400 mt-1">
+                                <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40+</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {!computedBMI && (
+                    <div className="rounded-[24px] p-8 bg-gray-50 border-2 border-dashed border-black/10 text-center">
+                        <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Enter your height & weight to see your BMI</p>
+                    </div>
+                )}
+            </div>
+
+            {/* BMI Reference Table */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+                {[
+                    { range: '< 18.5', label: 'Underweight', color: '#3B82F6' },
+                    { range: '18.5–24.9', label: 'Healthy', color: '#22C55E' },
+                    { range: '25–29.9', label: 'Overweight', color: '#F59E0B' },
+                    { range: '≥ 30', label: 'Obese', color: '#EF4444' },
+                ].map((cat) => (
+                    <div key={cat.label} className="rounded-2xl p-4 text-center" style={{ backgroundColor: cat.color + '12', border: `1px solid ${cat.color}30` }}>
+                        <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: cat.color }}>{cat.label}</div>
+                        <div className="text-[11px] font-bold text-gray-500">{cat.range}</div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+                <button
+                    onClick={() => { setShowBMI(false); setShowQuote(true); }}
+                    className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                >
+                    Back
+                </button>
+                <button
+                    onClick={() => { setShowBMI(false); setShowQuote2(true); }}
+                    disabled={!computedBMI}
+                    className={`w-full md:w-auto px-16 py-6 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3 ${!computedBMI
+                        ? 'bg-black/10 text-black/20 cursor-not-allowed'
+                        : 'bg-black text-white hover:scale-105'
+                        }`}
+                    onMouseEnter={e => {
+                        if (computedBMI) {
+                            e.currentTarget.style.backgroundColor = '#FFDE59';
+                            e.currentTarget.style.color = '#1a1a1a';
+                        }
+                    }}
+                    onMouseLeave={e => {
+                        if (computedBMI) {
+                            e.currentTarget.style.backgroundColor = '#000000';
+                            e.currentTarget.style.color = '#ffffff';
+                        } else {
+                            e.currentTarget.style.backgroundColor = '';
+                            e.currentTarget.style.color = '';
+                        }
+                    }}
+                >
+                    Continue to Assessment
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    );
+
+    const renderQuote2Step = () => (
+        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Image side (left on desktop) */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={quoteTargetImg}
+                            alt="GLP-1 Clinical Research"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        {/* APA Reference fine print */}
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Wilbon, S. S., &amp; Kolonin, M. G. (2023). GLP‑1 receptor agonists — effects beyond obesity and diabetes. <em>Cells, 13</em>(1), 65. https://doi.org/10.3390/cells13010065
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Text side (right on desktop) */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Research
+                    </div>
+                    <div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.3em] text-black/40 mb-4">Scientific Consensus</p>
+                        <h2 style={{ color: '#1a1a1a' }} className="text-2xl md:text-3xl font-black tracking-tight leading-[1.25]">
+                            "GLP‑1 receptor agonists have been transformative in treating metabolic diseases, enabling significant weight loss and improved glucose control, and preclinical and clinical studies have also revealed beneficial effects on cardiovascular diseases, neurodegeneration, kidney disease, and cancer, highlighting a broad range of positive health impacts beyond obesity and diabetes."
+                        </h2>
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => { setShowQuote2(false); setShowBMI(true); }}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => setShowQuote2(false)}
+                            className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:scale-105 flex items-center justify-center gap-3"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Start My Assessment
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderQuoteStep = () => (
+        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left Side: Quote Image with Fine Print */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={weightlossQuoteImg}
+                            alt="Weight Loss Transformation"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        {/* APA Reference fine print at bottom of image */}
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Ard, J., Lee, C. J., Gudzune, K., Addison, B., Lingvay, I., et al. (2025). Weight reduction over time in tirzepatide‑treated participants by early weight loss response: Post hoc analysis in SURMOUNT‑1. <em>Diabetes, Obesity and Metabolism, 27</em>(9), 5064–5071. https://pmc.ncbi.nlm.nih.gov/articles/PMC12326891/
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Side: Quote and CTA — explicit white bg so nothing bleeds through */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Efficacy
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"Experience up to</span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>35%</span>
+                            {' '}body weight
+                        </span>
+                        <span className="block">reduction through</span>
+                        <span className="block">medication and healthy</span>
+                        <span className="block">lifestyle habits."</span>
+                    </h2>
+                    <button
+                        onClick={() => { setShowQuote(false); setShowBMI(true); }}
+                        className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                        style={{ color: '#ffffff' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                    >
+                        Start Assessment
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     const renderStep0 = () => (
         <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
             <div className="text-center mb-16">
-                <div className="inline-block py-2 px-6 bg-accent-black border border-accent-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-8">
-                    {categoryData.title} • Module 01
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6 italic">
+                <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
                     {categoryData.question[0]} <br />
                     <span className="text-[#1a1a1a]">{categoryData.question[1]}</span>
                 </h1>
@@ -630,15 +1057,15 @@ const Assessment = () => {
                             key={opt.id}
                             onClick={() => toggleImprovement(opt.id)}
                             className={`group relative p-8 rounded-[40px] cursor-pointer transition-all duration-700 border-2 overflow-hidden ${isSelected
-                                ? 'border-accent-black bg-accent-black/[0.03] shadow-[0_0_50px_rgba(19,91,236,0.1)]'
+                                ? 'border-black bg-white shadow-[0_0_50px_rgba(0,0,0,0.05)]'
                                 : 'border-black/10 bg-white hover:border-black/20'
                                 }`}
                         >
                             <div className="relative z-10">
-                                <h3 className={`text-2xl font-black uppercase tracking-tighter italic mb-3 transition-colors duration-500 text-black`}>
+                                <h3 className={`text-2xl font-medium tracking-tighter mb-3 transition-colors duration-500 text-black assessment-option-arial pr-12`}>
                                     {opt.name}
                                 </h3>
-                                <p className="text-gray-600 text-sm font-medium leading-relaxed">
+                                <p className="text-gray-600 text-sm font-medium leading-relaxed pr-12">
                                     {opt.desc}
                                 </p>
                             </div>
@@ -647,20 +1074,27 @@ const Assessment = () => {
                             <div className={`absolute top-8 right-8 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isSelected ? 'bg-accent-black border-accent-black scale-110' : 'border-black/10 opacity-30 group-hover:opacity-100'
                                 }`}>
                                 {isSelected && (
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 )}
-                            </div>
-
-                            {/* Subtle Background Glow */}
-                            <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isSelected ? 'opacity-10' : 'opacity-0'}`}>
-                                <div className="absolute inset-0 bg-accent-black blur-[80px]"></div>
                             </div>
                         </div>
                     );
                 })}
             </div>
+
+            {selectedImprovements.includes('other-goal') && (
+                <div className="mb-16 animate-fadeIn">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-6">Tell us more about your goal</label>
+                    <textarea
+                        value={otherGoalText}
+                        onChange={(e) => setOtherGoalText(e.target.value)}
+                        placeholder="Please describe your specific goal here..."
+                        className="w-full p-8 rounded-[32px] bg-black/5 border-2 border-black/10 focus:border-black focus:bg-white text-lg font-medium outline-none transition-all duration-500 min-h-[200px] resize-none"
+                    />
+                </div>
+            )}
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
                 <Link
@@ -672,10 +1106,23 @@ const Assessment = () => {
                 <button
                     onClick={handleContinue}
                     disabled={selectedImprovements.length === 0}
-                    className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group ${selectedImprovements.length > 0
-                        ? 'bg-black text-white hover:bg-accent-black hover:text-black hover:scale-105 hover:shadow-[0_0_60px_rgba(19,91,236,0.4)]'
+                    className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group flex items-center justify-center gap-4 ${selectedImprovements.length > 0
+                        ? 'bg-black text-white hover:scale-105 shadow-sm cursor-pointer'
                         : 'bg-black/5 text-black/20 cursor-not-allowed'
                         }`}
+                    style={selectedImprovements.length > 0 ? { color: '#ffffff' } : {}}
+                    onMouseEnter={e => {
+                        if (selectedImprovements.length > 0) {
+                            e.currentTarget.style.backgroundColor = '#FFDE59';
+                            e.currentTarget.style.color = '#1a1a1a';
+                        }
+                    }}
+                    onMouseLeave={e => {
+                        if (selectedImprovements.length > 0) {
+                            e.currentTarget.style.backgroundColor = '#000000';
+                            e.currentTarget.style.color = '#ffffff';
+                        }
+                    }}
                 >
                     <span className="relative z-10 flex items-center gap-4">
                         Continue Assessment
@@ -690,9 +1137,9 @@ const Assessment = () => {
     );
 
     const renderStatStep = () => (
-        <div className="assessment-step max-w-6xl mx-auto py-20 px-6 flex flex-col md:flex-row items-center gap-16">
+        <div className="assessment-step max-w-7xl mx-auto py-20 px-6 flex flex-col md:flex-row items-center gap-16">
             {/* Left Image Section */}
-            <div className="w-full md:w-[450px] aspect-[4/5] rounded-[40px] overflow-hidden relative shadow-2xl group flex-shrink-0">
+            <div className="w-full md:w-[675px] aspect-[4/5] rounded-[40px] overflow-hidden relative shadow-2xl group flex-shrink-0">
                 <img
                     src={categoryData.stat.image}
                     alt="Statistical validation"
@@ -705,9 +1152,9 @@ const Assessment = () => {
             {/* Right Content Section */}
             <div className="flex-1 text-left">
                 <h2 className="text-black font-black leading-[0.85] mb-12 tracking-tighter">
-                    <span className="text-8xl md:text-[160px] block mb-4 italic">{categoryData.stat.pct}</span>
+                    <span className="text-8xl md:text-[160px] block mb-4">{categoryData.stat.pct}</span>
                     <span className="text-4xl md:text-7xl uppercase block opacity-90">{categoryData.stat.text}</span>
-                    <span className="text-4xl md:text-7xl uppercase inline-block bg-accent-black text-black px-4 mt-2 italic">{categoryData.stat.highlight}</span>
+                    <span className="text-4xl md:text-7xl uppercase inline-block bg-accent-black text-black px-4 mt-2">{categoryData.stat.highlight}</span>
                 </h2>
 
                 <div className="flex flex-col md:flex-row items-center gap-6">
@@ -724,7 +1171,7 @@ const Assessment = () => {
                         Continue
                     </button>
                 </div>
-                <p className="text-gray-400 text-xs font-medium tracking-wide uppercase italic text-left mt-10">
+                <p className="text-gray-400 text-xs font-medium tracking-wide uppercase text-left mt-10">
                     {categoryData.stat.disclaimer}
                 </p>
             </div>
@@ -737,7 +1184,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black border border-accent-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-8">
                     Member Journeys
                 </div>
-                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6">
+                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">
                     Tremendous <span className="text-accent-black">Results.</span>
                 </h2>
                 <p className="text-gray-500 font-medium uppercase tracking-[0.3em] text-[10px]">
@@ -752,7 +1199,7 @@ const Assessment = () => {
                             <div className="inline-block bg-accent-black text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
                                 {rev.result}
                             </div>
-                            <p className="text-2xl font-serif italic text-black opacity-90 leading-tight mb-8">
+                            <p className="text-2xl font-serif text-black opacity-90 leading-tight mb-8">
                                 "{rev.text}"
                             </p>
                             <div className="flex items-center gap-4">
@@ -785,53 +1232,124 @@ const Assessment = () => {
     );
 
     const renderAuthStep = () => {
+        if (showOtpInput) {
+            return (
+                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
+                    <div className="text-center mb-12">
+                        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                        <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-6">
+                            Identity Verification
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                            Verify Your <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Phone.</span>
+                        </h2>
+                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#1a1a1a99' }}>
+                            A security code has been transmitted to{' '}
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.phoneNumber}</span>
+                        </p>
+                    </div>
+
+                    <div className="rounded-[40px] p-8 md:p-12 text-center" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a10' }}>
+                        <div className="space-y-6 mb-10">
+                            <input
+                                type="text"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                placeholder="0 0 0 0 0 0"
+                                className="w-full rounded-2xl py-6 text-center text-4xl font-black tracking-[0.5em] outline-none transition-all"
+                                style={{ backgroundColor: '#fff', border: '2px solid #1a1a1a20', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = '#1a1a1a20'}
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-4">
+                            <button
+                                onClick={handleVerifyOtp}
+                                disabled={verifying || otp.length < 6}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 disabled:opacity-50"
+                                style={{ backgroundColor: '#000', color: '#fff' }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
+                            >
+                                {verifying ? 'Verifying...' : 'Unlock Protocol'}
+                            </button>
+                            <button
+                                onClick={() => setShowOtpInput(false)}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
+                                style={{ backgroundColor: 'transparent', border: '1px solid #1a1a1a20', color: '#1a1a1a99' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a20'}
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         if (showVerificationSent) {
             return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700">
+                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
                     <div className="text-center mb-12">
-                        <div className="w-24 h-24 rounded-full bg-accent-black/10 border border-accent-black/20 flex items-center justify-center mx-auto mb-8">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-accent-black animate-pulse">
+                        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="3" className="animate-pulse">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic mb-4">
-                            Check Your <span className="text-accent-black">Email.</span>
+                        <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-6">
+                            Verification Sent
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                            Check Your <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Email.</span>
                         </h2>
-                        <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto">
-                            Clinical verification link transmitted to: <br />
-                            <span className="text-[#1a1a1a] font-black">{authData.email}</span>
+                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#1a1a1a99' }}>
+                            Clinical verification link transmitted to:{' '}
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.email}</span>
                         </p>
                     </div>
 
-                    <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl text-center">
-                        <div className="space-y-6 mb-10 text-left">
-                            <div className="flex gap-4 p-4 bg-black/5 rounded-2xl border border-black/5">
-                                <span className="text-accent-black font-black">01.</span>
-                                <p className="text-xs text-gray-600 font-medium">Open the email from GLP-GLOW and click the verification link.</p>
+                    <div className="rounded-[40px] p-8 md:p-12" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a10' }}>
+                        <div className="space-y-4 mb-10 text-left">
+                            <div className="flex gap-4 p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
+                                <span className="font-black" style={{ color: '#1a1a1a' }}>01.</span>
+                                <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a80' }}>Open the email from uGlowMD and click the verification link.</p>
                             </div>
-                            <div className="flex gap-4 p-4 bg-black/5 rounded-2xl border border-black/5">
-                                <span className="text-accent-black font-black">02.</span>
-                                <p className="text-xs text-gray-600 font-medium">Verify your ownership to unlock the medical intake portal.</p>
+                            <div className="flex gap-4 p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
+                                <span className="font-black" style={{ color: '#1a1a1a' }}>02.</span>
+                                <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a80' }}>Verify your ownership to unlock the medical intake portal.</p>
                             </div>
                         </div>
 
                         <div className="space-y-4">
                             <button
                                 onClick={() => window.open(`https://${authData.email.split('@')[1]}`, '_blank')}
-                                className="w-full py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]"
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
+                                style={{ backgroundColor: '#000', color: '#fff' }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
                             >
                                 Open Mailbox
                             </button>
                             <button
                                 onClick={() => setShowVerificationSent(false)}
-                                className="w-full py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
+                                style={{ backgroundColor: 'transparent', border: '1px solid #1a1a1a20', color: '#1a1a1a99' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a20'}
                             >
                                 Back to Sign Up
                             </button>
                         </div>
 
-                        <p className="mt-8 text-[9px] font-black uppercase tracking-[0.3em] text-gray-300 italic">
+                        <p className="mt-8 text-[9px] font-black uppercase tracking-[0.4em]" style={{ color: '#1a1a1a40', textAlign: 'center' }}>
                             Waiting for secure confirmation...
                         </p>
                     </div>
@@ -840,92 +1358,189 @@ const Assessment = () => {
         }
 
         return (
-            <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+            <div className="assessment-step max-w-2xl mx-auto py-20 px-6 bg-white">
                 <div className="text-center mb-12">
-                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                         Secure Clinical Portal
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic mb-4">
-                        {authMode === 'signup' ? 'Create' : 'Access'} <br />
-                        <span className="text-accent-black">Your Account.</span>
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                        {authMode === 'signup' ? 'Create' : 'Access'}<br />
+                        <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Your Account.</span>
                     </h2>
-                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                        To view your customized {categoryId.replace('-', ' ')} protocol.
+                    <p className="font-medium uppercase tracking-[0.2em] text-[10px]" style={{ color: '#1a1a1a80' }}>
+                        Join the telemedicine platform to proceed with your protocol.
                     </p>
                 </div>
 
-                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
-                    {authError && (
-                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
-                            {authError}
-                        </div>
-                    )}
+                <div className="rounded-[40px] p-8 md:p-12" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a10' }}>
                     <div className="space-y-6">
                         {authMode === 'signup' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">First Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="John"
-                                        value={authData.firstName}
-                                        onChange={(e) => setAuthData({ ...authData, firstName: e.target.value })}
-                                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
-                                    />
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>First Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="John"
+                                            value={authData.firstName}
+                                            onChange={(e) => setAuthData({ ...authData, firstName: e.target.value })}
+                                            className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Last Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Doe"
+                                            value={authData.lastName}
+                                            onChange={(e) => setAuthData({ ...authData, lastName: e.target.value })}
+                                            className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                        />
+                                    </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Last Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Doe"
-                                        value={authData.lastName}
-                                        onChange={(e) => setAuthData({ ...authData, lastName: e.target.value })}
-                                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
-                                    />
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Phone Number</label>
+                                    <div className="flex gap-4">
+                                        <input
+                                            type="text"
+                                            value={authData.countryCode}
+                                            onChange={(e) => {
+                                                let val = e.target.value;
+                                                if (!val.startsWith('+') && val.length > 0) val = '+' + val;
+                                                setAuthData({ ...authData, countryCode: val.replace(/[^\d+]/g, '').slice(0, 5) });
+                                            }}
+                                            placeholder="+1"
+                                            className="w-24 rounded-2xl py-5 text-center font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                            required
+                                        />
+                                        <input
+                                            type="tel"
+                                            placeholder="555 000 0000"
+                                            value={authData.phoneNumber}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setAuthData({ ...authData, phoneNumber: val.replace(/\D/g, '').slice(0, 15) });
+                                            }}
+                                            className="flex-1 rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Email Address</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Email Address</label>
                             <input
                                 type="email"
                                 placeholder="name@email.com"
                                 value={authData.email}
                                 onChange={(e) => setAuthData({ ...authData, email: e.target.value })}
-                                className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
+                                className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Password</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Password</label>
                             <input
                                 type="password"
                                 placeholder="••••••••"
                                 value={authData.password}
                                 onChange={(e) => setAuthData({ ...authData, password: e.target.value })}
-                                className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
+                                className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                             />
                         </div>
 
-                        <div className="flex gap-4 mt-4">
-                            <button
-                                onClick={() => setStep(2)}
-                                className="flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:border-white/30"
-                            >
-                                Back
-                            </button>
+                        {authMode === 'signup' && (
+                            <div className="pt-4 space-y-4">
+                                <label className="flex items-start gap-4 cursor-pointer group">
+                                    <div className="relative flex items-center mt-1">
+                                        <input
+                                            type="checkbox"
+                                            checked={acceptedTerms}
+                                            onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                            className="peer appearance-none w-5 h-5 border-2 rounded-md transition-all"
+                                            style={{ borderColor: '#1a1a1a30', backgroundColor: '#fff' }}
+                                            onFocus={e => { e.target.style.borderColor = '#FFDE59'; }}
+                                        />
+                                        <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
+                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 left-1 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: '#1a1a1a60' }}>
+                                        I accept all <a href="/terms-conditions" target="_blank" className="font-black underline hover:opacity-70 transition-opacity" style={{ color: '#1a1a1a' }}>Terms and Conditions</a> of the telemedicine platform.
+                                    </span>
+                                </label>
+
+                                <label className="flex items-start gap-4 cursor-pointer group">
+                                    <div className="relative flex items-center mt-1">
+                                        <input
+                                            type="checkbox"
+                                            checked={acceptedRisks}
+                                            onChange={(e) => setAcceptedRisks(e.target.checked)}
+                                            className="peer appearance-none w-5 h-5 border-2 rounded-md transition-all"
+                                            style={{ borderColor: '#1a1a1a30', backgroundColor: '#fff' }}
+                                        />
+                                        <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
+                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 left-1 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: '#1a1a1a60' }}>
+                                        I understand the medical risks and protocols.
+                                    </span>
+                                </label>
+                            </div>
+                        )}
+
+                        <div className="pt-8 space-y-4">
                             <button
                                 onClick={handleAuthSubmit}
-                                disabled={authLoading}
-                                className="flex-[2] py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 hover:bg-accent-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)] disabled:opacity-50"
+                                disabled={authLoading || (authMode === 'signup' && (!acceptedTerms || !acceptedRisks))}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 disabled:opacity-30"
+                                style={{ backgroundColor: '#000', color: '#fff' }}
+                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
                             >
-                                {authLoading ? 'Verifying...' : (authMode === 'signup' ? 'Continue' : 'Enter Medical Portal')}
+                                {authLoading ? (
+                                    <span className="flex items-center justify-center gap-3">
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Clinical Handshake...
+                                    </span>
+                                ) : authMode === 'signup' ? 'Initiate Protocol' : 'Access Account'}
+                            </button>
+                            <button
+                                onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
+                                style={{ backgroundColor: 'transparent', border: '1px solid #1a1a1a20', color: '#1a1a1a99' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a20'}
+                            >
+                                {authMode === 'signup' ? 'Already have an account? Sign In' : 'Need an account? Create one'}
                             </button>
                         </div>
 
                         <div className="flex items-center gap-4 py-2">
-                            <div className="h-px flex-1 bg-black/5"></div>
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">OR</span>
-                            <div className="h-px flex-1 bg-black/5"></div>
+                            <div className="h-px flex-1" style={{ backgroundColor: '#1a1a1a10' }}></div>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: '#1a1a1a30' }}>OR</span>
+                            <div className="h-px flex-1" style={{ backgroundColor: '#1a1a1a10' }}></div>
                         </div>
 
                         {/* Social Logins */}
@@ -933,36 +1548,49 @@ const Assessment = () => {
                             <button
                                 onClick={async () => {
                                     try {
-                                        const { error } = await signUp({ provider: 'google' });
+                                        const { error } = await supabase.auth.signInWithOAuth({
+                                            provider: 'google',
+                                            options: {
+                                                redirectTo: window.location.href
+                                            }
+                                        });
                                         if (error) throw error;
                                     } catch (err) {
                                         setAuthError(err.message);
                                     }
                                 }}
-                                className="flex items-center justify-center gap-3 bg-black/5 border border-black/5 hover:border-white/30 transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white"
+                                className="flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                style={{ backgroundColor: '#fff', border: '1px solid #1a1a1a15', color: '#1a1a1a' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a15'}
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                 </svg>
                                 Google
                             </button>
-                            <button className="flex items-center justify-center gap-3 bg-[#1a1a1a] text-white hover:bg-black transition-all py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed cursor-not-allowed opacity-50" disabled title="Coming Soon">
+                            <button
+                                className="flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed opacity-30"
+                                style={{ backgroundColor: '#fff', border: '1px solid #1a1a1a15', color: '#1a1a1a' }}
+                                disabled
+                            >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2.001-.156-3.314 1.091-4.21 1.091zM15.503 2.496c.844-1.026 1.404-2.455 1.248-3.87-1.221.052-2.704.818-3.58 1.844-.78.896-1.456 2.364-1.272 3.741 1.35.104 2.755-.701 3.604-1.715z" />
+                                    <path d="M17 2H7c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4H7V6h10v10z" />
                                 </svg>
-                                Apple
+                                Phone
                             </button>
                         </div>
 
-                        <div className="pt-8 text-center border-t border-black/5">
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">
-                                {authMode === 'signup' ? 'Already a member?' : 'New to GLP-GLOW?'} <br />
+                        <div className="pt-8 text-center" style={{ borderTop: '1px solid #1a1a1a08' }}>
+                            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed" style={{ color: '#1a1a1a60' }}>
+                                {authMode === 'signup' ? 'Already a member?' : 'New to uGlowMD?'}{' '}
                                 <button
                                     onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
-                                    className="text-accent-black mt-2 hover:underline"
+                                    className="font-black underline hover:opacity-70 transition-opacity"
+                                    style={{ color: '#1a1a1a' }}
                                 >
                                     {authMode === 'signup' ? 'Sign In Here' : 'Create Clinical Account'}
                                 </button>
@@ -972,13 +1600,14 @@ const Assessment = () => {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <button onClick={() => setStep(2)} className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-black transition-colors">
-                        ← Back to results
+                    <button onClick={() => setStep(0)} className="text-[9px] font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity" style={{ color: '#1a1a1a50' }}>
+                        ← Back to goals
                     </button>
                 </div>
             </div>
         );
     };
+
 
     const renderEligibilityStep = () => (
         <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
@@ -986,7 +1615,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Eligibility Check
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
+                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
                     Let's make sure you're <br />
                     <span className="text-accent-black">eligible for treatment.</span>
                 </h2>
@@ -997,47 +1626,90 @@ const Assessment = () => {
             </div>
 
             <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
-                <div className="space-y-8">
+                <div className="space-y-10">
                     {/* Sex Selection */}
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4 text-center">Sex assigned at birth</label>
-                        <div className="grid grid-cols-2 gap-4">
-                            {['male', 'female'].map(s => (
+                        <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Sex assigned at birth</label>
+                        <div className="grid grid-cols-3 gap-4">
+                            {['male', 'female', 'other'].map(s => (
                                 <button
                                     key={s}
                                     onClick={() => setEligibilityData({ ...eligibilityData, sex: s })}
-                                    className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${eligibilityData.sex === s
-                                        ? 'bg-white text-black border-white'
-                                        : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20'
-                                        } border`}
+                                    className={`py-5 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${eligibilityData.sex === s
+                                        ? 'border-black text-black bg-white shadow-xl scale-[1.05]'
+                                        : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/10'
+                                        } border-2`}
                                 >
                                     {s}
                                 </button>
                             ))}
                         </div>
+
+                        {eligibilityData.sex === 'other' && (
+                            <div className="mt-6 animate-fadeIn">
+                                <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-4">Please specify your gender</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter gender identity..."
+                                    className="w-full bg-black/5 border-2 border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-black transition-all font-bold"
+                                    value={eligibilityData.genderOther}
+                                    onChange={(e) => setEligibilityData({ ...eligibilityData, genderOther: e.target.value })}
+                                />
+                            </div>
+                        )}
+
                         {triedToContinue && !eligibilityData.sex && (
-                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">Please select your sex</p>
+                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Please select your sex</p>
                         )}
                     </div>
 
                     {/* Date of Birth */}
                     <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Date of Birth</label>
-                        <input
-                            type="date"
-                            className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.dob ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
-                            value={eligibilityData.dob}
-                            onChange={(e) => setEligibilityData({ ...eligibilityData, dob: e.target.value })}
-                        />
-                        {triedToContinue && !eligibilityData.dob && (
-                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">Date of birth is required</p>
+                        <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Date of Birth</label>
+                        <div className="grid grid-cols-3 gap-6">
+                            <div>
+                                <input
+                                    type="text"
+                                    maxLength="2"
+                                    placeholder="MM"
+                                    className={`w-full text-center bg-black/5 border-2 ${triedToContinue && !eligibilityData.dobMonth ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-black focus:outline-none focus:border-black transition-all font-black text-xl`}
+                                    value={eligibilityData.dobMonth}
+                                    onChange={(e) => setEligibilityData({ ...eligibilityData, dobMonth: e.target.value.replace(/\D/g, '') })}
+                                />
+                                <span className="block text-center text-[8px] font-black uppercase tracking-widest text-gray-300 mt-2">Month</span>
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    maxLength="2"
+                                    placeholder="DD"
+                                    className={`w-full text-center bg-black/5 border-2 ${triedToContinue && !eligibilityData.dobDay ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-black focus:outline-none focus:border-black transition-all font-black text-xl`}
+                                    value={eligibilityData.dobDay}
+                                    onChange={(e) => setEligibilityData({ ...eligibilityData, dobDay: e.target.value.replace(/\D/g, '') })}
+                                />
+                                <span className="block text-center text-[8px] font-black uppercase tracking-widest text-gray-300 mt-2">Day</span>
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    maxLength="4"
+                                    placeholder="YYYY"
+                                    className={`w-full text-center bg-black/5 border-2 ${triedToContinue && !eligibilityData.dobYear ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-black focus:outline-none focus:border-black transition-all font-black text-xl`}
+                                    value={eligibilityData.dobYear}
+                                    onChange={(e) => setEligibilityData({ ...eligibilityData, dobYear: e.target.value.replace(/\D/g, '') })}
+                                />
+                                <span className="block text-center text-[8px] font-black uppercase tracking-widest text-gray-300 mt-2">Year</span>
+                            </div>
+                        </div>
+                        {triedToContinue && (!eligibilityData.dobMonth || !eligibilityData.dobDay || !eligibilityData.dobYear) && (
+                            <p className="text-red-500 text-[9px] mt-4 ml-4 font-black uppercase tracking-widest animate-pulse text-center">Full date of birth is required</p>
                         )}
                     </div>
 
                     {/* State & Phone */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="relative">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">State</label>
+                            <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Residing State</label>
                             <div className="relative">
                                 <input
                                     type="text"
@@ -1085,7 +1757,7 @@ const Assessment = () => {
                                             name.toLowerCase().includes(stateSearch.toLowerCase()) ||
                                             code.toLowerCase().includes(stateSearch.toLowerCase())
                                         ).length === 0 && (
-                                                <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-300 italic text-center">
+                                                <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-300 text-center">
                                                     No matches found
                                                 </div>
                                             )}
@@ -1093,7 +1765,7 @@ const Assessment = () => {
                                 )}
                             </div>
                             {triedToContinue && !eligibilityData.state && (
-                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">State selection is required</p>
+                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">State selection is required</p>
                             )}
 
                             {/* Overlay to close dropdown */}
@@ -1129,7 +1801,7 @@ const Assessment = () => {
                                 }}
                             />
                             {triedToContinue && !eligibilityData.phone && (
-                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">Phone number is required</p>
+                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Phone number is required</p>
                             )}
                         </div>
                     </div>
@@ -1142,8 +1814,8 @@ const Assessment = () => {
                                 <button
                                     key={v}
                                     onClick={() => setEligibilityData({ ...eligibilityData, pcpVisitLast6Months: v })}
-                                    className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${eligibilityData.pcpVisitLast6Months === v
-                                        ? 'bg-accent-black text-black border-accent-black'
+                                    className={`py-4 px-6 rounded-2xl text-[10px] font-medium tracking-widest transition-all assessment-option-arial ${eligibilityData.pcpVisitLast6Months === v
+                                        ? 'border-black text-black bg-white shadow-md scale-[1.02]'
                                         : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-black/5 text-gray-400 border-red-500/50' : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20')
                                         } border`}
                                 >
@@ -1152,12 +1824,12 @@ const Assessment = () => {
                             ))}
                         </div>
                         {triedToContinue && !eligibilityData.pcpVisitLast6Months && (
-                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">Please select an option</p>
+                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Please select an option</p>
                         )}
 
                         {eligibilityData.pcpVisitLast6Months && (
                             <div className="mt-6 p-6 bg-white/[0.02] border border-black/5 rounded-3xl">
-                                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed italic">
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed">
                                     {eligibilityData.pcpVisitLast6Months === 'Yes'
                                         ? 'Since you have selected "Yes", please upload the lab results that include your "Lipid" and "A1c" values:'
                                         : 'Since you have selected "No", you could possibly be ordered/recommended to do a Lab Test (Lipid, A1c).'}
@@ -1222,10 +1894,10 @@ const Assessment = () => {
                                             </span>
                                         </button>
                                         {triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) && (
-                                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest italic animate-pulse">At least one lab result is REQUIRED</p>
+                                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">At least one lab result is REQUIRED</p>
                                         )}
                                         {eligibilityData.labResults?.length > 0 && (
-                                            <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 italic text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
+                                            <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
                                         )}
                                     </div>
                                 )}
@@ -1249,11 +1921,11 @@ const Assessment = () => {
                                 </svg>
                             </div>
                             <span className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-wide group-hover:text-gray-600 transition-colors">
-                                I agree to receive text messages from GLP-GLOW with important updates, including prescription reminders, order updates, exclusive offers and information about new products. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out.
+                                I agree to receive text messages from uGlowMD with important updates, including prescription reminders, order updates, exclusive offers and information about new products. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out.
                             </span>
                         </label>
                         {triedToContinue && !eligibilityData.consent && (
-                            <p className="text-red-500 text-[9px] mt-2 ml-10 font-black uppercase tracking-widest italic animate-pulse">Consent is required</p>
+                            <p className="text-red-500 text-[9px] mt-2 ml-10 font-black uppercase tracking-widest animate-pulse">Consent is required</p>
                         )}
                     </div>
 
@@ -1269,20 +1941,25 @@ const Assessment = () => {
                                 setTriedToContinue(true);
                                 const isPcpLabRequired = eligibilityData.pcpVisitLast6Months === 'Yes';
                                 const hasLabResults = Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0;
+                                const hasFullDob = eligibilityData.dobMonth && eligibilityData.dobDay && eligibilityData.dobYear;
+                                const hasGenderIfOther = eligibilityData.sex !== 'other' || (eligibilityData.sex === 'other' && eligibilityData.genderOther && eligibilityData.genderOther.trim() !== '');
 
                                 if (
                                     eligibilityData.sex &&
-                                    eligibilityData.dob &&
+                                    hasGenderIfOther &&
+                                    hasFullDob &&
                                     eligibilityData.state &&
                                     eligibilityData.phone &&
                                     eligibilityData.pcpVisitLast6Months &&
                                     (!isPcpLabRequired || (isPcpLabRequired && hasLabResults)) &&
                                     eligibilityData.consent
                                 ) {
+                                    const formattedDob = `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}`;
+                                    setEligibilityData(prev => ({ ...prev, dob: formattedDob }));
                                     setStep(6);
                                 }
                             }}
-                            className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]`}
+                            className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm`}
                         >
                             Continue
                         </button>
@@ -1290,7 +1967,7 @@ const Assessment = () => {
                 </div>
             </div>
 
-            <div className="mt-12 text-center text-[9px] font-black uppercase tracking-[0.3em] text-white/10 italic">
+            <div className="mt-12 text-center text-[9px] font-black uppercase tracking-[0.3em] text-white/10">
                 clinical screening protocol v2.4 • secure encryption enabled
             </div>
         </div>
@@ -1324,8 +2001,8 @@ const Assessment = () => {
                         <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                             Logistics Locked
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-8 leading-[0.9]">
-                            GLP-GLOW IS <br />
+                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
+                            <span className="font-brand font-bold italic-u">u</span><span className="font-brand font-bold">Glow<sup>MD</sup></span> IS <br />
                             AVAILABLE IN <br />
                             <span className="text-accent-black">{stateName.toUpperCase()}</span>
                         </h2>
@@ -1350,7 +2027,7 @@ const Assessment = () => {
                             </button>
                             <button
                                 onClick={() => setStep(7)}
-                                className="flex-1 px-10 py-8 bg-[#1a1a1a] text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:shadow-[0_0_60px_rgba(0,0,0,0.2)] transform hover:scale-105"
+                                className="flex-1 px-10 py-8 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:text-white shadow-sm transform hover:scale-105"
                             >
                                 Finalize Medical Review
                             </button>
@@ -1370,14 +2047,14 @@ const Assessment = () => {
                         Medical Consultation Prep
                     </div>
 
-                    <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-8 leading-[0.9]">
+                    <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
                         Answer a few <br />
                         questions about <br />
                         <span className="text-accent-black">your health.</span>
                     </h2>
 
                     <div className="mb-12">
-                        <div className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4 italic">Doctor</div>
+                        <div className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Doctor</div>
                         <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-md">
                             Our board-certified doctors use the information in the following questions to tailor your treatment.
                         </p>
@@ -1393,7 +2070,7 @@ const Assessment = () => {
                             </button>
                             <button
                                 onClick={() => setStep(8)}
-                                className="w-full md:flex-1 px-12 py-8 bg-[#1a1a1a] text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:shadow-[0_0_60px_rgba(0,0,0,0.2)] transform hover:scale-105"
+                                className="w-full md:flex-1 px-12 py-8 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:text-white shadow-sm transform hover:scale-105"
                             >
                                 Continue to Medical Intake
                             </button>
@@ -1426,7 +2103,7 @@ const Assessment = () => {
                             <div className="flex items-center gap-6">
                                 <div className="w-12 h-px bg-accent-black"></div>
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic text-[#1a1a1a] mb-1">Dr. Anya Sharma</h3>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-[#1a1a1a] mb-1">Dr. Anya Sharma</h3>
                                     <p className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-black">Chief Clinical Advisor</p>
                                 </div>
                             </div>
@@ -1447,7 +2124,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Biometrics & Selection
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
+                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
                     Establish your <br />
                     <span className="text-accent-black">clinical baseline.</span>
                 </h2>
@@ -1490,7 +2167,7 @@ const Assessment = () => {
                                 <button
                                     key={drug}
                                     onClick={() => setIntakeData({ ...intakeData, medication_interest: drug })}
-                                    className={`w-full py-5 rounded-2xl border font-black text-[10px] uppercase tracking-widest transition-all ${intakeData.medication_interest === drug ? 'bg-accent-black border-accent-black text-black' : 'bg-black/5 border-black/5 text-[#1a1a1a] hover:border-accent-black'}`}
+                                    className={`w-full py-5 px-8 pr-12 rounded-2xl border font-medium text-[10px] tracking-widest transition-all assessment-option-arial text-left ${intakeData.medication_interest === drug ? 'border-black text-black bg-white shadow-md scale-[1.02]' : 'bg-black/5 border-black/5 text-gray-400 hover:border-black/20'}`}
                                 >
                                     {drug}
                                 </button>
@@ -1503,7 +2180,7 @@ const Assessment = () => {
                             <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Please specify / Describe your goals</label>
                             <textarea
                                 placeholder="Tell us more about what you're looking for..."
-                                className="w-full h-32 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold resize-none"
+                                className="w-full h-32 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-black transition-all font-bold resize-none"
                                 value={intakeData.other_medication_details || ''}
                                 onChange={(e) => setIntakeData({ ...intakeData, other_medication_details: e.target.value })}
                             />
@@ -1521,7 +2198,7 @@ const Assessment = () => {
                     <button
                         onClick={() => setStep(5)}
                         disabled={!intakeData.medication_interest || (intakeData.medication_interest === 'Other / Not Sure' && !intakeData.other_medication_details)}
-                        className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 ${intakeData.medication_interest && (intakeData.medication_interest !== 'Other / Not Sure' || intakeData.other_medication_details) ? 'bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_50px_rgba(19,91,236,0.3)]' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
+                        className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 ${intakeData.medication_interest && (intakeData.medication_interest !== 'Other / Not Sure' || intakeData.other_medication_details) ? 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue
                     </button>
@@ -1571,11 +2248,11 @@ const Assessment = () => {
 
                 <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-16 backdrop-blur-xl">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">{question.title}</h3>
-                    <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic mb-12 leading-tight">
+                    <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-12 leading-tight">
                         {question.question}
                     </h2>
                     {question.type === 'multiselect' && (
-                        <p className="text-[10px] font-medium italic text-white/30 -mt-8 mb-8">
+                        <p className="text-[10px] font-medium text-black/30 -mt-8 mb-8">
                             Select all that apply
                         </p>
                     )}
@@ -1583,7 +2260,7 @@ const Assessment = () => {
                     <div className="space-y-4">
                         {question.type === 'info' ? (
                             <div className="space-y-6">
-                                <p className="text-gray-600 text-lg font-medium leading-relaxed italic">
+                                <p className="text-gray-600 text-lg font-medium leading-relaxed">
                                     {question.content}
                                 </p>
                             </div>
@@ -1600,9 +2277,9 @@ const Assessment = () => {
                                                 setIntakeData({ ...intakeData, [question.id]: current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt] });
                                             }
                                         }}
-                                        className={`w-full py-6 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
-                                            ? 'bg-accent-black border-accent-black text-black'
-                                            : 'bg-black/5 border-black/5 text-gray-400 hover:border-black/10'
+                                        className={`w-full py-6 px-10 pr-12 rounded-2xl border text-[10px] font-medium tracking-widest transition-all assessment-option-arial text-left ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
+                                            ? 'border-black text-black bg-white shadow-md scale-[1.02]'
+                                            : 'bg-black/5 border-black/5 text-gray-400 hover:border-black/20'
                                             }`}
                                     >
                                         {opt}
@@ -1612,7 +2289,7 @@ const Assessment = () => {
                         ) : (
                             <textarea
                                 placeholder={question.placeholder}
-                                className="w-full h-48 bg-black/5 border border-black/5 rounded-3xl py-8 px-10 text-black focus:outline-none focus:border-accent-black transition-all font-bold resize-none underline-none"
+                                className="w-full h-48 bg-black/5 border border-black/5 rounded-3xl py-8 px-10 text-black focus:outline-none focus:border-black transition-all font-bold resize-none underline-none"
                                 value={intakeData[question.id] || ''}
                                 onChange={(e) => setIntakeData({ ...intakeData, [question.id]: e.target.value })}
                             />
@@ -1621,7 +2298,7 @@ const Assessment = () => {
                         {question.info && (
                             <div className="mt-8 p-6 bg-accent-black/10 border border-accent-black/20 rounded-2xl">
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-black mb-2">Why we ask</h4>
-                                <p className="text-[11px] font-bold text-gray-600 leading-relaxed italic">
+                                <p className="text-[11px] font-bold text-gray-600 leading-relaxed">
                                     {question.info}
                                 </p>
                             </div>
@@ -1642,7 +2319,7 @@ const Assessment = () => {
                                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white">Document Uploaded</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-black">Document Uploaded</p>
                                                 <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-black hover:underline">View File</a>
                                             </div>
                                         </div>
@@ -1739,7 +2416,7 @@ const Assessment = () => {
                             className={`w-full md:w-auto flex items-center justify-center gap-3 px-10 py-6 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] transition-all group ${((!intakeData[question.id] && question.type !== 'text' && question.type !== 'info') ||
                                 (question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist')) && !intakeData[`${question.id}_file`]))
                                 ? 'bg-black/5 text-gray-300 cursor-not-allowed'
-                                : 'bg-[#1a1a1a] text-white hover:bg-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)]'
+                                : 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm transition-all duration-300'
                                 }`}
                         >
                             {medicalStep === medicalQuestions.length - 1 ? 'Finish Intake' : 'Forward'}
@@ -1759,7 +2436,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Step 24: Identification
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
+                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
                     Verify your <span className="text-accent-black">Identity.</span>
                 </h2>
                 <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
@@ -1779,7 +2456,7 @@ const Assessment = () => {
                                         setIdData({ ...idData, type, file_url: '' });
                                     }
                                 }}
-                                className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${idData.type === type ? 'bg-white text-black border-white' : 'bg-black/5 text-gray-400 border-black/5'}`}
+                                className={`py-4 rounded-2xl text-[10px] font-medium uppercase tracking-widest border transition-all assessment-option-arial ${idData.type === type ? 'border-black text-black bg-white shadow-md scale-[1.02]' : 'bg-black/5 text-gray-400 border-black/5'}`}
                             >
                                 {type}
                             </button>
@@ -1815,8 +2492,8 @@ const Assessment = () => {
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white">ID Front Uploaded</p>
-                                    <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-black hover:underline">View Document</a>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-black">Document Uploaded</p>
+                                    <a href={idData.file_url} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-accent-black hover:underline">View File</a>
                                 </div>
                             </div>
                             <button
@@ -1841,13 +2518,13 @@ const Assessment = () => {
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
                             )}
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-white">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-black">
                                 Upload Front of ID
                             </span>
                         </button>
                     )}
                     {idData.file_url && (
-                        <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-black text-center opacity-60 italic">Identity document securely processed</p>
+                        <p className="mt-3 text-[9px] font-black uppercase tracking-widest text-accent-black text-center opacity-60">Identity document securely processed</p>
                     )}
                 </div>
 
@@ -1861,7 +2538,7 @@ const Assessment = () => {
                     <button
                         onClick={() => setStep(11)}
                         disabled={!idData.type || !idData.number || !idData.file_url}
-                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-[#1a1a1a] text-white hover:bg-black' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${idData.type && idData.number && idData.file_url ? 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue to Shipping
                     </button>
@@ -1876,7 +2553,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Step 25: Delivery
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
+                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
                     Where should we <span className="text-accent-black">ship?</span>
                 </h2>
             </div>
@@ -1916,7 +2593,7 @@ const Assessment = () => {
                                 onFocus={() => setShowStateDropdown(true)}
                             />
                             {showStateDropdown && (
-                                <div className="absolute z-50 left-0 right-0 mt-2 max-h-40 overflow-y-auto bg-black border border-black/5 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
+                                <div className="absolute z-50 left-0 right-0 mt-2 max-h-40 overflow-y-auto bg-white border border-black/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
                                     {Object.entries(stateFullNames)
                                         .filter(([code, name]) =>
                                             name.toLowerCase().includes(stateSearch.toLowerCase()) ||
@@ -1930,7 +2607,7 @@ const Assessment = () => {
                                                     setStateSearch('');
                                                     setShowStateDropdown(false);
                                                 }}
-                                                className="px-6 py-3 hover:bg-accent-black hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between"
+                                                className="px-6 py-3 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between text-black"
                                             >
                                                 <span>{name}</span>
                                                 <span className="opacity-40">{code}</span>
@@ -1982,7 +2659,7 @@ const Assessment = () => {
                     <button
                         onClick={() => setStep(12)}
                         disabled={!shippingData.address || !shippingData.city || !shippingData.zip || !shippingData.state || !shippingData.phone}
-                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-[#1a1a1a] text-white hover:bg-black' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${shippingData.address && shippingData.city && shippingData.zip && shippingData.state && shippingData.phone ? 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
                     >
                         Continue to Payment
                     </button>
@@ -1997,7 +2674,7 @@ const Assessment = () => {
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     Secure Checkout
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4 leading-tight">
+                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
                     Complete Your <span className="text-accent-black">Payment.</span>
                 </h2>
                 <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
@@ -2008,12 +2685,12 @@ const Assessment = () => {
             <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-10">
                 <div className="flex justify-between items-start pb-8 border-b border-black/5">
                     <div>
-                        <h3 className="text-white text-xl font-black uppercase tracking-tighter italic mb-2">Eligibility Verification Fee</h3>
+                        <h3 className="text-black text-xl font-black uppercase tracking-tighter mb-2">Eligibility Verification Fee</h3>
                         <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest leading-relaxed max-w-xs">
                             A healthcare provider will review and verify your eligibility for the program.
                         </p>
                     </div>
-                    <span className="text-accent-black text-3xl font-black italic">
+                    <span className="text-accent-black text-3xl font-black">
                         {paymentData.appliedDiscount ? (
                             <>
                                 <span className="line-through text-gray-300 text-xl mr-2">$25.00</span>
@@ -2034,7 +2711,7 @@ const Assessment = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 italic">Payment Details</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Payment Details</label>
                     {(() => {
                         const baseCents = 2500;
                         const disc = paymentData.appliedDiscount;
@@ -2051,7 +2728,7 @@ const Assessment = () => {
                             return (
                                 <button
                                     onClick={() => handleSubmitAssessment()}
-                                    className="w-full py-6 bg-accent-black text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white transition-all shadow-[0_0_50px_rgba(19,91,236,0.2)]"
+                                    className="w-full py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
                                 >
                                     Complete Activation →
                                 </button>
@@ -2077,7 +2754,7 @@ const Assessment = () => {
                 </div>
 
                 <div className="pt-8 border-t border-black/5">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4 italic">Have an eligibility coupon code?</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Have an eligibility coupon code?</label>
                     <div className="flex flex-col md:flex-row gap-4">
                         <input
                             type="text"
@@ -2136,7 +2813,7 @@ const Assessment = () => {
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
             </div>
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6 leading-tight">
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 leading-tight">
                 Assessment <br />
                 <span className="text-accent-black">Complete.</span>
             </h2>
@@ -2147,13 +2824,13 @@ const Assessment = () => {
             <div className="flex flex-col md:flex-row gap-4 justify-center">
                 <button
                     onClick={() => navigate('/')}
-                    className="px-12 py-8 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all duration-500"
+                    className="w-full md:w-auto px-12 py-6 rounded-2xl bg-white border border-black/10 text-black font-black text-[10px] uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
                 >
                     Home Page
                 </button>
                 <button
                     onClick={() => navigate('/dashboard')}
-                    className="px-12 py-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-accent-black hover:shadow-[0_0_50px_rgba(19,91,236,0.3)] transition-all duration-500"
+                    className="px-12 py-8 bg-white text-black border border-black/10 rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 shadow-sm"
                 >
                     Enter Dashboard
                 </button>
@@ -2179,7 +2856,7 @@ const Assessment = () => {
                     <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                         Final Review
                     </div>
-                    <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic mb-6">
+                    <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">
                         Review Your <span className="text-accent-black">Profile.</span>
                     </h2>
                     <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
@@ -2281,7 +2958,7 @@ const Assessment = () => {
                                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-3">
                                             {question.title}
                                         </p>
-                                        <p className="text-gray-800 text-sm mb-2 italic">{question.question}</p>
+                                        <p className="text-gray-800 text-sm mb-2">{question.question}</p>
                                         <div className="mt-3 p-4 bg-white/[0.02] rounded-xl">
                                             <p className="text-black">
                                                 {formatAnswer(intakeData[question.id])}
@@ -2290,7 +2967,7 @@ const Assessment = () => {
                                         {/* Show prescription file if it exists */}
                                         {intakeData[`${question.id}_file`] && (
                                             <div className="mt-3 p-3 bg-black/5 border border-black/5 rounded-xl flex items-center justify-between">
-                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">Attached: Medical Document</span>
+                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400">Attached: Medical Document</span>
                                                 <a href={intakeData[`${question.id}_file`]} target="_blank" rel="noreferrer" className="text-[8px] font-black uppercase tracking-widest text-accent-black hover:underline">Preview</a>
                                             </div>
                                         )}
@@ -2387,7 +3064,7 @@ const Assessment = () => {
                     </div>
                     <button
                         onClick={() => window.print()}
-                        className="mt-6 text-[9px] font-black uppercase tracking-[0.3em] text-gray-300 hover:text-white transition-colors"
+                        className="mt-6 text-[9px] font-black uppercase tracking-[0.3em] text-gray-300 hover:text-black transition-colors"
                     >
                         Generate Assessment PDF
                     </button>
@@ -2399,27 +3076,49 @@ const Assessment = () => {
     return (
         <div className="min-h-screen bg-white text-[#1a1a1a] font-sans selection:bg-accent-black selection:text-black">
             {/* Minimal Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 py-6">
-                <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors text-black">
-                        GLP-GLOW
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 h-[84px] flex items-center">
+                <div className="max-w-7xl mx-auto w-full flex justify-between items-center h-full">
+                    <Link to="/" className="relative flex items-center mt-[10px]">
+                        <img
+                            src={logo}
+                            alt="uGlowMD Logo"
+                            className="h-20 md:h-30 w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
+                            style={{
+                                filter: 'brightness(0.1)',
+                                maxWidth: 'none'
+                            }}
+                        />
                     </Link>
 
                     {step > 0 && step < 13 && (
-                        <button
-                            onClick={handleClearProgress}
-                            className="text-[9px] font-black uppercase tracking-widest text-black/20 hover:text-red-500 transition-all border border-black/5 hover:border-red-500/30 px-4 py-2 rounded-full pointer-events-auto"
-                        >
-                            Stop & Clear Progress
-                        </button>
+                        <div className="flex items-center gap-6">
+                            <button
+                                onClick={handleClearProgress}
+                                className="text-[9px] font-black uppercase tracking-widest text-white bg-black border border-black hover:bg-[#1a1a1a] transition-all px-5 py-2.5 rounded-full pointer-events-auto shadow-lg"
+                            >
+                                Stop & Clear Progress
+                            </button>
+                        </div>
                     )}
                 </div>
+
+                {/* Compact Progress Bar directly under the logo/header content */}
+                {((step > 0 && step < 13) || (step === 0 && !(showQuote || showBMI || showQuote2))) && (
+                    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5">
+                        <div
+                            className="h-full bg-black transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.max(2, (step / 13) * 100)}%` }}
+                        ></div>
+                    </div>
+                )}
             </header>
 
-            <main className="pt-32 pb-20 min-h-[calc(100vh-100px)]">
+            <main className="pt-28 pb-20 min-h-[calc(100vh-100px)]">
                 <div className="w-full">
-                    {step === 0 && renderStep0()}
-                    {step === 1 && renderStatStep()}
+                    {categoryId === 'weight-loss' && showQuote && step === 0 && renderQuoteStep()}
+                    {categoryId === 'weight-loss' && !showQuote && showBMI && step === 0 && renderBMICalculatorStep()}
+                    {categoryId === 'weight-loss' && !showQuote && !showBMI && showQuote2 && step === 0 && renderQuote2Step()}
+                    {!(categoryId === 'weight-loss' && (showQuote || showBMI || showQuote2)) && step === 0 && renderStep0()}
                     {step === 2 && renderReviewStep()}
                     {step === 3 && renderAuthStep()}
                     {step === 4 && renderBMIAndDrugStep()}
@@ -2440,7 +3139,7 @@ const Assessment = () => {
                 <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
                     <button
                         onClick={handleClearProgress}
-                        className="w-full bg-black/80 backdrop-blur-xl border border-black/5 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest text-black/20 hover:text-red-500 transition-all"
+                        className="w-full bg-black border border-black py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-2xl active:scale-95 transition-all"
                     >
                         Reset Progress & Exit
                     </button>
@@ -2456,6 +3155,10 @@ const Assessment = () => {
                     0%, 100% { transform: translateY(0); }
                     50% { transform: translateY(-10px); }
                 }
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(24px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
                 input[type="date"]::-webkit-calendar-picker-indicator {
                     filter: invert(0);
                     cursor: pointer;
@@ -2469,6 +3172,13 @@ const Assessment = () => {
                 }
                 ::-ms-input-placeholder {
                     color: rgba(0, 0, 0, 0.4) !important;
+                }
+                .assessment-option-arial {
+                    font-family: Arial, sans-serif !important;
+                    text-transform: none !important;
+                }
+                .assessment-option-arial::first-letter {
+                    text-transform: uppercase !important;
                 }
             `}} />
         </div>

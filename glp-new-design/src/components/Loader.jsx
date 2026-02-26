@@ -3,15 +3,15 @@ import gsap from 'gsap';
 
 const Loader = ({ loaded, onComplete }) => {
     const containerRef = useRef(null);
-    const spinnerRef = useRef(null);
+    const contentRef = useRef(null);
     const exitStartedRef = useRef(false);
 
     useEffect(() => {
         // Set initial state
-        gsap.set(spinnerRef.current, { opacity: 0, scale: 0.8 });
+        gsap.set(contentRef.current, { opacity: 0, scale: 0.8 });
 
         // Entrance animation
-        gsap.to(spinnerRef.current, {
+        gsap.to(contentRef.current, {
             opacity: 1,
             scale: 1,
             duration: 0.8,
@@ -27,7 +27,7 @@ const Loader = ({ loaded, onComplete }) => {
             const exitTl = gsap.timeline({ onComplete });
 
             exitTl
-                .to(spinnerRef.current, {
+                .to(contentRef.current, {
                     opacity: 0,
                     scale: 0.8,
                     duration: 0.4,
@@ -44,11 +44,33 @@ const Loader = ({ loaded, onComplete }) => {
     return (
         <div
             ref={containerRef}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0a0a]"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505] overflow-hidden"
         >
-            <div ref={spinnerRef} className="relative flex items-center justify-center">
-                {/* Circular Loader */}
-                <div className="w-12 h-12 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+
+            <div ref={contentRef} className="relative z-10 flex flex-col items-center justify-center gap-6">
+                {/* Heartbeat Circle with 'u' */}
+                <div className="relative flex items-center justify-center">
+                    {/* Pulsing Outer Glow */}
+                    <div className="absolute w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+
+                    {/* Main Circle and 'u' */}
+                    <div className="w-28 h-28 border border-white/30 rounded-full flex items-center justify-center animate-heartbeat shadow-[0_0_40px_rgba(255,255,255,0.1)] backdrop-blur-[2px]">
+                        <span
+                            className="text-white text-7xl font-medium italic select-none"
+                            style={{
+                                fontFamily: '"Cormorant Garamond", serif',
+                                transform: 'translateY(-4px)'
+                            }}
+                        >
+                            u
+                        </span>
+                    </div>
+                </div>
+
+                {/* Loading Text (Optional but adds premium feel) */}
+                <span className="text-white/50 text-xs uppercase tracking-[0.3em] font-medium">
+                    Initializing Glow
+                </span>
             </div>
         </div>
     );

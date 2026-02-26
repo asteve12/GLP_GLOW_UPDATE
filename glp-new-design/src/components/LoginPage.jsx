@@ -38,7 +38,16 @@ const LoginPage = () => {
         try {
             const { error } = await signIn({ email, password });
             if (error) throw error;
-            navigate('/'); // or dashboard
+
+            // Check for returnTo parameter to redirect back to assessment if needed
+            const queryParams = new URLSearchParams(window.location.search);
+            const returnTo = queryParams.get('returnTo');
+
+            if (returnTo) {
+                navigate(returnTo);
+            } else {
+                navigate('/dashboard');
+            }
         } catch (error) {
             setError(error.message);
             console.error('Login error:', error);
@@ -138,7 +147,7 @@ const LoginPage = () => {
 
                             <div className="pt-8 text-center border-t border-white/5">
                                 <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-4 italic">
-                                    New to GLP-GLOW?
+                                    New to <span className="font-brand font-bold italic-u">u</span><span className="font-brand font-bold">Glow<sup>MD</sup></span>?
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <Link
@@ -169,7 +178,7 @@ const LoginPage = () => {
                         End-to-End Encryption • HIPAA Secure Environment
                     </p>
                     <p className="text-[8px] font-medium text-white/40 uppercase tracking-widest">
-                        © 2026 GLP-GLOW Health. All rights reserved.
+                        © 2026 uGlowMD Health. All rights reserved.
                     </p>
                 </div>
             </div>

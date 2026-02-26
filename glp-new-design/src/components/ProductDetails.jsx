@@ -60,11 +60,12 @@ import glycemicControlImg from '../assets/glycemic_control.png';
 import maxPotencyImg from '../assets/max_potency.png';
 import testosteroneHeroImg from '../assets/testosterone-image-v2.png';
 import testosteroneInjectionImg from '../assets/testosterone_injection.png';
+import boostedTestosteroneImg from '../assets/boosted-testosterone.png';
 import testosteroneRdtImg from '../assets/testosterone_rdt_prd_img.png';
 import estPrdImg from '../assets/est_prd_image.png';
 import skincareHeroImg from '../assets/skincare.png';
 import antiAgingImg from '../assets/ant-aging.png';
-import faceSpotCreamImg from '../assets/face-spot-cream.png';
+import faceSpotImg from '../assets/face-spot.png';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
 import rosaceaCareImg from '../assets/rosacea_care_set.png';
 import eyeSerumImg from '../assets/Eye-Serum-prd-image.png';
@@ -179,7 +180,7 @@ const productSpecificData = {
         ],
         ingredients: [
             { name: "Tirzepatide", desc: "A dual GIP/GLP-1 receptor agonist." },
-            { name: "Niacinamide", desc: "Vitamin B3, sometimes added to support metabolic health." }
+            { name: "Cyanocobalamin", desc: "Vitamin B12 often compounded to support energy levels and reduce nausea." }
         ],
         howItWorks: [
             { id: "01", title: "Two is better than one.", desc: "While Semaglutide targets one hunger hormone, Tirzepatide targets two, offering a more comprehensive approach." },
@@ -773,8 +774,8 @@ const productSpecificData = {
         name: 'Testosterone',
         type: 'Subcutaneous Injection',
         price: '$149/mo',
-        image: testosteroneInjectionImg,
-        heroBg: testosteroneInjectionImg,
+        image: boostedTestosteroneImg,
+        heroBg: boostedTestosteroneImg,
         description: 'Restore your hormonal edge. Clinically compounded testosterone therapy to optimise energy, muscle, libido and mental clarity.',
         highlights: ["Physician-prescribed", "Boosts energy & libido", "Increase lean muscle", "Starts at $149/mo"],
         benefits: [
@@ -925,7 +926,7 @@ const productSpecificData = {
             {
                 dosage: 'TBA', plans: [
                     { name: 'Once', price: '$79.99', badge: '' },
-                    { name: 'Every 2 Mo', price: '$69.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$69.99', badge: '' },
                     { name: 'Monthly', price: '$35.00', badge: 'Best Value' },
                 ]
             }
@@ -935,8 +936,8 @@ const productSpecificData = {
         name: 'Face Spot Peel',
         type: 'Topical Peel',
         price: '$69/mo',
-        image: faceSpotCreamImg,
-        heroBg: faceSpotCreamImg,
+        image: faceSpotImg,
+        heroBg: faceSpotImg,
         description: 'Target stubborn dark spots and uneven pigmentation with our medical-grade chemical peel. Reveal brighter, more uniform skin in weeks.',
         highlights: ["Fades dark spots", "Evens skin tone", "Prescription-grade AHAs", "Starts at $69/mo"],
         benefits: [
@@ -967,7 +968,7 @@ const productSpecificData = {
             {
                 dosage: 'TBA', plans: [
                     { name: 'Once', price: '$99.99', badge: '' },
-                    { name: 'Every 2 Mo', price: '$72.00', badge: '' },
+                    { name: 'Every 2 Months', price: '$72.00', badge: '' },
                     { name: 'Monthly', price: '$36.00', badge: 'Best Value' },
                 ]
             }
@@ -1009,7 +1010,7 @@ const productSpecificData = {
             {
                 dosage: 'TBA', plans: [
                     { name: 'Once', price: '$84.99', badge: '' },
-                    { name: 'Every 2 Mo', price: '$59.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$59.99', badge: '' },
                     { name: 'Monthly', price: '$29.99', badge: 'Best Value' },
                 ]
             }
@@ -1051,7 +1052,7 @@ const productSpecificData = {
             {
                 dosage: 'TBA', plans: [
                     { name: 'Once', price: '$114.99', badge: '' },
-                    { name: 'Every 2 Mo', price: '$79.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$79.99', badge: '' },
                     { name: 'Monthly', price: '$39.99', badge: 'Best Value' },
                 ]
             }
@@ -1133,8 +1134,8 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$139.99', badge: '' },
-                    { name: 'Monthly', price: '$99.99', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$139.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$99.99', badge: 'Best Value' },
                 ]
             }
         ]
@@ -1669,11 +1670,11 @@ const ProductDetails = () => {
                         {/* Left Side: Product Display */}
                         <div className="w-full lg:w-1/2 flex flex-col items-center justify-start pt-12 lg:pt-20 pb-12 relative overflow-visible">
                             {/* Main Product Image in a Card-like Container */}
-                            <div className="relative z-10 w-full aspect-square max-w-[600px] flex items-center justify-center bg-[#F9F9F9] rounded-[48px] border border-black/5 shadow-sm p-12 lg:p-16 transform scale-100 lg:scale-105">
+                            <div className="relative z-10 w-full min-h-[520px] max-w-[520px] flex items-center justify-center bg-[#F9F9F9] rounded-[48px] border border-black/5 shadow-sm p-8 lg:p-12 transform scale-100 lg:scale-105">
                                 <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="w-full h-full object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)] transition-transform duration-700 hover:scale-110"
+                                    className="max-w-full max-h-[480px] object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)] transition-transform duration-700 hover:scale-110"
                                 />
                             </div>
 
@@ -1683,7 +1684,7 @@ const ProductDetails = () => {
                                     *Results vary by individual. Based on clinical data and internal patient surveys. Customer results have not been independently verified. Price shown with 3 month shipping option.
                                 </p>
                                 <p className="text-[9px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
-                                    Prescription products require an online consultation with a healthcare provider. The featured products are compounded using FDA-approved active ingredients.
+                                    Prescription products require an online consultation with a healthcare provider. The featured products are compounded using FDA-approved active ingredients. These compounded treatments are not FDA approved. Prescription required.
                                 </p>
                             </div>
                         </div>
@@ -1817,21 +1818,34 @@ const ProductDetails = () => {
                                                                 productId.includes('tadalafil') ? 'Tadalafil is a long-acting PDE5 inhibitor that remains effective for up to 36 hours for greater spontaneity.' :
                                                                     productId.includes('nad') ? 'NAD+ is a critical coenzyme found in all living cells that is essential for energy metabolism and DNA repair.' :
                                                                         productId.includes('bpc-157') ? 'BPC-157 is a regenerative peptide that promotes tissue repair and reduces inflammation in muscles and joints.' :
-                                                                            `A physician-prescribed ${product.type.toLowerCase()} designed for clinical-grade results.`
+                                                                            productId.includes('glutathione') ? "Glutathione is the body's 'master antioxidant'—a vital molecule for detoxification, immune function, and protecting cells from oxidative stress." :
+                                                                                productId.includes('testosterone') ? 'Testosterone is a key hormone that regulates energy levels, muscle mass, and sexual health, delivered via clinically optimized protocols.' :
+                                                                                    productId.includes('estradiol') ? 'Estradiol is the primary human estrogen used to manage symptoms of hormonal decline and support long-term metabolic and bone health.' :
+                                                                                        productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? "Often called the 'love hormone,' Oxytocin promotes emotional bonding, trust, and heightened physical sensation during intimacy." :
+                                                                                            skinCareIds.includes(productId) ? 'This is a prescription-grade dermatological treatment designed to rejuvenate skin, clear acne, or fade pigmentation at the cellular level.' :
+                                                                                                `A physician-prescribed ${product.type?.toLowerCase() || 'treatment'} designed for clinical-grade results.`
                                             },
                                             {
                                                 q: "Are there side effects?",
                                                 a: productId.includes('finasteride') ? 'Possible side effects include decreased libido or erectile dysfunction in a small percentage of users. Most effects resolve if use is discontinued.' :
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Common side effects include mild nausea, vomiting, or digestive changes as your body adjusts. These typically subside within weeks.' :
                                                         productId.includes('sildenafil') || productId.includes('tadalafil') ? 'Potential effects include flushing, headaches, or mild congestion. These are usually temporary and dose-dependent.' :
-                                                            'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
+                                                            productId.includes('nad') || productId.includes('glutathione') || productId.includes('bpc-157') ? 'Generally well-tolerated. Some users may experience mild site irritation if injected, or a brief tingling sensation as the coenzymes enter circulation.' :
+                                                                productId.includes('testosterone') || productId.includes('estradiol') ? 'Hormone therapy can occasionally cause mood changes, fluid retention, or acne. A licensed provider monitors your labs to ensure optimal safety.' :
+                                                                    productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Oxytocin is highly safe and well-tolerated. Rare effects may include a mild temporary headache, slight nausea, or facial flushing.' :
+                                                                        skinCareIds.includes(productId) ? 'Medical-grade topicals may cause initial redness, dryness, or minor peeling as your skin adjusts to the potent active ingredients and increased cell turnover.' :
+                                                                            'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
                                             },
                                             {
                                                 q: "How long until I see results?",
                                                 a: productId.includes('finasteride') ? 'Hair growth follow a cycle. Most men see initial stabilization in 3-6 months, with peak regrowth at 12 months.' :
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Many patients see weight loss within the first 4-8 weeks, with more significant results after 3-4 months of consistent use.' :
-                                                        productId.includes('sildenafil') || productId.includes('tadalafil') ? 'Results are typically felt within 30-60 minutes of the first dose. Optimal response may take 1-2 uses.' :
-                                                            'Timeline varies by individual. Most clinical-grade therapies show noticeable results within 4-12 weeks of consistent use.'
+                                                        productId.includes('sildenafil') || productId.includes('tadalafil') || productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Results are typically felt within 15 to 60 minutes of the first dose. Optimal response is usually achieved within 1-2 uses.' :
+                                                            productId.includes('nad') || productId.includes('glutathione') ? 'Many users report improved energy and mental clarity within the first few days, with deeper cellular benefits appearing after 4-8 weeks.' :
+                                                                productId.includes('bpc-157') ? 'Significant reduction in localized pain and improved joint mobility are often noticed within the first 1 to 3 weeks of therapy.' :
+                                                                    productId.includes('testosterone') || productId.includes('estradiol') ? 'Improvements in energy and sleep often appear in 2 weeks, while full metabolic and physical benefits typically take 3 to 6 months.' :
+                                                                        skinCareIds.includes(productId) ? 'Initial texture improvement is seen in 2-4 weeks; visible reduction in wrinkles, acne, or dark spots typically takes 8-12 weeks of nightly use.' :
+                                                                            'Timeline varies by individual. Most clinical-grade therapies show noticeable results within 4-12 weeks of consistent use.'
                                             }
                                         ].map((faq, idx) => (
                                             <div key={idx} className="group border-b border-gray-50 pb-4 last:border-0 overflow-hidden">
@@ -2005,9 +2019,11 @@ const ProductDetails = () => {
             <section className="how-it-works-section py-20 md:py-32 px-6 bg-white">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
                     <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-20 text-center">How It Works</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative">
-                        {/* Connecting Line (Desktop) */}
-                        <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
+                    <div className={`grid grid-cols-1 ${product.howItWorks.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'} gap-16 relative`}>
+                        {/* Connecting Line (Desktop) - only shown if multiple steps */}
+                        {product.howItWorks.length > 1 && (
+                            <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
+                        )}
 
                         {product.howItWorks.map((step, i) => (
                             <div key={i} className="bg-white p-4 md:p-6 border border-black/5 rounded-2xl shadow-lg text-center group hover:border-accent-blue/30 transition-all duration-500">
@@ -2117,6 +2133,19 @@ const ProductDetails = () => {
                         <div className="p-8 space-y-8">
                             {Object.keys(productSpecificData)
                                 .filter(id => {
+                                    // Only show products that are in the navigation dropdowns
+                                    const dropdownProductIds = [
+                                        'semaglutide-injection', 'tirzepatide-injection',
+                                        'readysetgo-men', 'growtabs-sildenafil', 'growtabs-tadalafil', 'quicklover-women', 'loverspray-women',
+                                        'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1',
+                                        'nad-nasal-spray', 'nad-injection', 'glutathione-injection',
+                                        'testosterone-injection', 'testosterone-rdt', 'estradiol-tabs',
+                                        'anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream',
+                                        'bpc-157-injection', 'bpc-157-tb500-injection'
+                                    ];
+
+                                    if (!dropdownProductIds.includes(id)) return false;
+
                                     const currentCat = getCategory(id);
                                     return currentCat === category;
                                 })

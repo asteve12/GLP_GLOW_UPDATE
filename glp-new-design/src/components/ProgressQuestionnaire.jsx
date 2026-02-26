@@ -164,7 +164,7 @@ const ProgressQuestionnaire = () => {
             <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-8 py-6">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors">
-                        GLP-GLOW
+                        uGlowMD
                     </Link>
                     <Link to="/dashboard" className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors">
                         Exit
@@ -216,8 +216,8 @@ const ProgressQuestionnaire = () => {
                                     type="button"
                                     onClick={() => handleRatingSelect(option.value)}
                                     className={`w-full text-left p-6 rounded-2xl border transition-all duration-300 group ${formData.progressRating === option.value
-                                            ? 'bg-accent-green text-black border-accent-green shadow-[0_0_30px_rgba(191,255,0,0.2)]'
-                                            : 'bg-white/5 text-white border-transparent hover:bg-white/10'
+                                        ? 'bg-accent-green text-black border-accent-green shadow-[0_0_30px_rgba(191,255,0,0.2)]'
+                                        : 'bg-white/5 text-white border-transparent hover:bg-white/10'
                                         }`}
                                 >
                                     <div className="flex items-center justify-between">
@@ -270,8 +270,8 @@ const ProgressQuestionnaire = () => {
                                     type="button"
                                     onClick={() => setFormData(prev => ({ ...prev, satisfied: option.split(' - ')[0] }))}
                                     className={`flex-1 p-6 rounded-2xl border transition-all duration-300 ${formData.satisfied === option.split(' - ')[0]
-                                            ? 'bg-accent-green text-black border-accent-green shadow-[0_0_30px_rgba(191,255,0,0.2)]'
-                                            : 'bg-white/5 text-white border-transparent hover:bg-white/10'
+                                        ? 'bg-accent-green text-black border-accent-green shadow-[0_0_30px_rgba(191,255,0,0.2)]'
+                                        : 'bg-white/5 text-white border-transparent hover:bg-white/10'
                                         }`}
                                 >
                                     <span className="font-bold text-sm uppercase tracking-wide">{option}</span>

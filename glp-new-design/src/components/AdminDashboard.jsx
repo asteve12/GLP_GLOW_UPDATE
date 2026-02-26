@@ -1315,7 +1315,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
         const payload = {
             userId: patientId,
-            product_name: `GLP-GLOW ${selectedProductLabel}`,
+            product_name: `uGlowMD ${selectedProductLabel}`,
             product_price: chargePriceCents,
             product_category: category,
             real_price: basePriceCents,
@@ -2514,7 +2514,7 @@ const ClinicalQueue = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Tabs */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex overflow-x-auto no-scrollbar whitespace-nowrap pb-4 gap-3 -mx-2 px-2">
                 {categories.map(cat => {
                     // Calculate badge count:
                     // For 'all', sum of all pending. For specific category, get from map.
@@ -2526,7 +2526,7 @@ const ClinicalQueue = () => {
                         <button
                             key={cat.id}
                             onClick={() => setFilter(cat.id)}
-                            className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${filter === cat.id
+                            className={`inline-flex px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border items-center gap-2 ${filter === cat.id
                                 ? 'bg-white text-black border-white'
                                 : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'
                                 }`}
@@ -4695,13 +4695,13 @@ const OrderManagement = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Header */}
-            <div className="flex flex-wrap items-center justify-between gap-6 bg-white/5 border border-white/10 rounded-[32px] p-6">
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white/5 border border-white/10 rounded-[32px] p-6 overflow-hidden">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-2 md:pb-0 w-full md:w-auto -mx-2 px-2">
                     {['all', 'processing', 'shipped', 'delivered'].map(f => (
                         <button
                             key={f}
                             onClick={() => { setFilter(f); setPage(1); }}
-                            className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-white text-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                            className={`inline-flex px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-white text-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
                         >
                             {f}
                         </button>
@@ -4722,40 +4722,57 @@ const OrderManagement = () => {
                     </div>
                 ) : (
                     paginatedOrders.map(order => (
-                        <div key={order.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col gap-8">
-                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                                <div className="flex flex-col md:flex-row md:items-center gap-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent-black/20 group-hover:text-accent-black transition-all shrink-0">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                        </svg>
+                        <div key={order.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col gap-8 relative overflow-hidden">
+                            {/* Decorative Background Element */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-black/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
+
+                            {/* Icon at the Top */}
+                            <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:text-accent-black group-hover:bg-accent-black/10 transition-all shrink-0">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                    <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                            </div>
+
+                            {/* Stacked Details Below Icon */}
+                            <div className="flex flex-col gap-6 relative z-10">
+                                <div className="space-y-4">
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <h3 className="text-2xl font-black uppercase tracking-tighter italic">
+                                            {order.profiles?.first_name} {order.profiles?.last_name || 'User'}
+                                        </h3>
+                                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-accent-black/30 text-accent-black bg-accent-black/5 whitespace-nowrap`}>
+                                            {order.delivery_status || 'In Transit'}
+                                        </span>
                                     </div>
-                                    <div>
-                                        <div className="flex flex-wrap items-center gap-3 mb-1">
-                                            <p className="text-lg font-black uppercase tracking-tighter italic">
-                                                {order.profiles?.first_name} {order.profiles?.last_name || 'User'}
-                                            </p>
-                                            <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-accent-black/30 text-accent-black bg-accent-black/5 whitespace-nowrap`}>
-                                                {order.delivery_status || 'Processing'}
-                                            </span>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-[11px] text-white/60 uppercase font-black tracking-widest">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-white/20">ID:</span>
+                                            <span>#{order.id.slice(0, 12).toUpperCase()}</span>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-4 text-[10px] text-white/40 uppercase font-black tracking-widest">
-                                            <span>#{order.id.slice(0, 8)}</span>
-                                            <span className="w-1 h-1 bg-white/10 rounded-full"></span>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-white/20">Date:</span>
                                             <span>{new Date(order.created_at).toLocaleDateString()}</span>
-                                            {order.profiles?.email && (
-                                                <>
-                                                    <span className="w-1 h-1 bg-white/10 rounded-full"></span>
-                                                    <span className="lowercase">{order.profiles.email}</span>
-                                                </>
-                                            )}
                                         </div>
+                                        {order.profiles?.email && (
+                                            <div className="flex items-center gap-3 col-span-full">
+                                                <span className="text-white/20">Email:</span>
+                                                <span className="lowercase normal-case font-medium text-white/80">{order.profiles.email}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="md:text-right pt-4 md:pt-0 border-t border-white/5 md:border-0">
-                                    <p className="text-xl font-black text-white italic tracking-tighter">${parseFloat(order.drug_price || 0).toFixed(2)}</p>
-                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest max-w-[200px] md:max-w-[300px] truncate">{order.drug_name || 'Medical Protocol'}</p>
+                                {/* Price and Product on Own Row */}
+                                <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">Clinical Protocol</p>
+                                        <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{order.drug_name || 'GLP-GLOW Latanoprost Solution'}</h4>
+                                    </div>
+                                    <div className="flex flex-col sm:items-end gap-1">
+                                        <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">Fee Amount</p>
+                                        <p className="text-3xl font-black text-accent-black italic tracking-tighter">${parseFloat(order.drug_price || 299).toFixed(2)}</p>
+                                    </div>
                                 </div>
                             </div>
 

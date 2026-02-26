@@ -10,10 +10,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
                     {/* Brand & Stats/Badges */}
                     <div className="lg:col-span-4 space-y-8">
-                        <div className="relative z-10">
-                            <span className="text-3xl font-black uppercase tracking-tighter italic leading-none">GLP-GLOW</span>
-                        </div>
-                        <p className="text-[#FAF9F6]/50 text-sm leading-relaxed max-w-xs">
+                        <p className="text-[#FAF9F6]/50 text-sm leading-relaxed max-w-xs pt-4">
                             Leading the revolution in personalized metabolic science and longevity.
                             Built for peak performance and sustainable health.
                         </p>
@@ -90,7 +87,7 @@ const Footer = () => {
                             <div className="space-y-6 text-sm">
                                 <div className="space-y-1">
                                     <p className="text-white font-bold">Email</p>
-                                    <a href="mailto:customercare@rugiet.com" className="text-white/60 hover:text-white">customercare@rugiet.com</a>
+                                    <a href="mailto:support@uglowmd.com" className="text-white/60 hover:text-white">support@uglowmd.com</a>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-white font-bold">Phone</p>
@@ -112,7 +109,7 @@ const Footer = () => {
                 <div className="pt-16 pb-12 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-[10px] font-medium uppercase tracking-widest text-white/30 leading-relaxed">
                     <div className="space-y-4">
                         <h5 className="text-white/60 font-black tracking-[0.2em] mb-4">Patient Safety & Risk</h5>
-                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. GLP-GLOW ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
+                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. <span className="font-brand"><span className="italic">u</span>Glow<sup>MD</sup></span> ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
                         <p>All medications are sourced exclusively from FDA Approved Pharmacies and compounded under strict quality control.</p>
                     </div>
                     <div className="space-y-4">
@@ -128,9 +125,9 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20">
-                        &copy; {currentYear} GLP-GLOW. All Rights Reserved.
+                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 flex items-center gap-2">
+                        &copy; {currentYear}. All Rights Reserved.
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-8 md:gap-10">
@@ -139,6 +136,18 @@ const Footer = () => {
                                 {legal}
                             </Link>
                         ))}
+                    </div>
+                </div>
+
+                {/* Massive Branding Worldmark */}
+                <div className="w-full pt-12 pb-4 flex justify-center border-t border-white/5">
+                    <div
+                        className="text-[clamp(4rem,22vw,22rem)] text-white/20 select-none inline-flex items-baseline leading-[0.8] tracking-tighter"
+                        style={{ fontFamily: '"Cormorant Garamond", serif', fontWeight: 600 }}
+                    >
+                        <span className="italic lowercase mr-2 text-[0.7em]">u</span>
+                        <span>Glow</span>
+                        <sup className="text-[0.4em] ml-2 font-light tracking-tight">MD</sup>
                     </div>
                 </div>
             </div>

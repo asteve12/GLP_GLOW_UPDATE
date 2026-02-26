@@ -13,20 +13,25 @@ const LegalPage = ({ title, content }) => {
     }, [title]);
 
     return (
-        <div className="bg-bg-primary min-h-screen text-white">
+        <div className="bg-white min-h-screen text-black relative">
             <Navbar />
 
-            <div className="pt-32 pb-24 px-6">
+            <div className="pt-40 pb-32 px-6 relative z-10">
                 <div className="max-w-4xl mx-auto">
                     <div className="legal-content">
-                        <div className="inline-block py-2 px-4 bg-accent-green/10 border border-accent-green/20 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] mb-8 text-accent-green">
-                            Compliance Document
+                        <div className="inline-flex items-center gap-3 py-2 px-5 bg-black/5 border border-black/10 rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-black">
+                            <div className="w-2 h-2 rounded-full bg-black"></div>
+                            Clinical Compliance Document
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-12 italic">
-                            {title}
+                        <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-16 italic leading-[0.85] text-black">
+                            {title.split(' & ').map((part, i) => (
+                                <React.Fragment key={i}>
+                                    {part} {i === 0 && title.includes('&') && <br />}
+                                </React.Fragment>
+                            ))}
                         </h1>
 
-                        <div className="prose prose-invert max-w-none space-y-8 text-white/70 text-lg leading-relaxed font-medium">
+                        <div className="prose max-w-none space-y-12 text-black/60 text-xl leading-relaxed font-medium assessment-option-arial">
                             {content}
                         </div>
                     </div>

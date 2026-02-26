@@ -39,7 +39,7 @@ import Footer from './Footer';
 const productsData = {
     'weight-loss': {
         title: 'WEIGHT LOSS',
-        tagline: 'Join 100,000+ GLP-GLOW patients',
+        tagline: <>Join 100,000+ <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> patients</>,
         description: 'Finally serious about weight loss? So are we. Fat loss made easy with personalized care and GLP-1 medication.',
         valueProps: [
             'Lose pounds of fat every week',
@@ -78,7 +78,7 @@ const productsData = {
             { q: 'Are there hidden fees?', a: 'No membership or hidden fees! Everything you need is included in the price.' }
         ],
         richDetails: {
-            brandName: 'GLP-GLOW',
+            brandName: 'uGlowMD',
             highlights: ["Appetite-suppressing formula", "Works in 24 hours on average*", "Active for up to 7 days", "Starts as low as $299/mo*"],
             benefits: [
                 { id: "01", title: "Curb Cravings", desc: "Designed to target appetite receptors in the brain, silencing food noise." },
@@ -194,7 +194,7 @@ const productsData = {
             { q: 'What is the liquid asterisk?', a: '*Indicates a compounded prescription tailored to your specific scalp health and needs.' }
         ],
         richDetails: {
-            brandName: 'GLP-GLOW',
+            brandName: 'uGlowMD',
             highlights: ["Stop Hair Loss", "Promote New Growth", "Clinical Grade Ingredients", "Start for $49/mo"],
             benefits: [
                 { id: "01", title: "Block DHT", desc: "Finasteride targets the hormone responsible for male pattern baldness at the root." },
@@ -710,7 +710,7 @@ const ProductPage = () => {
                             <div className="mb-12 text-center max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-4">
                                 <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white drop-shadow-md mb-6">The results speak for themselves.</h2>
                                 <p className="text-lg md:text-xl text-white/90 font-medium leading-relaxed mb-8">
-                                    Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName || 'GLP-GLOW'} patients.
+                                    Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName === 'uGlowMD' ? <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> : (data.richDetails?.brandName || <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>)} patients.
                                 </p>
                                 <button className="bg-accent-black text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl transform hover:scale-105">
                                     I'm ready, Let's Go
@@ -821,7 +821,7 @@ const ProductPage = () => {
                                     One size does not fit all in biology. Our doctors tailor your dosage based on your specific health profile, ensuring maximum efficacy with minimum side effects.
                                 </p>
                                 <p className="mt-4 text-[#1A1A1A]/80 font-medium text-lg leading-relaxed">
-                                    {data.richDetails?.brandName || 'GLP-GLOW'} provides a <span className="font-bold text-[#1A1A1A] uppercase italic">true clinical advantage</span> — precision medicine that adapts to your body's unique response to therapy.
+                                    {data.richDetails?.brandName === 'uGlowMD' ? <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> : (data.richDetails?.brandName || <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>)} provides a <span className="font-bold text-[#1A1A1A] uppercase italic">true clinical advantage</span> — precision medicine that adapts to your body's unique response to therapy.
                                 </p>
                             </div>
                             <div className="w-full md:w-1/2">
@@ -1026,7 +1026,7 @@ const ProductPage = () => {
                                 The change we've all been waiting for.
                             </h2>
                             <p className="text-lg md:text-xl text-gray-600">
-                                Join the over <span className="font-bold text-gray-900">100,000 GLP-GLOW patients</span> and we'll help you finally get real, lasting results.
+                                Join the over <span className="font-bold text-gray-900">100,000 <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> patients</span> and we'll help you finally get real, lasting results.
                             </p>
                         </div>
 
@@ -1117,7 +1117,7 @@ const ProductPage = () => {
 
                         {/* Disclaimer */}
                         <p className="text-center text-sm text-gray-500 italic">
-                            * Data based on GLP-GLOW patients over their first 6 months of treatment
+                            * Data based on uGlowMD patients over their first 6 months of treatment
                         </p>
 
                     </div>
@@ -1223,7 +1223,7 @@ const ProductPage = () => {
                             </div>
                             <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-[#1A1A1A] leading-[0.9] uppercase tracking-tighter mb-8 italic">
                                 Begin your journey <br />
-                                <span className="text-accent-green">with GLP-GLOW.</span>
+                                <span className="text-accent-green">with <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>.</span>
                             </h2>
                             <p className="text-xl text-[#4A4A4A] leading-relaxed max-w-2xl mx-auto font-medium">
                                 Start your transformation today with our medical-grade protocol. Our streamlined approach ensures you're supported <span className="font-bold text-[#1A1A1A] italic">every step of the way</span>.
@@ -1384,7 +1384,7 @@ const ProductPage = () => {
                                 {/* Right Column - Content */}
                                 <div>
                                     <p className="text-sm md:text-base font-semibold text-[#C89850] uppercase tracking-wider mb-4">
-                                        GLP-GLOW Guarantee
+                                        <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> Guarantee
                                     </p>
                                     <h2 className="text-3xl md:text-4xl lg:text-4xl font-bold text-gray-900 leading-tight mb-6">
                                         The only thing you'll lose is extra weight.
@@ -1476,7 +1476,7 @@ const ProductPage = () => {
 
                         {/* SECTION FOOTER */}
                         <div className="mt-24 pt-10 border-t border-white/5 flex justify-between items-center opacity-30">
-                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">GLP-GLOW TREATMENT SUITE • v4.0</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">uGlowMD TREATMENT SUITE • v4.0</span>
                             <div className="flex gap-2">
                                 <span className="w-1 h-1 rounded-full bg-accent-green"></span>
                                 <span className="w-1 h-1 rounded-full bg-accent-green"></span>

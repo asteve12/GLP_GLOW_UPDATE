@@ -113,7 +113,7 @@ const WellnessSection = () => {
                         <div className="relative rounded-[40px] overflow-hidden shadow-2xl border border-white/10 group">
                             <img
                                 src={happyPeopleImg}
-                                alt="GLP-GLOW Success Stories"
+                                alt="uGlowMD Success Stories"
                                 className="w-full h-full object-cover aspect-[4/5] transform transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/80 to-transparent opacity-60"></div>

@@ -25,6 +25,7 @@ import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
 import SatisfactionSurvey from './components/SatisfactionSurvey';
 import NewLandingPage from './components/NewLandingPage';
+import { Toaster } from 'react-hot-toast';
 
 const ScrollToHash = () => {
   const { hash } = useLocation();
@@ -61,6 +62,7 @@ function App() {
 
   return (
     <Router>
+      <Toaster position="top-right" />
       {isLoading && <Loader loaded={isLoaded} onComplete={() => setIsLoading(false)} />}
       <div className="font-sans text-text-main bg-bg-primary min-h-screen">
         <ScrollToHash />
@@ -89,14 +91,76 @@ function App() {
 
           <Route path="/terms-conditions" element={
             <LegalPage title="Terms & Conditions" content={
-              <div className="space-y-6">
-                <p>Welcome to GLP-GLOW. By accessing or using our platform, you agree to be bound by these Terms and Conditions.</p>
-                <h3 className="text-white text-2xl font-bold mt-8 italic">1. Medical Disclaimer</h3>
-                <p>The content on this site is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician.</p>
-                <h3 className="text-white text-2xl font-bold mt-8 italic">2. User Eligibility</h3>
-                <p>You must be at least 18 years of age and a resident of a state where our services are available to use this platform.</p>
-                <h3 className="text-white text-2xl font-bold mt-8 italic">3. Prescriptions</h3>
-                <p>Prescriptions are only provided after a medical consultation with a licensed provider and are subject to the provider's professional discretion.</p>
+              <div className="space-y-12 pb-20">
+                <section>
+                  <p className="text-black/90 text-xl">Last Updated: February 25, 2026</p>
+                  <p className="mt-4">These Terms and Conditions ("Terms") constitute a legally binding agreement between you and <sub>u</sub>GLOW<sup>MD</sup> regarding your access to and use of our telemedicine platform. By creating an account or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms.</p>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-1 px-0 bg-black"></div>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">1. Telemedicine Services & Eligibility</h3>
+                  </div>
+                  <div className="space-y-4 font-normal text-black/60">
+                    <p><sub>u</sub>GLOW<sup>MD</sup> provides a platform for patients to connect with independent healthcare providers ("Providers"). <sub>u</sub>GLOW<sup>MD</sup> does not practice medicine and does not interfere with the clinical judgment of Providers.</p>
+                    <p><strong className="text-black">Emergency Situations:</strong> THE SERVICES ARE NOT FOR EMERGENCIES. IF YOU BELIEVE YOU ARE EXPERIENCING A MEDICAL EMERGENCY, CALL 911 IMMEDIATELY OR GO TO THE NEAREST EMERGENCY ROOM.</p>
+                    <p><strong className="text-black">Interstate Practice:</strong> Services are only available to residents in states where our Providers are licensed to practice. You agree to provide accurate location data at all times.</p>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-1 px-0 bg-black"></div>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">2. Risk Prevention & Clinical protocols</h3>
+                  </div>
+                  <div className="space-y-4 font-normal text-black/60 text-base">
+                    <p>To protect both patients and Providers, you agree to follow all clinical protocols, including but not limited to:</p>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>Providing 100% accurate, complete, and truthful information regarding your medical history, current medications, and vitals (including BMI and weight).</li>
+                      <li>Completing all required blood tests, follow-up assessments, and "check-ins" as mandated by your Provider.</li>
+                      <li>Immediately reporting any adverse side effects or changes in your health status to your Provider via the secure portal.</li>
+                    </ul>
+                    <p>Failure to provide accurate data or follow protocols constitutes a material breach of these Terms and absolves the Provider and Platform of liability for resulting adverse outcomes.</p>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-1 px-0 bg-black"></div>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">3. No Guarantee of Prescription</h3>
+                  </div>
+                  <div className="space-y-4 font-normal text-black/60">
+                    <p>The decision to prescribe medication is at the <strong className="text-black">sole and absolute discretion</strong> of the licensed Provider. Payment for an assessment does not guarantee a prescription. If a Provider determines that you are not a clinical candidate for treatment, you may be issued a refund in accordance with our Refund Policy.</p>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-1 px-0 bg-black"></div>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">4. Limitation of Liability & Indemnity</h3>
+                  </div>
+                  <div className="space-y-4 font-normal text-black/60">
+                    <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, <sub>u</sub>GLOW<sup>MD</sup>, its affiliates, and Providers shall not be liable for any indirect, incidental, or consequential damages arising from your use of the platform or prescribed medications.</p>
+                    <p>You agree to indemnify and hold harmless the Platform and its Providers from any claims, losses, or legal fees resulting from your intentional provision of false medical data or failure to follow prescribed protocols.</p>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-1 px-0 bg-black"></div>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">5. Dispute Resolution & Arbitration</h3>
+                  </div>
+                  <div className="space-y-4 font-normal text-black/60">
+                    <p>Any dispute arising from these terms or your care shall be resolved via <strong className="text-black">binding individual arbitration</strong>. You waive your right to participate in a class-action lawsuit or a jury trial.</p>
+                  </div>
+                </section>
+
+                <section className="pt-8 border-t border-black/10">
+                  <p className="text-[10px] uppercase tracking-widest text-black/30">
+                    Compliance Verification: federal medical board standards (fmbs) • ryan haight act compliant • hipaa certified infrastructure
+                  </p>
+                </section>
               </div>
             } />
           } />

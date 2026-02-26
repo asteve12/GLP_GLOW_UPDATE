@@ -198,7 +198,7 @@ const QualifyNow = () => {
                     {/* Help Section */}
                     <div className="mt-32 text-center qualify-header">
                         <p className="text-gray-400 font-medium italic text-lg mb-4">Unsure which path is right for you?</p>
-                        <a href="mailto:support@glp-glow.com" className="text-accent-blue font-bold uppercase tracking-widest text-sm border-b border-accent-blue/30 hover:border-accent-blue transition-all pb-1">
+                        <a href="mailto:support@uglowmd.com" className="text-accent-blue font-bold uppercase tracking-widest text-sm border-b border-accent-blue/30 hover:border-accent-blue transition-all pb-1">
                             Consult with our triage team
                         </a>
                     </div>
