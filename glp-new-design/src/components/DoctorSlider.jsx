@@ -97,7 +97,7 @@ const DoctorSlider = () => {
                     </div>
                     <div className="lg:col-span-5 doctor-header-content space-y-8">
                         <p className="text-xl text-[#FAF9F6]/60 leading-relaxed font-medium">
-                            GLP-GLOW physicians are here to guide you every step of the way, bringing both their expertise and genuine care to keep you supported.
+                            <span className="font-brand font-bold italic-u">u</span><span className="font-brand font-bold">Glow<sup>MD</sup></span> physicians are here to guide you every step of the way, bringing both their expertise and genuine care to keep you supported.
                         </p>
                         <button className="bg-[#FFC7A2] text-[#170700] px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-[#FAF9F6] transition-all shadow-2xl transform hover:scale-105 active:scale-95 text-xs">
                             Take the Assessment

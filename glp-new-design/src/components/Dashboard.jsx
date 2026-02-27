@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { intakeQuestions } from '../data/questions';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { toast } from 'react-hot-toast';
 
 const stripePromise = loadStripe('pk_test_51RNxytRZvtknfMGgwf0Tsuvx6jguIyVph5rWBAMFzFcfpj9SuWUWIdm06eCsxwAhbeQE69EFOo7ExXCqyLBpHVvl00Kr3ycplu');
 
@@ -1011,7 +1012,7 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                                 <div className="w-8 h-8 rounded-full bg-accent-green/20 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-accent-green border border-accent-green/20">01</div>
                                 <div>
                                     <p className="text-xs font-black uppercase tracking-tight mb-1 italic">Share Your Link</p>
-                                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with GLP-GLOW.</p>
+                                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with uGlowMD.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -1232,7 +1233,7 @@ const NotificationsView = ({ submissions, orders }) => {
 };
 
 const Dashboard = () => {
-    const { user, signOut } = useAuth();
+    const { user, signOut, verifyOtp, updateUser } = useAuth();
     const navigate = useNavigate();
     const [vitalityScore, setVitalityScore] = useState(0);
     const [profile, setProfile] = useState(null);
@@ -1240,7 +1241,125 @@ const Dashboard = () => {
     const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    // Improved tab detection
+    // Phone verification state
+    const [showPhoneVerificationModal, setShowPhoneVerificationModal] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [verifying, setVerifying] = useState(false);
+    const [phoneVerified, setPhoneVerified] = useState(true); // Default to true to avoid flash
+
+    useEffect(() => {
+        if (user) {
+            // Check if phone matches and is confirmed
+            const isConfirmed = !!user.phone_confirmed_at;
+            setPhoneVerified(isConfirmed);
+
+            // Get phone number from user record or metadata (stored during signup)
+            const phoneNumber = user.phone || user.user_metadata?.phone_number;
+
+            // If phone exists but not confirmed, show modal and trigger SMS automatically
+            if (phoneNumber && !isConfirmed) {
+                setShowPhoneVerificationModal(true);
+
+                // Only trigger SMS once per session to avoid spamming
+                const hasSentSms = sessionStorage.getItem('otp_auto_sent');
+                if (!hasSentSms) {
+                    // Set flag immediately to prevent race conditions during React Strict Mode / re-renders
+                    sessionStorage.setItem('otp_auto_sent', 'true');
+
+                    const autoTriggerSms = async () => {
+                        try {
+                            console.log('[Dashboard] Triggering OTP for:', phoneNumber);
+                            // Update phone will trigger the SMS. 
+                            // This specifically requires 'phone_change' type for verification.
+                            const { error } = await updateUser({ phone: phoneNumber });
+                            if (error) {
+                                // If it fails, clear the flag so user can retry or resend
+                                sessionStorage.removeItem('otp_auto_sent');
+                                throw error;
+                            }
+                            toast.success('Verification code sent to your phone!');
+                        } catch (err) {
+                            console.error('Failed to auto-send OTP:', err);
+                            toast.error(`Couldn't send code: ${err.message}`);
+                        }
+                    };
+                    autoTriggerSms();
+                }
+            }
+        }
+    }, [user, updateUser]);
+
+    const handleVerifyPhone = async (e) => {
+        if (e) e.preventDefault();
+        setVerifying(true);
+        try {
+            const phoneNumber = user.phone || user.user_metadata?.phone_number;
+            if (!phoneNumber) throw new Error("No phone number found for verification.");
+
+            console.log('[Dashboard] Verifying OTP for:', phoneNumber, 'Token:', otp);
+
+            // CRITICAL: When triggered via updateUser({phone}), the type MUST be 'phone_change'
+            const { error } = await verifyOtp({
+                phone: phoneNumber,
+                token: otp,
+                type: 'phone_change'
+            });
+
+            if (error) throw error;
+
+            // Optional: Update profile table to reflect verification
+            await supabase.from('profiles').update({
+                phone_number: phoneNumber,
+                updated_at: new Date().toISOString()
+            }).eq('id', user.id);
+
+            setPhoneVerified(true);
+            setShowPhoneVerificationModal(false);
+            toast.success('Phone verified successfully!');
+
+            // Reload user to get updated confirmed_at
+            window.location.reload();
+        } catch (error) {
+            console.error('Verification failed:', error);
+            // If phone_change fails, try 'sms' as a fallback for standard signups
+            if (error.message.includes('invalid') || error.message.includes('expired')) {
+                try {
+                    const phoneNumber = user.phone || user.user_metadata?.phone_number;
+                    const { error: fallbackError } = await verifyOtp({
+                        phone: phoneNumber,
+                        token: otp,
+                        type: 'sms'
+                    });
+                    if (!fallbackError) {
+                        setPhoneVerified(true);
+                        setShowPhoneVerificationModal(false);
+                        toast.success('Phone verified!');
+                        window.location.reload();
+                        return;
+                    }
+                } catch (e) {
+                    // ignore fallback error and show original
+                }
+            }
+            toast.error(error.message);
+        } finally {
+            setVerifying(false);
+        }
+    };
+
+    const resendOtp = async () => {
+        try {
+            const phoneNumber = user.phone || user.user_metadata?.phone_number;
+            const { error } = await updateUser({
+                phone: phoneNumber
+            });
+            if (error) throw error;
+            toast.success('Verification code resent.');
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
     const getTab = () => {
         const path = location.pathname;
         if (path.includes('/medications')) return 'medications';
@@ -1479,11 +1598,39 @@ const Dashboard = () => {
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle to handle missing profiles gracefully
+
             if (error) {
                 console.error('Error fetching profile:', error);
             } else {
-                setProfile(data);
+                const meta = user.user_metadata || {};
+
+                // If profile doesn't exist OR is missing key data, perform a sync
+                if (!data || (!data.phone_number && meta.phone_number) || (!data.first_name && meta.first_name)) {
+                    console.log('[Dashboard] Syncing identity from Auth to Public Profile...');
+                    const profileData = {
+                        id: user.id,
+                        email: user.email,
+                        first_name: data?.first_name || meta.first_name || '',
+                        last_name: data?.last_name || meta.last_name || '',
+                        phone_number: data?.phone_number || meta.phone_number || '',
+                        updated_at: new Date().toISOString()
+                    };
+
+                    const { data: updatedProfile, error: upsertError } = await supabase
+                        .from('profiles')
+                        .upsert(profileData, { onConflict: 'id' })
+                        .select()
+                        .single();
+
+                    if (!upsertError) {
+                        setProfile(updatedProfile);
+                    } else {
+                        console.error('Sync failed:', upsertError);
+                    }
+                } else {
+                    setProfile(data);
+                }
             }
         } catch (err) {
             console.error('Profile fetch error:', err);
@@ -1857,6 +2004,28 @@ const Dashboard = () => {
                         <p className="text-white/40 text-sm font-bold uppercase tracking-widest">
                             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
+
+                        {!phoneVerified && user?.phone && (
+                            <div className="mt-8 bg-orange-500/10 border border-orange-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-black uppercase tracking-tight text-orange-400">Phone Verification Required</p>
+                                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Please verify your phone number to access all clinical features.</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowPhoneVerificationModal(true)}
+                                    className="px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-lg"
+                                >
+                                    Verify Now
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Stats Grid - Only show on Overview */}
@@ -2397,6 +2566,67 @@ const Dashboard = () => {
                     </Routes>
                 </div>
             </main>
+
+            {/* Phone Verification Modal */}
+            {showPhoneVerificationModal && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">
+                    <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-xl" onClick={() => setShowPhoneVerificationModal(false)}></div>
+                    <div className="relative w-full max-w-md bg-white rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid #1a1a1a08' }}>
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2">
+                                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </div>
+                        <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
+                            Identity Verification
+                        </div>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                            One Last{' '}
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Thing</span>
+                        </h3>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed" style={{ color: '#1a1a1a60' }}>
+                            We've sent a 6-digit code to{' '}
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>{user?.phone}</span>. Please enter it below to confirm your clinical registration.
+                        </p>
+
+                        <form onSubmit={handleVerifyPhone} className="space-y-6">
+                            <input
+                                type="text"
+                                maxLength="6"
+                                placeholder="0 0 0 0 0 0"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                className="w-full rounded-2xl py-6 text-2xl font-black tracking-[0.5em] text-center outline-none transition-all"
+                                style={{ backgroundColor: '#f9f9f7', border: '2px solid #1a1a1a15', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                required
+                            />
+
+                            <button
+                                type="submit"
+                                disabled={verifying || otp.length < 6}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50"
+                                style={{ backgroundColor: '#000', color: '#fff' }}
+                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
+                            >
+                                {verifying ? 'Verifying...' : 'Verify Number →'}
+                            </button>
+                        </form>
+
+                        <button
+                            onClick={resendOtp}
+                            className="mt-8 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-70"
+                            style={{ color: '#1a1a1a60' }}
+                        >
+                            Didn't receive a code?{' '}
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>Resend</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
 
             {/* Assessment Details Modal */}
             {

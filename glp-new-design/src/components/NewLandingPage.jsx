@@ -89,7 +89,7 @@ const NewLandingPage = () => {
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl">
                             {[
-                                { label: 'GLP-GLOW', title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
+                                { label: <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
                                 { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAv6wve4IaUgF73Lo9B1lOz-pbcNVHhWnowiQfXy-87zYhvAlbWm2widJbI65HI5YwlAf2GzY6OQywDcS3OUvZixeZAoIq2P9qvgUkrXxhTZiYF06bSVuoAXspBMsea0t_am-c326QgzfcLrzcaeP6vQoTj-5Undg5PRT4U70mU39zB-vZZfWfujFbXUNXBXXRWkGDPfZ6d2aUr_NfcHh8D6Bagm_9YXhNGLq0IEeu7TwZAnfyEkRHCmdb_yBwn5j6BYouVBbyLzCHe' },
                                 { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7-ipYFRVrPiuFu-R6Y_Sz-aTOJh48jBupdGHajJ_3zcvE-HEH7Fa-rZJCHUh9FTSkjph_G0F6YOjwrz_JJYRujbnPMWM2l88Qyk7zmNryvB8vONuE5BZg46zVMGF81az-AjwmB06-apba4vUCwfGLi7vygGnzxAkW4bcYSqRInUyYms82vs8AOdBcPEyBVV7mZOqSzjnITQqtC-XkqrjAgtSGEwI1MRDULuhtG6vqyL9VrBOmYFPkPiuDxrBrn6bZAvI2CU5p31V' },
@@ -217,7 +217,7 @@ const NewLandingPage = () => {
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 90 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>3. Rx Shipment Arrived</h3>
-                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With uGlowMD, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
+                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <span className="font-serif"><span className="italic">u</span>Glow<sup>MD</sup></span>, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ const NewLandingPage = () => {
                         <div className="bg-[#1a1a1a] rounded-[32px] overflow-hidden flex flex-col md:flex-row group">
                             <div className="p-12 md:p-20 text-white flex-1 flex flex-col justify-center">
                                 <p className="text-xs tracking-widest uppercase mb-4 opacity-70">Get your edge back with</p>
-                                <h2 className="text-4xl md:text-5xl font-bold mb-10 leading-tight">Testosterone by<br />uGlowMD</h2>
+                                <h2 className="text-4xl md:text-5xl font-bold mb-10 leading-tight">Testosterone by<br /><span className="font-serif"><span className="italic">u</span>Glow<sup>MD</sup></span></h2>
                                 <div className="flex gap-4 mb-12">
                                     <button className="bg-white text-black px-8 py-3 rounded-md text-xs font-bold hover:bg-gray-200 transition-colors">Get started</button>
                                     <button className="bg-transparent border border-white/30 text-white px-8 py-3 rounded-md text-xs font-bold hover:bg-white/10 transition-colors">Explore</button>
@@ -347,8 +347,9 @@ const NewLandingPage = () => {
                         <div className="flex justify-center mb-4">
                             <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-transform hover:scale-105 duration-500">
                                 <div className="flex items-center">
-                                    <span className="text-lg font-serif italic text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>uGlow</span>
-                                    <span className="text-[8px] font-black text-black ml-0.5 mb-1.5">MD</span>
+                                    <span className="text-lg font-serif text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+                                        <span className="italic">u</span>Glow<sup>MD</sup>
+                                    </span>
                                 </div>
                             </div>
                         </div>

@@ -105,7 +105,7 @@ const ReviewSlider = () => {
             <div className="mb-8 md:mb-12 text-center max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-4">
                 <h2 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-white drop-shadow-md mb-4 md:mb-6">Real Results. <br /><span className="text-accent-green">Real Transformations.</span></h2>
                 <p className="text-base md:text-lg lg:text-xl text-white/90 font-medium leading-relaxed mb-4 md:mb-8">
-                    From weight loss to hair restoration, see how GLP-GLOW is helping patients reclaim their confidence and vitality.
+                    From weight loss to hair restoration, see how <span className="font-brand font-bold italic-u">u</span><span className="font-brand font-bold">Glow<sup>MD</sup></span> is helping patients reclaim their confidence and vitality.
                 </p>
             </div>
 

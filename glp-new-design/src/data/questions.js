@@ -7,7 +7,7 @@ export const categoryQuestions = {
             text: 'of patients achieve sustainable metabolic',
             highlight: 'results*',
             image: null, // Will be handled in component
-            disclaimer: '*Based on a survey of 114 active GLP-GLOW patients, conducted in May 2025.',
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
             reviews: [
                 { name: "Sarah M.", result: "Lost 45lbs", text: "Confidence restored. More energy than ever before." },
                 { name: "Michael K.", result: "Down 32lbs", text: "The hunger noise just disappeared. Life-changing." },
@@ -15,7 +15,7 @@ export const categoryQuestions = {
             ]
         },
         improvements: [
-            { id: 'lose-weight', name: 'Lose weight', desc: 'Targeted fat reduction and clinical weight management protocols.' },
+            { id: 'lose-weight', name: 'Lose Weight', desc: 'Targeted fat reduction and clinical weight management protocols.' },
             { id: 'general-health', name: 'Improve my general physical health', desc: 'Optimize metabolic function and overall wellness levels.' },
             { id: 'health-condition', name: 'Improve another health condition', desc: 'Clinical support for weight-related health improvements.' },
             { id: 'confidence', name: 'Increase confidence about my appearance', desc: 'Feel better in your skin with visible body composition changes.' },
@@ -31,7 +31,7 @@ export const categoryQuestions = {
             text: 'of users report significant clinical density',
             highlight: 'improvement*',
             image: null,
-            disclaimer: '*Based on a survey of 114 active GLP-GLOW patients, conducted in May 2025.',
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
             reviews: [
                 { name: "James T.", result: "Fuller Hair", text: "No more hats. Scalp looks amazing and dense." },
                 { name: "David S.", result: "Visible Growth", text: "Started seeing results in just 3 months. Incredible." },
@@ -53,7 +53,7 @@ export const categoryQuestions = {
             text: 'of men feel more confident in their',
             highlight: 'performance*',
             image: null,
-            disclaimer: '*Based on a survey of 114 active GLP-GLOW patients, conducted in May 2025.',
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
             reviews: [
                 { name: "Robert L.", result: "Peak Mastery", text: "Life changed. Improved intimacy and absolute confidence." },
                 { name: "Andrew C.", result: "Vitality Boost", text: "Performance levels I haven't seen since my early 20s." },
@@ -75,7 +75,7 @@ export const categoryQuestions = {
             text: 'of users report enhanced cellular',
             highlight: 'vitality*',
             image: null,
-            disclaimer: '*Based on a survey of 114 active GLP-GLOW patients, conducted in May 2025.',
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
             reviews: [
                 { name: "Elena G.", result: "Optimal Vitality", text: "Feeling 20 again. Energy levels skyrocketed instantly." },
                 { name: "Frank P.", result: "Cellular Renew", text: "Mental clarity and physical surge are undeniable." },
