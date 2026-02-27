@@ -32,6 +32,19 @@ Deno.serve(async (req) => {
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+        // Parse request body first to get fallback user identity if no token provided
+        const reqBody = await req.json().catch(() => ({}));
+        const {
+            couponCode,
+            discountedAmount,
+            amount: requestAmount,
+            type: requestType,
+            categoryId,
+            userId: reqUserId,
+            email: reqEmail,
+            metadata: extraMetadata = {}
+        } = reqBody;
+
         // Get the authenticated user from the request
         // Fallback to x-customer-authorization to bypass gateway JWT validation bugs
         const authHeader = req.headers.get("Authorization");
@@ -39,42 +52,28 @@ Deno.serve(async (req) => {
 
         const token = authHeader?.replace("Bearer ", "") || customAuthHeader?.replace("Bearer ", "");
 
-        if (!token) {
+        let finalUserId = reqUserId;
+        let finalEmail = reqEmail;
+
+        if (token && token.trim() !== "undefined") {
+            const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+            if (!authError && user) {
+                finalUserId = user.id;
+                finalEmail = user.email;
+            }
+        }
+
+        if (!finalUserId) {
             return new Response(
-                JSON.stringify({ error: "Missing authorization header" }),
+                JSON.stringify({ error: "Missing identity - User ID not provided or authenticated" }),
                 {
-                    status: 401,
+                    status: 400,
                     headers: { ...corsHeaders, "Content-Type": "application/json" },
                 }
             );
         }
 
-        const {
-            data: { user },
-            error: authError,
-        } = await supabase.auth.getUser(token);
-
-        if (authError || !user) {
-            return new Response(
-                JSON.stringify({ error: "User not authenticated" }),
-                {
-                    status: 401,
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-            );
-        }
-
-        console.log("Creating payment intent for user:", user.id);
-
-        // Parse request body
-        const {
-            couponCode,
-            discountedAmount,
-            amount: requestAmount,
-            type: requestType,
-            categoryId,
-            metadata: extraMetadata = {}
-        } = await req.json().catch(() => ({}));
+        console.log("Creating payment intent for user:", finalUserId);
 
         // Product Category Mapping
         const categoryMap: Record<string, string> = {
@@ -95,7 +94,7 @@ Deno.serve(async (req) => {
             const { data: profile, error: profileError } = await supabase
                 .from("profiles")
                 .select("stripe_customer_id, email")
-                .eq("id", user.id)
+                .eq("id", finalUserId)
                 .single();
 
             if (profileError) {
@@ -104,14 +103,14 @@ Deno.serve(async (req) => {
                     throw profileError;
                 }
                 console.log("Profiles table is missing stripe_customer_id column. Using email search fallback.");
-                userEmail = user.email || null;
+                userEmail = finalEmail || null;
             } else {
                 customerId = profile.stripe_customer_id;
-                userEmail = profile.email || user.email || null;
+                userEmail = profile.email || finalEmail || null;
             }
         } catch (err) {
             console.error("Error fetching profile:", err);
-            userEmail = user.email || null;
+            userEmail = finalEmail || null;
         }
 
         // If we don't have a customer ID from the DB, search/create in Stripe
@@ -130,7 +129,7 @@ Deno.serve(async (req) => {
                 const customer = await stripe.customers.create({
                     email: userEmail,
                     metadata: {
-                        supabase_user_id: user.id,
+                        supabase_user_id: finalUserId,
                     },
                 });
                 customerId = customer.id;
@@ -144,7 +143,7 @@ Deno.serve(async (req) => {
                     .update({
                         stripe_customer_id: customerId,
                     })
-                    .eq("id", user.id);
+                    .eq("id", finalUserId);
 
                 if (updateError && updateError.code !== "42703") {
                     console.error("Failed to update profile with customer ID:", updateError.message);
@@ -232,7 +231,7 @@ Deno.serve(async (req) => {
                 customer: customerId,
                 payment_method_types: ["card"],
                 metadata: {
-                    user_id: user.id,
+                    user_id: finalUserId,
                     type: paymentType,
                     product_id: "prod_TMtZzL2vS9ieNE",
                     product_category: displayCategory,
@@ -281,7 +280,7 @@ Deno.serve(async (req) => {
             },
             setup_future_usage: "off_session",
             metadata: {
-                user_id: user.id,
+                user_id: finalUserId,
                 type: paymentType,
                 product_id: "prod_TMtZzL2vS9ieNE",
                 product_category: displayCategory,

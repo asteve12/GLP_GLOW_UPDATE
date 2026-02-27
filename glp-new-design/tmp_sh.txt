@@ -1,0 +1,48 @@
+30: import sexualHealthFirstQuoteImg from '../assets/sexual_health_first_quote.png';
+31: import sexualHealthQuote2Img from '../assets/sexual_health_quote_2.png';
+37: 'sexual-health': { ...baseCategoryQuestions['sexual-health'], stat: { ...baseCategoryQuestions['sexual-health'].stat, image: smili
+217: const [showSexualHealthQuote, setShowSexualHealthQuote] = useState(true);
+218: const [showSexualHealthGoals, setShowSexualHealthGoals] = useState(false);
+219: const [showSexualHealthQuote2, setShowSexualHealthQuote2] = useState(false);
+220: const [selectedSexualHealthGoals, setSelectedSexualHealthGoals] = useState([]);
+424: const callSexualHealthAIReview = async () => {
+427: const { data, error } = await supabase.functions.invoke('check-sexual-health-eligibility', {
+870: } else if (categoryId === 'sexual-health') {
+899: } else if (categoryId === 'sexual-health') {
+975: const toggleSexualHealthGoal = (id) => {
+976: setSelectedSexualHealthGoals(prev =>
+989: } else if (categoryId === 'sexual-health') {
+1303: const renderSexualHealthQuoteStep = () => (
+1310: src={sexualHealthFirstQuoteImg}
+1340: onClick={() => { setShowSexualHealthQuote(false); setShowSexualHealthGoals(true); }}
+1357: const renderSexualHealthGoalsStep = () => (
+1381: onClick={() => toggleSexualHealthGoal(goal.id)}
+1382: className={`group relative p-6 rounded-[20px] cursor-pointer transition-all duration-700 border-2 overflow-hidden ${selectedSexual
+1388: <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${selectedSexualHealth
+1390: {selectedSexualHealthGoals.includes(goal.id) && (
+1405: onClick={() => { setShowSexualHealthGoals(false); setShowSexualHealthQuote2(true); }}
+1406: disabled={selectedSexualHealthGoals.length === 0}
+1407: className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 rel
+1411: style={selectedSexualHealthGoals.length > 0 ? { color: '#ffffff' } : {}}
+1413: if (selectedSexualHealthGoals.length > 0) {
+1419: if (selectedSexualHealthGoals.length > 0) {
+1437: const renderSexualHealthQuote2Step = () => (
+1444: src={sexualHealthQuote2Img}
+1474: setShowSexualHealthQuote2(false);
+2131: if (categoryId === 'sexual-health') {
+2153: {/* Sex Selection - Only show for non-sexual-health categories */}
+2154: {categoryId !== 'sexual-health' && (
+2519: if (categoryId === 'sexual-health') {
+2521: callSexualHealthAIReview();
+3437: {categoryId === 'sexual-health' ? 'Step 34: Identification' : 'Step 26: Identification'}
+3580: onClick={() => categoryId === 'sexual-health' ? setStep(8) : setStep(25)}
+3601: {categoryId === 'sexual-health' ? 'Step 35: Shipping' : 'Step 27: Delivery'}
+3767: if (categoryId === 'sexual-health') {
+3787: {categoryId === 'sexual-health' ? 'Step 36: Coupons' : 'Step 28: Coupons'}
+3867: {categoryId === 'sexual-health' ? 'Step 37: Payment' : 'Step 29: Billing'}
+3941: {categoryId === 'sexual-health' ? 'Step 37: Secure Checkout' : 'Step 30: Secure Checkout'}
+4189: ((step > 0 && step < 15) || (step === 0 && !(showQuote || showBMI || showQuote2 || showSexualHealthQuote || showSexualHealthGoals 
+4225: {categoryId === 'sexual-health' && showSexualHealthQuote && step === 0 && renderSexualHealthQuoteStep()}
+4226: {categoryId === 'sexual-health' && !showSexualHealthQuote && showSexualHealthGoals && step === 0 && renderSexualHealthGoalsStep()}
+4227: {categoryId === 'sexual-health' && !showSexualHealthQuote && !showSexualHealthGoals && showSexualHealthQuote2 && step === 0 && ren
+4228: {!(categoryId === 'weight-loss' && (showQuote || showBMI || showQuote2)) && categoryId !== 'sexual-health' && (step === 0 || step 
