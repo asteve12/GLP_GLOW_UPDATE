@@ -16,6 +16,9 @@ import prescribedImg from '../assets/get-prescribed-image.jpg';
 import rxShipmentImg from '../assets/rx-shipment-image.jpg';
 import drugImg from '../assets/drug.jpg';
 import exerciseImg from '../assets/exercise.jpg';
+import repairImg from '../assets/sec_quote_strenght_img.png';
+import medicalTeamImg from '../assets/medical-team.png';
+import fdaImg from '../assets/fda_image.webp';
 
 const NewLandingPage = () => {
     const categories = [
@@ -89,13 +92,13 @@ const NewLandingPage = () => {
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl">
                             {[
-                                { label: <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
+                                { label: <span className="font-serif italic-u"><sub>u</sub>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
                                 { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAv6wve4IaUgF73Lo9B1lOz-pbcNVHhWnowiQfXy-87zYhvAlbWm2widJbI65HI5YwlAf2GzY6OQywDcS3OUvZixeZAoIq2P9qvgUkrXxhTZiYF06bSVuoAXspBMsea0t_am-c326QgzfcLrzcaeP6vQoTj-5Undg5PRT4U70mU39zB-vZZfWfujFbXUNXBXXRWkGDPfZ6d2aUr_NfcHh8D6Bagm_9YXhNGLq0IEeu7TwZAnfyEkRHCmdb_yBwn5j6BYouVBbyLzCHe' },
                                 { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7-ipYFRVrPiuFu-R6Y_Sz-aTOJh48jBupdGHajJ_3zcvE-HEH7Fa-rZJCHUh9FTSkjph_G0F6YOjwrz_JJYRujbnPMWM2l88Qyk7zmNryvB8vONuE5BZg46zVMGF81az-AjwmB06-apba4vUCwfGLi7vygGnzxAkW4bcYSqRInUyYms82vs8AOdBcPEyBVV7mZOqSzjnITQqtC-XkqrjAgtSGEwI1MRDULuhtG6vqyL9VrBOmYFPkPiuDxrBrn6bZAvI2CU5p31V' },
-                                { label: 'LAB TESTING', title: 'Biomarkers', slug: 'nad-nasal-spray', img: labTestingImg },
-                                { label: 'TESTOSTERONE', title: 'Hormonal Therapy', slug: 'sildenafil-yohimbe-troche', img: testosteroneImg },
                                 { label: 'SKIN GLOW', title: 'Skin Care', slug: 'glutathione-injection', img: skincareImg },
+                                { label: 'TESTOSTERONE', title: 'Hormonal Therapy', slug: 'testosterone', img: testosteroneImg },
+                                { label: 'LAB TESTING', title: 'Biomarkers', slug: 'nad-nasal-spray', img: labTestingImg },
                             ]
                                 .map((item, i) => {
                                     const categoryMap = {
@@ -105,28 +108,41 @@ const NewLandingPage = () => {
                                         'nad-injection': 'longevity',
                                         'nad-nasal-spray': 'longevity',
                                         'sildenafil-yohimbe-troche': 'sexual-health',
-                                        'glutathione-injection': 'longevity'
+                                        'glutathione-injection': 'longevity',
+                                        'testosterone': 'testosterone',
+                                        'retatrutide': 'weight-loss',
+                                        'repair-healing': 'repair-healing'
                                     };
                                     const categoryId = categoryMap[item.slug] || 'weight-loss';
 
                                     return (
-                                        <Link key={i} to={`/assessment/${categoryId}`} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-xl">
+                                        <Link key={i} to={`/assessment/${categoryId}`} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                             {item.video ? (
                                                 <video
                                                     autoPlay
                                                     loop
                                                     muted
                                                     playsInline
-                                                    className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 transition-transform duration-500"
+                                                    className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500"
                                                 >
                                                     <source src={item.video} type="video/mp4" />
                                                 </video>
                                             ) : (
-                                                <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 transition-transform duration-500" src={item.img} />
+                                                <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
                                             )}
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white">
-                                                <span className="text-[10px] tracking-widest uppercase mb-1">{item.label}</span>
-                                                <span className="text-lg font-bold text-center">{item.title}</span>
+
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
+                                                <span className={`text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-600' : ''}`}>
+                                                    {item.label}
+                                                </span>
+                                                <span className={`text-lg font-bold text-center transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-500' : ''}`}>
+                                                    {item.title}
+                                                </span>
+                                                {item.label === 'LAB TESTING' && (
+                                                    <span className="mt-3 px-4 py-1.5 bg-red-600 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-white group-hover:text-red-600 transition-all duration-300">
+                                                        Coming March 15
+                                                    </span>
+                                                )}
                                             </div>
                                         </Link>
                                     );
@@ -142,14 +158,12 @@ const NewLandingPage = () => {
                 </section>
 
                 {/* Glow Smarter Banner */}
-                <section className="py-6 md:py-12">
-                    <div className="max-w-[1200px] mx-auto px-0 md:px-6">
-                        <div className="relative rounded-none md:rounded-[40px] overflow-hidden bg-[#0a0a0a] group">
-                            <img alt="Promotional banner" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" src={glpPromoImg} />
-                            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500"></div>
-                            <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
-                                <Link to="/qualify?category=weight-loss" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
-                            </div>
+                <section className="py-0">
+                    <div className="w-full relative overflow-hidden bg-[#0a0a0a] group">
+                        <img alt="Promotional banner" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" src={glpPromoImg} />
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500"></div>
+                        <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
+                            <Link to="/qualify?category=weight-loss" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
                         </div>
                     </div>
                 </section>
@@ -168,7 +182,7 @@ const NewLandingPage = () => {
                 </section>
 
                 {/* How It Works */}
-                <section className="py-24 overflow-hidden relative" ref={stepsRef}>
+                <section id="how-it-works" className="py-24 overflow-hidden relative" ref={stepsRef}>
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="relative">
                             <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gray-200 -translate-x-1/2 hidden md:block"></div>
@@ -217,7 +231,7 @@ const NewLandingPage = () => {
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 90 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>3. Rx Shipment Arrived</h3>
-                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <span className="font-serif"><span className="italic">u</span>Glow<sup>MD</sup></span>, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
+                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <span className="font-serif"><sub>u</sub>Glow<sup>MD</sup></span>, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
@@ -225,56 +239,25 @@ const NewLandingPage = () => {
                     </div>
                 </section>
 
-                {/* Expert Care Section */}
-                <section className="py-24 bg-[#fcfcfc]">
-                    <div className="max-w-[1200px] mx-auto px-6 text-center">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>The best care <br />by the best in medicine</h2>
-                        <p className="text-gray-500 text-sm mb-16 max-w-lg mx-auto">Meet the team of leading specialists with decades of combined experience across key specialties.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 max-w-4xl mx-auto text-left">
-                            {[
-                                {
-                                    name: "Dr. Craig Primack, MD",
-                                    role: "Head of Weight Loss at uGlowMD",
-                                    specialty: "Internal Health • Modern Health",
-                                    color: "text-orange-600",
-                                    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAbijEkmIYX8eDTl0s4vu5Hix0ilIF6AUl_4_4BYJ24T6lrZlGT_1cI-MNcyiMl_al2DTPdL26oDJzheo4he-JooAr1jJUSot0YPKkzMAUD3O-bZWlbjwItseWSKJ0xrWHsHPvKO_rdBgvd_I_kah9kC3fRLfPWjxy5bxXFZuKwUyiei4uoP7URlstzaUAn503RuYPsOQtgazZFn-yMQQSGfeLQhXLKKcmlGgUnXirchz_lZI0F256pu1O7SMVELofWu1Z18WlXvQ1T",
-                                    bio: "A nationally recognized obesity specialist, Dr. Primack regularly educates clinicians across the country on evidence-based metabolic and weight management care."
-                                },
-                                {
-                                    name: "Dr. Peter Stahl, MD",
-                                    role: "Head of Men's Sexual Health & Urology",
-                                    specialty: "Men's Health • Modern Health",
-                                    color: "text-black",
-                                    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAFE1MsNPrVl7Quf1l_gbqDsBqCWIHHuBMjDmNqLM390g1Y1LIS-6QPgG_of9e1CDVP6PR2MnO62ghpxvwdH578E7fCd8gm2C08nkMPxpyD3Q2O8y2__AOoS7v5LfU4EXFIjzL430BLr6fPTzSouxrWcs-BIOflL0DUGgNN4tV8712fQal5IHnM0CXndKiaxfQBWcbHpU0qYx42LP8OettmuY7k1EhpKf9NOvJhuTwahHmoCR0Mku28g-4GGPvEcQ2W69r9sA7bJ-IU",
-                                    bio: "A recognized leader in urology, hormonal health, and complex sexual medicine, Dr. Stahl is focused on clinical-led biological solutions that enhance energy, sexual function, and metabolic performance in men."
-                                },
-                                {
-                                    name: "Dr. Alisa Williams, MD",
-                                    role: "Head of Medical Affairs at uGlowMD",
-                                    specialty: "Alternative Health • Live & Grow Health",
-                                    color: "text-pink-600",
-                                    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC8J4RrNj450LUshg1IZk9FqnLReTbTeGN26x4AacwNSxeI6tH7iqlGj5PrAqfx4ZGv5p7VbwgyWTkN9gDVPfMhxfoHGBly2p3jgCaOS7pSx94VarTepjtIN5tmlJY6wOOu5bbgzG0Nnd247200SZvn0H3KAHmas0N4FYjAhLDGkx6aqzZqPJxBpZghXHuj5RL9OMFm8un5FedjcuOcL2tEKym1dJEKaniUjqzbh_Wa2eGvgwgPybUiw7rr4-bu1fqm9qJ1clmsenBL",
-                                    bio: "A board-certified family medicine physician with extensive experience in dermatology, Dr. Williams brings years of clinical expertise to the uGlowMD patient experience."
-                                },
-                                {
-                                    name: "Dr. Alice Marquet, MD",
-                                    role: "Endocrinology Advisor",
-                                    specialty: "Thyroid Health",
-                                    color: "text-green-600",
-                                    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDdxwW8rykXbc9G48XoFFYhM232y8ivO8HWuwv-sOTxx81y6QnFIzCdHY-woiPPJrGuYE3FQbUehKB5KEyDAkeDOGEua1fyy5NT3h2Kfa1aIqkhMOHd9KXzYmo5_t_EQ2dF8s2SsvmtyEm1xCEPu1k5Bvh6tWoHclzSNTy6BWC3WxTr49T6aP28kYxfq7yxCUXN5B221O5LN0K5uOuS9OMjCmNfOfarUDlXb7HDi9cK2ZEoToATagdshq58zpXVfgA_rJt7j4OPNmak",
-                                    bio: "A specialized physician in urology and office affairs, Dr. Marquet oversees the clinical initiatives at uGlowMD and brings deep expertise in thyroid, metabolic, and endocrine care."
-                                }
-                            ].map((profile, i) => (
-                                <div key={i} className="flex items-start gap-6 group">
-                                    <img alt={profile.name} className="w-16 h-16 rounded-full object-cover transition-transform group-hover:scale-110 duration-300" src={profile.img} />
-                                    <div>
-                                        <p className={`text-[10px] font-bold uppercase tracking-widest ${profile.color} mb-1`}>{profile.role}</p>
-                                        <p className="text-gray-400 text-xs mb-2">{profile.specialty}</p>
-                                        <h4 className="font-bold text-sm mb-2">{profile.name}</h4>
-                                        <p className="text-xs text-gray-600 leading-relaxed">{profile.bio}</p>
-                                    </div>
+                {/* Expert Care Section - Bird's Eye View Medical Team */}
+                <section className="py-24 bg-white">
+                    <div className="max-w-[1400px] mx-auto px-6">
+                        <div className="relative rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[21/9]">
+                            <img
+                                src={medicalTeamImg}
+                                alt="uGlow MD Medical Team"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-12 md:p-20">
+                                <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                                    <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                        The best care <br />by the best in medicine
+                                    </h2>
+                                    <p className="text-white/80 text-lg md:text-xl font-light max-w-xl">
+                                        Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
+                                    </p>
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -290,7 +273,7 @@ const NewLandingPage = () => {
                                 <a className="text-sm font-bold border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors" href="#">Learn more</a>
                             </div>
                             <div className="w-full md:w-1/2">
-                                <img alt="FDA Regulated Pharmacy" className="rounded-3xl w-full h-[400px] object-cover shadow-2xl transition-transform hover:scale-[1.02] duration-500" src={drugImg} />
+                                <img alt="FDA Regulated Pharmacy" className="rounded-3xl w-full h-[400px] object-cover shadow-2xl transition-transform hover:scale-[1.02] duration-500" src={fdaImg} />
                             </div>
                         </div>
 
@@ -308,75 +291,54 @@ const NewLandingPage = () => {
                     </div>
                 </section>
 
-                {/* Testosterone Banner */}
-                <section className="py-12">
-                    <div className="max-w-[1200px] mx-auto px-6">
-                        <div className="bg-[#1a1a1a] rounded-[32px] overflow-hidden flex flex-col md:flex-row group">
-                            <div className="p-12 md:p-20 text-white flex-1 flex flex-col justify-center">
-                                <p className="text-xs tracking-widest uppercase mb-4 opacity-70">Get your edge back with</p>
-                                <h2 className="text-4xl md:text-5xl font-bold mb-10 leading-tight">Testosterone by<br /><span className="font-serif"><span className="italic">u</span>Glow<sup>MD</sup></span></h2>
-                                <div className="flex gap-4 mb-12">
-                                    <button className="bg-white text-black px-8 py-3 rounded-md text-xs font-bold hover:bg-gray-200 transition-colors">Get started</button>
-                                    <button className="bg-transparent border border-white/30 text-white px-8 py-3 rounded-md text-xs font-bold hover:bg-white/10 transition-colors">Explore</button>
-                                </div>
-                                <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-10">
-                                    <div className="cursor-pointer group/item">
-                                        <p className="text-xs text-white/50 mb-1">Testosterone Rx</p>
-                                        <p className="font-bold mb-1 group-hover/item:text-orange-400 transition-colors">Is it right for you? ↗</p>
-                                        <p className="text-xs text-white/30">Learn more</p>
-                                    </div>
-                                    <div className="cursor-pointer group/item">
-                                        <p className="text-xs text-white/50 mb-1">At home lab kits</p>
-                                        <p className="font-bold mb-1 group-hover/item:text-orange-400 transition-colors">To check your T levels</p>
-                                        <p className="text-xs text-white/30">Start testing →</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="w-full md:w-2/5 h-80 md:h-auto overflow-hidden">
-                                <img alt="Performance exercise" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src={exerciseImg} />
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* Lab Testing Section */}
-                <section className="py-32 bg-[#fcfbfa] border-y border-gray-100">
+                <section className="py-32 bg-[#fcfbfa] border-y border-gray-100 group/lab hover:!bg-black transition-all duration-700">
                     <div className="max-w-[1200px] mx-auto px-6 text-center">
-                        <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-300">LABS BY</p>
+                        <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-300 group-hover/lab:text-red-900 transition-colors">LABS BY</p>
 
                         <div className="flex justify-center mb-4">
-                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-transform hover:scale-105 duration-500">
+                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-all group-hover/lab:bg-red-600 group-hover/lab:border-red-500 hover:scale-105 duration-500">
                                 <div className="flex items-center">
-                                    <span className="text-lg font-serif text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-                                        <span className="italic">u</span>Glow<sup>MD</sup>
+                                    <span className="text-lg font-serif text-black tracking-tight group-hover/lab:text-white" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+                                        <sub>u</sub>Glow<sup>MD</sup>
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <h2 className="text-4xl md:text-5xl mb-8 tracking-tight leading-[1.15]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
-                            <span className="text-black font-bold block">Get your labs.</span>
-                            <span className="text-gray-400 italic">Go for your optimal.</span>
+                            <span className="text-black font-bold block group-hover/lab:text-red-600 transition-colors">Get your labs.</span>
+                            <span className="text-gray-400 italic group-hover/lab:text-red-400">Go for your optimal.</span>
                         </h2>
 
+                        <div className="mb-12 flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                            <span className="px-6 py-2 bg-[#FFDE59]/10 border border-[#FFDE59]/30 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-[#FFDE59]">
+                                Coming Soon • March 15th 2026
+                            </span>
+                            <p className="text-gray-400 text-sm font-medium tracking-tight">
+                                Our comprehensive biomarker analysis becomes available mid-month.
+                            </p>
+                        </div>
+
                         <div className="flex flex-col md:flex-row justify-center items-center gap-5 mb-24">
-                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black hover:shadow-2xl transition-all duration-300 min-w-[160px]">
+                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black group-hover/lab:bg-red-600 group-hover/lab:text-white hover:shadow-2xl transition-all duration-300 min-w-[160px]">
                                 Start my labs
                             </button>
-                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 transition-all duration-300 min-w-[160px]">
+                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 group-hover/lab:border-red-900 group-hover/lab:bg-transparent group-hover/lab:text-red-200 transition-all duration-300 min-w-[160px]">
                                 Learn more
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mb-24 max-w-4xl mx-auto">
                             <div>
-                                <h3 className="font-bold text-lg mb-4">Find your baseline</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">Get a clear picture of your health with a simple lab test.</p>
+                                <h3 className="font-bold text-lg mb-4 group-hover/lab:text-red-500">Find your baseline</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed group-hover/lab:text-red-300">Get a clear picture of your health with a simple lab test.</p>
                             </div>
                             <div>
-                                <h3 className="font-bold text-lg mb-4">Plan your breakthrough</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">Optimize your health with a doctor-developed action plan.</p>
-                                <a className="text-xs font-bold border-b border-black pb-1 inline-block mt-4 hover:text-gray-600 hover:border-gray-600 transition-colors" href="#">Explore the plan →</a>
+                                <h3 className="font-bold text-lg mb-4 group-hover/lab:text-red-500">Plan your breakthrough</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed group-hover/lab:text-red-300">Optimize your health with a doctor-developed action plan.</p>
+                                <a className="text-xs font-bold border-b border-black pb-1 inline-block mt-4 hover:text-gray-600 hover:border-gray-600 transition-colors group-hover/lab:text-red-400 group-hover/lab:border-red-400" href="#">Explore the plan →</a>
                             </div>
                         </div>
 
@@ -400,7 +362,6 @@ const NewLandingPage = () => {
                                     </ul>
                                 ))}
                             </div>
-                            <button className="mt-12 text-xs font-bold border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">View the markers</button>
                         </div>
 
                         {/* Cancer Screening Callout */}
@@ -416,6 +377,116 @@ const NewLandingPage = () => {
                             <p className="text-[10px] text-gray-400 max-w-3xl mx-auto leading-relaxed">
                                 Not available in all 50 states. Eligibility determination and prescription required for all lab tests. Lab results alone are not intended to diagnose, treat, or cure any condition.
                             </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* FAQ Section */}
+                <section id="faq" className="py-32 bg-white">
+                    <div className="max-w-[1000px] mx-auto px-6">
+                        <div className="text-center mb-24">
+                            <h2 className="text-4xl md:text-6xl font-bold mb-6 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                Frequently Asked Questions
+                            </h2>
+                            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+                                Everything you need to know about our physician-guided weight loss solutions.
+                            </p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {[
+                                {
+                                    q: "What is GLP Glow?",
+                                    a: "GLP-GLOW is an online platform providing tailored weight loss solutions. It connects you with licensed healthcare professionals for telehealth consultations, offers medications such as compounded semaglutide and tirzepatide. All services and medications are conveniently delivered to your doorstep."
+                                },
+                                {
+                                    q: "How does the process work?",
+                                    a: "The process involves four key steps: 1. Online Assessment (filling out our secure health survey), 2. Provider Review (a licensed healthcare provider reviews your eligibility within 24 hours), 3. Possible Outcomes (Approved, More Info Required, or Denied), and 4. Prescription & Shipping (once approved, medication is delivered within 5–7 business days)."
+                                },
+                                {
+                                    q: "What medications are offered?",
+                                    a: "We currently offer Compounded Semaglutide and Compounded Tirzepatide. These are supplied by a licensed and FDA-compliant compounding pharmacy, adhering to all legal and regulatory standards."
+                                },
+                                {
+                                    q: "Do I automatically get approved if I complete the online form?",
+                                    a: "No. Completing the form does not guarantee approval. A licensed healthcare provider must review and verify your medical eligibility before any prescription can be issued. GLP Glow strictly follows medical, ethical, and legal standards."
+                                },
+                                {
+                                    q: "What is the eligibility verification fee?",
+                                    a: "There is a $25 non-refundable fee for a licensed healthcare provider to review your online assessment and verify your eligibility. This fee does not guarantee approval, and if approved, additional charges will apply based on the medication and package selected."
+                                },
+                                {
+                                    q: "How is pricing determined?",
+                                    a: "Once approved, your provider will determine the most appropriate medication and package length. You'll be automatically charged based on the selected treatment plan. Full pricing and shipping details will be shared along with tracking info."
+                                },
+                                {
+                                    q: "How long does shipping take?",
+                                    a: "Once your prescription is approved and ordered, shipping typically takes 5–7 business days. All packages come with tracking information."
+                                },
+                                {
+                                    q: "What are your business hours?",
+                                    a: "We operate remotely Monday to Friday, 9:00 AM – 4:00 PM CDT."
+                                },
+                                {
+                                    q: "What states do you currently serve?",
+                                    a: "We currently serve patients in 24 U.S. states, including AZ, CO, DC, GA, HI, IL, IN, IA, KS, MD, MO, NE, NY, NC, OK, OR, PA, RI, SD, TN, TX, UT, WA, and WI."
+                                },
+                                {
+                                    q: "Are your medications safe and compliant?",
+                                    a: "Yes. All medications are compounded in a licensed, FDA-registered compounding pharmacy in full compliance with U.S. laws and regulations. Your health and safety are our top priorities."
+                                },
+                                {
+                                    q: "Can I speak with someone if I have questions?",
+                                    a: "Absolutely! Reach out to us during business hours via Email at americahealthsolutions@gmail.com or via our Customer Care Line at 214-699-7654."
+                                },
+                                {
+                                    q: "What if my eligibility is denied?",
+                                    a: "If a provider determines you do not meet the medical criteria, your eligibility will be denied. The $25 verification fee is non-refundable, but we'll notify you of the decision and may recommend alternative solutions if available."
+                                },
+                                {
+                                    q: "Is the provider review instant?",
+                                    a: "No. Although the online form is quick, a licensed provider must manually review your information within 24 hours to ensure safety, compliance, and accurate care."
+                                },
+                                {
+                                    q: "Can I cancel my order after approval?",
+                                    a: "Once a provider has approved your eligibility and the prescription has been processed, orders cannot be canceled or refunded due to the nature of compounded medication."
+                                },
+                                {
+                                    q: "Is GLP Glow a weight loss clinic?",
+                                    a: "GLP Glow is not a traditional clinic. We are a telehealth service platform facilitating remote medical consultations and medication delivery for approved patients seeking weight loss solutions."
+                                }
+                            ].map((item, i) => (
+                                <div key={i} className="group border-b border-gray-100 last:border-0 overflow-hidden transition-all duration-500">
+                                    <details className="cursor-pointer py-8">
+                                        <summary className="list-none flex items-center justify-between gap-4">
+                                            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-black transition-colors">
+                                                {item.q}
+                                            </h3>
+                                            <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center shrink-0 group-hover:border-black transition-all">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-gray-400 group-hover:text-black"><path d="M6 9l6 6 6-6" /></svg>
+                                            </div>
+                                        </summary>
+                                        <div className="mt-6 text-gray-500 text-lg leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
+                                            {item.a}
+                                        </div>
+                                    </details>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-32 p-12 bg-gray-50 rounded-[40px] text-center">
+                            <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Still have questions?</h3>
+                            <p className="text-gray-500 mb-8">We're here to help! Contact us any time during business hours.</p>
+                            <div className="flex flex-wrap justify-center gap-6">
+                                <a href="mailto:americahealthsolutions@gmail.com" className="flex items-center gap-3 text-sm font-bold tracking-tight hover:text-gray-600 transition-colors">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><path d="M22 6l-10 7L2 6" /></svg>
+                                    americahealthsolutions@gmail.com
+                                </a>
+                                <a href="tel:214-699-7654" className="flex items-center gap-3 text-sm font-bold tracking-tight hover:text-gray-600 transition-colors">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" /></svg>
+                                    214-699-7654
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -454,19 +525,17 @@ const NewLandingPage = () => {
                         <div>
                             <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Resources</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-                                <li><Link className="hover:text-white transition-colors" to="#">Blog</Link></li>
+                                <li><Link className="hover:text-white transition-colors" to="/blog">Peer reviewed blog</Link></li>
                                 <li><Link className="hover:text-white transition-colors" to="#">Reviews</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">FAQ</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">How it works</Link></li>
+                                <li><a className="hover:text-white transition-colors" href="#faq">FAQ</a></li>
+                                <li><a className="hover:text-white transition-colors" href="#how-it-works">How it works</a></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Company</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
                                 <li><Link className="hover:text-white transition-colors" to="#">About us</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">Careers</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">Press</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">Investors</Link></li>
+                                <li><Link className="hover:text-white transition-colors" to="#">Contact us</Link></li>
                             </ul>
                         </div>
                         <div>
@@ -474,8 +543,6 @@ const NewLandingPage = () => {
                             <ul className="space-y-4 text-sm text-gray-400">
                                 <li><Link className="hover:text-white transition-colors" to="/terms-conditions">Terms & conditions</Link></li>
                                 <li><Link className="hover:text-white transition-colors" to="/privacy-policy">Privacy policy</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/cookie-policy">Cookie policy</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/your-privacy-choices">Your privacy choices</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -483,14 +550,22 @@ const NewLandingPage = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-600 pt-12 border-t border-white/5">
                         <div className="flex gap-6 mb-4 md:mb-0">
                             <a className="hover:text-white transition-colors font-medium tracking-tight" href="#">uGlow™</a>
-                            <a className="hover:text-white transition-colors font-medium" href="#">Instagram</a>
-                            <a className="hover:text-white transition-colors font-medium" href="#">Twitter</a>
+                            <a className="hover:text-white transition-colors font-medium" href="https://www.instagram.com/uglowmd?igsh=MXc0bjB5aHR0MGR5Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a>
+                            <a className="hover:text-white transition-colors font-medium" href="https://www.facebook.com/share/1CXFW9dXa9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Facebook</a>
+                            <a className="hover:text-white transition-colors font-medium" href="https://x.com/uglowmd?s=21&t=AWKB5Ql2CQkOFAgP0xqEJg" target="_blank" rel="noopener noreferrer">Twitter/X</a>
                         </div>
                         <p className="font-medium tracking-tight">© 2024 uGlowMD. All rights reserved.</p>
                     </div>
                 </div>
+
+                {/* Massive Styled Footer Logo (uGlow MD Style) */}
+                <div className="w-full mt-10 md:mt-0 overflow-hidden select-none pointer-events-none flex justify-center items-end opacity-[0.05] translate-y-20">
+                    <h1 className="text-[30vw] font-brand tracking-tighter text-white whitespace-nowrap leading-[0.8]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+                        <span className="italic">u</span>Glow<sup className="text-[0.4em] uppercase tracking-normal">MD</sup>
+                    </h1>
+                </div>
             </footer>
-        </div>
+        </div >
     );
 };
 

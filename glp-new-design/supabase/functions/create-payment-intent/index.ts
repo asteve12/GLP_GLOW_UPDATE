@@ -55,11 +55,22 @@ Deno.serve(async (req) => {
         let finalUserId = reqUserId;
         let finalEmail = reqEmail;
 
-        if (token && token.trim() !== "undefined") {
-            const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-            if (!authError && user) {
-                finalUserId = user.id;
-                finalEmail = user.email;
+        if (token && token.trim() !== "undefined" && token.trim() !== "null") {
+            try {
+                const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+                if (!authError && user) {
+                    finalUserId = user.id;
+                    finalEmail = user.email;
+                }
+                // If authError (e.g. expired/invalid JWT), we silently fall through
+                // to the body-provided userId + email below. This handles the case
+                // where the user confirmed email in a different browser and the
+                // frontend did a token refresh that hasn't propagated yet.
+                if (authError) {
+                    console.warn("JWT validation warning (non-fatal):", authError.message);
+                }
+            } catch (e) {
+                console.warn("Could not validate JWT token, using body identity:", e);
             }
         }
 

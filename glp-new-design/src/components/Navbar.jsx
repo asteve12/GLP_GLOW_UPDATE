@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   {
     name: 'Weight Loss',
     id: 'weight-loss',
-    color: '#60A5FA', // Blue
+    color: '#93C5FD', // Brighter Blue
     products: [
       { name: 'Semaglutide (Rx)', path: 'semaglutide-injection' },
       { name: 'Tirzepatide (Rx)', path: 'tirzepatide-injection' },
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   {
     name: 'Better Sex',
     id: 'sexual-health',
-    color: '#8B5CF6', // Purple
+    color: '#D8B4FE', // Brighter Purple
     products: [
       { name: 'ReadySetGo (2-in-1 RDT) *Men* (Rx)', path: 'readysetgo-men' },
       { name: 'GrowTabs (Sildenafil) *Men* (Rx)', path: 'growtabs-sildenafil' },
@@ -29,7 +29,7 @@ const NAV_ITEMS = [
   {
     name: 'Hair Loss',
     id: 'hair-loss',
-    color: '#92400E', // Dark Brown
+    color: '#FCD34D', // Bright Amber (instead of dark brown)
     products: [
       { name: '3-in-1 Hair Growth Tabs (Rx)', path: 'hair-growth-tabs-3in1' },
       { name: '2-in-1 Hair Growth Tabs (Rx)', path: 'hair-growth-tabs-2in1' },
@@ -38,7 +38,7 @@ const NAV_ITEMS = [
   {
     name: 'Longevity',
     id: 'longevity',
-    color: '#93C5FD', // Light Blue
+    color: '#FB923C', // Vibrant Orange
     products: [
       { name: 'NAD + Spray (Nasal)', path: 'nad-nasal-spray' },
       { name: 'NAD + (Subq Inj)*', path: 'nad-injection' },
@@ -48,7 +48,7 @@ const NAV_ITEMS = [
   {
     name: 'Testosterone',
     id: 'hormone-therapy',
-    color: '#10B981', // Green
+    color: '#34D399', // Brighter Green
     products: [
       { name: 'Testosterone (Rx)', path: 'testosterone-injection' },
       { name: 'Testosterone (RDT) (Rx)', path: 'testosterone-rdt' },
@@ -58,7 +58,7 @@ const NAV_ITEMS = [
   {
     name: 'Skin Care',
     id: 'skin-care',
-    color: '#F9A8D4', // Light Pink
+    color: '#FBCFE8', // Brighter Pink
     products: [
       { name: 'Anti-Aging Cream (Rx)', path: 'anti-aging-cream' },
       { name: 'Face Spot Peel (Rx)', path: 'face-spot-peel' },
@@ -135,7 +135,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
               <img
                 src={logo}
                 alt="uGlowMD Logo"
-                className=" mt-[8px] h-28 md:h-32 w-auto transition-transform hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2"
+                className=" mt-[8px] h-[168px] md:h-[192px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2"
                 style={{
                   filter: 'brightness(1.2)',
                   maxWidth: 'none'
@@ -144,7 +144,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
             </Link>
           </div>
 
-          <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-[12px] font-bold uppercase tracking-widest text-white whitespace-nowrap">
+          <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-[12px] font-black uppercase tracking-[0.14em] text-white whitespace-nowrap">
             {NAV_ITEMS.map((item) => (
               <div
                 key={item.id}
@@ -174,13 +174,17 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
             ))}
           </div>
 
-          <div className="flex items-center gap-6 text-[12px] font-bold uppercase tracking-widest text-white">
-            <Link
-              className="hover:text-white/80 transition-colors"
-              to={location.pathname.startsWith('/assessment') ? `/login?returnTo=${encodeURIComponent(location.pathname)}` : "/login"}
-            >
-              Log in
-            </Link>
+          <div className="flex items-center gap-6 text-[12px] font-black uppercase tracking-[0.14em] text-white">
+            {user ? (
+              <Link className="hover:text-white/80 transition-colors" to="/dashboard">Dashboard</Link>
+            ) : (
+              <Link
+                className="hover:text-white/80 transition-colors"
+                to={location.pathname.startsWith('/assessment') ? `/login?returnTo=${encodeURIComponent(location.pathname)}` : "/login"}
+              >
+                Log in
+              </Link>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-white hover:text-white/80 transition-colors p-1"
@@ -285,15 +289,52 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
                           </div>
                         ))}
                       </div>
+
+                      {/* Start Assessment button – shown for all categories except Skin Care & Retatrutide */}
+                      {!['skin-care', 'retatrutide'].includes(category.id) && (() => {
+                        const assessmentRouteMap = {
+                          'weight-loss': 'weight-loss',
+                          'sexual-health': 'sexual-health',
+                          'hair-loss': 'hair-restoration',
+                          'longevity': 'longevity',
+                          'hormone-therapy': 'testosterone',
+                          'repair-healing': 'repair-healing',
+                        };
+                        const routeId = assessmentRouteMap[category.id];
+                        if (!routeId) return null;
+                        return (
+                          <Link
+                            to={`/assessment/${routeId}`}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="mt-5 flex items-center justify-center gap-3 w-full py-5 rounded-2xl font-black text-[10.5px] uppercase tracking-[0.4em] transition-all duration-300 border border-white/40 text-white hover:bg-white hover:text-black hover:border-white group/cta"
+                          >
+                            Start Assessment
+                            <svg className="w-3 h-3 -rotate-45 group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </Link>
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Footer Info */}
-              <div className="pt-10 border-t border-white/5">
-                <p className="text-[9px] text-white leading-relaxed uppercase tracking-[0.2em] font-bold">
-                  <span className="font-brand"><span className="italic">u</span>Glow<sup>MD</sup></span> Specialized Medical Programs. All treatments require physician consultation and medical eligibility verification.
+              <div className="pt-10 border-t border-white/5 flex flex-col gap-6">
+                <Link
+                  to="/blog"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="bg-white text-black py-5 rounded-2xl flex items-center justify-center gap-3 font-black text-[10.5px] uppercase tracking-[0.4em] hover:bg-gray-200 transition-all shadow-xl"
+                >
+                  Peer blog review
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </Link>
+
+                <p className="text-[9px] text-white/40 leading-relaxed uppercase tracking-[0.2em] font-bold">
+                  <span className="font-brand"><sub>u</sub>Glow<sup>MD</sup></span> Specialized Medical Programs. All treatments require physician consultation and medical eligibility verification.
                 </p>
               </div>
             </div>

@@ -25,6 +25,8 @@ import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
 import SatisfactionSurvey from './components/SatisfactionSurvey';
 import NewLandingPage from './components/NewLandingPage';
+import BlogPage from './components/BlogPage';
+import BlogPostDetails from './components/BlogPostDetails';
 import { Toaster } from 'react-hot-toast';
 
 const ScrollToHash = () => {
@@ -94,16 +96,16 @@ function App() {
               <div className="space-y-12 pb-20">
                 <section>
                   <p className="text-black/90 text-xl">Last Updated: February 25, 2026</p>
-                  <p className="mt-4">These Terms and Conditions ("Terms") constitute a legally binding agreement between you and <sub>u</sub>GLOW<sup>MD</sup> regarding your access to and use of our telemedicine platform. By creating an account or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms.</p>
+                  <p className="mt-4">These Terms and Conditions ("Terms") constitute a legally binding agreement between you and <sub>u</sub>Glow<sup>MD</sup> regarding your access to and use of our telemedicine platform. By creating an account or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms.</p>
                 </section>
 
                 <section>
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-1 px-0 bg-black"></div>
-                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter">1. Telemedicine Services & Eligibility</h3>
+                    <h3 className="text-black text-3xl font-black uppercase tracking-tighter"><sub>u</sub>Glow<sup>MD</sup> Specialized Medical Programs</h3>
                   </div>
                   <div className="space-y-4 font-normal text-black/60">
-                    <p><sub>u</sub>GLOW<sup>MD</sup> provides a platform for patients to connect with independent healthcare providers ("Providers"). <sub>u</sub>GLOW<sup>MD</sup> does not practice medicine and does not interfere with the clinical judgment of Providers.</p>
+                    <p><sub>u</sub>Glow<sup>MD</sup> provides a platform for patients to connect with independent healthcare providers ("Providers"). <sub>u</sub>Glow<sup>MD</sup> does not practice medicine and does not interfere with the clinical judgment of Providers.</p>
                     <p><strong className="text-black">Emergency Situations:</strong> THE SERVICES ARE NOT FOR EMERGENCIES. IF YOU BELIEVE YOU ARE EXPERIENCING A MEDICAL EMERGENCY, CALL 911 IMMEDIATELY OR GO TO THE NEAREST EMERGENCY ROOM.</p>
                     <p><strong className="text-black">Interstate Practice:</strong> Services are only available to residents in states where our Providers are licensed to practice. You agree to provide accurate location data at all times.</p>
                   </div>
@@ -141,7 +143,7 @@ function App() {
                     <h3 className="text-black text-3xl font-black uppercase tracking-tighter">4. Limitation of Liability & Indemnity</h3>
                   </div>
                   <div className="space-y-4 font-normal text-black/60">
-                    <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, <sub>u</sub>GLOW<sup>MD</sup>, its affiliates, and Providers shall not be liable for any indirect, incidental, or consequential damages arising from your use of the platform or prescribed medications.</p>
+                    <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, <sub>u</sub>Glow<sup>MD</sup>, its affiliates, and Providers shall not be liable for any indirect, incidental, or consequential damages arising from your use of the platform or prescribed medications.</p>
                     <p>You agree to indemnify and hold harmless the Platform and its Providers from any claims, losses, or legal fees resulting from your intentional provision of false medical data or failure to follow prescribed protocols.</p>
                   </div>
                 </section>
@@ -178,6 +180,9 @@ function App() {
               </div>
             } />
           } />
+
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:id" element={<BlogPostDetails />} />
 
           <Route path="/telehealth-consent" element={
             <LegalPage title="Telehealth Consent" content={

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -10,7 +10,29 @@ import { toast } from 'react-hot-toast';
 
 const stripePromise = loadStripe('pk_test_51RNxytRZvtknfMGgwf0Tsuvx6jguIyVph5rWBAMFzFcfpj9SuWUWIdm06eCsxwAhbeQE69EFOo7ExXCqyLBpHVvl00Kr3ycplu');
 
-// Helper to get category from drug name
+import weightLossImg from '../assets/weightloss-quote-img.png';
+import hairLossImg from '../assets/hair-loss-first-quote.png';
+import sexualHealthImg from '../assets/sexual_health_first_quote.png';
+import longevityImg from '../assets/longetivity_first_quote_img.png';
+import testosteroneImg from '../assets/testosterone-image-v2.png';
+import skinCareImg from '../assets/skincare.png';
+import retatrutideImg from '../assets/clinical_breakthrough.png';
+import repairImg from '../assets/sec_quote_strenght_img.png';
+
+
+// Helper to get category ID from drug name for intake questions
+const getMedicationCategoryId = (drugName) => {
+    const drug = (drugName || '').toLowerCase();
+    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight') || drug.includes('retatrutide')) return 'weight-loss';
+    if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) return 'hair-restoration';
+    if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil')) return 'sexual-health';
+    if (drug.includes('nad') || drug.includes('longevity')) return 'longevity';
+    if (drug.includes('testosterone')) return 'testosterone';
+    if (drug.includes('skin')) return 'skin-care';
+    if (drug.includes('repair') || drug.includes('healing') || drug.includes('strength')) return 'repair-healing';
+    return drugName; // Fallback
+};
+
 const getMedicationCategory = (drugName) => {
     const drug = (drugName || '').toLowerCase();
 
@@ -40,7 +62,7 @@ const getMedicationCategory = (drugName) => {
         return 'Longevity';
     }
 
-    return null;
+    return 'Other';
 };
 
 
@@ -98,7 +120,7 @@ const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
             <button
                 type="submit"
                 disabled={!stripe || processing}
-                className="w-full py-5 bg-accent-blue text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                className="w-full py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#111111] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
                 {processing ? (
                     <>
@@ -180,22 +202,22 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
-            <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-xl" onClick={onClose}></div>
+            <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-xl" onClick={onClose}></div>
             <div className="relative w-full max-w-xl bg-[#0A0A0A] border border-white/10 rounded-[32px] md:rounded-[40px] shadow-2xl dashboard-card flex flex-col max-h-[90vh] overflow-hidden">
-                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#080808]">
+                <div className="p-8 border-b border-white/10 flex items-center justify-between bg-[#080808]">
                     <div>
-                        <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
-                            {type === 'cancel' ? 'Cancel' : type === 'activate' ? 'Reactivate' : (step === 1 ? 'Request' : 'Secure Payment')} <span className={type === 'cancel' ? 'text-red-500' : 'text-accent-blue'}>
+                        <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
+                            {type === 'cancel' ? 'Cancel' : type === 'activate' ? 'Reactivate' : (step === 1 ? 'Request' : 'Secure Payment')} <span className={type === 'cancel' ? 'text-red-500' : 'text-white'}>
                                 {type === 'dosage' ? 'Dosage Adjustment' : (type === 'cancel' || type === 'activate') ? 'Subscription' : 'Medication Change'}
                             </span>
                         </h3>
-                        <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">
+                        <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
                             {type === 'cancel' ? `Discontinuing your ${medication?.selected_drug} protocol` :
                                 type === 'activate' ? `Resuming your ${medication?.selected_drug} protocol` :
                                     (step === 1 ? medication?.selected_drug : `Confirming changes for ${medication?.selected_drug}`)}
                         </p>
                     </div>
-                    <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 hover:text-white">
+                    <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white/50 hover:text-white">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
@@ -205,9 +227,9 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                 <div className="p-8 overflow-y-auto">
                     {type === 'cancel' || type === 'activate' ? (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className={`${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-blue/10 border-accent-blue/20'} border rounded-3xl p-8 text-center`}>
-                                <div className={`w-16 h-16 rounded-full ${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-accent-blue/10 border-accent-blue/20'} flex items-center justify-center border mx-auto mb-6`}>
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={type === 'cancel' ? 'text-red-500' : 'text-accent-blue'}>
+                            <div className={`${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-white/5 border-white/20'} border rounded-3xl p-8 text-center`}>
+                                <div className={`w-16 h-16 rounded-full ${type === 'cancel' ? 'bg-red-500/10 border-red-500/20' : 'bg-white/5 border-white/20'} flex items-center justify-center border mx-auto mb-6`}>
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={type === 'cancel' ? 'text-red-500' : 'text-white'}>
                                         {type === 'cancel' ? (
                                             <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
                                         ) : (
@@ -215,7 +237,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                         )}
                                     </svg>
                                 </div>
-                                <h4 className="text-xl font-black uppercase tracking-tighter italic mb-4">{type === 'cancel' ? 'Are you sure?' : 'Welcome Back'}</h4>
+                                <h4 className="text-xl font-black uppercase tracking-tighter  mb-4">{type === 'cancel' ? 'Are you sure?' : 'Welcome Back'}</h4>
                                 <p className="text-xs text-white/60 leading-relaxed font-bold uppercase tracking-wider mx-auto max-w-sm">
                                     {type === 'cancel'
                                         ? "Cancelling will pause your automatic renewals and medication deliveries. You will still have access to the protocol until the end of your current billing cycle."
@@ -226,7 +248,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                 <button
                                     onClick={handleProceed}
                                     disabled={loading}
-                                    className={`w-full py-6 ${type === 'cancel' ? 'bg-red-500 hover:bg-red-600' : 'bg-accent-blue hover:bg-white'} text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg`}
+                                    className={`w-full py-6 ${type === 'cancel' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#FFDE59] hover:bg-[#111111]'} text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg`}
                                 >
                                     {loading ? (
                                         <>
@@ -248,7 +270,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                     ) : step === 1 ? (
                         <form onSubmit={handleProceed} className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
                             <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-2">
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-4 ml-2">
                                     {type === 'dosage' ? 'Select New Dosage' : 'Select Replacement Medication'}
                                 </label>
                                 <div className="grid grid-cols-2 gap-3">
@@ -258,8 +280,8 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                             type="button"
                                             onClick={() => setValue(opt)}
                                             className={`py-4 rounded-2xl font-bold text-xs transition-all border ${value === opt
-                                                ? 'bg-accent-blue text-black border-accent-blue'
-                                                : 'bg-white/5 text-white/60 border-white/5 hover:border-white/20'
+                                                ? 'bg-[#FFDE59] text-black border-accent-blue'
+                                                : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
                                                 }`}
                                         >
                                             {opt}
@@ -269,7 +291,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4 ml-2">
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-4 ml-2">
                                     Reason for change
                                 </label>
                                 <textarea
@@ -277,17 +299,17 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                     onChange={(e) => setReason(e.target.value)}
                                     required
                                     placeholder="Please describe why you'd like to make this change..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white text-sm focus:outline-none focus:border-accent-green transition-all min-h-[120px] resize-none font-medium"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white text-sm focus:outline-none focus:border-[#FFDE59] transition-all min-h-[120px] resize-none font-medium"
                                 />
                             </div>
 
                             {type === 'dosage' && (
-                                <div className="bg-accent-blue/10 border border-accent-blue/20 rounded-2xl p-5">
+                                <div className="bg-white/5 border border-white/20 rounded-2xl p-5">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-accent-blue">Dosage Change Fee</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-white">Dosage Change Fee</span>
                                         <span className="text-lg font-black text-white">$5.00</span>
                                     </div>
-                                    <p className="text-[10px] text-white/40 leading-relaxed font-medium">
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-medium">
                                         Covering the clinical review and updated prescription processing.
                                     </p>
                                 </div>
@@ -298,7 +320,7 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                             <button
                                 type="submit"
                                 disabled={!value || !reason || preparingPayment}
-                                className="w-full py-6 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-accent-green transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                                className="w-full py-6 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#FFDE59] hover:text-black transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                             >
                                 {preparingPayment ? (
                                     <>
@@ -328,18 +350,234 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
     );
 };
 
+
+const SettingsView = ({ profile, user, onUpdate, setLastOptimisticUpdate }) => {
+    const { updateUser } = useAuth();
+    const [form, setForm] = React.useState({
+        first_name: profile?.first_name || '',
+        last_name: profile?.last_name || '',
+        phone: profile?.phone || user?.phone || '',
+        date_of_birth: profile?.date_of_birth || '',
+    });
+    const [pwForm, setPwForm] = React.useState({ current: '', newPw: '', confirm: '' });
+    const [saving, setSaving] = React.useState(false);
+    const [pwSaving, setPwSaving] = React.useState(false);
+    const [msg, setMsg] = React.useState(null);
+    const [pwMsg, setPwMsg] = React.useState(null);
+
+    const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        setMsg(null);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    first_name: form.first_name,
+                    last_name: form.last_name,
+                    phone: form.phone,
+                    date_of_birth: form.date_of_birth,
+                })
+                .eq('id', user.id);
+            if (error) throw error;
+
+            if (setLastOptimisticUpdate) setLastOptimisticUpdate(Date.now());
+            setMsg({ type: 'success', text: 'Profile updated successfully.' });
+            if (onUpdate) onUpdate();
+        } catch (err) {
+            setMsg({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        if (pwForm.newPw !== pwForm.confirm) {
+            setPwMsg({ type: 'error', text: 'New passwords do not match.' });
+            return;
+        }
+        setPwSaving(true);
+        setPwMsg(null);
+        try {
+            const { error } = await updateUser({ password: pwForm.newPw });
+            if (error) throw error;
+            setPwMsg({ type: 'success', text: 'Password updated successfully.' });
+            setPwForm({ current: '', newPw: '', confirm: '' });
+        } catch (err) {
+            setPwMsg({ type: 'error', text: err.message });
+        } finally {
+            setPwSaving(false);
+        }
+    };
+
+    const inputStyle = {
+        width: '100%', boxSizing: 'border-box',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        border: '1.5px solid rgba(255,255,255,0.1)',
+        borderRadius: '14px', padding: '14px 18px',
+        fontSize: '14px', color: '#fff', outline: 'none',
+        transition: 'border-color 0.2s', fontFamily: 'inherit'
+    };
+    const labelStyle = {
+        display: 'block', fontSize: '9px', fontWeight: '900',
+        textTransform: 'uppercase', letterSpacing: '0.3em',
+        color: 'rgba(255,255,255,0.4)', marginBottom: '8px'
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">
+                    Account <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '0 8px' }}>Settings</span>
+                </h2>
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Manage your personal information and preferences</p>
+            </div>
+
+            {/* Personal Info */}
+            <form onSubmit={handleSave}>
+                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 space-y-8">
+                    <h3 className="text-lg font-black uppercase tracking-tight text-white/80 border-b border-white/10 pb-4">Personal Information</h3>
+
+                    {msg && (
+                        <div style={{
+                            padding: '12px 18px', borderRadius: '12px', fontSize: '12px', fontWeight: '700',
+                            backgroundColor: msg.type === 'success' ? 'rgba(255,222,89,0.1)' : 'rgba(239,68,68,0.1)',
+                            border: `1px solid ${msg.type === 'success' ? 'rgba(255,222,89,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                            color: msg.type === 'success' ? '#FFDE59' : '#f87171'
+                        }}>
+                            {msg.text}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[
+                            { label: 'First Name', name: 'first_name', type: 'text', placeholder: 'John' },
+                            { label: 'Last Name', name: 'last_name', type: 'text', placeholder: 'Doe' },
+                            { label: 'Phone Number', name: 'phone', type: 'tel', placeholder: '+1 (555) 000-0000' },
+                            { label: 'Date of Birth', name: 'date_of_birth', type: 'date', placeholder: '' },
+                        ].map(field => (
+                            <div key={field.name}>
+                                <label style={labelStyle}>{field.label}</label>
+                                <input
+                                    type={field.type}
+                                    name={field.name}
+                                    value={form[field.name]}
+                                    onChange={handleChange}
+                                    placeholder={field.placeholder}
+                                    style={inputStyle}
+                                    onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div>
+                        <label style={labelStyle}>Email Address</label>
+                        <input
+                            type="email"
+                            value={user?.email || ''}
+                            disabled
+                            style={{ ...inputStyle, opacity: 0.4, cursor: 'not-allowed' }}
+                        />
+                        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '6px', fontWeight: '700', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                            Contact support to change your email address
+                        </p>
+                    </div>
+
+
+
+                    <button
+                        type="submit"
+                        disabled={saving}
+                        style={{
+                            padding: '16px 40px', borderRadius: '999px',
+                            backgroundColor: '#FFDE59', color: '#000',
+                            border: 'none', fontSize: '11px', fontWeight: '900',
+                            textTransform: 'uppercase', letterSpacing: '0.3em',
+                            cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1,
+                            transition: 'opacity 0.2s', fontFamily: 'inherit'
+                        }}
+                    >
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
+
+            {/* Password Change */}
+            <form onSubmit={handlePasswordChange}>
+                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 space-y-6">
+                    <h3 className="text-lg font-black uppercase tracking-tight text-white/80 border-b border-white/10 pb-4">Change Password</h3>
+
+                    {pwMsg && (
+                        <div style={{
+                            padding: '12px 18px', borderRadius: '12px', fontSize: '12px', fontWeight: '700',
+                            backgroundColor: pwMsg.type === 'success' ? 'rgba(255,222,89,0.1)' : 'rgba(239,68,68,0.1)',
+                            border: `1px solid ${pwMsg.type === 'success' ? 'rgba(255,222,89,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                            color: pwMsg.type === 'success' ? '#FFDE59' : '#f87171'
+                        }}>
+                            {pwMsg.text}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label style={labelStyle}>New Password</label>
+                            <input type="password" value={pwForm.newPw}
+                                onChange={e => setPwForm(f => ({ ...f, newPw: e.target.value }))}
+                                placeholder="Min 8 characters" style={inputStyle} required minLength={8}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Confirm New Password</label>
+                            <input type="password" value={pwForm.confirm}
+                                onChange={e => setPwForm(f => ({ ...f, confirm: e.target.value }))}
+                                placeholder="Repeat new password" style={inputStyle} required minLength={8}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={pwSaving}
+                        style={{
+                            padding: '16px 40px', borderRadius: '999px',
+                            backgroundColor: 'transparent', color: '#FFDE59',
+                            border: '1.5px solid rgba(255,222,89,0.4)',
+                            fontSize: '11px', fontWeight: '900',
+                            textTransform: 'uppercase', letterSpacing: '0.3em',
+                            cursor: pwSaving ? 'not-allowed' : 'pointer', opacity: pwSaving ? 0.7 : 1,
+                            transition: 'all 0.2s', fontFamily: 'inherit'
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#000'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#FFDE59'; }}
+                    >
+                        {pwSaving ? 'Updating...' : 'Update Password'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
+
 const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onRetake }) => {
+
     // Determine if user can manage subscription (must be approved by provider)
     const isApproved = submission.approval_status === 'approved';
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 hover:border-accent-blue/30 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
+        <div className="bg-[#111111] border border-white/10 rounded-[32px] p-8 hover:border-white/20 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
                 <div className="flex flex-col md:flex-row items-start gap-6">
-                    <div className="w-20 h-20 rounded-3xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20 group-hover:border-accent-blue/40 transition-all">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue">
+                    <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/20 group-hover:border-white/20 transition-all">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
                             <path d="M10.5 21l-7.5-7.5 3.5-3.5 7.5 7.5-3.5 3.5z" />
                             <path d="M14.5 7L21 13.5l-3.5 3.5L11 10.5 14.5 7z" />
                             <path d="M12 12l2.5-2.5" strokeLinecap="round" />
@@ -347,7 +585,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                     </div>
                     <div>
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic text-white">
+                            <h3 className="text-2xl font-black uppercase tracking-tighter  text-white">
                                 {(() => {
                                     const drug = submission.selected_drug || submission.dosage_preference || '';
                                     return getMedicationCategory(drug) || drug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active Protocol';
@@ -356,7 +594,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <div className="flex gap-2">
                                 {/* Subscription Status Badge - based on billing state */}
                                 {isSubscriptionActive ? (
-                                    <span className="px-3 py-1 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue text-[9px] font-black uppercase tracking-widest rounded-full">
+                                    <span className="px-3 py-1 bg-white/5 border border-white/20 text-white text-[9px] font-black uppercase tracking-widest rounded-full">
                                         Active
                                     </span>
                                 ) : (
@@ -365,7 +603,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                                     </span>
                                 )}
                                 {/* Approval Status Badge - based on provider decision */}
-                                <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-widest rounded-full ${submission.approval_status === 'approved' ? 'bg-white/5 border-white/10 text-white/40' :
+                                <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-widest rounded-full ${submission.approval_status === 'approved' ? 'bg-white/5 border-white/10 text-white/50' :
                                     submission.approval_status === 'pending' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' :
                                         'bg-red-500/10 border-red-500/20 text-red-500'
                                     }`}>
@@ -373,21 +611,21 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                                 </span>
                             </div>
                         </div>
-                        <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-6">
+                        <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-6">
                             Submitted on {new Date(submission.submitted_at).toLocaleDateString()}
                         </p>
 
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Current Medication</p>
-                                <p className="text-sm font-bold text-white italic capitalize">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Current Medication</p>
+                                <p className="text-sm font-bold text-white  capitalize">
                                     {submission.dosage_preference || submission.selected_drug || 'Standard Protocol'}
                                 </p>
                             </div>
 
                             <div className="hidden lg:block">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Next Delivery</p>
-                                <p className="text-sm font-bold text-white italic">Feb 14, 2026</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Next Delivery</p>
+                                <p className="text-sm font-bold text-white ">Feb 14, 2026</p>
                             </div>
                         </div>
                     </div>
@@ -399,13 +637,13 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <>
                                 <button
                                     onClick={() => onAction('dosage', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-accent-blue text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
+                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#111111] transition-all transform hover:scale-[1.02]"
                                 >
                                     Adjust Dosage
                                 </button>
                                 <button
                                     onClick={() => onAction('medication', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all"
+                                    className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all"
                                 >
                                     Change Medication
                                 </button>
@@ -419,19 +657,19 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                         ) : (
                             <button
                                 onClick={() => onAction('activate', submission)}
-                                className="w-full md:w-56 px-8 py-4 bg-accent-blue text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(92,225,230,0.15)]"
+                                className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#111111] transition-all transform hover:scale-[1.02] "
                             >
                                 Activate Subscription
                             </button>
                         )
                     ) : (
-                        <div className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/40 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center">
+                        <div className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/50 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center">
                             Awaiting Approval
                         </div>
                     )}
                     <button
                         onClick={() => onRetake && onRetake(submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/5 text-white/20 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white/40 transition-all opacity-50 hover:opacity-100"
+                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/30 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white/50 transition-all opacity-50 hover:opacity-100"
                     >
                         Retake Assessment
                     </button>
@@ -446,50 +684,50 @@ const OrdersView = ({ orders }) => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Order <span className="text-accent-blue">History</span></h2>
-                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Track your clinical shipments and deliveries</p>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Order <span className="text-white">History</span></h2>
+                <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Track your clinical shipments and deliveries</p>
             </div>
 
             <div className="grid grid-cols-1 gap-6">
                 {orders.length === 0 ? (
-                    <div className="bg-white/5 border border-dashed border-white/10 rounded-[40px] p-20 text-center">
+                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-20 text-center">
                         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/20">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
                                 <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
-                        <p className="text-white/40 font-black uppercase tracking-widest text-xs">No active orders found</p>
-                        <p className="text-[10px] text-white/20 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed</p>
+                        <p className="text-white/50 font-black uppercase tracking-widest text-xs">No active orders found</p>
+                        <p className="text-[10px] text-white/30 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed</p>
                     </div>
                 ) : (
                     orders.map(order => (
-                        <div key={order.id} className="bg-[#0A0A0A] border border-white/10 rounded-[40px] p-8 md:p-10 hover:border-accent-green/30 transition-all group relative overflow-hidden">
+                        <div key={order.id} className="bg-[#111111] border border-white/10 rounded-[40px] p-8 md:p-10 hover:border-[#FFDE59]/50 transition-all group relative overflow-hidden">
                             {/* Decorative Background Element */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
                                 <div className="flex flex-col md:flex-row items-start gap-6">
-                                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all flex-shrink-0">
+                                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 group-hover:text-white group-hover:bg-white/5 transition-all flex-shrink-0">
                                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full ${order.delivery_status === 'delivered' ? 'bg-accent-blue/10 text-accent-blue' :
+                                            <p className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full ${order.delivery_status === 'delivered' ? 'bg-white/5 text-white' :
                                                 order.delivery_status === 'cancelled' ? 'bg-red-500/10 text-red-500' :
                                                     'bg-blue-500/10 text-blue-400'
                                                 }`}>{order.delivery_status}</p>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">ORD-{order.id.slice(0, 8).toUpperCase()}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">ORD-{order.id.slice(0, 8).toUpperCase()}</span>
                                         </div>
-                                        <h3 className="text-xl font-black uppercase italic tracking-tighter mb-1">{order.drug_name}</h3>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Ordered on {new Date(order.created_at).toLocaleDateString()}</p>
+                                        <h3 className="text-xl font-black uppercase  tracking-tighter mb-1">{order.drug_name}</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Ordered on {new Date(order.created_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col md:items-end gap-6">
                                     <div className="text-right">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Tracking ID</p>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Tracking ID</p>
                                         <p className="text-sm font-bold text-white tracking-widest">{order.tracking_id || 'Pending Generate'}</p>
                                     </div>
                                     {order.tracking_url ? (
@@ -497,7 +735,7 @@ const OrdersView = ({ orders }) => {
                                             href={order.tracking_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-blue transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+                                            className="inline-flex items-center gap-3 px-8 py-4 bg-[#111111] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
                                         >
                                             Track Package
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -505,7 +743,7 @@ const OrdersView = ({ orders }) => {
                                             </svg>
                                         </a>
                                     ) : (
-                                        <div className="px-8 py-4 bg-white/5 border border-white/10 text-white/20 rounded-2xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed">
+                                        <div className="px-8 py-4 bg-white/5 border border-white/10 text-white/30 rounded-2xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed">
                                             Processing...
                                         </div>
                                     )}
@@ -619,7 +857,7 @@ const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-white/5 border border-white/10 p-6 rounded-[24px] focus-within:border-accent-green transition-all">
+            <div className="bg-white/5 border border-white/10 p-6 rounded-[24px] focus-within:border-[#FFDE59] transition-all">
                 <PaymentElement
                     options={{
                         layout: 'tabs',
@@ -644,7 +882,7 @@ const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
             </div>
 
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center italic">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center ">
                     {error}
                 </div>
             )}
@@ -660,10 +898,10 @@ const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
                 <button
                     type="submit"
                     disabled={!stripe || loading}
-                    className="py-6 bg-white text-black rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-accent-green transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] relative overflow-hidden group"
+                    className="py-6 bg-[#111111] text-white rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#FFDE59] hover:text-black transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] relative overflow-hidden group"
                 >
                     <span className="relative z-10">{loading ? 'Processing...' : 'Confirm Update'}</span>
-                    <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                    <div className="absolute inset-0 bg-[#FFDE59] translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
                 </button>
             </div>
         </form>
@@ -679,6 +917,28 @@ const BillingView = ({ profile, user }) => {
         last4: profile?.last_four_digits_of_card || '4242',
         expiry: '12/26'
     });
+
+    const handleRemoveCard = async () => {
+        if (!window.confirm('Are you sure you want to remove your primary payment method?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    card_name: null,
+                    last_four_digits_of_card: null
+                })
+                .eq('id', user.id);
+
+            if (error) throw error;
+
+            setPaymentMethod({ brand: 'None', last4: '••••', expiry: '--/--' });
+            toast.success('Payment method removed successfully');
+        } catch (err) {
+            console.error('Error removing card:', err);
+            toast.error('Could not remove payment method');
+        }
+    };
 
     useEffect(() => {
         const fetchBillingHistory = async () => {
@@ -745,120 +1005,97 @@ const BillingView = ({ profile, user }) => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Financial <span className="text-accent-blue">Portal</span></h2>
-                    <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Manage your payment methods and history</p>
+                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Financial <span className="text-white">Portal</span></h2>
+                    <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Manage your payment methods and history</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8">
                 {/* Active Payment Method */}
-                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
+                <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 md:p-12">
-                        <div className="w-16 h-16 rounded-3xl bg-accent-blue/5 flex items-center justify-center border border-accent-blue/10">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue opacity-40">
+                        <div className="w-16 h-16 rounded-3xl bg-[#FFDE59]/5 flex items-center justify-center border border-accent-blue/10">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white opacity-40">
                                 <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
                         </div>
                     </div>
 
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 mb-16">Primary Payment Method</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-16">Primary Payment Method</h3>
 
                     <div className="space-y-12">
                         <div className="flex items-center gap-8">
-                            <div className="w-24 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black italic text-sm tracking-tighter">
+                            <div className="w-24 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black  text-sm tracking-tighter">
                                 {paymentMethod.brand.toUpperCase()}
                             </div>
                             <div>
                                 <p className="text-2xl font-black tracking-tight mb-1">•••• •••• •••• {paymentMethod.last4}</p>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Card expires on {paymentMethod.expiry}</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Card expires on {paymentMethod.expiry}</p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="px-8 py-4 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-blue transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
+                                className="px-8 py-4 bg-[#111111] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all shadow-[0_0_40px_rgba(255,255,255,0.05)]"
                             >
                                 Update Method
                             </button>
-                            <button className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
+                            <button
+                                onClick={handleRemoveCard}
+                                className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:border-red-500/50 hover:text-red-400 transition-all font-brand"
+                            >
                                 Remove Card
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Billing Summary */}
-                <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-10">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 mb-10">Subscription Details</h3>
-                    <div className="space-y-8">
-                        <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Current Plan</p>
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm font-black uppercase italic">{formatPlanName(profile?.current_plan)}</p>
-                                <span className={`px-2 py-0.5 ${profile?.subscribe_status ? 'bg-accent-blue' : 'bg-red-500/20 text-red-400'} text-black text-[8px] font-black uppercase rounded-sm`}>
-                                    {profile?.subscribe_status ? 'Active' : 'Inactive'}
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Renewal Date</p>
-                            <p className="text-sm font-bold">
-                                {profile?.current_sub_end_date ? new Date(profile.current_sub_end_date).toLocaleDateString() : 'No active renewal'}
-                            </p>
-                        </div>
-                        <div className="pt-6 border-t border-white/5">
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm font-black uppercase italic text-accent-green">$25.00 <span className="text-[10px] text-white/40 normal-case not-italic">/ month</span></p>
-                                <button className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all">Manage →</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             {/* Invoices */}
             <div className="mt-12">
                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40">Statement History</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50">Statement History</h3>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                     {loadingHistory ? (
                         <div className="text-center py-12">
-                            <div className="w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-[10px] text-white/20 font-black uppercase tracking-widest">Loading statements...</p>
+                            <div className="w-8 h-8 border-2 border-[#FFDE59] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">Loading statements...</p>
                         </div>
                     ) : billingHistory.length === 0 ? (
                         <div className="text-center py-12 border border-dashed border-white/10 rounded-3xl">
-                            <p className="text-[10px] text-white/20 font-black uppercase tracking-widest">No transaction records found</p>
+                            <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">No transaction records found</p>
                         </div>
                     ) : (
                         billingHistory.map(inv => (
-                            <div key={inv?.id || Math.random()} className="bg-white/5 border border-white/5 rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-white/10 transition-all group">
+                            <div key={inv?.id || Math.random()} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-white/10 transition-all group">
                                 <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 group-hover:bg-accent-green/10 group-hover:text-accent-green transition-all">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/30 group-hover:bg-[#FFDE59]/20 group-hover:text-white transition-all">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black uppercase italic tracking-tight mb-1">{inv?.description || inv?.plan_name || 'Protocol Verification'}</p>
+                                        <p className="text-xs font-black uppercase  tracking-tight mb-1">{inv?.description || inv?.plan_name || 'Protocol Verification'}</p>
                                         <div className="flex items-center gap-3">
-                                            <p className="text-[9px] text-white/20 font-black uppercase tracking-widest">{inv?.id ? String(inv.id).slice(0, 8).toUpperCase() : 'INV-TRX'}</p>
-                                            <span className="w-1 h-1 bg-white/10 rounded-full"></span>
-                                            <p className="text-[9px] text-white/20 font-black uppercase tracking-widest">{inv?.created_at ? new Date(inv.created_at).toLocaleDateString() : 'Recent'}</p>
+                                            <p className="text-[9px] text-white/30 font-black uppercase tracking-widest">{inv?.id ? String(inv.id).slice(0, 8).toUpperCase() : 'INV-TRX'}</p>
+                                            <span className="w-1 h-1 bg-white/5 rounded-full"></span>
+                                            <p className="text-[9px] text-white/30 font-black uppercase tracking-widest">{inv?.created_at ? new Date(inv.created_at).toLocaleDateString() : 'Recent'}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between md:text-right gap-8">
                                     <div>
                                         <p className="text-sm font-black mb-1">${Number(inv?.amount || 0).toFixed(2)}</p>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-accent-green flex items-center gap-1.5 md:justify-end">
-                                            <span className="w-1 h-1 bg-accent-green rounded-full"></span>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white flex items-center gap-1.5 md:justify-end">
+                                            <span className="w-1 h-1 bg-[#FFDE59] rounded-full"></span>
                                             {inv?.status || 'Paid'}
                                         </p>
                                     </div>
-                                    <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 hover:bg-white hover:text-black transition-all">
+                                    <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-[#111111] hover:text-white transition-all">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                             <path d="M12 5v14m0 0l-7-7m7 7l7-7" />
                                         </svg>
@@ -873,12 +1110,12 @@ const BillingView = ({ profile, user }) => {
             {/* Update Modal */}
             {isEditing && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6">
-                    <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-3xl" onClick={() => setIsEditing(false)}></div>
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-3xl" onClick={() => setIsEditing(false)}></div>
                     <div className="relative w-full max-w-xl max-h-[90vh] bg-[#0A0A0A] border border-white/10 rounded-[32px] md:rounded-[48px] shadow-2xl dashboard-card flex flex-col overflow-hidden">
                         <div className="overflow-y-auto p-8 md:p-12 no-scrollbar">
                             <div className="text-center mb-10 md:mb-16">
-                                <h3 className="text-3xl font-black uppercase tracking-tighter italic mb-4">Secure <span className="text-accent-green">Vault</span></h3>
-                                <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] leading-relaxed max-w-xs mx-auto">Update your primary clinical protocol payment method</p>
+                                <h3 className="text-3xl font-black uppercase tracking-tighter  mb-4">Secure <span className="text-white">Vault</span></h3>
+                                <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.2em] leading-relaxed max-w-xs mx-auto">Update your primary clinical protocol payment method</p>
                             </div>
 
                             <Elements stripe={stripePromise} options={stripeOptions}>
@@ -939,14 +1176,14 @@ const ReferralView = ({ profile, user, onUpdate }) => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Referral <span className="text-accent-green">Programme</span></h2>
-                    <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Give $25, Get $25 – Share your journey</p>
+                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Referral <span className="text-white">Programme</span></h2>
+                    <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Give $25, Get $25 – Share your journey</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 md:p-12 text-accent-green opacity-20 group-hover:opacity-40 transition-opacity">
+                    <div className="absolute top-0 right-0 p-8 md:p-12 text-white opacity-20 group-hover:opacity-40 transition-opacity">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -955,16 +1192,16 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                         </svg>
                     </div>
 
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 mb-12">Your Exclusive Invite</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-12">Your Exclusive Invite</h3>
 
                     {!referralLink ? (
                         <div className="py-12 border-2 border-dashed border-white/10 rounded-3xl text-center">
-                            <h4 className="text-xl font-bold mb-4 italic tracking-tight uppercase">Ready to start referring?</h4>
-                            <p className="text-xs text-white/40 mb-8 max-w-sm mx-auto uppercase tracking-widest font-bold">Generate your unique link below and start earning credits for every successful transformation.</p>
+                            <h4 className="text-xl font-bold mb-4  tracking-tight uppercase">Ready to start referring?</h4>
+                            <p className="text-xs text-white/50 mb-8 max-w-sm mx-auto uppercase tracking-widest font-bold">Generate your unique link below and start earning credits for every successful transformation.</p>
                             <button
                                 onClick={generateReferral}
                                 disabled={generating}
-                                className="px-10 py-5 bg-accent-green text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
+                                className="px-10 py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
                             >
                                 {generating ? 'Generating...' : 'Generate My Link →'}
                             </button>
@@ -972,32 +1209,32 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                     ) : (
                         <div className="space-y-12">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-4">Your Unique Link</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Your Unique Link</p>
                                 <div className="flex flex-col md:flex-row gap-4">
-                                    <div className="flex-1 bg-black p-5 rounded-2xl border border-white/5 font-mono text-xs text-accent-green truncate">
+                                    <div className="flex-1 bg-black p-5 rounded-2xl border border-white/10 font-mono text-xs text-white truncate">
                                         {referralLink}
                                     </div>
                                     <button
                                         onClick={copyToClipboard}
-                                        className="px-8 py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-green transition-all whitespace-nowrap"
+                                        className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all whitespace-nowrap"
                                     >
                                         Copy Link
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-6 pt-12 border-t border-white/5">
+                            <div className="grid grid-cols-3 gap-6 pt-12 border-t border-white/10">
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Total Referrals</p>
-                                    <p className="text-2xl font-black italic">0</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Total Referrals</p>
+                                    <p className="text-2xl font-black ">0</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Credits Earned</p>
-                                    <p className="text-2xl font-black italic text-accent-green">$0</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Credits Earned</p>
+                                    <p className="text-2xl font-black  text-white">$0</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Pending</p>
-                                    <p className="text-2xl font-black italic">0</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Pending</p>
+                                    <p className="text-2xl font-black ">0</p>
                                 </div>
                             </div>
                         </div>
@@ -1006,27 +1243,27 @@ const ReferralView = ({ profile, user, onUpdate }) => {
 
                 <div className="space-y-6">
                     <div className="bg-white/5 border border-white/10 rounded-[40px] p-8">
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 mb-8">How it works</h3>
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8">How it works</h3>
                         <div className="space-y-8">
                             <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-accent-green/20 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-accent-green border border-accent-green/20">01</div>
+                                <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">01</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 italic">Share Your Link</p>
-                                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with uGlowMD.</p>
+                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">Share Your Link</p>
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with uGlowMD.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-accent-green/20 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-accent-green border border-accent-green/20">02</div>
+                                <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">02</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 italic">They Get $25 Off</p>
-                                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest">Friends receive $25 off their first medical assessment.</p>
+                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">They Get $25 Off</p>
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Friends receive $25 off their first medical assessment.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-accent-green/20 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-accent-green border border-accent-green/20">03</div>
+                                <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">03</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 italic">You Earn $25 Credit</p>
-                                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest">Get $25 credit once their first assessment is processed.</p>
+                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">You Earn $25 Credit</p>
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Get $25 credit once their first assessment is processed.</p>
                                 </div>
                             </div>
                         </div>
@@ -1046,7 +1283,7 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
             icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
         },
         approved: {
-            color: 'accent-green',
+            color: '[#FFDE59]',
             label: 'Approved',
             icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
         },
@@ -1068,8 +1305,8 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all font-sans">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                    <div className={`w-12 h-12 rounded-full bg-${status.color === 'accent-green' ? 'accent-green' : status.color}-500/10 flex items-center justify-center flex-shrink-0`}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${status.color === 'accent-green' ? 'accent-green' : status.color + '-400'}`}>
+                    <div className={`w-12 h-12 rounded-full bg-${status.color === '[#FFDE59]' ? '[#FFDE59]' : status.color}-500/10 flex items-center justify-center flex-shrink-0`}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${status.color === '[#FFDE59]' ? '[#FFDE59]' : status.color + '-400'}`}>
                             <path d={status.icon} />
                         </svg>
                     </div>
@@ -1080,19 +1317,19 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
                             </h4>
                             <button
                                 onClick={() => setSelectedAssessment(submission)}
-                                className="text-[10px] bg-white/5 hover:bg-white/10 text-white/40 hover:text-white px-3 py-1 rounded-full border border-white/10 transition-all font-black uppercase tracking-widest"
+                                className="text-[10px] bg-white/5 hover:bg-white/5 text-white/50 hover:text-white px-3 py-1 rounded-full border border-white/10 transition-all font-black uppercase tracking-widest"
                             >
                                 View Data
                             </button>
                         </div>
-                        <p className="text-xs text-white/40 font-medium">
+                        <p className="text-xs text-white/50 font-medium">
                             Submitted {submittedDate}
                         </p>
                     </div>
                 </div>
 
                 <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest self-start ${submission.approval_status === 'approved'
-                    ? 'bg-accent-green/10 border border-accent-green/20 text-accent-green'
+                    ? 'bg-[#FFDE59]/20 border border-[#FFDE59]/40 text-white'
                     : submission.approval_status === 'pending'
                         ? 'bg-orange-500/10 border border-orange-500/20 text-orange-400'
                         : 'bg-red-500/10 border border-red-500/20 text-red-400'
@@ -1104,41 +1341,41 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
                 {submission.goals && submission.goals.length > 0 && (
                     <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Goals</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">Goals</p>
                         <p className="text-xs font-bold text-white truncate">{submission.goals[0]}</p>
                     </div>
                 )}
                 {submission.weight && (
                     <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Weight</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">Weight</p>
                         <p className="text-xs font-bold text-white">{submission.weight} lbs</p>
                     </div>
                 )}
                 {submission.bmi && (
                     <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">BMI</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">BMI</p>
                         <p className="text-xs font-bold text-white">{submission.bmi}</p>
                     </div>
                 )}
                 {submission.state && (
                     <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">State</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mb-1">State</p>
                         <p className="text-xs font-bold text-white">{submission.state}</p>
                     </div>
                 )}
             </div>
 
             {submission.approval_status === 'approved' && (
-                <div className="pt-4 border-t border-white/5 flex gap-3">
+                <div className="pt-4 border-t border-white/10 flex gap-3">
                     <button
                         onClick={() => onPrescriptionClick(submission.provider_id)}
-                        className="flex-1 bg-accent-green text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
+                        className="flex-1 bg-[#FFDE59] text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all"
                     >
                         Prescription info
                     </button>
                     <button
                         onClick={() => navigate('/dashboard/orders')}
-                        className="px-6 bg-white/5 border border-white/10 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-accent-green transition-all"
+                        className="px-6 bg-white/5 border border-white/10 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-[#FFDE59] transition-all"
                     >
                         Shipment
                     </button>
@@ -1146,9 +1383,9 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
             )}
 
             {submission.approval_status === 'pending' && (
-                <div className="pt-4 border-t border-white/5">
+                <div className="pt-4 border-t border-white/10">
                     <p className="text-[10px] text-white/60 font-medium leading-relaxed">
-                        <span className="text-accent-green">⏱</span> Review in progress. Average turnaround is 24-48 hours.
+                        <span className="text-white">⏱</span> Review in progress. Average turnaround is 24-48 hours.
                     </p>
                 </div>
             )}
@@ -1200,19 +1437,19 @@ const NotificationsView = ({ submissions, orders }) => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-2">Patient <span className="text-accent-green">Notifications</span></h2>
-                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Real-time updates on your clinical journey</p>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Patient <span className="text-white">Notifications</span></h2>
+                <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Real-time updates on your clinical journey</p>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
                 {sortedNotifications.length === 0 ? (
-                    <div className="bg-white/5 border border-dashed border-white/10 rounded-[40px] p-20 text-center">
-                        <p className="text-white/20 font-black uppercase tracking-widest text-xs">No active notifications</p>
+                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-20 text-center">
+                        <p className="text-white/30 font-black uppercase tracking-widest text-xs">No active notifications</p>
                     </div>
                 ) : (
                     sortedNotifications.map(notif => (
                         <div key={notif.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex gap-6 hover:border-white/20 transition-all items-start group">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.type === 'success' ? 'bg-accent-green/10 text-accent-green' : notif.type === 'warning' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.type === 'success' ? 'bg-[#FFDE59]/20 text-white' : notif.type === 'warning' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d={notif.icon} />
                                 </svg>
@@ -1220,7 +1457,7 @@ const NotificationsView = ({ submissions, orders }) => {
                             <div className="flex-1">
                                 <div className="flex justify-between items-start mb-1">
                                     <h4 className="text-sm font-black uppercase tracking-tight">{notif.title}</h4>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/20">{new Date(notif.time).toLocaleDateString()}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30">{new Date(notif.time).toLocaleDateString()}</span>
                                 </div>
                                 <p className="text-xs text-white/60 leading-relaxed font-bold uppercase tracking-widest">{notif.message}</p>
                             </div>
@@ -1366,6 +1603,7 @@ const Dashboard = () => {
         if (path.includes('/assessments')) return 'assessments';
         if (path.includes('/orders')) return 'orders';
         if (path.includes('/billing')) return 'billing';
+        if (path.includes('/settings')) return 'settings';
         if (path.includes('/referral')) return 'referral';
         if (path.includes('/notifications')) return 'notifications';
         return 'overview';
@@ -1614,6 +1852,7 @@ const Dashboard = () => {
                         first_name: data?.first_name || meta.first_name || '',
                         last_name: data?.last_name || meta.last_name || '',
                         phone_number: data?.phone_number || meta.phone_number || '',
+                        date_of_birth: data?.date_of_birth || meta.date_of_birth || meta.birthday || '',
                         updated_at: new Date().toISOString()
                     };
 
@@ -1804,7 +2043,7 @@ const Dashboard = () => {
         return (
             <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-white">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-accent-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-16 h-16 border-4 border-[#FFDE59] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 </div>
             </div>
         );
@@ -1831,18 +2070,18 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white font-sans">
             {/* Sidebar Navigation */}
-            <aside className="fixed left-0 top-0 h-screen w-72 bg-[#0A0A0A] border-r border-white/5 p-6 hidden lg:block">
-                <div className="mb-12">
+            <aside className="fixed left-0 top-0 h-screen w-72 bg-[#1a1a1a] border-r border-white/10 p-6 hidden lg:flex flex-col">
+                <div className="flex-shrink-0 mb-12">
                     <button
                         onClick={() => navigate('/')}
-                        className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors"
+                        className="text-2xl font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
                     >
-                        GLP-<span className="text-accent-green">GLOW</span>
+                        <sub className="font-brand lowercase italic opacity-80">u</sub>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
                     </button>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/20 mt-2">Patient Portal</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mt-2">Patient Portal</p>
                 </div>
 
-                <nav className="space-y-2 mb-12">
+                <nav className="flex-1 overflow-y-auto space-y-2 mb-8 pr-2 custom-scrollbar">
                     {[
                         { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
                         { id: 'medications', label: 'Medications', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
@@ -1850,14 +2089,15 @@ const Dashboard = () => {
                         { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
                         { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
                         { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-                        //{ id: 'referral', label: 'Referral', icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 110-8 4 4 0 010 8z' },
+                        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+                        { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z' },
                     ].map(item => (
                         <button
                             key={item.id}
                             onClick={() => navigate(`/dashboard/${item.id}`)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wider transition-all ${currentTab === item.id
-                                ? 'bg-accent-green text-black'
-                                : 'text-white/40 hover:text-white hover:bg-white/5'
+                                ? 'bg-[#FFDE59] text-black shadow-[0_4px_15px_rgba(255,222,89,0.2)]'
+                                : 'text-white/50 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1868,21 +2108,21 @@ const Dashboard = () => {
                     ))}
                 </nav>
 
-                <div className="absolute bottom-6 left-6 right-6">
-
+                <div className="flex-shrink-0 mt-auto border-t border-white/5 pt-6">
                     <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all cursor-pointer group">
-                        <div className="w-10 h-10 rounded-full bg-accent-green/10 border-2 border-accent-green/20 flex items-center justify-center font-black text-accent-green">
+                        <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
                             {userName.charAt(0).toUpperCase()}
                         </div>
-                        <div className="flex-1">
-                            <p className="text-xs font-black uppercase tracking-tight">{userName}</p>
-                            <p className="text-[9px] text-white/40 font-medium">Week {weekNumber}</p>
+                        <div className="flex-1 overflow-hidden">
+                            <p className="text-xs font-black uppercase tracking-tight text-white truncate">{userName}</p>
+                            <p className="text-[9px] text-white/40 font-medium uppercase tracking-widest">Week {weekNumber}</p>
                         </div>
                         <button
                             onClick={handleSignOut}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded-lg text-red-400"
+                            title="Sign Out"
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
                             </svg>
                         </button>
@@ -1893,7 +2133,7 @@ const Dashboard = () => {
             {/* Main Content */}
             <main className="lg:ml-72 min-h-screen">
                 {/* Top Bar (Mobile) */}
-                <div className="lg:hidden sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+                <div className="lg:hidden sticky top-0 z-40 bg-[#111111]/95 backdrop-blur-xl border-b border-white/10 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <button
@@ -1906,12 +2146,12 @@ const Dashboard = () => {
                             </button>
                             <button
                                 onClick={() => navigate('/')}
-                                className="text-xl font-black uppercase tracking-tighter italic"
+                                className="text-xl font-black uppercase tracking-tighter "
                             >
-                                GLP-<span className="text-accent-green">GLOW</span>
+                                <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
                             </button>
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-accent-green/10 border-2 border-accent-green/20 flex items-center justify-center font-black text-accent-green">
+                        <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
                             {userName.charAt(0).toUpperCase()}
                         </div>
                     </div>
@@ -1921,20 +2161,20 @@ const Dashboard = () => {
                 {mobileMenuOpen && (
                     <div className="fixed inset-0 z-50 lg:hidden">
                         <div
-                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                             onClick={() => setMobileMenuOpen(false)}
                         ></div>
                         <div className="absolute top-0 left-0 w-[80%] max-w-sm h-full bg-[#0A0A0A] border-r border-white/10 p-6 shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
                             <div className="flex items-center justify-between mb-10">
                                 <button
                                     onClick={() => navigate('/')}
-                                    className="text-2xl font-black uppercase tracking-tighter italic"
+                                    className="text-2xl font-black uppercase tracking-tighter text-white"
                                 >
-                                    GLP-<span className="text-accent-green">GLOW</span>
+                                    <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
                                 </button>
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="p-2 text-white/40 hover:text-white transition-colors"
+                                    className="p-2 text-white/50 hover:text-white transition-colors"
                                 >
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
@@ -1950,6 +2190,7 @@ const Dashboard = () => {
                                     { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
                                     { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
                                     { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+                                    { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
                                 ].map(item => (
                                     <button
                                         key={item.id}
@@ -1958,8 +2199,8 @@ const Dashboard = () => {
                                             setMobileMenuOpen(false);
                                         }}
                                         className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all ${currentTab === item.id
-                                            ? 'bg-accent-green text-black'
-                                            : 'text-white/40 hover:text-white hover:bg-white/5'
+                                            ? 'bg-[#FFDE59] text-black'
+                                            : 'text-white/50 hover:text-white hover:bg-[#111111]/10'
                                             }`}
                                     >
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1972,17 +2213,17 @@ const Dashboard = () => {
 
                             <div className="pt-6 border-t border-white/10 mt-6">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-full bg-accent-green/10 border-2 border-accent-green/20 flex items-center justify-center font-black text-accent-green">
+                                    <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
                                         {userName.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
                                         <p className="text-xs font-black uppercase tracking-tight text-white">{userName}</p>
-                                        <p className="text-[9px] text-white/40 font-medium">Week {weekNumber}</p>
+                                        <p className="text-[9px] text-white/50 font-medium">Week {weekNumber}</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleSignOut}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#111111]/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
@@ -1996,143 +2237,21 @@ const Dashboard = () => {
 
                 {/* Content Area */}
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto p-6 md:p-12">
-                    {/* Welcome Header */}
-                    <div className="mb-12">
-                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-2">
-                            Welcome Back, <span className="text-accent-green">{userName}</span>
-                        </h1>
-                        <p className="text-white/40 text-sm font-bold uppercase tracking-widest">
-                            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
 
-                        {!phoneVerified && user?.phone && (
-                            <div className="mt-8 bg-orange-500/10 border border-orange-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-black uppercase tracking-tight text-orange-400">Phone Verification Required</p>
-                                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Please verify your phone number to access all clinical features.</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setShowPhoneVerificationModal(true)}
-                                    className="px-6 py-3 bg-orange-500 text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-lg"
-                                >
-                                    Verify Now
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Stats Grid - Only show on Overview */}
-                    {currentTab === 'overview' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div
-                                onClick={() => navigate('/dashboard/medications')}
-                                className="dashboard-card bg-gradient-to-br from-accent-green/10 to-transparent border border-accent-green/20 rounded-3xl p-6 cursor-pointer hover:scale-[1.02] transition-transform"
-                            >
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-full bg-accent-green/20 flex items-center justify-center">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-green">
-                                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-accent-green/60">Active</span>
-                                </div>
-                                <p className="text-3xl font-black text-accent-green mb-1">{approvedSubmissions.length}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Your Medications</p>
-                            </div>
-
-                            <div
-                                onClick={() => navigate('/dashboard/assessments')}
-                                className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all font-sans relative overflow-hidden group"
-                            >
-                                {submissions.length > 0 ? (
-                                    <>
-                                        {/* Status Background Glow */}
-                                        <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${submissions[0].approval_status === 'approved' ? 'accent-green' :
-                                            (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'orange' : 'red'
-                                            }-500/10 blur-3xl group-hover:bg-opacity-20 transition-all duration-500`}></div>
-
-                                        <div className="flex items-center justify-between mb-4 relative z-10">
-                                            <div className={`w-12 h-12 rounded-full bg-${submissions[0].approval_status === 'approved' ? 'accent-green/20' :
-                                                (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'orange-500/10' : 'red-500/10'
-                                                } flex items-center justify-center`}>
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={
-                                                    submissions[0].approval_status === 'approved' ? 'text-accent-green' :
-                                                        (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'text-orange-400' : 'text-red-400'
-                                                }>
-                                                    <path d={
-                                                        submissions[0].approval_status === 'approved' ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" :
-                                                            (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" :
-                                                                "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                    } />
-                                                </svg>
-                                            </div>
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${submissions[0].approval_status === 'approved' ? 'text-accent-green/60' :
-                                                (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'text-orange-400/60' : 'text-red-400/60'
-                                                }`}>
-                                                {submissions[0].approval_status === 'approved' ? 'Approved' :
-                                                    (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'In Review' : 'Attention'}
-                                            </span>
-                                        </div>
-                                        <p className="text-3xl font-black text-white mb-1 relative z-10">
-                                            {submissions[0].selected_drug || submissions[0].recommended_treatment || 'Protocol'}
-                                        </p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 relative z-10">Latest Assessment</p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/20">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                            <span className="text-xs font-black uppercase tracking-widest text-white/20">Empty</span>
-                                        </div>
-                                        <p className="text-3xl font-black text-white/40 mb-1">0</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">No History</p>
-                                    </>
-                                )}
-                            </div>
-
-                            <div
-                                onClick={() => navigate('/dashboard/orders')}
-                                className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all group overflow-hidden relative"
-                            >
-                                <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 blur-3xl transition-opacity group-hover:opacity-20 opacity-0"></div>
-                                <div className="flex items-center justify-between mb-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400">
-                                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-blue-400/60">Live</span>
-                                </div>
-                                <p className="text-3xl font-black text-white mb-1 relative z-10">{orders.length}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 relative z-10">Active Orders</p>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Renewal Management Section - High Visibility Placement */}
                     {location.pathname === '/dashboard/overview' && hasActiveProtocol && (
-                        <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] overflow-hidden relative group mb-12">
+                        <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] overflow-hidden relative group mb-12">
                             <div className="flex flex-col lg:flex-row items-center">
                                 <div className="w-full lg:w-1/2 p-10 md:p-14 order-2 lg:order-1 relative z-10">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse shadow-[0_0_10px_rgba(191,255,0,0.5)]"></div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-green">Protocol Status: Active</span>
+                                        <div className="w-2 h-2 rounded-full bg-[#FFDE59] animate-pulse"></div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Protocol Status: Active</span>
                                     </div>
 
-                                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-4 leading-none">
+                                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-4 leading-none">
                                         Congratulations <br />
-                                        <span className="text-white/40">
+                                        <span className="text-white/50">
                                             {activeCategories.length === 1
                                                 ? `On your ${activeCategories[0]} Approval`
                                                 : activeCategories.length > 1
@@ -2148,13 +2267,13 @@ const Dashboard = () => {
                                     <div className="flex flex-wrap gap-4">
                                         <button
                                             onClick={() => navigate('/dashboard/medications')}
-                                            className="px-8 py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-green hover:shadow-[0_0_40px_rgba(191,255,0,0.3)] transition-all"
+                                            className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
                                         >
                                             Request Dosage Change
                                         </button>
                                         <button
                                             onClick={() => window.open('https://trustpilot.com', '_blank')}
-                                            className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
+                                            className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
                                         >
                                             Submit Wellness Review
                                         </button>
@@ -2166,7 +2285,7 @@ const Dashboard = () => {
                                         alt="Renewal Management"
                                         className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-r lg:bg-gradient-to-l from-transparent via-[#0A0A0A]/40 to-[#0A0A0A]"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r lg:bg-gradient-to-l from-transparent via-white/40 to-white"></div>
                                 </div>
                             </div>
                         </div>
@@ -2179,22 +2298,143 @@ const Dashboard = () => {
 
                         <Route path="overview" element={
                             <>
+                                {/* Welcome Header */}
+                                <div className="mb-12">
+                                    <h1 className="text-[30px] font-black uppercase tracking-tighter mb-2">
+                                        Welcome Back, <span style={{ backgroundColor: "#FFDE59", padding: "0 8px", color: "#000" }}>{userName}</span>
+                                    </h1>
+                                    <p className="text-white/50 text-sm font-bold uppercase tracking-widest">
+                                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </p>
+
+                                    {!phoneVerified && user?.phone && (
+                                        <div className="mt-8 bg-orange-500/10 border border-orange-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black uppercase tracking-tight text-orange-400">Phone Verification Required</p>
+                                                    <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Please verify your phone number to access all clinical features.</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => setShowPhoneVerificationModal(true)}
+                                                className="px-6 py-3 bg-orange-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-lg"
+                                            >
+                                                Verify Now
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                                    <div
+                                        onClick={() => navigate('/dashboard/medications')}
+                                        className="dashboard-card bg-[#FFDE59]/10 border border-[#FFDE59]/40 rounded-3xl p-6 cursor-pointer hover:scale-[1.02] transition-transform"
+                                    >
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="w-12 h-12 rounded-full bg-[#FFDE59]/30 flex items-center justify-center">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white">
+                                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-xs font-black uppercase tracking-widest text-white/50">Active</span>
+                                        </div>
+                                        <p className="text-3xl font-black text-white mb-1">{approvedSubmissions.length}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Your Medications</p>
+                                    </div>
+
+                                    <div
+                                        onClick={() => navigate('/dashboard/assessments')}
+                                        className="dashboard-card bg-white/5 border border-white/10 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all font-sans relative overflow-hidden group"
+                                    >
+                                        {submissions.length > 0 ? (
+                                            <>
+                                                {/* Status Background Glow */}
+                                                <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${submissions[0].approval_status === 'approved' ? '[#FFDE59]' :
+                                                    (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'orange' : 'red'
+                                                    }-500/10 blur-3xl group-hover:bg-opacity-20 transition-all duration-500`}></div>
+
+                                                <div className="flex items-center justify-between mb-4 relative z-10">
+                                                    <div className={`w-12 h-12 rounded-full bg-${submissions[0].approval_status === 'approved' ? '[#FFDE59]/20' :
+                                                        (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'orange-500/10' : 'red-500/10'
+                                                        } flex items-center justify-center`}>
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={
+                                                            submissions[0].approval_status === 'approved' ? 'text-white' :
+                                                                (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'text-orange-400' : 'text-red-400'
+                                                        }>
+                                                            <path d={
+                                                                submissions[0].approval_status === 'approved' ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" :
+                                                                    (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" :
+                                                                        "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                            } />
+                                                        </svg>
+                                                    </div>
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${submissions[0].approval_status === 'approved' ? 'text-white/50' :
+                                                        (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'text-orange-400/60' : 'text-red-400/60'
+                                                        }`}>
+                                                        {submissions[0].approval_status === 'approved' ? 'Approved' :
+                                                            (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'In Review' : 'Attention'}
+                                                    </span>
+                                                </div>
+                                                <p className="text-3xl font-black text-white mb-1 relative z-10">
+                                                    {submissions[0].selected_drug || submissions[0].recommended_treatment || 'Protocol'}
+                                                </p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Latest Assessment</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/30">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <span className="text-xs font-black uppercase tracking-widest text-white/30">Empty</span>
+                                                </div>
+                                                <p className="text-3xl font-black text-white/50 mb-1">0</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50">No History</p>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    <div
+                                        onClick={() => navigate('/dashboard/orders')}
+                                        className="dashboard-card bg-white/5 border border-white/10 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all group overflow-hidden relative"
+                                    >
+                                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 blur-3xl transition-opacity group-hover:opacity-20 opacity-0"></div>
+                                        <div className="flex items-center justify-between mb-4 relative z-10">
+                                            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400">
+                                                    <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-xs font-black uppercase tracking-widest text-blue-400/60">Live</span>
+                                        </div>
+                                        <p className="text-3xl font-black text-white mb-1 relative z-10">{orders.length}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Active Orders</p>
+                                    </div>
+                                </div>
                                 {/* Product Recommendations Carousel */}
-                                <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 overflow-hidden relative group mb-12">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden relative group mb-12">
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
-                                            <h2 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
+                                            <h2 className="text-2xl font-black uppercase tracking-tighter  mb-1">
                                                 {approvedSubmissions.length > 0 ? "Explore Other Treatments" : "Explore Treatments"}
                                             </h2>
-                                            <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Enhanced wellness solutions</p>
+                                            <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Enhanced wellness solutions</p>
                                         </div>
                                         <div className="flex gap-2">
-                                            <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all">
+                                            <button className="p-2 rounded-full bg-white/5 hover:bg-white/5 text-white transition-all">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M15 18l-6-6 6-6" />
                                                 </svg>
                                             </button>
-                                            <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all">
+                                            <button className="p-2 rounded-full bg-white/5 hover:bg-white/5 text-white transition-all">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M9 18l6-6-6-6" />
                                                 </svg>
@@ -2207,30 +2447,58 @@ const Dashboard = () => {
                                             {
                                                 id: 'weight-loss',
                                                 title: "Medical Weight Loss",
-                                                image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1887&auto=format&fit=crop",
+                                                image: weightLossImg,
                                                 path: "/assessment/weight-loss",
-                                                color: "accent-green"
+                                                accent: '#FFDE59'
                                             },
                                             {
                                                 id: 'hair-restoration',
                                                 title: "Hair Restoration",
-                                                image: "https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?q=80&w=2070&auto=format&fit=crop",
+                                                image: hairLossImg,
                                                 path: "/assessment/hair-restoration",
-                                                color: "blue-400"
+                                                accent: '#60A5FA'
                                             },
                                             {
                                                 id: 'sexual-health',
                                                 title: "Sexual Health",
-                                                image: "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?q=80&w=2676&auto=format&fit=crop",
+                                                image: sexualHealthImg,
                                                 path: "/assessment/sexual-health",
-                                                color: "red-400"
+                                                accent: '#F472B6'
                                             },
                                             {
                                                 id: 'longevity',
-                                                title: "Longevity",
-                                                image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2080&auto=format&fit=crop",
+                                                title: "Longevity & NAD+",
+                                                image: longevityImg,
                                                 path: "/assessment/longevity",
-                                                color: "purple-400"
+                                                accent: '#A78BFA'
+                                            },
+                                            {
+                                                id: 'testosterone',
+                                                title: "Testosterone & Hormones",
+                                                image: testosteroneImg,
+                                                path: "/assessment/testosterone",
+                                                accent: '#FB923C'
+                                            },
+                                            {
+                                                id: 'retatrutide',
+                                                title: "Retatrutide (New Innovation)",
+                                                image: retatrutideImg,
+                                                path: "/assessment/weight-loss",
+                                                accent: '#FFDE59'
+                                            },
+                                            {
+                                                id: 'repair-healing',
+                                                title: "Repair & Strength Healing",
+                                                image: repairImg,
+                                                path: "/assessment/repair-healing",
+                                                accent: '#EF4444'
+                                            },
+                                            {
+                                                id: 'skin-care',
+                                                title: "Skin Care",
+                                                image: skinCareImg,
+                                                path: "/qualify",
+                                                accent: '#34D399'
                                             }
                                         ].map((product, i) => {
                                             const sub = submissions.find(s => s.selected_drug === product.id);
@@ -2257,7 +2525,7 @@ const Dashboard = () => {
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
                                                     <div className="absolute bottom-6 left-6 right-6">
-                                                        <div className={`w-8 h-8 rounded-full bg-${product.color === 'accent-green' ? 'accent-blue' : product.color}-500 mb-3 flex items-center justify-center shadow-lg border border-white/20`}>
+                                                        <div className="w-8 h-8 rounded-full mb-3 flex items-center justify-center shadow-lg border border-white/20" style={{ backgroundColor: product.accent || '#FFDE59' }}>
                                                             {isDisabled ? (
                                                                 <div className={`w-2 h-2 rounded-full ${isApproved ? 'bg-black' : 'bg-black animate-pulse'}`}></div>
                                                             ) : (
@@ -2266,8 +2534,8 @@ const Dashboard = () => {
                                                                 </svg>
                                                             )}
                                                         </div>
-                                                        <h3 className="text-lg font-black uppercase tracking-tighter italic mb-1 leading-tight">{product.title}</h3>
-                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : isApproved ? 'text-accent-blue' : 'text-white/60'}`}>
+                                                        <h3 className="text-lg font-black uppercase tracking-tighter  mb-1 leading-tight">{product.title}</h3>
+                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : isApproved ? 'text-white' : 'text-white/60'}`}>
                                                             {desc}
                                                         </p>
                                                     </div>
@@ -2282,13 +2550,13 @@ const Dashboard = () => {
 
 
                                 {/* Recent Assessments in Overview */}
-                                <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic mb-2">Recent Records</h2>
-                                            <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Your clinical journey history</p>
+                                            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  mb-2">Recent Records</h2>
+                                            <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Your clinical journey history</p>
                                         </div>
-                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue hover:text-black transition-all">
+                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-white/5 border border-white/20 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black hover:text-black transition-all">
                                             View All
                                         </button>
                                     </div>
@@ -2296,29 +2564,29 @@ const Dashboard = () => {
                                     {submissions.length === 0 ? (
                                         <div className="text-center py-16">
                                             <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/20">
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
                                                     <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-xl font-black uppercase tracking-tighter italic mb-3">No Records Yet</h4>
+                                            <h4 className="text-xl font-black uppercase tracking-tighter  mb-3">No Records Yet</h4>
                                             {submissions.length === 0 ? (
                                                 <button
                                                     onClick={() => navigate('/qualify')}
-                                                    className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]"
+                                                    className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]"
                                                 >
                                                     Start Assessment →
                                                 </button>
                                             ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                 <button
                                                     onClick={() => navigate('/qualify')}
-                                                    className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
+                                                    className="px-10 py-4 bg-[#111111] text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
                                                 >
                                                     Retake Assessment
                                                 </button>
                                             ) : (
                                                 <div className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-full">
                                                     <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.3)]"></div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Clinical Review in Progress</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Clinical Review in Progress</span>
                                                 </div>
                                             )}
                                         </div>
@@ -2330,7 +2598,7 @@ const Dashboard = () => {
                                         </div>
                                     )}
 
-                                    <button onClick={() => navigate('/dashboard/assessments')} className="md:hidden w-full mt-8 px-6 py-3 bg-accent-blue/10 border border-accent-blue/20 text-accent-blue rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-blue hover:text-black transition-all">
+                                    <button onClick={() => navigate('/dashboard/assessments')} className="md:hidden w-full mt-8 px-6 py-3 bg-white/5 border border-white/20 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black hover:text-black transition-all">
                                         View All
                                     </button>
                                 </div>
@@ -2338,17 +2606,17 @@ const Dashboard = () => {
                         } />
 
                         <Route path="medications" element={
-                            <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
+                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
-                                        <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-2">
+                                        <h2 className="text-3xl font-black uppercase tracking-tighter  mb-2">
                                             {activeCategories.length === 1
                                                 ? activeCategories[0]
                                                 : activeCategories.length > 1
                                                     ? 'My Protocols'
                                                     : 'My Medications'}
                                         </h2>
-                                        <p className="text-xs text-white/40 font-bold uppercase tracking-widest">
+                                        <p className="text-xs text-white/50 font-bold uppercase tracking-widest">
                                             {activeCategories.length === 1
                                                 ? `Managing your active ${activeCategories[0]} protocol`
                                                 : activeCategories.length > 1
@@ -2357,13 +2625,13 @@ const Dashboard = () => {
                                         </p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
                                             Request New Consultation
                                         </button>
                                     ) : (submissions[0]?.approval_status === 'pending' || submissions[0]?.approval_status === 'under_review') ? (
                                         <div className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full">
                                             <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Clinical Review in Progress</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/50">Clinical Review in Progress</span>
                                         </div>
                                     ) : null}
                                 </div>
@@ -2400,13 +2668,13 @@ const Dashboard = () => {
                                         }
 
                                         return activeDisplayList.length === 0 ? (
-                                            <div className="text-center py-24 border border-dashed border-white/5 rounded-[40px] bg-white/[0.01]">
+                                            <div className="text-center py-24 border border-dashed border-white/10 rounded-[40px] bg-[#111111]/[0.01]">
                                                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/20">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
                                                         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                     </svg>
                                                 </div>
-                                                <p className="text-white/20 font-black uppercase tracking-widest text-[10px] mb-8">
+                                                <p className="text-white/30 font-black uppercase tracking-widest text-[10px] mb-8">
                                                     {submissions.length > 0
                                                         ? (submissions[0]?.approval_status === 'pending' || submissions[0]?.approval_status === 'under_review')
                                                             ? "Your initial assessment is currently under clinical review"
@@ -2416,14 +2684,14 @@ const Dashboard = () => {
                                                 {submissions.length === 0 ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
+                                                        className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all"
                                                     >
                                                         Start Assessment
                                                     </button>
                                                 ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-accent-blue text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.2)]"
+                                                        className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.2)]"
                                                     >
                                                         Retake Assessment
                                                     </button>
@@ -2431,11 +2699,11 @@ const Dashboard = () => {
                                                     <div className="flex flex-col items-center gap-4">
                                                         <div className="flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-full">
                                                             <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Clinical Review in Progress</span>
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Clinical Review in Progress</span>
                                                         </div>
                                                         <button
                                                             onClick={() => navigate('/dashboard/assessments')}
-                                                            className="text-[9px] font-black uppercase tracking-widest text-accent-blue hover:text-white transition-all"
+                                                            className="text-[9px] font-black uppercase tracking-widest text-white hover:text-white transition-all"
                                                         >
                                                             View Assessment Status →
                                                         </button>
@@ -2489,31 +2757,31 @@ const Dashboard = () => {
                         } />
 
                         <Route path="assessments" element={
-                            <div className="dashboard-card bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 md:p-12">
+                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
-                                        <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-2">Assessment History</h2>
-                                        <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Complete clinical log</p>
+                                        <h2 className="text-3xl font-black uppercase tracking-tighter  mb-2">Assessment History</h2>
+                                        <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Complete clinical log</p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all">
                                             New Assessment +
                                         </button>
                                     ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-accent-blue text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]">
                                             Retake Assessment
                                         </button>
                                     ) : (
                                         <div className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full">
                                             <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Review in Progress</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Review in Progress</span>
                                         </div>
                                     )}
                                 </div>
                                 <div className="space-y-6">
                                     {submissions.length === 0 ? (
                                         <div className="text-center py-20 border border-dashed border-white/10 rounded-[32px]">
-                                            <p className="text-white/20 font-black uppercase tracking-widest mb-6">No records found</p>
+                                            <p className="text-white/30 font-black uppercase tracking-widest mb-6">No records found</p>
                                         </div>
                                     ) : (
                                         submissions.map(submission => (
@@ -2557,12 +2825,22 @@ const Dashboard = () => {
                             <BillingView profile={profile} user={user} />
                         } />
 
+                        <Route path="statements" element={
+                            <ProviderStatementsView />
+                        } />
+
                         <Route path="notifications" element={
                             <NotificationsView submissions={submissions} orders={orders} />
                         } />
-                        {/* <Route path="referral" element={
-                            <ReferralView profile={profile} user={user} onUpdate={fetchProfile} />
-                        } /> */}
+
+                        <Route path="settings" element={
+                            <SettingsView
+                                profile={profile}
+                                user={user}
+                                onUpdate={fetchProfile}
+                                setLastOptimisticUpdate={setLastOptimisticUpdate}
+                            />
+                        } />
                     </Routes>
                 </div>
             </main>
@@ -2570,23 +2848,23 @@ const Dashboard = () => {
             {/* Phone Verification Modal */}
             {showPhoneVerificationModal && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">
-                    <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-xl" onClick={() => setShowPhoneVerificationModal(false)}></div>
-                    <div className="relative w-full max-w-md bg-white rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid #1a1a1a08' }}>
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-xl" onClick={() => setShowPhoneVerificationModal(false)}></div>
+                    <div className="relative w-full max-w-md bg-[#111111] rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
                         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2">
                                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
                         </div>
                         <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
                             Identity Verification
                         </div>
-                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4" style={{ color: '#ffffff' }}>
                             One Last{' '}
-                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Thing</span>
+                            <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '2px 8px', display: 'inline-block' }}>Thing</span>
                         </h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed" style={{ color: '#1a1a1a60' }}>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
                             We've sent a 6-digit code to{' '}
-                            <span className="font-black" style={{ color: '#1a1a1a' }}>{user?.phone}</span>. Please enter it below to confirm your clinical registration.
+                            <span className="font-black" style={{ color: '#ffffff' }}>{user?.phone}</span>. Please enter it below to confirm your clinical registration.
                         </p>
 
                         <form onSubmit={handleVerifyPhone} className="space-y-6">
@@ -2597,7 +2875,7 @@ const Dashboard = () => {
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
                                 className="w-full rounded-2xl py-6 text-2xl font-black tracking-[0.5em] text-center outline-none transition-all"
-                                style={{ backgroundColor: '#f9f9f7', border: '2px solid #1a1a1a15', color: '#1a1a1a' }}
+                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid #1a1a1a15', color: '#ffffff' }}
                                 onFocus={e => e.target.style.borderColor = '#FFDE59'}
                                 onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                                 required
@@ -2618,10 +2896,10 @@ const Dashboard = () => {
                         <button
                             onClick={resendOtp}
                             className="mt-8 text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-70"
-                            style={{ color: '#1a1a1a60' }}
+                            style={{ color: 'rgba(255,255,255,0.4)' }}
                         >
                             Didn't receive a code?{' '}
-                            <span className="font-black" style={{ color: '#1a1a1a' }}>Resend</span>
+                            <span className="font-black" style={{ color: '#ffffff' }}>Resend</span>
                         </button>
                     </div>
                 </div>
@@ -2633,24 +2911,24 @@ const Dashboard = () => {
                 selectedAssessment && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-12">
                         <div
-                            className="absolute inset-0 bg-[#050505]/90 backdrop-blur-xl"
+                            className="absolute inset-0 bg-[#111111]/90 backdrop-blur-xl"
                             onClick={() => setSelectedAssessment(null)}
                         ></div>
 
                         <div className="relative w-full max-w-4xl bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card h-[80vh] flex flex-col">
                             {/* Modal Header */}
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                            <div className="p-8 border-b border-white/10 flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-1">
-                                        Assessment <span className="text-accent-blue">Record</span>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
+                                        Assessment <span className="text-white">Record</span>
                                     </h3>
-                                    <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">
+                                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
                                         Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => setSelectedAssessment(null)}
-                                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all"
+                                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
                                 >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                                         <path d="M6 18L18 6M6 6l12 12" />
@@ -2664,15 +2942,15 @@ const Dashboard = () => {
                                     {/* Left Column: Core Info */}
                                     <div className="space-y-8">
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Protocol Details</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Protocol Details</h4>
                                             <div className="space-y-4">
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Target Treatment</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Target Treatment</p>
                                                     <p className="text-sm font-bold uppercase tracking-tight">{selectedAssessment.selected_drug}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Status</p>
-                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-accent-blue text-black' : 'bg-orange-500/10 text-orange-400'
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Status</p>
+                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-[#FFDE59] text-black' : 'bg-orange-500/10 text-orange-400'
                                                         }`}>
                                                         {selectedAssessment.approval_status}
                                                     </span>
@@ -2681,22 +2959,22 @@ const Dashboard = () => {
                                         </section>
 
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Clinical Biometrics</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Clinical Biometrics</h4>
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Sex</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Sex</p>
                                                     <p className="text-sm font-bold capitalize">{selectedAssessment.sex || 'Not provided'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Birthday</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
                                                     <p className="text-sm font-bold">{selectedAssessment.birthday || 'Not provided'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Weight</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
                                                     <p className="text-sm font-bold">{selectedAssessment.weight ? `${selectedAssessment.weight} lbs` : 'Not provided'}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">BMI Score</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
                                                     <p className="text-sm font-bold">{selectedAssessment.bmi || 'Not computed'}</p>
                                                 </div>
                                             </div>
@@ -2706,26 +2984,26 @@ const Dashboard = () => {
                                     {/* Right Column: Goals & Shipping */}
                                     <div className="space-y-8">
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Wellness Goals</h4>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
                                             <div className="flex flex-wrap gap-2">
                                                 {selectedAssessment.goals?.map((goal, i) => (
                                                     <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
                                                         {goal}
                                                     </span>
-                                                )) || <p className="text-white/40 text-xs italic">No goals listed</p>}
+                                                )) || <p className="text-white/50 text-xs ">No goals listed</p>}
                                             </div>
                                         </section>
 
                                         <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-6 border-b border-accent-blue/20 pb-2">Fulfillment Details</h4>
-                                            <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Fulfillment Details</h4>
+                                            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Recipient</p>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Recipient</p>
                                                         <p className="text-sm font-bold">{selectedAssessment.shipping_first_name} {selectedAssessment.shipping_last_name}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-1">Address</p>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Address</p>
                                                         <p className="text-xs text-white/60 leading-relaxed uppercase tracking-tight font-medium">
                                                             {selectedAssessment.shipping_address}<br />
                                                             {selectedAssessment.shipping_city}, {selectedAssessment.shipping_state} {selectedAssessment.shipping_zip}
@@ -2738,62 +3016,111 @@ const Dashboard = () => {
                                 </div>
 
                                 {/* Clinical Intake Responses */}
-                                <div className="mt-12 pt-12 border-t border-white/5">
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue mb-8 border-b border-accent-blue/20 pb-2">Clinical Intake Responses</h4>
+                                <div className="mt-12 pt-12 border-t border-white/10">
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-8 border-b border-white/20 pb-2">Clinical Intake Responses</h4>
 
                                     {(() => {
-                                        const answers = selectedAssessment.medical_responses || selectedAssessment.intake_data || {};
-                                        const categoryId = selectedAssessment.selected_drug || 'weight-loss';
-                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
+                                        // Robust data merging to catch all answers across different schemas
+                                        const combinedData = {
+                                            ...selectedAssessment,
+                                            ...(selectedAssessment.intake_data || {}),
+                                            ...(selectedAssessment.medical_responses || {}),
+                                        };
 
-                                        // Check if there are any answers to display
-                                        const hasAnswers = questions.some(q => answers[q.id] || selectedAssessment[q.id]);
-
-                                        if (!hasAnswers) {
-                                            return (
-                                                <div className="py-12 flex flex-col items-center justify-center text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
-                                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/20 mb-4">
-                                                        <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">No detailed clinical data available for this record</p>
-                                                </div>
-                                            );
+                                        // Deep merge common sub-objects if they exist
+                                        if (selectedAssessment.intake_data?.eligibility) {
+                                            Object.assign(combinedData, selectedAssessment.intake_data.eligibility);
+                                        }
+                                        if (selectedAssessment.intake_data?.shipping) {
+                                            Object.assign(combinedData, selectedAssessment.intake_data.shipping);
                                         }
 
+                                        const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
+                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
+
+                                        // Track displayed keys to identify "unmapped" data
+                                        const displayedKeys = new Set([
+                                            'id', 'user_id', 'submitted_at', 'approval_status', 'shipping_address', 'shipping_city',
+                                            'shipping_state', 'shipping_zip', 'shipping_first_name', 'shipping_last_name',
+                                            'shipping_phone', 'shipping_email', 'selected_drug', 'category', 'intake_data',
+                                            'medical_responses', 'lab_results_url', 'glp1_prescription_url', 'identification_url',
+                                            'height_feet', 'height_inches', 'weight', 'bmi', 'sex', 'birthday', 'goals', 'email', 'custom_goal'
+                                        ]);
+
                                         return (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                                                {questions.map((q) => {
-                                                    if (q.type === 'info') return null;
+                                            <div className="space-y-6">
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    {questions.map((q) => {
+                                                        if (q.type === 'info') return null;
 
-                                                    let answer = answers[q.id];
-                                                    // Fallback to top level field if not found in nested objects
-                                                    if (answer === undefined && selectedAssessment[q.id]) answer = selectedAssessment[q.id];
+                                                        let answer = combinedData[q.id];
+                                                        if (answer === undefined || answer === null || answer === '') return null;
 
-                                                    if (answer === undefined || answer === null || answer === '') return null;
+                                                        displayedKeys.add(q.id);
+                                                        const details = combinedData[`${q.id}_details`] || combinedData[`${q.id}_info`];
+                                                        if (details) displayedKeys.add(`${q.id}_details`);
 
-                                                    const details = answers[`${q.id}_details`];
-
-                                                    return (
-                                                        <div key={q.id} className="space-y-3 p-6 bg-white/5 border border-white/5 rounded-3xl hover:border-white/10 transition-all">
-                                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 leading-snug">{q.question}</p>
-                                                            <div className="text-xs font-bold text-accent-blue leading-relaxed">
-                                                                {Array.isArray(answer) ? (
-                                                                    <ul className="list-disc list-inside space-y-1">
-                                                                        {answer.map((item, i) => <li key={i}>{item}</li>)}
-                                                                    </ul>
-                                                                ) : (
-                                                                    answer.toString()
-                                                                )}
-                                                            </div>
-                                                            {details && (
-                                                                <div className="mt-2 pt-2 border-t border-white/5">
-                                                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">Additional Details</p>
-                                                                    <p className="text-[11px] text-white/60 font-medium italic">{details}</p>
+                                                        return (
+                                                            <div key={q.id} className="group/resp p-6 bg-white/5 border border-white/10 rounded-3xl hover:border-[#FFDE59]/30 transition-all">
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                                                    <div>
+                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#FFDE59] mb-3">Clinical Question</p>
+                                                                        <p className="text-xs font-bold text-white/90 leading-relaxed">{q.question}</p>
+                                                                    </div>
+                                                                    <div className="md:pl-8 md:border-l border-white/10">
+                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Patient Response</p>
+                                                                        <div className="text-xs font-black uppercase tracking-tight text-white leading-relaxed">
+                                                                            {Array.isArray(answer) ? (
+                                                                                <ul className="list-disc list-inside space-y-2">
+                                                                                    {answer.map((item, i) => <li key={i}>{item}</li>)}
+                                                                                </ul>
+                                                                            ) : (
+                                                                                <span className="bg-[#FFDE59]/10 text-[#FFDE59] px-3 py-1.5 rounded-lg border border-[#FFDE59]/20">
+                                                                                    {answer.toString()}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        {details && (
+                                                                            <div className="mt-6 pt-6 border-t border-white/10">
+                                                                                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-3">Internal Narrative</p>
+                                                                                <p className="text-[11px] text-white/70 font-medium leading-relaxed italic">"{details}"</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                            )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                {/* Overflow Section for unmapped data */}
+                                                {Object.entries(combinedData).some(([key, val]) => {
+                                                    if (displayedKeys.has(key) || key.startsWith('__')) return false;
+                                                    if (typeof val === 'object' && val !== null) return false;
+                                                    if (val === undefined || val === null || val === '') return false;
+                                                    return true;
+                                                }) && (
+                                                        <div className="mt-12">
+                                                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6 flex items-center gap-4">
+                                                                <span>Supplementry Clinical Markers</span>
+                                                                <div className="h-px flex-1 bg-white/5"></div>
+                                                            </h4>
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                {Object.entries(combinedData).map(([key, val]) => {
+                                                                    if (displayedKeys.has(key) || key.startsWith('__')) return null;
+                                                                    if (typeof val === 'object' && val !== null) return null;
+                                                                    if (val === undefined || val === null || val === '') return null;
+
+                                                                    return (
+                                                                        <div key={key} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center">
+                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{key.replace(/_/g, ' ')}</p>
+                                                                            <p className="text-[11px] font-bold text-white uppercase tracking-tight">{val.toString()}</p>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
                                                         </div>
-                                                    );
-                                                })}
+                                                    )}
                                             </div>
                                         );
                                     })()}
@@ -2801,10 +3128,10 @@ const Dashboard = () => {
                             </div>
 
                             {/* Modal Footer */}
-                            <div className="p-8 border-t border-white/5 bg-[#050505]/50">
+                            <div className="p-8 border-t border-white/10 bg-[#111111]/50">
                                 <button
                                     onClick={() => setSelectedAssessment(null)}
-                                    className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
+                                    className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
                                 >
                                     Close Record
                                 </button>
@@ -2818,8 +3145,8 @@ const Dashboard = () => {
 
             {/* Retake Warning Modal */}
             {retakeModal.isOpen && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-[#0A0A0A] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+                    <div className="bg-[#111111] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
 
                         <div className="w-16 h-16 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 mx-auto">
@@ -2829,7 +3156,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="text-center mb-8">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic text-white mb-3">Warning: Action Cannot Be Undone</h3>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
                             <p className="text-sm text-white/60 font-medium leading-relaxed">
                                 Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
                             </p>
@@ -2844,7 +3171,7 @@ const Dashboard = () => {
                             </button>
                             <button
                                 onClick={() => setRetakeModal({ isOpen: false, submission: null })}
-                                className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
+                                className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
                             >
                                 Cancel
                             </button>
@@ -2864,32 +3191,32 @@ const Dashboard = () => {
             {/* Physician Details Modal */}
             {selectedPhysician && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-                    <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
                     <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
                         <div className="text-center mb-10">
-                            <div className="w-20 h-20 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center mx-auto mb-6">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent-blue">
+                            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
                                     <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-2">Prescribing <span className="text-accent-blue">Authority</span></h3>
-                            <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">Official Clinical Credentials</p>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
+                            <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
                         </div>
 
                         <div className="space-y-6">
-                            <div className="p-6 bg-white/5 border border-white/5 rounded-3xl group hover:border-accent-green/20 transition-all">
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">Full Name & Title</p>
+                            <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
                                 <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-5 bg-white/5 border border-white/5 rounded-3xl">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">License #</p>
-                                    <p className="text-xs font-black tracking-widest text-accent-blue">{selectedPhysician.supervising_license_number}</p>
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
+                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
                                 </div>
-                                <div className="p-5 bg-white/5 border border-white/5 rounded-3xl">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">NPI #</p>
-                                    <p className="text-xs font-black tracking-widest text-accent-blue">{selectedPhysician.supervising_npi_number}</p>
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
+                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
                                 </div>
                             </div>
 
@@ -2901,7 +3228,7 @@ const Dashboard = () => {
 
                         <button
                             onClick={() => setSelectedPhysician(null)}
-                            className="w-full mt-10 py-5 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent-blue transition-all"
+                            className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
                         >
                             Dismiss
                         </button>
@@ -2912,4 +3239,250 @@ const Dashboard = () => {
     );
 };
 
+// ─────────────────────────────────────────────────────────────
+// PROVIDER STATEMENTS VIEW
+// ─────────────────────────────────────────────────────────────
+const ProviderStatementsView = () => {
+    const { user } = useAuth();
+    const [statements, setStatements] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [selectedStmt, setSelectedStmt] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchStatements = async () => {
+            setLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('provider_statements')
+                    .select('*')
+                    .eq('status', 'approved')
+                    .order('year', { ascending: false })
+                    .order('month', { ascending: false });
+                if (!error) setStatements(data || []);
+            } catch (err) {
+                console.error('Provider statements error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStatements();
+    }, []);
+
+    const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    if (loading) return (
+        <div className="py-20 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin" />
+        </div>
+    );
+
+    if (statements.length === 0) return (
+        <div className="text-center py-24 border-2 border-dashed border-white/10 rounded-3xl">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" className="mx-auto mb-4">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">No statements available yet</p>
+            <p className="text-[9px] text-white/20 mt-2">Statements are released on the 5th of each month after admin review</p>
+        </div>
+    );
+
+    return (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2">
+                    Monthly <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '0 8px' }}>Statements</span>
+                </h2>
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Your monthly compensation statements — released on the 5th of each month</p>
+            </div>
+
+            <div className="space-y-4">
+                {statements.map(stmt => (
+                    <div key={stmt.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-[#FFDE59]/10 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5">
+                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-base font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
+                                <p className="text-[10px] text-white/40 uppercase tracking-wider mt-0.5">{stmt.statement_number} · {stmt.new_patient_count ?? 0} new + {stmt.recurring_patient_count ?? 0} recurring</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <div className="text-right">
+                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Total Payout</p>
+                                <p className="text-2xl font-black text-[#FFDE59]">{fmtMoney(stmt.total_payout)}</p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedStmt(stmt)}
+                                className="px-5 py-2.5 bg-[#FFDE59] text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all"
+                            >
+                                View Statement
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Statement Document Modal */}
+            {selectedStmt && (
+                <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-3xl flex items-start justify-center p-4 md:p-8 overflow-y-auto animate-in fade-in duration-300">
+                    <div className="w-full max-w-4xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-xl font-black uppercase tracking-tight text-white">{selectedStmt.period_label}</h3>
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.statement_number}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => window.print()}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                    Print
+                                </button>
+                                <button
+                                    onClick={() => setSelectedStmt(null)}
+                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5 transition-all"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Render the Statement Document */}
+                        <div style={{ backgroundColor: '#e5e7eb', padding: '32px', borderRadius: '24px' }}>
+                            {/* Inline statement rendering — same style as StatementDocument */}
+                            {(() => {
+                                const stmt = selectedStmt;
+                                const rates = { new_patient_rate: stmt.new_patient_rate ?? 5, recurring_patient_rate: stmt.recurring_patient_rate ?? 5 };
+                                const periodLabel = stmt.period_label || `${stmt.month_name} ${stmt.year}`;
+                                const newTotal = rates.new_patient_rate * (stmt.new_patient_count ?? 0);
+                                const recurringTotal = rates.recurring_patient_rate * (stmt.recurring_patient_count ?? 0);
+                                const grandTotal = stmt.total_payout ?? (newTotal + recurringTotal);
+                                const pageStyle = { backgroundColor: '#fff', color: '#111', fontFamily: 'Georgia, serif', padding: '48px 56px', minHeight: '900px', position: 'relative', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.08)', marginBottom: '24px' };
+
+                                return (
+                                    <div>
+                                        {/* Page 1 */}
+                                        <div style={pageStyle}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PROVIDER COMPENSATION STATEMENT</div>
+                                                    <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
+                                                    <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
+                                                        <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '16px', fontWeight: '700' }}>MD</sup>
+                                                    </div>
+                                                    <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD · Provider Portal</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '40px' }} />
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '48px' }}>
+                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Statement Period</div><div style={{ fontSize: '14px', fontWeight: '700', color: '#111' }}>{periodLabel}</div></div>
+                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Release Date</div><div style={{ fontSize: '14px', fontWeight: '700', color: '#111' }}>{stmt.release_date ? new Date(stmt.release_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}</div></div>
+                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Status</div><div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', backgroundColor: '#dcfce7', color: '#16a34a' }}>Approved</div></div>
+                                            </div>
+                                            <div style={{ backgroundColor: '#f9f9f9', borderRadius: '16px', overflow: 'hidden', marginBottom: '32px' }}>
+                                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                                                    <thead>
+                                                        <tr style={{ backgroundColor: '#111', color: '#fff' }}>
+                                                            <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Description</th>
+                                                            <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Count</th>
+                                                            <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Rate</th>
+                                                            <th style={{ padding: '16px 24px', textAlign: 'right', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
+                                                            <td style={{ padding: '20px 24px' }}><div style={{ fontWeight: '700' }}>New Patient Eligibility</div><div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>Patients enrolled for the first time in {periodLabel}</div></td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: '900', fontSize: '18px' }}>{stmt.new_patient_count ?? 0}</td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'center', color: '#555' }}>{fmtMoney(rates.new_patient_rate)} / patient</td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'right', fontWeight: '900', fontSize: '16px' }}>{fmtMoney(newTotal)}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style={{ padding: '20px 24px' }}><div style={{ fontWeight: '700' }}>Recurring Active Subscribers</div><div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>Active subscribers with recurring billing in {periodLabel}</div></td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: '900', fontSize: '18px' }}>{stmt.recurring_patient_count ?? 0}</td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'center', color: '#555' }}>{fmtMoney(rates.recurring_patient_rate)} / subscriber</td>
+                                                            <td style={{ padding: '20px 24px', textAlign: 'right', fontWeight: '900', fontSize: '16px' }}>{fmtMoney(recurringTotal)}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                <div style={{ backgroundColor: '#111', color: '#fff', borderRadius: '16px', padding: '24px 40px', textAlign: 'right', minWidth: '280px' }}>
+                                                    <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>Total Payout to Provider</div>
+                                                    <div style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.03em', color: '#FFDE59' }}>{fmtMoney(grandTotal)}</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Page 2 — Patient Roster */}
+                                        <div style={{ ...pageStyle, marginBottom: 0 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+                                                <div><div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL — {periodLabel}</div><div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div></div>
+                                                <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}><span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '14px', fontWeight: '700' }}>MD</sup></div>
+                                            </div>
+                                            <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '32px' }} />
+
+                                            {/* New Patients */}
+                                            <div style={{ marginBottom: '40px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                                    <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients — {stmt.new_patient_count ?? 0} total</div>
+                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates.new_patient_rate)} each</div>
+                                                </div>
+                                                {(stmt.new_patients_list?.length > 0) ? (
+                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                                                        <thead><tr style={{ backgroundColor: '#f3f4f6' }}><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>#</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Patient Name</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Email</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Join Date</th><th style={{ padding: '10px 16px', textAlign: 'right', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Amount</th></tr></thead>
+                                                        <tbody>{stmt.new_patients_list.map((p, i) => (<tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}><td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td><td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || 'N/A'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '—'}</td><td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates.new_patient_rate)}</td></tr>))}</tbody>
+                                                    </table>
+                                                ) : <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '12px', textAlign: 'center', color: '#aaa', fontSize: '12px' }}>Roster not available for this period</div>}
+                                            </div>
+
+                                            {/* Recurring Patients */}
+                                            <div style={{ marginBottom: '40px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                                    <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers — {stmt.recurring_patient_count ?? 0} total</div>
+                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates.recurring_patient_rate)} each</div>
+                                                </div>
+                                                {(stmt.recurring_patients_list?.length > 0) ? (
+                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                                                        <thead><tr style={{ backgroundColor: '#f3f4f6' }}><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>#</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Patient Name</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Email</th><th style={{ padding: '10px 16px', textAlign: 'right', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Amount</th></tr></thead>
+                                                        <tbody>{stmt.recurring_patients_list.map((p, i) => (<tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}><td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td><td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || 'N/A'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td><td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates.recurring_patient_rate)}</td></tr>))}</tbody>
+                                                    </table>
+                                                ) : <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '12px', textAlign: 'center', color: '#aaa', fontSize: '12px' }}>Roster not available for this period</div>}
+                                            </div>
+
+                                            {/* Grand Total Page 2 */}
+                                            <div style={{ borderTop: '2px solid #111', paddingTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '8px' }}>Total Payout to Provider</div>
+                                                    <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', color: '#111' }}>{fmtMoney(grandTotal)}</div>
+                                                    <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{stmt.new_patient_count ?? 0} new + {stmt.recurring_patient_count ?? 0} recurring patients</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default Dashboard;
+
