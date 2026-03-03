@@ -21,10 +21,13 @@ const SignUpPage = () => {
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otp, setOtp] = useState('');
     const [verifying, setVerifying] = useState(false);
-    const { signUp, verifyOtp, updateUser } = useAuth();
+    const { signUp, verifyOtp, updateUser, user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (user) {
+            navigate('/dashboard');
+        }
         window.scrollTo(0, 0);
 
         // Animations
@@ -33,7 +36,7 @@ const SignUpPage = () => {
             { y: 40, opacity: 0 },
             { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" }
         );
-    }, []);
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -309,7 +312,7 @@ const SignUpPage = () => {
                                     Create <span className="text-white font-black">Account</span>
                                 </h1>
                                 <p className="text-white/40 font-medium">
-                                    Join <span className="font-brand font-bold italic-u">u</span><span className="font-brand font-bold">Glow<sup>MD</sup></span> to manage your transformative health journey.
+                                    Join <sub className="font-brand font-bold italic-u">u</sub><span className="font-brand font-bold">Glow<sup>MD</sup></span> to manage your transformative health journey.
                                 </p>
                             </div>
 

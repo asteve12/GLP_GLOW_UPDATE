@@ -31,6 +31,11 @@ import sexualHealthFirstQuoteImg from '../assets/sexual_health_first_quote.png';
 import sexualHealthQuote2Img from '../assets/sexual_health_quote_2.png';
 import hairLossFirstQuoteImg from '../assets/hair-loss-first-quote.png';
 import hairLossSecondQuoteImg from '../assets/hair_loss_second_quote.png';
+import longevityFirstQuoteImg from '../assets/longetivity_first_quote_img.png';
+import testosteroneQuote1Img from '../assets/testosterone-image-v2.png';
+import testosteroneQuote2Img from '../assets/testosterone-quote_img_2.png';
+import repairHealingQuote1Img from '../assets/STRENTHENING_FIRST_QUOTE_IMG.png';
+import repairHealingQuote2Img from '../assets/sec_quote_strenght_img.png';
 
 const categoryQuestions = {
     ...baseCategoryQuestions,
@@ -38,6 +43,8 @@ const categoryQuestions = {
     'hair-restoration': { ...baseCategoryQuestions['hair-restoration'], stat: { ...baseCategoryQuestions['hair-restoration'].stat, image: smilingImg } },
     'sexual-health': { ...baseCategoryQuestions['sexual-health'], stat: { ...baseCategoryQuestions['sexual-health'].stat, image: smilingImg } },
     'longevity': { ...baseCategoryQuestions['longevity'], stat: { ...baseCategoryQuestions['longevity'].stat, image: smilingImg } },
+    'testosterone': { ...baseCategoryQuestions['testosterone'], stat: { ...baseCategoryQuestions['testosterone'].stat, image: smilingImg } },
+    'repair-healing': { ...baseCategoryQuestions['repair-healing'], stat: { ...baseCategoryQuestions['repair-healing'].stat, image: smilingImg } },
 };
 
 const stateFullNames = {
@@ -83,7 +90,27 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                 return;
             }
 
-            // 2. Create the PaymentIntent on the server
+            // 2. Get a fresh session token — avoids Invalid JWT if session was
+            //    restored after email confirmation in a different browser
+            let accessToken = session?.access_token || null;
+            if (!accessToken) {
+                const { data: sessionData } = await supabase.auth.getSession();
+                accessToken = sessionData?.session?.access_token || null;
+            }
+            if (!accessToken) {
+                // Last resort: try refreshing the session
+                const { data: refreshData } = await supabase.auth.refreshSession();
+                accessToken = refreshData?.session?.access_token || null;
+            }
+
+            // 3. Create the PaymentIntent on the server
+            const invokeHeaders = {
+                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+            };
+            if (accessToken) {
+                invokeHeaders['Authorization'] = `Bearer ${accessToken}`;
+            }
+
             const { data, error: intentError } = await supabase.functions.invoke('create-payment-intent', {
                 method: 'POST',
                 body: {
@@ -94,10 +121,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                     userId: session?.user?.id || tempUserId,
                     email: session?.user?.email || email
                 },
-                headers: {
-                    ...(session ? { 'x-customer-authorization': `Bearer ${session.access_token}` } : {}),
-                    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-                }
+                headers: invokeHeaders
             });
 
             if (intentError || !data?.clientSecret) {
@@ -199,7 +223,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                     }`}
             >
                 <span className="relative z-10">
-                    {processing ? 'Processing Securely...' : `Process Activation • $${(amount / 100).toFixed(2)}`}
+                    {processing ? 'Processing Securely...' : `Process Submission • $${(amount / 100).toFixed(2)}`}
                 </span>
             </button>
         </form>
@@ -224,6 +248,17 @@ const Assessment = () => {
     const [showHairGoals, setShowHairGoals] = useState(false);
     const [showHairQuote2, setShowHairQuote2] = useState(false);
     const [selectedHairGoals, setSelectedHairGoals] = useState([]);
+    const [showLongevityQuote, setShowLongevityQuote] = useState(true);
+    const [showLongevityGoals, setShowLongevityGoals] = useState(false);
+    const [selectedLongevityGoals, setSelectedLongevityGoals] = useState([]);
+    const [showTestosteroneQuote, setShowTestosteroneQuote] = useState(true);
+    const [showTestosteroneGoals, setShowTestosteroneGoals] = useState(false);
+    const [showTestosteroneQuote2, setShowTestosteroneQuote2] = useState(false);
+    const [selectedTestosteroneGoals, setSelectedTestosteroneGoals] = useState([]);
+    const [showRepairQuote, setShowRepairQuote] = useState(true);
+    const [showRepairGoals, setShowRepairGoals] = useState(false);
+    const [showRepairQuote2, setShowRepairQuote2] = useState(false);
+    const [selectedRepairGoals, setSelectedRepairGoals] = useState([]);
     const [bmiHeightFeet, setBmiHeightFeet] = useState('');
     const [bmiHeightInches, setBmiHeightInches] = useState('0');
     const [bmiWeight, setBmiWeight] = useState('');
@@ -551,6 +586,53 @@ const Assessment = () => {
         }
     }, [categoryId]);
 
+    // Force white body background while Assessment is mounted.
+    // index.css sets body { background: #050505 } globally which bleeds
+    // through in any gap/transition/loading state.
+    useEffect(() => {
+        const prev = document.body.style.backgroundColor;
+        document.body.style.backgroundColor = '#ffffff';
+        return () => {
+            document.body.style.backgroundColor = prev;
+        };
+    }, []);
+
+    // When the user clicks the confirmation link, Supabase redirects them back to
+    // /assessment/{categoryId} as an authenticated user. We detect assessment_pending
+    // in their metadata and auto-advance to the intake questions, restoring their goals.
+    useEffect(() => {
+        if (!user) return;
+
+        const meta = user.user_metadata || {};
+        if (!meta.assessment_pending) return;
+        if (meta.assessment_category && meta.assessment_category !== categoryId) return;
+
+        // Restore goals they selected before creating the account
+        try {
+            const savedGoals = meta.assessment_goals ? JSON.parse(meta.assessment_goals) : [];
+            if (savedGoals.length > 0) {
+                setSelectedImprovements(savedGoals);
+            }
+        } catch (e) {
+            console.warn('Could not parse assessment_goals from metadata', e);
+        }
+
+        // Advance to the correct next step based on category
+        // weight-loss needs BMI data (step 4) before medical intake (step 8)
+        if (categoryId === 'weight-loss') {
+            setStep(4);
+        } else {
+            setMedicalStep(0);
+            setStep(8);
+        }
+
+        // Clear the pending flag so this only runs once
+        supabase.auth.updateUser({
+            data: { assessment_pending: false }
+        }).catch(err => console.warn('Could not clear assessment_pending flag', err));
+
+    }, [user, categoryId]);
+
     useEffect(() => {
         if (step > 0 && step < 13) {
             const dataToSave = {
@@ -623,24 +705,40 @@ const Assessment = () => {
     useEffect(() => {
         const checkExisting = async () => {
             if (!user || !categoryId) return;
+            if (step === 14 || step === 15) return;
+
+            // Try matching on selected_drug (stores categoryId)
             const { data, error } = await supabase
                 .from('form_submissions')
                 .select('id')
                 .eq('user_id', user.id)
                 .eq('selected_drug', categoryId)
-                .single();
+                .limit(1);
 
-            if (data) {
+            if (data && data.length > 0) {
+                document.body.style.backgroundColor = '#ffffff';
+                document.body.style.background = '#ffffff';
                 setHasExistingSubmission(true);
-            } else if (step === 15) {
-                // If they are on the success step but no submission exists (e.g. deleted),
-                // reset to the beginning so they can retake it.
-                setStep(0);
-                localStorage.removeItem(STORAGE_KEY);
+                return;
+            }
+
+            // Fallback: try matching on 'category' column
+            const { data: data2 } = await supabase
+                .from('form_submissions')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('category', categoryId)
+                .limit(1);
+
+            if (data2 && data2.length > 0) {
+                document.body.style.backgroundColor = '#ffffff';
+                document.body.style.background = '#ffffff';
+                setHasExistingSubmission(true);
             }
         };
         checkExisting();
-    }, [user, categoryId, step, navigate, STORAGE_KEY]);
+    }, [user, categoryId, step, STORAGE_KEY]);
+
 
     // Auto-fill shipping phone from eligibility phone if available
     useEffect(() => {
@@ -690,7 +788,7 @@ const Assessment = () => {
                 goals: selectedImprovements,
                 custom_goal: intakeData.other_goal_details,
 
-                // Biometrics
+                // Biometrics (weight-loss specific — null for other categories)
                 height_feet: h.feet > 0 ? h.feet : (parseInt(bmiHeightFeet) || null),
                 height_inches: h.inches > 0 ? h.inches : (parseInt(bmiHeightInches) || null),
                 weight: weightVal > 0 ? weightVal : (parseFloat(bmiWeight) || null),
@@ -702,16 +800,6 @@ const Assessment = () => {
                 state: eligibilityData.state || shippingData.state || intakeData.state,
                 seen_pcp: intakeData.pcp_labs || eligibilityData.pcpVisitLast6Months || intakeData.has_pcp_long,
                 email: user?.email || authData.email || shippingData.email,
-
-                // PCP & Prescription details (including piiData)
-                pcp_first_name: intakeData.pcp_first_name || piiData.pcpFirstName,
-                pcp_last_name: intakeData.pcp_last_name || piiData.pcpLastName,
-                pcp_state: piiData.pcpState,
-                pcp_npi: intakeData.pcp_npi || piiData.pcpNpi,
-                pcp_details: intakeData.pcp_details,
-                no_pcp: piiData.noPcp,
-                lab_fulfillment: labFulfillment || intakeData.lab_fulfillment,
-                past_dosage: piiData.pastDosage,
 
                 // Medical Conditions
                 heart_conditions: intakeData.heart_conditions || intakeData.heart || intakeData.heart_condition_dx_sh,
@@ -730,8 +818,8 @@ const Assessment = () => {
                 weight_impact_details: intakeData.qol_details || intakeData.weight_impact,
 
                 // Medications & Allergies
-                allergies: intakeData.allergies || intakeData.allergies_sh_sh || intakeData.allergies_list_long,
-                current_medications: intakeData.current_meds || intakeData.cardio_meds_list_sh,
+                allergies: intakeData.allergies || intakeData.allergies_repair || intakeData.allergies_sh_sh || intakeData.allergies_list_long,
+                current_medications: intakeData.current_meds || intakeData.current_meds_repair || intakeData.cardio_meds_list_sh,
                 other_medications: intakeData.other_meds || intakeData.supplements || intakeData.meds_list_long,
                 past_weight_loss_methods: intakeData.past_weightloss_methods || intakeData.past_methods,
                 past_prescription_meds: intakeData.past_rx_weightloss || intakeData.past_rx,
@@ -739,7 +827,7 @@ const Assessment = () => {
                 // Identity & Diversity
                 race_ethnicity: intakeData.ethnicity,
                 other_health_goals: intakeData.other_health_goals || intakeData.other_goals,
-                has_additional_info: intakeData.additional_health_info || "No",
+                has_additional_info: intakeData.additional_health_info || 'No',
                 additional_health_info: intakeData.additional_health_info_details || intakeData.symptom_detail_sh || intakeData.anything_else_long,
 
                 // Identification
@@ -747,11 +835,10 @@ const Assessment = () => {
                 identification_number: idData.number,
                 identification_url: idData.file_url,
 
-                // Shipping
+                // Shipping (only columns confirmed to exist in original schema)
                 shipping_first_name: shippingData.firstName || firstName,
                 shipping_last_name: shippingData.lastName || lastName,
                 shipping_address: shippingData.address,
-                shipping_apt: shippingData.apt,
                 shipping_city: shippingData.city,
                 shipping_state: shippingData.state,
                 shipping_zip: shippingData.zip,
@@ -762,26 +849,30 @@ const Assessment = () => {
                 approval_status: 'pending',
                 submitted_at: new Date().toISOString(),
                 selected_drug: categoryId,
+                category: categoryId,
+                intake_data: {
+                    ...intakeData,
+                    ...piiData,
+                    goals: selectedImprovements,
+                    category: categoryId,
+                    eligibility: eligibilityData,
+                    shipping: shippingData,
+                    identification: idData,
+                    lab_fulfillment: labFulfillment || intakeData.lab_fulfillment,
+                    past_dosage: piiData.pastDosage,
+                    no_pcp: piiData.noPcp,
+                },
                 lab_results_url: [
                     ...((Array.isArray(eligibilityData.labResults) ? eligibilityData.labResults : (eligibilityData.labResults ? [eligibilityData.labResults] : []))),
                     ...((Array.isArray(intakeData.lab_results_url) ? intakeData.lab_results_url : (intakeData.lab_results_url ? [intakeData.lab_results_url] : [])))
                 ],
-                past_rx_file_url: intakeData.past_rx_weightloss_file || intakeData.past_rx_file || null,
                 glp1_prescription_url: intakeData.current_meds_file ? [intakeData.current_meds_file] : [],
                 coupon_code: paymentData.coupon,
 
                 // Dosage Preferences
                 dosage_preference: intakeData.medication_interest === 'Other / Not Sure' ? `Other: ${intakeData.other_medication_details || ''}` : intakeData.medication_interest,
-
-                // COMPLETE RAW DATA SNAPSHOT:
-                medical_responses: {
-                    ...intakeData,
-                    ...piiData,
-                    eligibility: eligibilityData,
-                    shipping: shippingData,
-                    identification: idData
-                }
             };
+
 
             // 1. Submit the form data
             const { error: submitError } = await supabase
@@ -907,9 +998,14 @@ const Assessment = () => {
                             first_name: authData.firstName,
                             last_name: authData.lastName,
                             email: authData.email,
-                            phone_number: formattedPhone
+                            phone_number: formattedPhone,
+                            // Save assessment progress server-side so
+                            // confirmation link works in any browser
+                            assessment_pending: true,
+                            assessment_category: categoryId,
+                            assessment_goals: JSON.stringify(selectedImprovements)
                         },
-                        emailRedirectTo: `${window.location.origin}/dashboard`
+                        emailRedirectTo: `${window.location.origin}/assessment/${categoryId}`
                     }
                 });
                 if (signUpError) throw signUpError;
@@ -929,6 +1025,7 @@ const Assessment = () => {
                                 first_name: authData.firstName,
                                 last_name: authData.lastName,
                                 phone_number: formattedPhone,
+                                date_of_birth: eligibilityData.dob,
                                 updated_at: new Date().toISOString()
                             }, { onConflict: 'id' });
 
@@ -940,16 +1037,12 @@ const Assessment = () => {
                     }
                 }
 
-                toast.success('Information submitted. Please continue.');
-                if (categoryId === 'weight-loss') {
-                    setMedicalStep(0);
-                    setStep(8);
-                } else if (categoryId === 'sexual-health' || categoryId === 'hair-restoration') {
-                    setMedicalStep(0);
-                    setStep(8); // Go straight to Medical Intake (Eligibility is skipped)
-                } else {
-                    setStep(4);
-                }
+                // Show the email verification gate — do NOT advance yet.
+                // The user must confirm their email first. After clicking the
+                // link (in any browser), they land back on /assessment/{categoryId}
+                // as an authenticated user and the mount effect below resumes them.
+                toast.success('Account created! Please check your email to continue.');
+                setShowVerificationSent(true);
                 return;
             } catch (err) {
                 toast.error(err.message);
@@ -976,8 +1069,16 @@ const Assessment = () => {
                 } else if (categoryId === 'sexual-health' || categoryId === 'hair-restoration') {
                     setMedicalStep(0);
                     setStep(8); // Go straight to Medical Intake (Eligibility is skipped)
+                } else if (categoryId === 'longevity') {
+                    setMedicalStep(0);
+                    setStep(8);
+                } else if (categoryId === 'testosterone' || categoryId === 'repair-healing') {
+                    setMedicalStep(0);
+                    setStep(8);
                 } else {
-                    setStep(4);
+                    // weight-loss: skip eligibility, go straight to medical intake
+                    setMedicalStep(0);
+                    setStep(8);
                 }
             } catch (err) {
                 toast.error(err.message);
@@ -1018,28 +1119,103 @@ const Assessment = () => {
     const categoryData = categoryQuestions[categoryId] || categoryQuestions['weight-loss'];
     const medicalQuestions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
 
-    // Moved GSAP effect to top-level effects to prevent hook ordering issues
+    // Compute BMI — must be here (before early return) so hooks below always run
+    const computedBMI = (() => {
+        const totalInches = (parseInt(bmiHeightFeet) || 0) * 12 + (parseInt(bmiHeightInches) || 0);
+        const lbs = parseFloat(bmiWeight) || 0;
+        if (totalInches <= 0 || lbs <= 0) return null;
+        const bmi = ((lbs * 703) / (totalInches * totalInches)).toFixed(1);
+        return bmi;
+    })();
 
+    // MUST be before any early return — React hooks must always run in same order
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (computedBMI) {
+            setIntakeData(prev => ({ ...prev, bmi: computedBMI, weight: bmiWeight, height: `${bmiHeightFeet}'${bmiHeightInches}"` }));
+        }
+    }, [computedBMI, bmiWeight, bmiHeightFeet, bmiHeightInches]);
 
     if (hasExistingSubmission) {
         return (
-            <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center text-[#1a1a1a]">
-                <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center mb-6 border border-black/20">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2">
-                        <path d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">Already <span className="text-black">Submitted</span></h2>
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest max-w-xs mb-8">
-                    You have an active record for this category. Please check your dashboard for updates.
-                </p>
-                <div className="flex gap-4">
-                    <button onClick={() => navigate('/')} className="px-8 py-4 bg-black/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Go Home</button>
-                    <button onClick={() => navigate('/dashboard')} className="px-8 py-4 bg-accent-black text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">Dashboard</button>
+            <div style={{
+                minHeight: '100vh',
+                backgroundColor: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '40px 24px',
+                fontFamily: 'Inter, system-ui, sans-serif'
+            }}>
+                <div style={{ maxWidth: '520px', width: '100%', textAlign: 'center' }}>
+
+                    {/* Check icon */}
+                    <div style={{
+                        width: '96px', height: '96px', borderRadius: '50%',
+                        backgroundColor: '#FFDE5920', border: '2px solid #FFDE5970',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        margin: '0 auto', marginBottom: '32px'
+                    }}>
+                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none"
+                            stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+
+                    {/* Headline */}
+                    <h1 style={{
+                        fontSize: '40px', fontWeight: '900', color: '#1a1a1a',
+                        textTransform: 'uppercase', letterSpacing: '-0.03em',
+                        lineHeight: '1.05', marginBottom: '12px'
+                    }}>
+                        Assessment<br />
+                        <span style={{
+                            backgroundColor: '#FFDE59', color: '#1a1a1a',
+                            padding: '0 12px', display: 'inline-block', marginTop: '6px'
+                        }}>
+                            Completed
+                        </span>
+                    </h1>
+
+                    {/* Message */}
+                    <p style={{
+                        fontSize: '13px', color: '#666', lineHeight: '1.7',
+                        marginBottom: '40px', marginTop: '20px'
+                    }}>
+                        You have already completed this assessment.<br />
+                        A licensed provider is reviewing your submission.<br />
+                        Visit your dashboard to track your progress.
+                    </p>
+
+                    {/* Dashboard button */}
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
+                        style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '10px',
+                            padding: '18px 48px', borderRadius: '999px',
+                            backgroundColor: '#000', color: '#fff', border: 'none',
+                            fontSize: '12px', fontWeight: '800', textTransform: 'uppercase',
+                            letterSpacing: '0.15em', cursor: 'pointer',
+                            transition: 'background-color 0.25s, color 0.25s'
+                        }}
+                    >
+                        Go to My Dashboard
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </button>
+
                 </div>
             </div>
         );
     }
+
+
+
 
     const toggleImprovement = (id) => {
         setSelectedImprovements(prev =>
@@ -1048,6 +1224,7 @@ const Assessment = () => {
                 : [...prev, id]
         );
     };
+
 
     const toggleSexualHealthGoal = (id) => {
         setSelectedSexualHealthGoals(prev =>
@@ -1065,39 +1242,43 @@ const Assessment = () => {
         );
     };
 
+    const toggleLongevityGoal = (id) => {
+        setSelectedLongevityGoals(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const toggleTestosteroneGoal = (id) => {
+        setSelectedTestosteroneGoals(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const toggleRepairGoal = (id) => {
+        setSelectedRepairGoals(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
     const handleContinue = () => {
         if (selectedImprovements.length > 0) {
             if (user) {
-                if (categoryId === 'weight-loss') {
-                    setMedicalStep(0);
-                    setStep(5); // Logged-in weight-loss users go to Eligibility step
-                } else if (categoryId === 'sexual-health' || categoryId === 'hair-restoration') {
-                    setMedicalStep(0);
-                    setStep(8); // Go straight to Medical Intake (Eligibility skipped)
-                } else {
-                    setStep(4); // Other categories go to BMI/Drug step
-                }
+                // All categories skip eligibility step and go straight to medical intake
+                setMedicalStep(0);
+                setStep(8);
             } else {
                 setStep(3); // Go to Registration (Auth Step)
             }
         }
     };
 
-    // Compute BMI from imperial inputs
-    const computedBMI = (() => {
-        const totalInches = (parseInt(bmiHeightFeet) || 0) * 12 + (parseInt(bmiHeightInches) || 0);
-        const lbs = parseFloat(bmiWeight) || 0;
-        if (totalInches <= 0 || lbs <= 0) return null;
-        const bmi = ((lbs * 703) / (totalInches * totalInches)).toFixed(1);
-        return bmi;
-    })();
-
-    // Update intakeData with BMI whenever it changes to ensure it's captured in the form snapshot
-    useEffect(() => {
-        if (computedBMI) {
-            setIntakeData(prev => ({ ...prev, bmi: computedBMI, weight: bmiWeight, height: `${bmiHeightFeet}'${bmiHeightInches}"` }));
-        }
-    }, [computedBMI, bmiWeight, bmiHeightFeet, bmiHeightInches]);
+    // (computedBMI and its useEffect moved above hasExistingSubmission early return)
 
     const getBMICategory = (bmi) => {
         const v = parseFloat(bmi);
@@ -1421,19 +1602,27 @@ const Assessment = () => {
                         <span className="block">greater sexual satisfaction and</span>
                         <span className="block">improved confidence."</span>
                     </h2>
-                    <button
-                        onClick={() => { setShowSexualHealthQuote(false); setShowSexualHealthGoals(true); }}
-                        className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
-                        style={{ color: '#ffffff' }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                    >
-                        Continue Assessment
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { setShowSexualHealthQuote(false); setShowSexualHealthGoals(true); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Continue Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1486,6 +1675,12 @@ const Assessment = () => {
             </div>
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-16">
+                <button
+                    onClick={() => { setShowSexualHealthGoals(false); setShowSexualHealthQuote(true); }}
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
+                >
+                    Back
+                </button>
                 <button
                     onClick={() => { setShowSexualHealthGoals(false); setShowSexualHealthQuote2(true); }}
                     disabled={selectedSexualHealthGoals.length === 0}
@@ -1554,22 +1749,30 @@ const Assessment = () => {
                         <span className="block">quality of life for patients</span>
                         <span className="block">and their partners."</span>
                     </h2>
-                    <button
-                        onClick={() => {
-                            setShowSexualHealthQuote2(false);
-                            setStep(3); // Always go to Create Account / Sign In step
-                        }}
-                        className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
-                        style={{ color: '#ffffff' }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                    >
-                        Start Medical Assessment
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => { setShowSexualHealthQuote2(false); setShowSexualHealthGoals(true); }}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowSexualHealthQuote2(false);
+                                setStep(3); // Always go to Create Account / Sign In step
+                            }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Start Medical Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1612,19 +1815,27 @@ const Assessment = () => {
                         <span className="block">providing meaningful results for patients</span>
                         <span className="block">seeking to restore fuller, healthier hair."</span>
                     </h2>
-                    <button
-                        onClick={() => { setShowHairQuote(false); setShowHairGoals(true); }}
-                        className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
-                        style={{ color: '#ffffff' }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                    >
-                        Continue Assessment
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { setShowHairQuote(false); setShowHairGoals(true); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Continue Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1676,6 +1887,12 @@ const Assessment = () => {
             </div>
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-16">
+                <button
+                    onClick={() => { setShowHairGoals(false); setShowHairQuote(true); }}
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
+                >
+                    Back
+                </button>
                 <button
                     onClick={() => { setShowHairGoals(false); setShowHairQuote2(true); }}
                     disabled={selectedHairGoals.length === 0}
@@ -1733,22 +1950,534 @@ const Assessment = () => {
                         <span className="block">quality of life for patients</span>
                         <span className="block">and their partners."</span>
                     </h2>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => { setShowHairQuote2(false); setShowHairGoals(true); }}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowHairQuote2(false);
+                                setStep(3); // Always go to Create Account / Sign In step
+                            }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Start Medical Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderLongevityQuoteStep = () => (
+        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left: Image */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={longevityFirstQuoteImg}
+                            alt="Longevity Treatment"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Gomes, A. P., et al. (2013). Declining NAD+ induces a pseudohypoxic state disrupting nuclear-mitochondrial communication during aging. Cell, 155(7), 1624–1638. https://doi.org/10.1016/j.cell.2013.11.037
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: Quote + CTA */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Research
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"Restoring cellular NAD+ levels can support </span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>energy production,</span>
+                            {' '}mitochondrial function,
+                        </span>
+                        <span className="block">and overall vitality, helping you feel</span>
+                        <span className="block">more resilient and alert in daily life."</span>
+                    </h2>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { setShowLongevityQuote(false); setShowLongevityGoals(true); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4 text-white"
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Continue Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderLongevityGoalsStep = () => (
+        <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
+            <div className="text-center mb-16">
+                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
+                    Step 2 – Goals<br />
+                    <span className="text-[#1a1a1a]">Focus</span>
+                </h1>
+                <p className="text-gray-600 font-medium uppercase tracking-[0.3em] text-[10px] mb-8">
+                    What is your goal(s) for this treatment?
+                </p>
+            </div>
+
+            <div className="max-w-3xl mx-auto">
+                <div className="space-y-4">
+                    {[
+                        { id: 'energy', label: 'Increase daily energy and reduce fatigue' },
+                        { id: 'focus', label: 'Improve mental focus and cognitive clarity' },
+                        { id: 'aging', label: 'Support healthy aging and cellular resilience' },
+                        { id: 'recovery', label: 'Improve recovery after physical activity or stress' },
+                        { id: 'vitality', label: 'Enhance overall vitality and feeling of wellness' },
+                    ].map((goal) => (
+                        <div
+                            key={goal.id}
+                            onClick={() => toggleLongevityGoal(goal.id)}
+                            className={`group relative p-6 rounded-[20px] cursor-pointer transition-all duration-700 border-2 overflow-hidden ${selectedLongevityGoals.includes(goal.id)
+                                ? 'border-black bg-white shadow-[0_0_50px_rgba(0,0,0,0.05)]'
+                                : 'border-black/10 bg-white hover:border-black/20'
+                                }`}
+                        >
+                            <div className="relative z-10 flex items-center gap-4">
+                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${selectedLongevityGoals.includes(goal.id) ? 'bg-black border-black' : 'border-black/30'}`}>
+                                    {selectedLongevityGoals.includes(goal.id) && (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    )}
+                                </div>
+                                <span className="text-lg font-medium text-black">{goal.label}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-16">
+                <button
+                    onClick={() => { setShowLongevityGoals(false); setShowLongevityQuote(true); }}
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
+                >
+                    Back
+                </button>
+                <button
+                    onClick={() => { user ? setStep(5) : setStep(3); }}
+                    disabled={selectedLongevityGoals.length === 0}
+                    className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group flex items-center justify-center gap-4 ${selectedLongevityGoals.length > 0
+                        ? 'bg-black text-white hover:scale-105 shadow-sm cursor-pointer'
+                        : 'bg-black/5 text-black/20 cursor-not-allowed'
+                        }`}
+                    onMouseEnter={e => { if (selectedLongevityGoals.length > 0) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                    onMouseLeave={e => { if (selectedLongevityGoals.length > 0) { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; } }}
+                >
+                    <span className="relative z-10 flex items-center gap-4">
+                        Continue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:translate-x-2 transition-transform">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+    );
+
+    // ─── TESTOSTERONE FLOW ────────────────────────────────────────────────────
+
+    const renderTestosteroneQuoteStep = () => (
+        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left: Image */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={testosteroneQuote1Img}
+                            alt="Testosterone Treatment"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Traish, A. M., Guay, A., &amp; Zitzmann, M. (2011). Testosterone and the metabolic syndrome: An evidence-based review. The Journal of Sexual Medicine, 8(4), 1187–1204. https://doi.org/10.1111/j.1743-6109.2010.01977
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: Quote + CTA */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Research
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"Restoring testosterone to healthy levels can help</span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>improve energy, vitality,</span>
+                            {' '}and muscle strength,
+                        </span>
+                        <span className="block">supporting overall wellness and daily function</span>
+                        <span className="block">in men and women with low hormone levels."</span>
+                    </h2>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { setShowTestosteroneQuote(false); setShowTestosteroneGoals(true); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4 text-white"
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            Continue Assessment
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderTestosteroneGoalsStep = () => (
+        <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
+            <div className="text-center mb-16">
+                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] mb-6">
+                    Step 2 – Health<br />
+                    <span className="text-[#1a1a1a]">Goals</span>
+                </h1>
+                <p className="text-gray-600 font-medium uppercase tracking-[0.3em] text-[10px] mb-8">
+                    What is your main goal(s) for this treatment?
+                </p>
+            </div>
+
+            <div className="max-w-3xl mx-auto">
+                <div className="space-y-4">
+                    {[
+                        { id: 'energy', label: 'Increase daily energy and reduce fatigue' },
+                        { id: 'muscle', label: 'Improve muscle strength and physical performance' },
+                        { id: 'sexual', label: 'Support sexual health and libido' },
+                        { id: 'mood', label: 'Enhance mood, motivation, or mental clarity' },
+                        { id: 'wellness', label: 'Support overall wellness and healthy aging' },
+                    ].map((goal) => (
+                        <div
+                            key={goal.id}
+                            onClick={() => toggleTestosteroneGoal(goal.id)}
+                            className={`group relative p-6 rounded-[20px] cursor-pointer transition-all duration-700 border-2 overflow-hidden ${selectedTestosteroneGoals.includes(goal.id)
+                                ? 'border-black bg-white shadow-[0_0_50px_rgba(0,0,0,0.05)]'
+                                : 'border-black/10 bg-white hover:border-black/20'
+                                }`}
+                        >
+                            <div className="relative z-10 flex items-center gap-4">
+                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${selectedTestosteroneGoals.includes(goal.id) ? 'bg-black border-black' : 'border-black/30'}`}>
+                                    {selectedTestosteroneGoals.includes(goal.id) && (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    )}
+                                </div>
+                                <span className="text-lg font-medium text-black">{goal.label}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-16">
+                <button
+                    onClick={() => { setShowTestosteroneGoals(false); setShowTestosteroneQuote(true); }}
+                    className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
+                >
+                    Back
+                </button>
+                <button
+                    onClick={() => { setShowTestosteroneGoals(false); setShowTestosteroneQuote2(true); }}
+                    disabled={selectedTestosteroneGoals.length === 0}
+                    className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group flex items-center justify-center gap-4 ${selectedTestosteroneGoals.length > 0
+                        ? 'bg-black text-white hover:scale-105 shadow-sm cursor-pointer'
+                        : 'bg-black/5 text-black/20 cursor-not-allowed'
+                        }`}
+                    onMouseEnter={e => { if (selectedTestosteroneGoals.length > 0) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                    onMouseLeave={e => { if (selectedTestosteroneGoals.length > 0) { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; } }}
+                >
+                    <span className="relative z-10 flex items-center gap-4">
+                        Continue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:translate-x-2 transition-transform">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+    );
+
+    const renderTestosteroneQuote2Step = () => (
+        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left: Image */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={testosteroneQuote2Img}
+                            alt="Testosterone Therapy"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Bhasin, S., et al. (2018). Testosterone therapy in men with hypogonadism: An Endocrine Society clinical practice guideline. The Journal of Clinical Endocrinology &amp; Metabolism, 103(5), 1715–1744. https://doi.org/10.1210/jc.2018-00229
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: Quote + CTA */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Evidence
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"Testosterone therapy has been associated with</span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>improvements in mood,</span>
+                        </span>
+                        <span className="block">cognitive function, sexual health, and quality of life,</span>
+                        <span className="block">offering both physical and psychological benefits</span>
+                        <span className="block">when appropriately prescribed."</span>
+                    </h2>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => { setShowTestosteroneQuote2(false); setShowTestosteroneGoals(true); }}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { user ? (setMedicalStep(0), setStep(8)) : setStep(3); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4 text-white"
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            {user ? 'Start My Assessment' : 'Create Account'}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderRepairQuoteStep = () => (
+        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left Side: Quote Image with APA fine print */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={repairHealingQuote1Img}
+                            alt="BPC-157 & TB-500 Therapy"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Sikiric, P., Rucman, R., et al. (2018). Protective and regenerative effects of the peptide BPC 157 in animal models of injury. <em>Current Pharmaceutical Design</em>, 24(12), 1372–1384. https://doi.org/10.2174/1381612824666180118121915
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Side: Quote and CTA */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Evidence
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"BPC-157 and TB-500 are peptides shown in preclinical studies to support</span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>tissue repair,</span>
+                        </span>
+                        <span className="block">reduce inflammation, and promote healing, potentially aiding recovery from musculoskeletal injuries</span>
+                        <span className="block">and joint discomfort."</span>
+                    </h2>
                     <button
-                        onClick={() => {
-                            setShowHairQuote2(false);
-                            setStep(3); // Always go to Create Account / Sign In step
-                        }}
+                        onClick={() => { setShowRepairQuote(false); setShowRepairGoals(true); }}
                         className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
                         style={{ color: '#ffffff' }}
                         onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
                         onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
                     >
-                        Start Medical Assessment
+                        Continue Assessment
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderRepairGoalsStep = () => (
+        <div className="min-h-screen bg-white flex items-center">
+            <div className="max-w-4xl mx-auto px-6 py-20 w-full">
+                <div className="text-center mb-16">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
+                        Health Goals
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-[#1a1a1a] leading-[1.05]">
+                        What is your goal(s)<br />for this treatment?
+                    </h2>
+                    <p className="text-black/40 text-xs uppercase tracking-[0.3em] mt-4">Select all that apply</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 mb-12">
+                    {[
+                        { id: 'recovery', label: 'Accelerate recovery from sports or musculoskeletal injuries' },
+                        { id: 'pain', label: 'Reduce joint or tendon pain and inflammation' },
+                        { id: 'mobility', label: 'Improve mobility, flexibility, and range of motion' },
+                        { id: 'tissue', label: 'Support soft tissue, ligament, or tendon integrity for long-term wellness' },
+                        { id: 'prevention', label: 'Enhance overall injury prevention and physical performance' },
+                    ].map(goal => (
+                        <div
+                            key={goal.id}
+                            onClick={() => toggleRepairGoal(goal.id)}
+                            className={`flex items-center gap-6 p-6 rounded-[20px] border-2 cursor-pointer transition-all duration-300 ${selectedRepairGoals.includes(goal.id)
+                                ? 'border-black bg-black/5'
+                                : 'border-black/10 hover:border-black/30'
+                                }`}
+                        >
+                            <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all ${selectedRepairGoals.includes(goal.id) ? 'border-black bg-black' : 'border-black/30'
+                                }`}>
+                                {selectedRepairGoals.includes(goal.id) && (
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="w-full h-full p-1">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                )}
+                            </div>
+                            <span className="font-black text-sm uppercase tracking-wide text-[#1a1a1a]">{goal.label}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex flex-col md:flex-row gap-4">
+                    <button
+                        onClick={() => { setShowRepairGoals(false); setShowRepairQuote(true); }}
+                        className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (selectedRepairGoals.length === 0) { return; }
+                            setShowRepairGoals(false);
+                            setShowRepairQuote2(true);
+                        }}
+                        disabled={selectedRepairGoals.length === 0}
+                        className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4 text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        onMouseEnter={e => { if (selectedRepairGoals.length > 0) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                    >
+                        Continue
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderRepairQuote2Step = () => (
+        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+            <div className="flex flex-col md:flex-row items-center gap-16">
+                {/* Left Side: Quote Image with APA fine print */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
+                        <img
+                            src={repairHealingQuote2Img}
+                            alt="Peptide Recovery & Mobility"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
+                                Reference (APA): Sikiric, P., et al. (2021). Therapeutic potential of BPC 157 and TB-500 peptides: Preclinical findings. <em>Peptides</em>, 135, 170474. https://doi.org/10.1016/j.peptides.2020.170474
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Side: Quote and CTA */}
+                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
+                        Clinical Evidence
+                    </div>
+                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
+                        <span className="block">"Regular peptide therapy may enhance recovery,</span>
+                        <span className="block">
+                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>improve mobility,</span>
+                        </span>
+                        <span className="block">and support tendon, ligament, and soft tissue integrity when combined with proper</span>
+                        <span className="block">rehabilitation and lifestyle support."</span>
+                    </h2>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <button
+                            onClick={() => { setShowRepairQuote2(false); setShowRepairGoals(true); }}
+                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { user ? (setMedicalStep(0), setStep(8)) : setStep(3); }}
+                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                            style={{ color: '#ffffff' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                        >
+                            {user ? 'Start My Assessment' : 'Create Account'}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1939,7 +2668,18 @@ const Assessment = () => {
                     Back
                 </button>
                 <button
-                    onClick={() => user ? setStep(4) : setStep(3)}
+                    onClick={() => {
+                        if (user) {
+                            if (categoryId === 'longevity' || categoryId === 'testosterone' || categoryId === 'repair-healing') {
+                                setMedicalStep(0);
+                                setStep(8); // Skip eligibility
+                            } else {
+                                setStep(4);
+                            }
+                        } else {
+                            setStep(3);
+                        }
+                    }}
                     className="w-full md:w-auto px-20 py-8 bg-black text-white rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:bg-accent-black hover:text-black hover:shadow-[0_0_60px_rgba(19,91,236,0.5)] transform hover:scale-105"
                 >
                     Finalize My Plan
@@ -1988,7 +2728,7 @@ const Assessment = () => {
                         <button
                             onClick={() => {
                                 setMedicalStep(0);
-                                setStep(8);
+                                setStep(8); // All categories go to medical intake
                             }}
                             className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
                             style={{ backgroundColor: '#000', color: '#fff' }}
@@ -2250,8 +2990,8 @@ const Assessment = () => {
 
                         {authMode === 'signup' && (
                             <div className="pt-4 space-y-4">
-                                <label className="flex items-start gap-4 cursor-pointer group">
-                                    <div className="relative flex items-center mt-1">
+                                <label className="flex items-center gap-4 cursor-pointer group">
+                                    <div className="relative flex items-center justify-center shrink-0">
                                         <input
                                             type="checkbox"
                                             checked={acceptedTerms}
@@ -2261,7 +3001,7 @@ const Assessment = () => {
                                             onFocus={e => { e.target.style.borderColor = '#FFDE59'; }}
                                         />
                                         <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
-                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 left-1 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </div>
@@ -2270,8 +3010,8 @@ const Assessment = () => {
                                     </span>
                                 </label>
 
-                                <label className="flex items-start gap-4 cursor-pointer group">
-                                    <div className="relative flex items-center mt-1">
+                                <label className="flex items-center gap-4 cursor-pointer group">
+                                    <div className="relative flex items-center justify-center shrink-0">
                                         <input
                                             type="checkbox"
                                             checked={acceptedRisks}
@@ -2280,7 +3020,7 @@ const Assessment = () => {
                                             style={{ borderColor: '#1a1a1a30', backgroundColor: '#fff' }}
                                         />
                                         <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
-                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 left-1 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </div>
@@ -2391,295 +3131,358 @@ const Assessment = () => {
 
 
     const renderEligibilityStep = () => {
-        // Don't render eligibility step for sexual health - skip directly to identification
-        if (categoryId === 'sexual-health') {
-            return null;
-        }
-
         return (
             <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
-                <div className="text-center mb-12">
-                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
-                        Step 5: Eligibility Review
+                <div className="text-center mb-10">
+                    <div className="inline-block py-2 px-6 bg-black/5 border border-black/10 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-6">
+                        {categoryId === 'sexual-health' ? 'Step 2: Eligibility' : 'Clinical Screening'}
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-4 leading-tight">
-                        Let's make sure you're <br />
-                        <span className="text-accent-black">eligible for treatment.</span>
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
+                        Let's verify your <span className="text-black/60">eligibility.</span>
                     </h2>
-                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                        It's just like intake forms at the doctor.
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[9px]">
+                        We need a few details to ensure this protocol is safe and available in your state.
                     </p>
-
                 </div>
 
                 <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
                     <div className="space-y-10">
                         {/* Sex Selection - Only show for non-sexual-health categories */}
-                        {categoryId !== 'sexual-health' && (
-                            <>
-                                {/* State & Phone */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="relative">
-                                        <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Residing State</label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                placeholder="Search state..."
-                                                className={inputClassName}
-                                                value={showStateDropdown ? stateSearch : (eligibilityData.state ? stateFullNames[eligibilityData.state] : stateSearch)}
-                                                onChange={(e) => {
-                                                    setStateSearch(e.target.value);
-                                                    setShowStateDropdown(true);
-                                                }}
-                                                onFocus={() => {
-                                                    if (eligibilityData.state) setStateSearch('');
-                                                    setShowStateDropdown(true);
-                                                }}
-                                            />
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                                </svg>
-                                            </div>
-
-                                            {showStateDropdown && (
-                                                <div className="absolute z-50 left-0 right-0 mt-2 max-h-60 overflow-y-auto bg-white border border-black/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
-                                                    {Object.entries(stateFullNames)
-                                                        .filter(([code, name]) =>
-                                                            name.toLowerCase().includes(stateSearch.toLowerCase()) ||
-                                                            code.toLowerCase().includes(stateSearch.toLowerCase())
-                                                        )
-                                                        .map(([code, name]) => (
-                                                            <div
-                                                                key={code}
-                                                                onClick={() => {
-                                                                    setEligibilityData({ ...eligibilityData, state: code });
-                                                                    setStateSearch('');
-                                                                    setShowStateDropdown(false);
-                                                                }}
-                                                                className="px-8 py-4 text-[#1a1a1a] hover:bg-accent-black hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between items-center"
-                                                            >
-                                                                <span>{name}</span>
-                                                                <span className="opacity-40">{code}</span>
-                                                            </div>
-                                                        ))
-                                                    }
-                                                    {Object.entries(stateFullNames).filter(([code, name]) =>
-                                                        name.toLowerCase().includes(stateSearch.toLowerCase()) ||
-                                                        code.toLowerCase().includes(stateSearch.toLowerCase())
-                                                    ).length === 0 && (
-                                                            <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-300 text-center">
-                                                                No matches found
-                                                            </div>
-                                                        )}
-                                                </div>
-                                            )}
-                                        </div>
-                                        {triedToContinue && !eligibilityData.state && (
-                                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">State selection is required</p>
-                                        )}
-
-                                        {/* Overlay to close dropdown */}
-                                        {showStateDropdown && (
-                                            <div
-                                                className="fixed inset-0 z-40"
-                                                onClick={() => setShowStateDropdown(false)}
-                                            />
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number</label>
-                                        <input
-                                            type="tel"
-                                            placeholder="(XXX) XXX-XXXX"
-                                            className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
-                                            value={eligibilityData.phone}
-                                            onChange={(e) => {
-                                                const rawValue = e.target.value.replace(/\D/g, '');
-                                                let formattedValue = '';
-                                                if (rawValue.length > 0) {
-                                                    formattedValue = '(' + rawValue.substring(0, 3);
-                                                    if (rawValue.length > 3) {
-                                                        formattedValue += ') ' + rawValue.substring(3, 6);
-                                                    }
-                                                    if (rawValue.length > 6) {
-                                                        formattedValue += '-' + rawValue.substring(6, 10);
-                                                    }
-                                                } else {
-                                                    formattedValue = rawValue;
-                                                }
-                                                setEligibilityData({ ...eligibilityData, phone: formattedValue });
-                                            }}
-                                        />
-                                        {triedToContinue && !eligibilityData.phone && (
-                                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Phone number is required</p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* PCP Visit */}
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Have you seen your primary care provider in the past 12 months?</label>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {['Yes', 'No'].map(v => (
-                                            <button
-                                                key={v}
-                                                onClick={() => setEligibilityData({ ...eligibilityData, pcpVisitLast6Months: v })}
-                                                className={`py-4 px-6 rounded-2xl text-[10px] font-medium tracking-widest transition-all assessment-option-arial ${eligibilityData.pcpVisitLast6Months === v
-                                                    ? 'border-black text-black bg-white shadow-md scale-[1.02]'
-                                                    : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-black/5 text-gray-400 border-red-500/50' : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20')
-                                                    } border`}
-                                            >
-                                                {v}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    {triedToContinue && !eligibilityData.pcpVisitLast6Months && (
-                                        <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Please select an option</p>
-                                    )}
-
-                                    {eligibilityData.pcpVisitLast6Months && (
-                                        <div className="mt-6 p-6 bg-white/[0.02] border border-black/5 rounded-3xl">
-                                            <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed">
-                                                {eligibilityData.pcpVisitLast6Months === 'Yes'
-                                                    ? 'Since you have selected "Yes", please upload the lab results that include your "Lipid" and "A1c" values:'
-                                                    : 'Since you have selected "No", you could possibly be ordered/recommended to do a Lab Test (Lipid, A1c).'}
-                                            </p>
-                                            {eligibilityData.pcpVisitLast6Months === 'Yes' && (
-                                                <div className="mt-6">
-                                                    {/* Multi-file list */}
-                                                    {Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0 && (
-                                                        <div className="space-y-3 mb-6">
-                                                            {eligibilityData.labResults.map((url, idx) => (
-                                                                <div key={idx} className="flex items-center justify-between p-4 bg-black/5 border border-black/5 rounded-2xl group/file">
-                                                                    <div className="flex items-center gap-3">
-                                                                        <div className="w-8 h-8 bg-accent-black/10 rounded-lg flex items-center justify-center text-accent-black">
-                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                                                        </div>
-                                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Lab Document {idx + 1}</span>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-3">
-                                                                        <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">View</a>
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                const newResults = [...eligibilityData.labResults];
-                                                                                newResults.splice(idx, 1);
-                                                                                setEligibilityData({ ...eligibilityData, labResults: newResults });
-                                                                            }}
-                                                                            className="text-[10px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
-                                                                        >
-                                                                            Remove
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-
-                                                    <input
-                                                        type="file"
-                                                        id="lab-upload"
-                                                        className="hidden"
-                                                        accept="image/*,.pdf"
-                                                        onChange={(e) => handleFileUpload(e.target.files[0], 'lab-results', (url) => {
-                                                            const current = Array.isArray(eligibilityData.labResults) ? eligibilityData.labResults : (eligibilityData.labResults ? [eligibilityData.labResults] : []);
-                                                            setEligibilityData({ ...eligibilityData, labResults: [...current, url] });
-                                                        })}
-                                                    />
-                                                    <button
-                                                        onClick={() => document.getElementById('lab-upload').click()}
-                                                        disabled={uploading === 'lab-results'}
-                                                        className={`w-full flex items-center justify-center gap-4 px-8 py-6 bg-black/5 border-2 border-dashed ${triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) ? 'border-red-500/50' : 'border-black/5'} rounded-2xl hover:border-accent-black transition-all group`}
-                                                    >
-                                                        {uploading === 'lab-results' ? (
-                                                            <div className="w-5 h-5 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
-                                                        ) : (
-                                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
-                                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                                <polyline points="17 8 12 3 7 8"></polyline>
-                                                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                                                            </svg>
-                                                        )}
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-white">
-                                                            {eligibilityData.labResults?.length > 0 ? 'Upload Another Lab Result' : 'Upload Lab Results'}
-                                                        </span>
-                                                    </button>
-                                                    {triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) && (
-                                                        <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">At least one lab result is REQUIRED</p>
-                                                    )}
-                                                    {eligibilityData.labResults?.length > 0 && (
-                                                        <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Consent Text */}
-                                    <div className={`p-6 bg-white/[0.02] border ${triedToContinue && !eligibilityData.consent ? 'border-red-500/50' : 'border-black/5'} rounded-3xl`}>
-                                        <label className="flex gap-4 cursor-pointer group">
-                                            <div className="relative flex-shrink-0 mt-1">
-                                                <input
-                                                    type="checkbox"
-                                                    className="peer hidden"
-                                                    checked={eligibilityData.consent}
-                                                    onChange={(e) => setEligibilityData({ ...eligibilityData, consent: e.target.checked })}
-                                                />
-                                                <div className="w-6 h-6 border-2 border-black/5 rounded peer-checked:bg-accent-black peer-checked:border-accent-black transition-all"></div>
-                                                <svg className="absolute top-1 left-1 w-4 h-4 text-black opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                            </div>
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-wide group-hover:text-gray-600 transition-colors">
-                                                I agree to receive text messages from uGlowMD with important updates, including prescription reminders, order updates, exclusive offers and information about new products. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out.
-                                            </span>
-                                        </label>
-                                        {triedToContinue && !eligibilityData.consent && (
-                                            <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Consent is required</p>
-                                        )}
-                                    </div>
-
-                                    {/* Navigation */}
-                                    <div className="flex flex-col md:flex-row gap-4 pt-2">
+                        {categoryId !== 'sexual-health' && categoryId !== 'hair-restoration' && categoryId !== 'testosterone' && (
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Biological Sex (Birth)</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {['Male', 'Female'].map(v => (
                                         <button
-                                            onClick={() => setStep(0)}
-                                            className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                                            key={v}
+                                            onClick={() => setEligibilityData({ ...eligibilityData, sex: v.toLowerCase() })}
+                                            className={`py-4 px-6 rounded-2xl text-[10px] font-bold tracking-widest transition-all ${eligibilityData.sex === v.toLowerCase()
+                                                ? 'border-black text-black bg-white shadow-md'
+                                                : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20'
+                                                } border`}
                                         >
-                                            Back
+                                            {v}
                                         </button>
-                                        <button
-                                            onClick={() => {
-                                                // Validate all required fields
-                                                const requiredFields = ['state', 'phone', 'pcpVisitLast6Months', 'consent'];
-                                                const missingFields = requiredFields.filter(field => !eligibilityData[field]);
-
-                                                if (missingFields.length > 0) {
-                                                    setTriedToContinue(true);
-                                                    return;
-                                                }
-
-                                                // Validate lab results if PCP visit was "Yes"
-                                                if (eligibilityData.pcpVisitLast6Months === 'Yes' && (!eligibilityData.labResults || eligibilityData.labResults.length === 0)) {
-                                                    setTriedToContinue(true);
-                                                    return;
-                                                }
-
-                                                // Format DOB
-                                                const formattedDob = `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}`;
-                                                setEligibilityData(prev => ({ ...prev, dob: formattedDob }));
-                                                setStep(8);
-                                            }}
-                                            className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm`}
-                                        >
-                                            Continue
-                                        </button>
-                                    </div>
+                                    ))}
                                 </div>
-                            </>
+                            </div>
                         )}
+
+                        {/* Date of Birth */}
+                        <div className="mb-10">
+                            <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Date of Birth</label>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <input
+                                        type="text"
+                                        maxLength="2"
+                                        placeholder="MM"
+                                        className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.dobMonth ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-center text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
+                                        value={eligibilityData.dobMonth}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setEligibilityData({ ...eligibilityData, dobMonth: val });
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        maxLength="2"
+                                        placeholder="DD"
+                                        className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.dobDay ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-center text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
+                                        value={eligibilityData.dobDay}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setEligibilityData({ ...eligibilityData, dobDay: val });
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        maxLength="4"
+                                        placeholder="YYYY"
+                                        className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.dobYear ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 text-center text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
+                                        value={eligibilityData.dobYear}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setEligibilityData({ ...eligibilityData, dobYear: val });
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            {triedToContinue && (!eligibilityData.dobMonth || !eligibilityData.dobDay || !eligibilityData.dobYear) && (
+                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Full date of birth is required</p>
+                            )}
+                        </div>
+
+                        {/* State & Phone */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="relative">
+                                <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Residing State</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search state..."
+                                        className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.state ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-[#1a1a1a] focus:outline-none focus:border-black transition-all font-bold pr-12`}
+                                        value={showStateDropdown ? stateSearch : (eligibilityData.state ? stateFullNames[eligibilityData.state] : stateSearch)}
+                                        onChange={(e) => {
+                                            setStateSearch(e.target.value);
+                                            setShowStateDropdown(true);
+                                        }}
+                                        onFocus={() => {
+                                            if (eligibilityData.state) setStateSearch('');
+                                            setShowStateDropdown(true);
+                                        }}
+                                    />
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
+
+                                    {showStateDropdown && (
+                                        <div className="absolute z-50 left-0 right-0 mt-2 max-h-60 overflow-y-auto bg-white border border-black/10 rounded-2xl shadow-2xl backdrop-blur-xl no-scrollbar">
+                                            {Object.entries(stateFullNames)
+                                                .filter(([code, name]) =>
+                                                    name.toLowerCase().includes(stateSearch.toLowerCase()) ||
+                                                    code.toLowerCase().includes(stateSearch.toLowerCase())
+                                                )
+                                                .map(([code, name]) => (
+                                                    <div
+                                                        key={code}
+                                                        onClick={() => {
+                                                            setEligibilityData({ ...eligibilityData, state: code });
+                                                            setStateSearch('');
+                                                            setShowStateDropdown(false);
+                                                        }}
+                                                        className="px-8 py-4 text-[#1a1a1a] hover:bg-accent-black hover:text-black cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex justify-between items-center"
+                                                    >
+                                                        <span>{name}</span>
+                                                        <span className="opacity-40">{code}</span>
+                                                    </div>
+                                                ))
+                                            }
+                                            {Object.entries(stateFullNames).filter(([code, name]) =>
+                                                name.toLowerCase().includes(stateSearch.toLowerCase()) ||
+                                                code.toLowerCase().includes(stateSearch.toLowerCase())
+                                            ).length === 0 && (
+                                                    <div className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-300 text-center">
+                                                        No matches found
+                                                    </div>
+                                                )}
+                                        </div>
+                                    )}
+                                </div>
+                                {triedToContinue && !eligibilityData.state && (
+                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">State selection is required</p>
+                                )}
+
+                                {/* Overlay to close dropdown */}
+                                {showStateDropdown && (
+                                    <div
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setShowStateDropdown(false)}
+                                    />
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    placeholder="(XXX) XXX-XXXX"
+                                    className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
+                                    value={eligibilityData.phone}
+                                    onChange={(e) => {
+                                        const rawValue = e.target.value.replace(/\D/g, '');
+                                        let formattedValue = '';
+                                        if (rawValue.length > 0) {
+                                            formattedValue = '(' + rawValue.substring(0, 3);
+                                            if (rawValue.length > 3) {
+                                                formattedValue += ') ' + rawValue.substring(3, 6);
+                                            }
+                                            if (rawValue.length > 6) {
+                                                formattedValue += '-' + rawValue.substring(6, 10);
+                                            }
+                                        } else {
+                                            formattedValue = rawValue;
+                                        }
+                                        setEligibilityData({ ...eligibilityData, phone: formattedValue });
+                                    }}
+                                />
+                                {triedToContinue && !eligibilityData.phone && (
+                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Phone number is required</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* PCP Visit – not shown for longevity */}
+                        {categoryId !== 'longevity' && (
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Have you seen your primary care provider in the past 12 months?</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {['Yes', 'No'].map(v => (
+                                        <button
+                                            key={v}
+                                            onClick={() => setEligibilityData({ ...eligibilityData, pcpVisitLast6Months: v })}
+                                            className={`py-4 px-6 rounded-2xl text-[10px] font-medium tracking-widest transition-all assessment-option-arial ${eligibilityData.pcpVisitLast6Months === v
+                                                ? 'border-black text-black bg-white shadow-md scale-[1.02]'
+                                                : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-black/5 text-gray-400 border-red-500/50' : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20')
+                                                } border`}
+                                        >
+                                            {v}
+                                        </button>
+                                    ))}
+                                </div>
+                                {triedToContinue && !eligibilityData.pcpVisitLast6Months && (
+                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Please select an option</p>
+                                )}
+
+                                {eligibilityData.pcpVisitLast6Months && (
+                                    <div className="mt-6 p-6 bg-white/[0.02] border border-black/5 rounded-3xl">
+                                        <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed">
+                                            {eligibilityData.pcpVisitLast6Months === 'Yes'
+                                                ? 'Since you have selected "Yes", please upload the lab results that include your "Lipid" and "A1c" values:'
+                                                : 'Since you have selected "No", you could possibly be ordered/recommended to do a Lab Test (Lipid, A1c).'}
+                                        </p>
+                                        {eligibilityData.pcpVisitLast6Months === 'Yes' && (
+                                            <div className="mt-6">
+                                                {/* Multi-file list */}
+                                                {Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0 && (
+                                                    <div className="space-y-3 mb-6">
+                                                        {eligibilityData.labResults.map((url, idx) => (
+                                                            <div key={idx} className="flex items-center justify-between p-4 bg-black/5 border border-black/5 rounded-2xl group/file">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-8 h-8 bg-accent-black/10 rounded-lg flex items-center justify-center text-accent-black">
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                                                    </div>
+                                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Lab Document {idx + 1}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-3">
+                                                                    <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">View</a>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const newResults = [...eligibilityData.labResults];
+                                                                            newResults.splice(idx, 1);
+                                                                            setEligibilityData({ ...eligibilityData, labResults: newResults });
+                                                                        }}
+                                                                        className="text-[10px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+                                                                    >
+                                                                        Remove
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <input
+                                                    type="file"
+                                                    id="lab-upload"
+                                                    className="hidden"
+                                                    accept="image/*,.pdf"
+                                                    onChange={(e) => handleFileUpload(e.target.files[0], 'lab-results', (url) => {
+                                                        const current = Array.isArray(eligibilityData.labResults) ? eligibilityData.labResults : (eligibilityData.labResults ? [eligibilityData.labResults] : []);
+                                                        setEligibilityData({ ...eligibilityData, labResults: [...current, url] });
+                                                    })}
+                                                />
+                                                <button
+                                                    onClick={() => document.getElementById('lab-upload').click()}
+                                                    disabled={uploading === 'lab-results'}
+                                                    className={`w-full flex items-center justify-center gap-4 px-8 py-6 bg-black/5 border-2 border-dashed ${triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) ? 'border-red-500/50' : 'border-black/5'} rounded-2xl hover:border-accent-black transition-all group`}
+                                                >
+                                                    {uploading === 'lab-results' ? (
+                                                        <div className="w-5 h-5 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
+                                                    ) : (
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                        </svg>
+                                                    )}
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-white">
+                                                        {eligibilityData.labResults?.length > 0 ? 'Upload Another Lab Result' : 'Upload Lab Results'}
+                                                    </span>
+                                                </button>
+                                                {triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) && (
+                                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">At least one lab result is REQUIRED</p>
+                                                )}
+                                                {eligibilityData.labResults?.length > 0 && (
+                                                    <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Consent Text */}
+                        <div className={`p-6 bg-white/[0.02] border ${triedToContinue && !eligibilityData.consent ? 'border-red-500/50' : 'border-black/5'} rounded-3xl`}>
+                            <label className="flex gap-4 cursor-pointer group">
+                                <div className="relative flex-shrink-0 mt-1">
+                                    <input
+                                        type="checkbox"
+                                        className="peer hidden"
+                                        checked={eligibilityData.consent}
+                                        onChange={(e) => setEligibilityData({ ...eligibilityData, consent: e.target.checked })}
+                                    />
+                                    <div className="w-6 h-6 border-2 border-black/5 rounded peer-checked:bg-accent-black peer-checked:border-accent-black transition-all"></div>
+                                    <svg className="absolute top-1 left-1 w-4 h-4 text-black opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-wide group-hover:text-gray-600 transition-colors">
+                                    I agree to receive text messages from uGlowMD with important updates, including prescription reminders, order updates, exclusive offers and information about new products. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out.
+                                </span>
+                            </label>
+                            {triedToContinue && !eligibilityData.consent && (
+                                <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Consent is required</p>
+                            )}
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="flex flex-col md:flex-row gap-4 pt-2">
+                            <button
+                                onClick={() => setStep(0)}
+                                className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={() => {
+                                    // Validate all required fields
+                                    const requiredFields = categoryId === 'longevity'
+                                        ? ['state', 'phone', 'consent', 'dobMonth', 'dobDay', 'dobYear']
+                                        : ['state', 'phone', 'pcpVisitLast6Months', 'consent', 'dobMonth', 'dobDay', 'dobYear'];
+                                    const missingFields = requiredFields.filter(field => !eligibilityData[field]);
+
+                                    if (missingFields.length > 0) {
+                                        setTriedToContinue(true);
+                                        return;
+                                    }
+
+                                    // Validate lab results if PCP visit was "Yes" (weight-loss only)
+                                    if (categoryId !== 'longevity' && eligibilityData.pcpVisitLast6Months === 'Yes' && (!eligibilityData.labResults || eligibilityData.labResults.length === 0)) {
+                                        setTriedToContinue(true);
+                                        return;
+                                    }
+
+                                    // Format DOB
+                                    const formattedDob = `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}`;
+                                    setEligibilityData(prev => ({ ...prev, dob: formattedDob }));
+                                    // Longevity goes directly to medical intake; other categories go to medical intake too
+                                    setMedicalStep(0);
+                                    setStep(8);
+                                }}
+                                className={`flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm`}
+                            >
+                                Continue
+                            </button>
+                        </div>
                     </div>
                 </div>
-
                 <div className="mt-12 text-center text-[9px] font-black uppercase tracking-[0.3em] text-white/10">
                     clinical screening protocol v2.4 • secure encryption enabled
                 </div>
@@ -2784,15 +3587,11 @@ const Assessment = () => {
             if (nextStep < medicalQuestions.length) {
                 setMedicalStep(nextStep);
             } else {
-                if (categoryId === 'sexual-health') {
-                    setStep(25); // Sexual health: go to AI review step
-                    callSexualHealthAIReview();
-                } else if (categoryId === 'hair-restoration') {
-                    setStep(25); // Hair restoration: go to Review step
-                    callHairRestorationAIReview();
-                } else {
-                    setStep(25); // All other categories: AI review
+                if (categoryId === 'weight-loss') {
+                    setStep(25); // Weight-loss: go to AI review step
                     callAIReview();
+                } else {
+                    setStep(10); // Other categories: go directly to Identification
                 }
             }
         };
@@ -2814,7 +3613,7 @@ const Assessment = () => {
                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">Step {7 + medicalStep}: {question.title}</h3>
                     )}
                     {question.id !== 'quote3' && question.question && (
-                        <h2 className={`font-black uppercase tracking-tighter mb-12 leading-tight ${question.id === 'heart_conditions' ? 'text-lg opacity-80' : 'text-2xl'}`}>
+                        <h2 className={`font-black tracking-tighter mb-12 leading-tight ${question.id === 'heart_conditions' ? 'text-lg opacity-80' : 'text-2xl'}`}>
                             {question.question}
                         </h2>
                     )}
@@ -3406,28 +4205,43 @@ const Assessment = () => {
                         )}
 
                         {!question.isStep19 && !question.isStep23 && (question.type === 'multiselect' || question.type === 'choice') && (
-                            <div className="grid grid-cols-1 gap-3">
-                                {question.options.map(opt => (
-                                    <button
-                                        key={opt}
-                                        onClick={() => {
-                                            const current = intakeData[question.id] || [];
-                                            if (question.type === 'choice') {
-                                                // Toggle: clicking selected answer deselects it
-                                                setIntakeData({ ...intakeData, [question.id]: intakeData[question.id] === opt ? '' : opt });
-                                            } else {
-                                                setIntakeData({ ...intakeData, [question.id]: current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt] });
-                                            }
-                                            setIntakeError('');
-                                        }}
-                                        className={`w-full py-5 px-8 pr-12 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
-                                            ? 'border-black text-black bg-white shadow-md scale-[1.01]'
-                                            : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'
-                                            }`}
-                                    >
-                                        {opt}
-                                    </button>
-                                ))}
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 gap-3">
+                                    {question.options.map(opt => (
+                                        <button
+                                            key={opt}
+                                            onClick={() => {
+                                                const current = intakeData[question.id] || [];
+                                                if (question.type === 'choice') {
+                                                    // Toggle: clicking selected answer deselects it
+                                                    setIntakeData({ ...intakeData, [question.id]: intakeData[question.id] === opt ? '' : opt });
+                                                } else {
+                                                    setIntakeData({ ...intakeData, [question.id]: current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt] });
+                                                }
+                                                setIntakeError('');
+                                            }}
+                                            className={`w-full py-5 px-8 pr-12 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
+                                                ? 'border-black text-black bg-white shadow-md scale-[1.01]'
+                                                : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'
+                                                }`}
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {((question.type === 'multiselect' && Array.isArray(intakeData[question.id]) && intakeData[question.id].some(val => val.toLowerCase().includes('other'))) ||
+                                    (question.type === 'choice' && typeof intakeData[question.id] === 'string' && intakeData[question.id].toLowerCase().includes('other'))) && (
+                                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className="block text-[10px] font-black uppercase tracking-widest text-black/40 mb-3 ml-2">Please specify additional details below:</label>
+                                            <textarea
+                                                placeholder="Type your medications or details here..."
+                                                className="w-full h-32 bg-white border border-black/10 rounded-2xl py-5 px-8 text-sm font-bold outline-none focus:border-black transition-all resize-none shadow-sm placeholder:text-black/20"
+                                                value={intakeData[`${question.id}_other`] || ''}
+                                                onChange={(e) => setIntakeData({ ...intakeData, [`${question.id}_other`]: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
                             </div>
                         )}
 
@@ -3823,7 +4637,7 @@ const Assessment = () => {
                 <div>
                     <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">ID Type</label>
                     <div className="grid grid-cols-2 gap-4">
-                        {["Driver's License", "Passport"].map(type => (
+                        {["Driver's License", "State ID", "Passport", "Military ID"].map(type => (
                             <button
                                 key={type}
                                 onClick={() => {
@@ -3952,7 +4766,7 @@ const Assessment = () => {
 
                 <div className="flex flex-col md:flex-row gap-4">
                     <button
-                        onClick={() => categoryId === 'sexual-health' ? setStep(8) : setStep(25)}
+                        onClick={() => categoryId === 'weight-loss' ? setStep(25) : setStep(8)}
                         className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
@@ -4370,7 +5184,7 @@ const Assessment = () => {
                 </div>
 
                 <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-8 mt-10">
-                    By clicking "Process Activation", you agree to our clinical terms of service.
+                    By clicking "Process Submission", you agree to our clinical terms of service.
                 </p>
 
                 <div className="pt-8 mt-8 text-center border-t border-black/5">
@@ -4477,65 +5291,106 @@ const Assessment = () => {
 
 
     const renderSuccessStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6 text-center">
-            <div className="w-24 h-24 bg-accent-black/10 border border-accent-black/20 rounded-full flex items-center justify-center mx-auto mb-10">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 leading-tight">
-                Assessment <br />
-                <span className="text-accent-black">Complete.</span>
-            </h2>
-            <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px] mb-12 max-w-md mx-auto leading-relaxed">
-                Your medical profile has been encrypted and submitted to our clinical board. A licensed provider will review your case within 24 hours.
-            </p>
+        <div className="min-h-screen bg-white flex items-center justify-center px-6 py-20">
+            <div className="max-w-2xl w-full mx-auto text-center">
 
-            {tempUserId && !user && (
-                <div className="mb-12 p-8 rounded-[32px] bg-[#FFDE5910] border-2 border-[#FFDE5940] text-left animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-[#FFDE59] flex items-center justify-center text-black">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                        </div>
-                        <h3 className="text-lg font-black uppercase tracking-tighter text-[#1a1a1a]">Final Step: Verify Identity</h3>
-                    </div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-[#1a1a1a80] leading-relaxed mb-6">
-                        We've sent a verification link to <span className="text-black">{authData.email || 'your email'}</span>. You must click this link to activate your clinical profile and access your dashboard.
-                    </p>
-                    <button
-                        onClick={() => {
-                            const domain = (authData.email || '').split('@')[1];
-                            if (domain) window.open(`https://${domain}`, '_blank');
-                        }}
-                        className="w-full py-4 bg-black text-white rounded-xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#FFDE59] hover:text-black transition-all"
+                {/* Animated check icon */}
+                <div
+                    className="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-10"
+                    style={{ backgroundColor: '#FFDE5920', border: '2px solid #FFDE5960' }}
+                >
+                    <svg
+                        width="52" height="52" viewBox="0 0 24 24"
+                        fill="none" stroke="#1a1a1a" strokeWidth="3"
+                        strokeLinecap="round" strokeLinejoin="round"
+                        className="animate-in zoom-in duration-700"
                     >
-                        Open Mailbox & Verify
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+
+                {/* Category pill */}
+                <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
+                    {(categoryId || 'assessment').replace(/-/g, ' ')}
+                </div>
+
+                {/* Headline */}
+                <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.95] mb-6" style={{ color: '#1a1a1a' }}>
+                    Assessment<br />
+                    <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 16px', display: 'inline-block', marginTop: '8px' }}>
+                        Complete.
+                    </span>
+                </h1>
+
+                <p className="text-black/40 font-medium uppercase tracking-[0.2em] text-[10px] mb-16 max-w-md mx-auto leading-relaxed">
+                    Your medical profile has been securely submitted to our clinical board. A licensed provider will review your case shortly.
+                </p>
+
+                {/* What happens next */}
+                <div className="rounded-[40px] p-8 md:p-12 mb-12 text-left" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a10' }}>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40 mb-8 text-center">What Happens Next</p>
+                    <div className="space-y-6">
+                        {[
+                            {
+                                num: '01',
+                                title: 'Clinical Review',
+                                desc: 'A licensed provider reviews your assessment within 24 hours.'
+                            },
+                            {
+                                num: '02',
+                                title: 'Provider Assigned',
+                                desc: 'You will be matched with a provider specializing in your treatment category.'
+                            },
+                            {
+                                num: '03',
+                                title: 'Treatment Plan',
+                                desc: 'Your personalized plan and next steps will appear in your dashboard.'
+                            }
+                        ].map(item => (
+                            <div key={item.num} className="flex gap-6 items-start p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
+                                <span className="text-2xl font-black text-black/20 flex-shrink-0 leading-none">{item.num}</span>
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-black mb-1">{item.title}</p>
+                                    <p className="text-[10px] font-medium uppercase tracking-widest text-black/40 leading-relaxed">{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* CTAs */}
+                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
+                    >
+                        Return Home
+                    </button>
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
+                        style={{ color: '#ffffff' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                    >
+                        Go to My Dashboard
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
                     </button>
                 </div>
-            )}
 
-            <div className="flex flex-col md:flex-row gap-4 justify-center">
-                <button
-                    onClick={() => navigate('/')}
-                    className="w-full md:w-auto px-12 py-6 rounded-2xl bg-white border border-black/10 text-black font-black text-[10px] uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
-                >
-                    Home Page
-                </button>
-                <button
-                    onClick={() => navigate('/dashboard')}
-                    className="px-12 py-8 bg-white text-black border border-black/10 rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all duration-500 shadow-sm"
-                >
-                    Enter Dashboard
-                </button>
             </div>
         </div>
     );
 
 
     return (
-        <div className="min-h-screen bg-white text-[#1a1a1a] font-sans selection:bg-accent-black selection:text-black">
+        <div
+            className="min-h-screen text-[#1a1a1a] font-sans selection:bg-accent-black selection:text-black"
+            style={{ backgroundColor: '#ffffff' }}
+        >
             {/* Minimal Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 h-[84px] flex items-center">
                 <div className="max-w-7xl mx-auto w-full flex justify-between items-center h-full">
@@ -4565,7 +5420,7 @@ const Assessment = () => {
 
                 {/* Compact Progress Bar directly under the logo/header content */}
                 {
-                    ((step > 0 && step < 15) || (step === 0 && !(showQuote || showBMI || showQuote2 || showSexualHealthQuote || showSexualHealthGoals || showSexualHealthQuote2 || showHairQuote || showHairGoals || showHairQuote2))) && (
+                    ((step > 0 && step < 15) || (step === 0 && !(showQuote || showBMI || showQuote2 || showSexualHealthQuote || showSexualHealthGoals || showSexualHealthQuote2 || showHairQuote || showHairGoals || showHairQuote2 || showLongevityQuote || showLongevityGoals || showTestosteroneQuote || showTestosteroneGoals || showTestosteroneQuote2 || showRepairQuote || showRepairGoals || showRepairQuote2))) && (
                         <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5">
                             <div
                                 className="h-full bg-black transition-all duration-1000 ease-out"
@@ -4598,9 +5453,12 @@ const Assessment = () => {
 
             <main className="pt-28 pb-20 min-h-[calc(100vh-100px)]">
                 <div className="w-full">
-                    {categoryId === 'weight-loss' && showQuote && step === 0 && renderQuoteStep()}
-                    {categoryId === 'weight-loss' && !showQuote && showBMI && step === 0 && renderBMICalculatorStep()}
-                    {categoryId === 'weight-loss' && !showQuote && !showBMI && showQuote2 && step === 0 && renderQuote2Step()}
+                    {categoryId === 'weight-loss' && step === 0 && (
+                        showQuote ? renderQuoteStep() :
+                            showBMI ? renderBMICalculatorStep() :
+                                showQuote2 ? renderQuote2Step() :
+                                    renderQuoteStep() // Safety fallback — resets to start
+                    )}
                     {categoryId === 'sexual-health' && step === 0 && (
                         showSexualHealthQuote ? renderSexualHealthQuoteStep() :
                             showSexualHealthGoals ? renderSexualHealthGoalsStep() :
@@ -4613,9 +5471,29 @@ const Assessment = () => {
                                 showHairQuote2 ? renderHairQuote2Step() :
                                     renderHairQuoteStep() // Safety Fallback
                     )}
-                    {!(categoryId === 'weight-loss' && (showQuote || showBMI || showQuote2)) &&
+                    {categoryId === 'longevity' && step === 0 && (
+                        showLongevityQuote ? renderLongevityQuoteStep() :
+                            showLongevityGoals ? renderLongevityGoalsStep() :
+                                renderLongevityQuoteStep() // Safety Fallback
+                    )}
+                    {categoryId === 'testosterone' && step === 0 && (
+                        showTestosteroneQuote ? renderTestosteroneQuoteStep() :
+                            showTestosteroneGoals ? renderTestosteroneGoalsStep() :
+                                showTestosteroneQuote2 ? renderTestosteroneQuote2Step() :
+                                    renderTestosteroneQuoteStep() // Safety Fallback
+                    )}
+                    {categoryId === 'repair-healing' && step === 0 && (
+                        showRepairQuote ? renderRepairQuoteStep() :
+                            showRepairGoals ? renderRepairGoalsStep() :
+                                showRepairQuote2 ? renderRepairQuote2Step() :
+                                    renderRepairQuoteStep() // Safety Fallback
+                    )}
+                    {categoryId !== 'weight-loss' &&
                         categoryId !== 'sexual-health' &&
                         categoryId !== 'hair-restoration' &&
+                        categoryId !== 'longevity' &&
+                        categoryId !== 'testosterone' &&
+                        categoryId !== 'repair-healing' &&
                         (step === 0 || step === 1) && renderStep0()}
                     {step === 2 && renderReviewStep()}
                     {step === 3 && renderAuthStep()}

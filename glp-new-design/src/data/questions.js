@@ -88,6 +88,52 @@ export const categoryQuestions = {
             { id: 'dna', name: 'DNA Structural Integrity', desc: 'Protective protocols to preserve genetic health and cellular repair.' },
             { id: 'cognitive', name: 'Cognitive Neuro-Precision', desc: 'Enhance mental clarity, focus, and long-term brain health.' }
         ]
+    },
+    'testosterone': {
+        title: 'Testosterone Health Assessment',
+        question: ['What is your primary goal for', 'testosterone therapy?'],
+        stat: {
+            pct: '89%',
+            text: 'of patients report improved energy and',
+            highlight: 'vitality*',
+            image: null,
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
+            reviews: [
+                { name: "Marcus T.", result: "Energy Restored", text: "Levels optimized. Feeling stronger and sharper every day." },
+                { name: "Daniel R.", result: "Muscle Gain", text: "Physical performance is back to peak. Clinical precision delivered." },
+                { name: "Carlos M.", result: "Libido Boost", text: "Confidence and vitality fully restored. Remarkable results." }
+            ]
+        },
+        improvements: [
+            { id: 'energy', name: 'Increase daily energy and reduce fatigue', desc: 'Restore optimal hormone levels for sustained daily vitality.' },
+            { id: 'muscle', name: 'Improve muscle strength and physical performance', desc: 'Support lean mass, strength, and athletic recovery.' },
+            { id: 'sexual', name: 'Support sexual health and libido', desc: 'Optimize hormonal balance for sexual function and desire.' },
+            { id: 'mood', name: 'Enhance mood, motivation, or mental clarity', desc: 'Testosterone supports cognitive sharpness and emotional balance.' },
+            { id: 'wellness', name: 'Support overall wellness and healthy aging', desc: 'Long-term hormonal health for sustained vitality and longevity.' }
+        ]
+    },
+    'repair-healing': {
+        title: 'Repair & Strength Healing',
+        question: ['What is your primary goal for', 'peptide therapy?'],
+        stat: {
+            pct: '91%',
+            text: 'of patients report improved recovery and',
+            highlight: 'mobility*',
+            image: null,
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
+            reviews: [
+                { name: "James K.", result: "Full Recovery", text: "Back to training in half the time. BPC-157 is extraordinary." },
+                { name: "Maria L.", result: "Pain Free", text: "Joint pain gone in weeks. Mobility completely restored." },
+                { name: "Tom R.", result: "Peak Performance", text: "Tendon healed. Performance back at 100%." }
+            ]
+        },
+        improvements: [
+            { id: 'recovery', name: 'Accelerate recovery from sports or musculoskeletal injuries', desc: 'Targeted peptide support for faster healing at the cellular level.' },
+            { id: 'pain', name: 'Reduce joint or tendon pain and inflammation', desc: 'BPC-157 and TB-500 modulate inflammation for lasting relief.' },
+            { id: 'mobility', name: 'Improve mobility, flexibility, and range of motion', desc: 'Restore functional movement through tissue repair protocols.' },
+            { id: 'tissue', name: 'Support soft tissue, ligament, or tendon integrity', desc: 'Long-term structural support for connective tissue health.' },
+            { id: 'prevention', name: 'Enhance overall injury prevention and physical performance', desc: 'Proactive peptide strategy for athletes and active individuals.' }
+        ]
     }
 };
 
@@ -500,9 +546,9 @@ export const intakeQuestions = {
         {
             id: 'female_considerations_intro',
             title: 'Female-Specific Considerations',
-            type: 'info',
-            content: 'The following questions are for female patients only. If you are male, you may skip these.',
-            condition: (data) => data.sex !== 'female' && data.assigned_sex_intake !== 'female'
+            question: 'The following questions are for female patients only. If you are male, you may skip these.',
+            type: 'choice',
+            options: ['Answer Questions', 'Skip']
         },
         {
             id: 'female_reproduction',
@@ -510,7 +556,7 @@ export const intakeQuestions = {
             question: 'Are you pregnant, planning pregnancy, or breastfeeding?',
             type: 'choice',
             options: ['No', 'Yes – cannot use finasteride'],
-            condition: (data) => data.sex === 'female' || data.assigned_sex_intake === 'female'
+            condition: (data) => data.female_considerations_intro === 'Answer Questions'
         },
         {
             id: 'female_contraception',
@@ -518,7 +564,7 @@ export const intakeQuestions = {
             question: 'If premenopausal, are you using reliable contraception?',
             type: 'choice',
             options: ['Yes', 'No – finasteride cannot be prescribed'],
-            condition: (data) => data.sex === 'female' || data.assigned_sex_intake === 'female'
+            condition: (data) => data.female_considerations_intro === 'Answer Questions'
         },
         {
             id: 'pcos_hormonal',
@@ -526,7 +572,7 @@ export const intakeQuestions = {
             question: 'Have you been diagnosed with PCOS or other hormonal disorders?',
             type: 'choice',
             options: ['No', 'Yes'],
-            condition: (data) => data.sex === 'female' || data.assigned_sex_intake === 'female'
+            condition: (data) => data.female_considerations_intro === 'Answer Questions'
         },
         {
             id: 'tobacco_nicotine',
@@ -553,7 +599,7 @@ export const intakeQuestions = {
             id: 'family_history',
             title: 'Lifestyle Factors',
             question: 'Family history of hair loss?',
-            type: 'multiselect',
+            type: 'choice',
             options: ['No', 'Father', 'Mother', 'Siblings']
         },
         {
@@ -813,27 +859,746 @@ export const intakeQuestions = {
         }
     ],
     'longevity': [
-        { id: 'phys_activity', title: 'Activity Level', question: 'Activity level?', type: 'choice', options: ['Sedentary', 'Somewhat', 'Active', 'Athletic', 'Biohacker'] },
-        { id: 'height_longevity', title: 'Biometrics', question: 'Height?', type: 'text' },
-        { id: 'weight_longevity', title: 'Biometrics', question: 'Weight?', type: 'text' },
-        { id: 'med_conditions_longevity', title: 'Health Status', question: 'Medical conditions?', type: 'multiselect', options: ['None', 'Diabetes', 'HTN', 'Heart', 'Thyroid', 'Asthma', 'Anxiety', 'HIV', 'Kidney', 'Cancer', 'Other'] },
-        { id: 'kidney_status', title: 'Organ Health', question: 'Kidney problems?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'liver_status', title: 'Organ Health', question: 'Liver problems?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'heart_pumping_status', title: 'Organ Health', question: 'Heart pumping problems?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'smoking_status_long', title: 'Habits', question: 'Smoking?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'family_hx_long', title: 'Family History', question: 'Family history?', type: 'multiselect', options: ['Cancer', 'Heart', 'Dementia', 'Diabetes', 'BP', 'Cholesterol', 'None'] },
-        { id: 'surgery_hx_long', title: 'Surgical History', question: 'Surgeries?', type: 'multiselect', options: ['None', 'Back/Neck', 'Heart', 'Prostate', 'Hysterectomy', 'Gallbladder', 'Appendix', 'Other'] },
-        { id: 'has_pcp_long', title: 'Care Network', question: 'Primary care provider?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'routine_physical_hx', title: 'Care Network', question: 'Check-up last 3 years?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'longevity_importance', title: 'Motivation', question: 'Longevity importance?', type: 'choice', options: ['None', 'Little', 'Some', 'Moderate', 'Significant'] },
-        { id: 'meds_list_long', title: 'Medications', question: 'Medications list?', type: 'text' },
-        { id: 'allergies_list_long', title: 'Allergies', question: 'Allergies list?', type: 'text' },
-        { id: 'personal_cancer_hx', title: 'Oncology', question: 'Personal cancer history?', type: 'choice', options: ['Yes', 'No'], details: true },
-        { id: 'family_cancer_hx_long', title: 'Oncology', question: 'Family cancer history?', type: 'choice', options: ['Yes', 'No'], details: true },
-        { id: 'adverse_situations', title: 'Safety Screening', question: 'Adverse situations?', type: 'multiselect', options: ['Hypersensitivity', 'Fatigue', 'Vision loss', 'Confusion', 'Uncontrolled illness', 'Psychiatric', 'None'] },
-        { id: 'nad_prev_use', title: 'Experience', question: 'NAD+ experience?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'self_injection_hx', title: 'Experience', question: 'Self-injection experience?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'nad_comfort_drawing', title: 'Experience', question: 'Comfortable injecting?', type: 'choice', options: ['Yes', 'No'] },
-        { id: 'anything_else_long', title: 'Final Review', question: 'Anything else?', type: 'choice', options: ['Yes', 'No'], details: true }
+        // Step 5 – Allergies
+        {
+            id: 'allergies_long',
+            title: 'Allergies',
+            question: 'Type all the allergies you have, if more than one allergy, use a comma (,). Include allergies to prescription or over-the-counter medicines, herbs, vitamins, supplements, food, dyes, or anything else. Enter "No" if you have no allergies.',
+            type: 'text',
+            placeholder: 'e.g. Penicillin, Shellfish, Latex… or "No"'
+        },
+        // Step 6 – Current Medications
+        {
+            id: 'current_meds_long',
+            title: 'Current Medications',
+            question: 'Are you currently taking any of the following medications?',
+            type: 'multiselect',
+            options: [
+                'A GLP-1 agonist such as (but not limited to) Semaglutide, Tirzepatide, exenatide, liraglutide',
+                'Metformin',
+                'SGLT2 inhibitors – empagliflozin, canagliflozin',
+                'Sulfonylureas such as (but not limited to) glipizide (Glucotrol), glimepiride (Amaryl), glyburide',
+                'Meglitinides – repaglinide, nateglinide',
+                'Insulin',
+                'Alpha-glucosidase inhibitors – acarbose',
+                'Thiazolidinediones – pioglitazone',
+                'Warfarin (also called Jantoven or Coumadin) - a blood thinner that usually requires regular lab testing',
+                'Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex), Hydrochlorothiazide/HCTZ',
+                'Selective Serotonin Reuptake Inhibitor (SSRI) such as (but not limited to) citalopram (Celexa), fluoxetine (Prozac), escitalopram (Lexapro)',
+                'Monoamine Oxidase Inhibitor (MAOI) such as (but not limited to) phenelzine (Nardil), selegiline (Emsam)',
+                'Opioids such as Oxycontin, Oxycodone, Vicodin, Percocet, Norco (hydrocodone), Dilaudid (hydromorphone), Methadone, Suboxone',
+                'Blood thinners (warfarin, apixaban, etc.)',
+                'Antihypertensives',
+                'Hormone therapies (testosterone, DHT blockers)',
+                'Minoxidil topical treatments',
+                'Finasteride or other 5-alpha-reductase inhibitors',
+                'Other medication(s)',
+                'None of the above'
+            ]
+        },
+        // Step 7 – Therapy History
+        {
+            id: 'nad_therapy_history',
+            title: 'Therapy History',
+            question: 'Have you ever used NAD+ therapy before?',
+            type: 'choice',
+            options: [
+                'I have never used any NAD+',
+                'I have used NAD+ spray only',
+                'I have used NAD+ subcutaneous injections'
+            ]
+        },
+        {
+            id: 'nad_therapy_effectiveness',
+            title: 'Prior Therapy – Effectiveness',
+            question: 'How effective was your prior therapy in achieving your wellness goals?',
+            type: 'choice',
+            condition: (data) => data.nad_therapy_history && data.nad_therapy_history !== 'I have never used any NAD+',
+            options: [
+                'I did not notice any improvement in energy or vitality',
+                'I noticed mild improvements, but goals were partially achieved',
+                'I noticed moderate improvements that helped daily function',
+                'I noticed significant improvements and felt clearly better'
+            ]
+        },
+        {
+            id: 'nad_therapy_side_effects',
+            title: 'Prior Therapy – Side Effects',
+            question: 'Did you experience side effects from prior therapy?',
+            type: 'choice',
+            condition: (data) => data.nad_therapy_history && data.nad_therapy_history !== 'I have never used any NAD+',
+            options: [
+                'No side effects at all',
+                'Mild effects such as temporary flushing, slight headache, or minor nausea',
+                'Moderate effects such as dizziness or fatigue lasting a few hours',
+                'Severe effects that required stopping the therapy'
+            ]
+        },
+        // Glutathione Therapy History
+        {
+            id: 'glutathione_therapy_history',
+            title: 'Therapy History',
+            question: 'Have you ever used Glutathione therapy before?',
+            type: 'choice',
+            options: [
+                'I have never used any Glutathione',
+                'I have used Glutathione subcutaneous injections',
+                'I have received Glutathione (IM) injections at a healthcare facility'
+            ]
+        },
+        {
+            id: 'glutathione_therapy_effectiveness',
+            title: 'Prior Glutathione Therapy – Effectiveness',
+            question: 'How effective was your prior therapy in achieving your wellness goals?',
+            type: 'choice',
+            condition: (data) => data.glutathione_therapy_history && data.glutathione_therapy_history !== 'I have never used any Glutathione',
+            options: [
+                'I did not notice any improvement in energy or vitality',
+                'I noticed mild improvements, but goals were partially achieved',
+                'I noticed moderate improvements that helped daily function',
+                'I noticed significant improvements and felt clearly better'
+            ]
+        },
+        {
+            id: 'glutathione_therapy_side_effects',
+            title: 'Prior Glutathione Therapy – Side Effects',
+            question: 'Did you experience side effects from prior therapy?',
+            type: 'choice',
+            condition: (data) => data.glutathione_therapy_history && data.glutathione_therapy_history !== 'I have never used any Glutathione',
+            options: [
+                'No side effects at all',
+                'Mild effects such as temporary flushing, slight headache, or minor nausea',
+                'Moderate effects such as dizziness or fatigue lasting a few hours',
+                'Severe effects that required stopping the therapy'
+            ]
+        },
+        // Step 8 – Health Conditions
+        {
+            id: 'liver_health_long',
+            title: 'Health Conditions',
+            question: 'How would you describe your liver health?',
+            type: 'choice',
+            options: [
+                'Normal liver function with no known issues',
+                'Mild liver condition monitored by a healthcare provider',
+                'Moderate liver condition requiring regular checkups',
+                'Severe liver disease limiting safe medication use'
+            ]
+        },
+        {
+            id: 'kidney_health_long',
+            title: 'Health Conditions',
+            question: 'How would you describe your kidney function?',
+            type: 'choice',
+            options: [
+                'Normal kidney function with no known issues',
+                'Mild kidney impairment monitored by a healthcare provider',
+                'Moderate kidney impairment requiring lab monitoring',
+                'Severe kidney disease or dialysis-dependent'
+            ]
+        },
+        {
+            id: 'cardiovascular_health_long',
+            title: 'Health Conditions',
+            question: 'How would you describe your cardiovascular health?',
+            type: 'choice',
+            options: [
+                'No cardiovascular issues',
+                'Stable heart or blood vessel conditions under medical supervision',
+                'History of heart attack, stroke, or unstable angina'
+            ]
+        },
+        {
+            id: 'metabolic_health_long',
+            title: 'Health Conditions',
+            question: 'How would you describe your metabolic health (blood sugar or diabetes)?',
+            type: 'choice',
+            options: [
+                'Normal blood sugar with no history of diabetes',
+                'Prediabetes or slightly elevated blood sugar',
+                'Type 1 diabetes managed under medical supervision',
+                'Type 2 diabetes – well controlled',
+                'Type 2 diabetes – poorly controlled'
+            ]
+        },
+        {
+            id: 'autoimmune_long',
+            title: 'Health Conditions',
+            question: 'Do you have autoimmune or chronic inflammatory conditions?',
+            type: 'choice',
+            options: [
+                'No autoimmune or chronic inflammation',
+                'Mild autoimmune condition that is well-controlled',
+                'Active or uncontrolled autoimmune disease'
+            ]
+        },
+        // Step 9 – Medication & Supplement Review
+        {
+            id: 'meds_supplements_long',
+            title: 'Medication & Supplement Review',
+            question: 'Which of the following best describes your current regular medications or supplements?',
+            type: 'multiselect',
+            options: [
+                'I do not take any medications or supplements',
+                'I take blood thinners such as warfarin or apixaban',
+                'I take blood pressure medications',
+                'I take diabetes medications including insulin, metformin, or GLP-1 agonists',
+                'I take antioxidant supplements such as NAC, vitamin C, or alpha-lipoic acid',
+                'I take hormone therapy such as testosterone, estrogen, or thyroid medications'
+            ]
+        },
+        // Step 10 – Lifestyle & Habits
+        {
+            id: 'exercise_freq_long',
+            title: 'Lifestyle & Habits',
+            question: 'How frequently do you exercise?',
+            type: 'choice',
+            options: [
+                'Rarely or never',
+                '1–2 times per week',
+                '3–5 times per week',
+                'Daily or almost daily'
+            ]
+        },
+        {
+            id: 'sleep_quality_long',
+            title: 'Lifestyle & Habits',
+            question: 'How would you describe your sleep quality?',
+            type: 'choice',
+            options: [
+                'Poor, less than 5 hours per night',
+                'Fair, 5–6 hours per night',
+                'Good, 7–8 hours per night',
+                'Excellent, more than 8 hours per night'
+            ]
+        },
+        {
+            id: 'alcohol_long',
+            title: 'Lifestyle & Habits',
+            question: 'How often do you consume alcohol?',
+            type: 'choice',
+            options: [
+                'Rarely or never',
+                '1–3 drinks per week',
+                '4–10 drinks per week',
+                'More than 10 drinks per week'
+            ]
+        },
+        {
+            id: 'tobacco_long',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use tobacco or nicotine?',
+            type: 'choice',
+            options: ['Never used', 'Former user', 'Current user']
+        },
+        {
+            id: 'recreational_drugs_long',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use recreational drugs?',
+            type: 'choice',
+            options: ['Never', 'Occasionally', 'Regularly']
+        },
+        // Step 11 – Side Effects & Consent
+        {
+            id: 'nad_consent_long',
+            title: 'Side Effects & Consent',
+            question: 'I understand NAD+ therapy may cause temporary flushing, dizziness, headache, or fatigue.',
+            type: 'choice',
+            options: ['Agree']
+        }
+    ],
+    'testosterone': [
+        // Step 6 – Allergies
+        {
+            id: 'allergies_test',
+            title: 'Allergies',
+            question: 'Type all the allergies you have, if more than one allergy, use a comma (,). Include allergies to prescription or over-the-counter medicines, herbs, vitamins, supplements, food, dyes, or anything else. Enter "No" if you have no allergies.',
+            type: 'text',
+            placeholder: 'e.g. Penicillin, Shellfish, Latex… or "No"'
+        },
+        // Step 7 – Current Medications
+        {
+            id: 'current_meds_test',
+            title: 'Current Medications',
+            question: 'Are you currently taking any of the following medications?',
+            type: 'multiselect',
+            options: [
+                'A GLP-1 agonist such as (but not limited to) Semaglutide, Tirzepatide, exenatide, liraglutide',
+                'Metformin',
+                'SGLT2 inhibitors – empagliflozin, canagliflozin',
+                'Sulfonylureas such as (but not limited to) glipizide (Glucotrol), glimepiride (Amaryl), glyburide',
+                'Meglitinides – repaglinide, nateglinide',
+                'Insulin',
+                'Alpha-glucosidase inhibitors – acarbose',
+                'Thiazolidinediones – pioglitazone',
+                'Warfarin (also called Jantoven or Coumadin) - a blood thinner that usually requires regular lab testing',
+                'Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex), Hydrochlorothiazide/HCTZ',
+                'Selective Serotonin Reuptake Inhibitor (SSRI) such as (but not limited to) citalopram (Celexa), fluoxetine (Prozac), escitalopram (Lexapro)',
+                'Monoamine Oxidase Inhibitor (MAOI) such as (but not limited to) phenelzine (Nardil), selegiline (Emsam)',
+                'Opioids such as Oxycontin, Oxycodone, Vicodin, Percocet, Norco (hydrocodone), Dilaudid (hydromorphone), Methadone, Suboxone',
+                'Blood thinners (warfarin, apixaban, etc.)',
+                'Antihypertensives',
+                'Hormone therapies (testosterone, DHT blockers)',
+                'Minoxidil topical treatments',
+                'Finasteride or other 5-alpha-reductase inhibitors',
+                'Other medication(s)',
+                'None of the above'
+            ]
+        },
+        // Step 8 – Prior Therapy History
+        {
+            id: 'test_therapy_history',
+            title: 'Prior Therapy History',
+            question: 'Have you previously used testosterone therapy?',
+            type: 'choice',
+            options: [
+                'No, I have never used testosterone therapy',
+                'I have used topical gels or creams and monitored my hormone levels',
+                'I have used intramuscular injections under a provider\'s supervision',
+                'I have used subcutaneous injections for hormone replacement therapy'
+            ]
+        },
+        {
+            id: 'test_therapy_effectiveness',
+            title: 'Prior Therapy – Effectiveness',
+            question: 'How effective was prior therapy in achieving your wellness goals?',
+            type: 'choice',
+            condition: (data) => data.test_therapy_history && data.test_therapy_history !== 'No, I have never used testosterone therapy',
+            options: [
+                'Did not notice any measurable improvement in energy, mood, or sexual health',
+                'Achieved mild improvement, with partial benefit in one or more areas',
+                'Achieved moderate improvement, noticeable in energy, strength, or focus',
+                'Achieved significant improvement, with clear changes in multiple wellness areas'
+            ]
+        },
+        {
+            id: 'test_therapy_side_effects',
+            title: 'Prior Therapy – Side Effects',
+            question: 'Have you experienced side effects from prior testosterone therapy?',
+            type: 'choice',
+            condition: (data) => data.test_therapy_history && data.test_therapy_history !== 'No, I have never used testosterone therapy',
+            options: [
+                'No side effects, therapy was well-tolerated',
+                'Mild acne, minor mood changes, or transient fatigue',
+                'Moderate changes such as elevated hematocrit, persistent acne, or water retention',
+                'Severe effects including cardiovascular symptoms, liver concerns, or therapy discontinuation'
+            ]
+        },
+        // Step 8b – Prior Hormone Therapy History
+        {
+            id: 'hormone_therapy_history',
+            title: 'Prior Hormone Therapy History',
+            question: 'Have you previously used estrogen or other hormone therapies?',
+            type: 'choice',
+            options: [
+                'No, I have never used hormone therapy',
+                'I have used oral estrogen formulations in the past',
+                'I have used transdermal patches or gels',
+                'I have used vaginal estrogen preparations',
+                'I have used compounded or other hormone therapies'
+            ]
+        },
+        {
+            id: 'hormone_therapy_effectiveness',
+            title: 'Prior Hormone Therapy – Effectiveness',
+            question: 'How effective was prior therapy in achieving your wellness goals?',
+            type: 'choice',
+            condition: (data) => data.hormone_therapy_history && data.hormone_therapy_history !== 'No, I have never used hormone therapy',
+            options: [
+                'Did not notice any improvement in symptoms or quality of life',
+                'Achieved mild improvement, noticeable in some symptoms only',
+                'Achieved moderate improvement, noticeable in multiple areas',
+                'Achieved significant improvement, with strong symptom relief and functional benefits'
+            ]
+        },
+        {
+            id: 'hormone_therapy_side_effects',
+            title: 'Prior Hormone Therapy – Side Effects',
+            question: 'Have you experienced side effects from prior hormone therapy?',
+            type: 'choice',
+            condition: (data) => data.hormone_therapy_history && data.hormone_therapy_history !== 'No, I have never used hormone therapy',
+            options: [
+                'No side effects',
+                'Mild symptoms such as breast tenderness, bloating, or mild nausea',
+                'Moderate effects such as persistent headaches, weight changes, or fluid retention',
+                'Severe effects such as abnormal bleeding, thromboembolic events, or therapy discontinuation'
+            ]
+        },
+        // Step 9 – Health Conditions
+
+        {
+            id: 'cardiovascular_test',
+            title: 'Health Conditions',
+            question: 'How would you describe your cardiovascular health?',
+            type: 'choice',
+            options: [
+                'No history of heart disease or vascular issues',
+                'Stable cardiovascular condition managed by a healthcare provider',
+                'History of heart attack, stroke, or unstable angina requiring ongoing supervision'
+            ]
+        },
+        {
+            id: 'liver_test',
+            title: 'Health Conditions',
+            question: 'How would you describe your liver health?',
+            type: 'choice',
+            options: [
+                'Healthy liver with no history of disease',
+                'Mild liver conditions monitored with routine blood tests',
+                'Moderate or severe liver disease requiring frequent evaluation'
+            ]
+        },
+        {
+            id: 'kidney_test',
+            title: 'Health Conditions',
+            question: 'How would you describe your kidney health?',
+            type: 'choice',
+            options: [
+                'Normal kidney function with no medical intervention required',
+                'Mild kidney impairment under medical supervision',
+                'Moderate or severe kidney impairment requiring close monitoring'
+            ]
+        },
+        {
+            id: 'prostate_breast_test',
+            title: 'Health Conditions',
+            question: 'Do you have a history of prostate disease, breast disease, or hormone-sensitive tumors?',
+            type: 'choice',
+            options: [
+                'No history of any hormone-sensitive or breast/prostate conditions',
+                'Benign conditions monitored by a provider (e.g., BPH, fibroadenoma)',
+                'History of active or treated hormone-sensitive cancer'
+            ]
+        },
+        {
+            id: 'polycythemia_test',
+            title: 'Health Conditions',
+            question: 'Do you have elevated red blood cell counts (polycythemia)?',
+            type: 'choice',
+            options: [
+                'No history of high hematocrit or red blood cell levels',
+                'Mildly elevated counts monitored by a healthcare provider',
+                'Significantly elevated counts requiring active management'
+            ]
+        },
+        {
+            id: 'diabetes_test',
+            title: 'Health Conditions',
+            question: 'Do you have diabetes or metabolic syndrome?',
+            type: 'choice',
+            options: [
+                'No history of diabetes or elevated blood sugar',
+                'Prediabetes or mildly elevated blood sugar levels managed by lifestyle changes',
+                'Type 1 or Type 2 diabetes that is well-controlled with medication',
+                'Type 2 diabetes that is poorly controlled'
+            ]
+        },
+        // Step 10 – Lifestyle & Habits
+        {
+            id: 'exercise_test',
+            title: 'Lifestyle & Habits',
+            question: 'How frequently do you engage in physical activity?',
+            type: 'choice',
+            options: [
+                'Rarely or never, sedentary lifestyle',
+                '1–2 times per week, light activity',
+                '3–5 times per week, moderate activity',
+                'Daily or almost daily, intense activity'
+            ]
+        },
+        {
+            id: 'sleep_test',
+            title: 'Lifestyle & Habits',
+            question: 'How would you describe your sleep quality?',
+            type: 'choice',
+            options: [
+                'Poor, less than 5 hours per night',
+                'Fair, 5–6 hours per night',
+                'Good, 7–8 hours per night',
+                'Excellent, more than 8 hours per night'
+            ]
+        },
+        {
+            id: 'alcohol_test',
+            title: 'Lifestyle & Habits',
+            question: 'How often do you consume alcohol?',
+            type: 'choice',
+            options: [
+                'Rarely or never',
+                '1–3 drinks per week',
+                '4–10 drinks per week',
+                'More than 10 drinks per week'
+            ]
+        },
+        {
+            id: 'tobacco_test',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use tobacco or nicotine products?',
+            type: 'choice',
+            options: ['Never', 'Former user', 'Current user']
+        },
+        {
+            id: 'recreational_drugs_test',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use recreational drugs?',
+            type: 'choice',
+            options: ['Never', 'Occasionally', 'Regularly']
+        },
+        // Step 11 – Side Effects & Consent
+        {
+            id: 'test_consent_1',
+            title: 'Side Effects & Consent',
+            question: 'I understand testosterone therapy may cause mild acne, hair changes, or mood alterations.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        {
+            id: 'test_consent_2',
+            title: 'Side Effects & Consent',
+            question: 'I understand therapy may increase red blood cell count, affect cholesterol, and require lab monitoring.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        // Estradiol Therapy Consents
+        {
+            id: 'estradiol_consent_1',
+            title: 'Side Effects & Consent',
+            question: 'I understand estradiol therapy may cause mild breast tenderness, bloating, nausea, or headaches.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        {
+            id: 'estradiol_consent_2',
+            title: 'Side Effects & Consent',
+            question: 'I understand estradiol therapy may increase risk of blood clots, affect liver function, and require lab monitoring.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        {
+            id: 'estradiol_consent_3',
+            title: 'Side Effects & Consent',
+            question: 'I consent to telehealth evaluation, lab review if required, and optional image uploads for monitoring therapy.',
+            type: 'choice',
+            options: ['Agree']
+        }
+    ],
+    'repair-healing': [
+        // Step 6 – Allergies
+        {
+            id: 'allergies_repair',
+            title: 'Allergies',
+            question: 'Type all the allergies you have, if more than one allergy, use a comma (,). Include allergies to prescription or over-the-counter medicines, herbs, vitamins, supplements, food, dyes, or anything else. Enter "No" if you have no allergies.',
+            type: 'text',
+            placeholder: 'e.g. Penicillin, Shellfish, Latex… or "No"'
+        },
+        // Step 7 – Current Medications
+        {
+            id: 'current_meds_repair',
+            title: 'Current Medications',
+            question: 'Are you currently taking any of the following medications?',
+            type: 'multiselect',
+            options: [
+                'A GLP-1 agonist such as (but not limited to) Semaglutide, Tirzepatide, exenatide, liraglutide',
+                'Metformin',
+                'SGLT2 inhibitors – empagliflozin, canagliflozin',
+                'Sulfonylureas such as (but not limited to) glipizide (Glucotrol), glimepiride (Amaryl), glyburide',
+                'Meglitinides – repaglinide, nateglinide',
+                'Insulin',
+                'Alpha-glucosidase inhibitors – acarbose',
+                'Thiazolidinediones – pioglitazone',
+                'Warfarin (also called Jantoven or Coumadin) - a blood thinner that usually requires regular lab testing',
+                'Diuretics such as (but not limited to) furosemide (Lasix), bumetanide (Bumex), Hydrochlorothiazide/HCTZ',
+                'Selective Serotonin Reuptake Inhibitor (SSRI) such as (but not limited to) citalopram (Celexa), fluoxetine (Prozac), escitalopram (Lexapro)',
+                'Monoamine Oxidase Inhibitor (MAOI) such as (but not limited to) phenelzine (Nardil), selegiline (Emsam)',
+                'Opioids such as Oxycontin, Oxycodone, Vicodin, Percocet, Norco (hydrocodone), Dilaudid (hydromorphone), Methadone, Suboxone',
+                'Blood thinners (warfarin, apixaban, etc.)',
+                'Antihypertensives',
+                'Hormone therapies (testosterone, DHT blockers)',
+                'Minoxidil topical treatments',
+                'Finasteride or other 5-alpha-reductase inhibitors',
+                'Other medication(s)',
+                'None of the above'
+            ]
+        },
+        // Step 8 – Prior Therapy History
+        {
+            id: 'peptide_therapy_history',
+            title: 'Prior Therapy History',
+            question: 'Have you previously used peptide therapy or similar regenerative treatments?',
+            type: 'choice',
+            options: [
+                'No, I have never used peptides or regenerative injections',
+                'I have used BPC-157 injections under medical supervision',
+                'I have used TB-500 injections under medical supervision',
+                'I have used other regenerative therapies (PRP, stem cells, growth factors)'
+            ]
+        },
+        {
+            id: 'peptide_therapy_effectiveness',
+            title: 'Prior Therapy – Effectiveness',
+            question: 'How effective was prior therapy in achieving your goals?',
+            type: 'choice',
+            condition: (data) => data.peptide_therapy_history && data.peptide_therapy_history !== 'No, I have never used peptides or regenerative injections',
+            options: [
+                'No noticeable improvement in recovery, pain, or mobility',
+                'Mild improvement, partial relief of symptoms',
+                'Moderate improvement, noticeable gains in mobility, pain reduction, or tissue healing',
+                'Significant improvement, strong functional gains and symptom relief'
+            ]
+        },
+        {
+            id: 'peptide_therapy_side_effects',
+            title: 'Prior Therapy – Side Effects',
+            question: 'Have you experienced side effects from prior peptide or injection therapy?',
+            type: 'choice',
+            condition: (data) => data.peptide_therapy_history && data.peptide_therapy_history !== 'No, I have never used peptides or regenerative injections',
+            options: [
+                'No side effects, therapy well tolerated',
+                'Mild pain, swelling, or redness at injection sites',
+                'Moderate bruising, temporary fatigue, or mild headache',
+                'Severe reaction requiring discontinuation or medical attention'
+            ]
+        },
+        // Step 9 – Health Conditions / Safety Assessment
+        {
+            id: 'cardiovascular_repair',
+            title: 'Health Conditions',
+            question: 'How would you describe your cardiovascular health?',
+            type: 'choice',
+            options: [
+                'Healthy with no history of heart disease',
+                'Stable cardiovascular condition monitored by a provider',
+                'History of heart attack, stroke, or significant cardiovascular events'
+            ]
+        },
+        {
+            id: 'bleeding_repair',
+            title: 'Health Conditions',
+            question: 'Do you have a history of bleeding disorders or anticoagulant use?',
+            type: 'choice',
+            options: [
+                'No history or medications',
+                'Mild bleeding tendency or occasional use of blood thinners',
+                'Major clotting or bleeding disorder requiring ongoing management'
+            ]
+        },
+        {
+            id: 'kidney_liver_repair',
+            title: 'Health Conditions',
+            question: 'Do you have any chronic kidney or liver disease?',
+            type: 'choice',
+            options: [
+                'No history of kidney or liver issues',
+                'Mild kidney or liver condition monitored by a provider',
+                'Moderate or severe kidney or liver disease requiring specialist management'
+            ]
+        },
+        {
+            id: 'autoimmune_repair',
+            title: 'Health Conditions',
+            question: 'Do you have autoimmune or inflammatory conditions?',
+            type: 'choice',
+            options: [
+                'None',
+                'Mild or well-controlled autoimmune condition (e.g., RA, psoriasis)',
+                'Active or severe autoimmune disease requiring ongoing therapy'
+            ]
+        },
+        {
+            id: 'diabetes_repair',
+            title: 'Health Conditions',
+            question: 'Do you have diabetes or metabolic syndrome?',
+            type: 'choice',
+            options: [
+                'No history',
+                'Prediabetes or controlled diabetes',
+                'Uncontrolled diabetes'
+            ]
+        },
+        {
+            id: 'cancer_repair',
+            title: 'Health Conditions',
+            question: 'Do you have a history of cancer or hormone-sensitive tumors?',
+            type: 'choice',
+            options: [
+                'No history',
+                'Benign tumors monitored by provider',
+                'Active or treated malignancy'
+            ]
+        },
+        // Step 10 – Lifestyle & Habits
+        {
+            id: 'exercise_repair',
+            title: 'Lifestyle & Habits',
+            question: 'How frequently do you engage in physical activity?',
+            type: 'choice',
+            options: [
+                'Rarely or never',
+                '1–2 times per week, light activity',
+                '3–5 times per week, moderate activity',
+                'Daily or almost daily, intense activity'
+            ]
+        },
+        {
+            id: 'sleep_repair',
+            title: 'Lifestyle & Habits',
+            question: 'How would you describe your sleep quality?',
+            type: 'choice',
+            options: [
+                'Poor, less than 5 hours per night',
+                'Fair, 5–6 hours per night',
+                'Good, 7–8 hours per night',
+                'Excellent, more than 8 hours per night'
+            ]
+        },
+        {
+            id: 'alcohol_repair',
+            title: 'Lifestyle & Habits',
+            question: 'How often do you consume alcohol?',
+            type: 'choice',
+            options: [
+                'Rarely or never',
+                '1–3 drinks per week',
+                '4–10 drinks per week',
+                'More than 10 drinks per week'
+            ]
+        },
+        {
+            id: 'tobacco_repair',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use tobacco or nicotine products?',
+            type: 'choice',
+            options: ['Never', 'Former user', 'Current user']
+        },
+        {
+            id: 'recreational_drugs_repair',
+            title: 'Lifestyle & Habits',
+            question: 'Do you use recreational drugs?',
+            type: 'choice',
+            options: ['Never', 'Occasionally', 'Regularly']
+        },
+        // Step 11 – Side Effects & Consent
+        {
+            id: 'repair_consent_1',
+            title: 'Side Effects & Consent',
+            question: 'I understand BPC-157 or TB-500 therapy may cause mild injection site discomfort, redness, or swelling.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        {
+            id: 'repair_consent_2',
+            title: 'Side Effects & Consent',
+            question: 'I understand therapy may have unknown systemic effects and requires monitoring for safety.',
+            type: 'choice',
+            options: ['Agree']
+        },
+        {
+            id: 'repair_consent_3',
+            title: 'Side Effects & Consent',
+            question: 'I consent to telehealth evaluation for therapy.',
+            type: 'choice',
+            options: ['Agree']
+        }
     ]
 };
+

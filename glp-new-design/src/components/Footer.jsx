@@ -60,7 +60,7 @@ const Footer = () => {
                                 ))}
                                 <li>
                                     <Link to="/" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openWaitlist')); }} className="text-orange-500 hover:text-orange-400 transition-colors text-sm font-black uppercase tracking-widest flex items-center gap-2 group">
-                                        Retatruide
+                                        Retatrutide
                                         <span className="animate-pulse">🔥</span>
                                     </Link>
                                 </li>
@@ -71,13 +71,21 @@ const Footer = () => {
                         <div>
                             <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-[#FFC7A2]">About Us</h4>
                             <ul className="space-y-4">
-                                {['Blog', 'FAQ', 'Science', 'Reviews', 'Careers'].map((link) => (
-                                    <li key={link}>
-                                        <Link to={`/${link.toLowerCase()}`} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
-                                            {link}
-                                        </Link>
-                                    </li>
-                                ))}
+                                {
+                                    [
+                                        { name: 'Peer Reviewed Blog', path: '/blog' },
+                                        { name: 'FAQ', path: '/faq' },
+                                        { name: 'Science', path: '/science' },
+                                        { name: 'Reviews', path: '/reviews' },
+                                        { name: 'Careers', path: '/careers' }
+                                    ].map((link) => (
+                                        <li key={link.name}>
+                                            <Link to={link.path} className="text-white/60 hover:text-white transition-colors text-sm font-medium uppercase tracking-wide">
+                                                {link.name}
+                                            </Link>
+                                        </li>
+                                    ))
+                                }
                             </ul>
                         </div>
 
@@ -109,7 +117,7 @@ const Footer = () => {
                 <div className="pt-16 pb-12 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-[10px] font-medium uppercase tracking-widest text-white/30 leading-relaxed">
                     <div className="space-y-4">
                         <h5 className="text-white/60 font-black tracking-[0.2em] mb-4">Patient Safety & Risk</h5>
-                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. <span className="font-brand"><span className="italic">u</span>Glow<sup>MD</sup></span> ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
+                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. <span className="font-brand"><sub>u</sub>Glow<sup>MD</sup></span> ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
                         <p>All medications are sourced exclusively from FDA Approved Pharmacies and compounded under strict quality control.</p>
                     </div>
                     <div className="space-y-4">
@@ -126,8 +134,15 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 flex items-center gap-2">
-                        &copy; {currentYear}. All Rights Reserved.
+                    <div className="flex flex-col gap-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20">
+                            &copy; {currentYear}. All Rights Reserved.
+                        </div>
+                        <div className="flex gap-6">
+                            <a href="https://www.instagram.com/uglowmd?igsh=MXc0bjB5aHR0MGR5Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors">Instagram</a>
+                            <a href="https://www.facebook.com/share/1CXFW9dXa9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors">Facebook</a>
+                            <a href="https://x.com/uglowmd?s=21&t=AWKB5Ql2CQkOFAgP0xqEJg" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors">Twitter/X</a>
+                        </div>
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-8 md:gap-10">
@@ -145,7 +160,7 @@ const Footer = () => {
                         className="text-[clamp(4rem,22vw,22rem)] text-white/20 select-none inline-flex items-baseline leading-[0.8] tracking-tighter"
                         style={{ fontFamily: '"Cormorant Garamond", serif', fontWeight: 600 }}
                     >
-                        <span className="italic lowercase mr-2 text-[0.7em]">u</span>
+                        <sub className="italic lowercase mr-2 text-[0.7em]">u</sub>
                         <span>Glow</span>
                         <sup className="text-[0.4em] ml-2 font-light tracking-tight">MD</sup>
                     </div>
