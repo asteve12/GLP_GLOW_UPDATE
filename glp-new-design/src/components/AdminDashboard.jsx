@@ -5232,15 +5232,15 @@ const ProfitTrackerView = () => {
             });
 
             const drugNames = Object.keys(summary);
-            const summaryArr = drugNames.map(drug => ({
-                drug,
-                totalCost: summary[drug].totalCost,
-                totalUnits: summary[drug].totalUnits,
-                avgCostPerUnit: summary[drug].totalUnits > 0 ? summary[drug].totalCost / summary[drug].totalUnits : 0,
-                revenue: summary[drug].totalRevenue,
-                profit: summary[drug].totalProfit,
-                margin: summary[drug].totalRevenue > 0
-                    ? ((summary[drug].totalProfit / summary[drug].totalRevenue) * 100).toFixed(1)
+            const summaryArr = drugNames.map(drugName => ({
+                drug: drugName,
+                totalCost: summary[drugName].totalCost,
+                totalUnits: summary[drugName].totalUnits,
+                avgCostPerUnit: summary[drugName].totalUnits > 0 ? summary[drugName].totalCost / summary[drugName].totalUnits : 0,
+                revenue: summary[drugName].totalRevenue,
+                profit: summary[drugName].totalProfit,
+                margin: summary[drugName].totalRevenue > 0
+                    ? ((summary[drugName].totalProfit / summary[drugName].totalRevenue) * 100).toFixed(1)
                     : 'N/A'
             })).sort((a, b) => b.profit - a.profit);
 
@@ -5396,35 +5396,40 @@ const ProfitTrackerView = () => {
                                                 <div style={{ padding: '8px 16px', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.25em', color: 'rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                                     {category}
                                                 </div>
-                                                {drugs.map(drug => (
-                                                    <button
-                                                        key={drug.name + drug.dosage}
-                                                        type="button"
-                                                        onMouseDown={() => {
-                                                            const formattedName = `${drug.name}${drug.dosage ? ' ' + drug.dosage : ''} ${drug.price}`;
-                                                            setForm(f => ({ ...f, drug_name: formattedName }));
-                                                            setDrugSearch(formattedName);
-                                                            setDrugDropdownOpen(false);
-                                                        }}
-                                                        style={{
-                                                            width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                            fontSize: '13px', fontWeight: '600', color: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? '#FFDE59' : '#ffffff',
-                                                            backgroundColor: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent',
-                                                            border: 'none', cursor: 'pointer', display: 'block',
-                                                            transition: 'background-color 0.15s'
-                                                        }}
-                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent'}
-                                                    >
-                                                        <div className="flex justify-between items-center">
-                                                            <div className="flex flex-col">
-                                                                <span className="text-white font-bold">{drug.name}</span>
-                                                                <span className="text-[10px] text-white/40 uppercase tracking-widest">{drug.dosage}</span>
+                                                {drugs.map((drugItem, idx) => {
+                                                    const formattedDisplay = `${drugItem.name}${drugItem.dosage ? ' ' + drugItem.dosage : ''} ${drugItem.price}`;
+                                                    const isSelected = form.drug_name === formattedDisplay;
+
+                                                    return (
+                                                        <button
+                                                            key={`${drugItem.name}-${drugItem.dosage}-${idx}`}
+                                                            type="button"
+                                                            onMouseDown={() => {
+                                                                setForm(f => ({ ...f, drug_name: formattedDisplay }));
+                                                                setDrugSearch(formattedDisplay);
+                                                                setDrugDropdownOpen(false);
+                                                            }}
+                                                            style={{
+                                                                width: '100%', textAlign: 'left', padding: '12px 16px',
+                                                                fontSize: '13px', fontWeight: '600',
+                                                                color: isSelected ? '#FFDE59' : '#ffffff',
+                                                                backgroundColor: isSelected ? 'rgba(255,222,89,0.08)' : 'transparent',
+                                                                border: 'none', cursor: 'pointer', display: 'block',
+                                                                transition: 'background-color 0.15s'
+                                                            }}
+                                                            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                                            onMouseLeave={e => e.currentTarget.style.backgroundColor = isSelected ? 'rgba(255,222,89,0.08)' : 'transparent'}
+                                                        >
+                                                            <div className="flex justify-between items-center">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-white font-bold">{drugItem.name}</span>
+                                                                    <span className="text-[10px] text-white/40 uppercase tracking-widest">{drugItem.dosage}</span>
+                                                                </div>
+                                                                <span className="text-[#FFDE59] font-black">{drugItem.price}</span>
                                                             </div>
-                                                            <span className="text-[#FFDE59] font-black">{drug.price}</span>
-                                                        </div>
-                                                    </button>
-                                                ))}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
                                         ))}
                                     </div>
