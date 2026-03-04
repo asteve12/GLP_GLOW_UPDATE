@@ -281,26 +281,26 @@ const getMedicationCategoryId = (drugName) => {
 
 const formatPlanName = (plan) => {
     try {
-        if (!plan || plan === 'None' || plan === '{}') return 'Monthly Maintenance';
+        if (!plan || plan === 'None' || plan === '{}' || plan === 'null') return null; // Return null so caller can show 'No Plan'
         if (typeof plan === 'object' && plan !== null) {
             const plans = Object.values(plan).filter(v => !!v && typeof v === 'string');
-            return plans.length > 0 ? plans.join(' + ') : 'Monthly Maintenance';
+            return plans.length > 0 ? plans.join(' + ') : null;
         }
         if (typeof plan === 'string') {
             try {
                 const parsed = JSON.parse(plan);
                 if (typeof parsed === 'object' && parsed !== null) {
                     const plans = Object.values(parsed).filter(v => !!v && typeof v === 'string');
-                    return plans.length > 0 ? plans.join(' + ') : 'Monthly Maintenance';
+                    return plans.length > 0 ? plans.join(' + ') : null;
                 }
             } catch {
-                return plan;
+                return plan.trim() || null;
             }
         }
-        return 'Protocol Plan';
+        return null;
     } catch (err) {
         console.error('[formatPlanName] Error:', err);
-        return 'Protocol Plan';
+        return null;
     }
 };
 
@@ -452,8 +452,8 @@ const PatientPortalManager = () => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.subscribe_status : !p.subscribe_status);
 
         let matchesCard = true;
-        if (cardFilter === 'vaulted') matchesCard = !!(p.stripe_payment_method_id || p.last_four_digits_of_card);
-        if (cardFilter === 'none') matchesCard = !(p.stripe_payment_method_id || p.last_four_digits_of_card);
+        if (cardFilter === 'has_card') matchesCard = !!(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
+        if (cardFilter === 'no_card') matchesCard = !(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
 
         let matchesCategory = true;
         if (categoryFilter !== 'all') {
@@ -529,8 +529,8 @@ const PatientPortalManager = () => {
                         className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-black hover:bg-white/5 transition-all cursor-pointer appearance-none flex-1 min-w-[120px] md:min-w-[160px]"
                     >
                         <option value="all" className="bg-[#111111]">All Cards</option>
-                        <option value="vaulted" className="bg-[#111111]">Card Vaulted</option>
-                        <option value="none" className="bg-[#111111]">No Card</option>
+                        <option value="has_card" className="bg-[#111111]">Has Card</option>
+                        <option value="no_card" className="bg-[#111111]">No Card</option>
                     </select>
 
                     <select
@@ -562,53 +562,93 @@ const PatientPortalManager = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                        {filteredPatients.map((p) => (
-                            <tr key={p.id} className="group hover:bg-[#111111]/[0.02] transition-all">
-                                <td className="py-4 md:py-6">
-                                    <p className="font-bold text-xs md:text-sm text-white">{p.first_name || p.last_name ? `${p.first_name} ${p.last_name}` : (p.email || 'Untitled Patient')}</p>
-                                </td>
-                                <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/60">{p.email}</td>
-                                <td className="py-4 md:py-6">
-                                    <span className={`px-2 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase ${p.subscribe_status ? 'bg-accent-black/10 text-accent-black' : 'bg-white/5 text-white/50'}`}>
-                                        {p.subscribe_status ? 'Active' : 'Inactive'}
-                                    </span>
-                                </td>
-                                <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/80 ">{formatPlanName(p.current_plan)}</td>
-                                <td className="py-4 md:py-6">
-                                    <span className="text-[10px] md:text-xs font-bold text-white/50">
-                                        {p.submission_count || 0} Submitted
-                                    </span>
-                                </td>
-                                <td className="py-4 md:py-6">
-                                    {p.stripe_payment_method_id || p.last_four_digits_of_card ? (
-                                        <span className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black uppercase text-accent-black">
-                                            <div className="w-1.5 h-1.5 bg-accent-black rounded-full"></div>
-                                            •••• {p.last_four_digits_of_card || 'VAULT'}
+                        {filteredPatients.map((p) => {
+                            const fullName = [p.first_name, p.last_name].filter(Boolean).join(' ').trim();
+                            const planLabel = formatPlanName(p.current_plan);
+                            const hasCard = !!(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
+                            const cardDisplay = p.last_four_digits_of_card
+                                ? `${p.card_name ? p.card_name + ' ' : ''}•••• ${p.last_four_digits_of_card}`
+                                : (p.card_name || (p.stripe_payment_method_id ? 'Vaulted' : null));
+
+                            return (
+                                <tr key={p.id} className="group hover:bg-white/[0.02] transition-all border-b border-white/5 last:border-0">
+                                    {/* Patient Name */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        <div className="flex flex-col gap-0.5">
+                                            <p className="font-bold text-xs md:text-sm text-white leading-tight">
+                                                {fullName || <span className="text-white/30 italic">No Name</span>}
+                                            </p>
+                                            {fullName && (
+                                                <p className="text-[9px] text-white/30 font-medium">{p.id?.slice(0, 8)}...</p>
+                                            )}
+                                        </div>
+                                    </td>
+                                    {/* Email */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        <p className="text-[10px] md:text-xs text-white/60 break-all">{p.email || '—'}</p>
+                                    </td>
+                                    {/* Subscription */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider ${p.subscribe_status
+                                                ? 'bg-[#bfff00]/10 text-[#bfff00] border border-[#bfff00]/20'
+                                                : 'bg-white/5 text-white/40 border border-white/10'
+                                            }`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${p.subscribe_status ? 'bg-[#bfff00]' : 'bg-white/30'}`} />
+                                            {p.subscribe_status ? 'Active' : 'Inactive'}
                                         </span>
-                                    ) : (
-                                        <span className="text-[9px] md:text-[10px] font-black uppercase text-white/30 ">None</span>
-                                    )}
-                                </td>
-                                <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/50">
-                                    {p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}
-                                </td>
-                                <td className="py-4 md:py-6 text-right">
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            const id = p.user_id || p.id;
-                                            console.log('[PatientPortalManager] Opening dossier for ID:', id);
-                                            setSelectedPatientId(id);
-                                            setIsDossierOpen(true);
-                                        }}
-                                        className="text-[9px] md:text-[10px] font-black uppercase text-accent-black hover:text-[#1a1a1a] transition-all bg-accent-black/10 px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl border border-accent-black/20 whitespace-nowrap"
-                                    >
-                                        View More
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                    {/* Current Plan */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        {planLabel ? (
+                                            <span className="text-[10px] md:text-xs font-semibold text-white/80 leading-snug">{planLabel}</span>
+                                        ) : (
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/25">No Plan</span>
+                                        )}
+                                    </td>
+                                    {/* Assessments */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs font-bold text-white/80">{p.submission_count || 0}</span>
+                                            <span className="text-[8px] uppercase tracking-widest text-white/30 font-black">Submitted</span>
+                                        </div>
+                                    </td>
+                                    {/* Card on File */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        {hasCard ? (
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="flex items-center gap-1.5 text-[10px] font-black text-[#bfff00]">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>
+                                                    {cardDisplay}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/25">No Card</span>
+                                        )}
+                                    </td>
+                                    {/* Joined */}
+                                    <td className="py-4 md:py-5 pr-4">
+                                        <p className="text-[10px] md:text-xs text-white/50">
+                                            {p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                                        </p>
+                                    </td>
+                                    {/* Action */}
+                                    <td className="py-4 md:py-5 text-right">
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const id = p.user_id || p.id;
+                                                setSelectedPatientId(id);
+                                                setIsDossierOpen(true);
+                                            }}
+                                            className="text-[9px] font-black uppercase tracking-widest text-[#bfff00] hover:bg-[#bfff00] hover:text-black transition-all bg-[#bfff00]/10 px-3 py-2 rounded-lg border border-[#bfff00]/20 whitespace-nowrap"
+                                        >
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         {filteredPatients.length === 0 && (
                             <tr>
                                 <td colSpan="8" className="py-20 text-center text-xs font-black uppercase tracking-widest text-white/30">
