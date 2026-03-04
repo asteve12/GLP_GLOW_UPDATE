@@ -5164,28 +5164,25 @@ const OrderManagement = () => {
 
 // --- Profit Tracker ---
 const DRUGS_CATALOG = [
-    { name: 'Semaglutide Injection', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', category: 'Weight Loss' },
-    { name: 'Retatrutide', category: 'Weight Loss' },
-    { name: 'Naltrexone (LDN)', category: 'Weight Loss' },
-    { name: 'Testosterone Cypionate', category: 'Hormone Therapy' },
-    { name: 'Testosterone Enanthate', category: 'Hormone Therapy' },
-    { name: 'Sermorelin', category: 'Longevity' },
-    { name: 'BPC-157', category: 'Longevity' },
-    { name: 'Ipamorelin / CJC-1295', category: 'Longevity' },
-    { name: 'Sildenafil (ED)', category: 'Sexual Health' },
-    { name: 'Tadalafil (ED)', category: 'Sexual Health' },
-    { name: 'Sildenafil + Tadalafil Combo', category: 'Sexual Health' },
-    { name: 'PT-141 (Bremelanotide)', category: 'Sexual Health' },
-    { name: 'Minoxidil Topical', category: 'Hair Restoration' },
-    { name: 'Finasteride Oral', category: 'Hair Restoration' },
-    { name: '3-in-1 Hair Growth Tabs', category: 'Hair Restoration' },
-    { name: '2-in-1 Hair Growth Tabs', category: 'Hair Restoration' },
-    { name: 'Tretinoin Cream', category: 'Skin Care' },
-    { name: 'Hydroquinone Cream', category: 'Skin Care' },
-    { name: 'Azelaic Acid', category: 'Skin Care' },
-    { name: 'Repair & Strength Healing', category: 'Skin Care' },
-    { name: 'Body Acne Cream', category: 'Skin Care' },
+    { name: 'Semaglutide', dosage: 'Injections', price: '$299', category: 'Weight Loss' },
+    { name: 'Tirzepatide', dosage: 'Injections', price: '$399', category: 'Weight Loss' },
+    { name: 'Semaglutide', dosage: 'Drops', price: '$249', category: 'Weight Loss' },
+    { name: 'Tirzepatide', dosage: 'Drops', price: '$349', category: 'Weight Loss' },
+    { name: 'Retatrutide', dosage: 'Research', price: '$499', category: 'Weight Loss' },
+    { name: 'ReadySetGo (2-in-1 RDT)', dosage: 'Men', price: '$89', category: 'Better Sex' },
+    { name: 'GrowTabs (Sildenafil)', dosage: 'Men', price: '$49', category: 'Better Sex' },
+    { name: 'GrowTabs (Tadalafil)', dosage: 'Men', price: '$49', category: 'Better Sex' },
+    { name: 'Sildenafil / Tadalafil', dosage: '2-in-1 Troche', price: '$89', category: 'Better Sex' },
+    { name: '3-in-1 Hair Growth Tabs', dosage: 'Rx', price: '$99', category: 'Hair Loss' },
+    { name: '2-in-1 Hair Growth Tabs', dosage: 'Rx', price: '$79', category: 'Hair Loss' },
+    { name: 'Finasteride', dosage: 'Oral', price: '$49', category: 'Hair Loss' },
+    { name: 'NAD + Spray', dosage: 'Nasal', price: '$99', category: 'Longevity' },
+    { name: 'NAD +', dosage: 'Subq Inj', price: '$199', category: 'Longevity' },
+    { name: 'Glutathione', dosage: 'Subq Inj', price: '$149', category: 'Longevity' },
+    { name: 'Testosterone', dosage: 'Injection', price: '$199', category: 'Testosterone' },
+    { name: 'Testosterone', dosage: 'RDT', price: '$159', category: 'Testosterone' },
+    { name: 'BPC 157', dosage: 'Subq Inj', price: '$149', category: 'Repair & Strength' },
+    { name: 'BPC 157 / TB 500', dosage: 'Subq Inj', price: '$199', category: 'Repair & Strength' },
 ];
 
 const ProfitTrackerView = () => {
@@ -5204,6 +5201,7 @@ const ProfitTrackerView = () => {
         pharmacy_name: '',
         cost_per_unit: '',
         quantity: '',
+        selling_price: '',
         purchase_date: new Date().toISOString().split('T')[0],
         notes: '',
     });
@@ -5226,37 +5224,23 @@ const ProfitTrackerView = () => {
             // Build profit summary per drug
             const summary = {};
             (data || []).forEach(p => {
-                if (!summary[p.drug_name]) summary[p.drug_name] = { totalCost: 0, totalUnits: 0 };
+                if (!summary[p.drug_name]) summary[p.drug_name] = { totalCost: 0, totalUnits: 0, totalRevenue: 0, totalProfit: 0 };
                 summary[p.drug_name].totalCost += Number(p.total_cost) || 0;
                 summary[p.drug_name].totalUnits += Number(p.quantity) || 0;
+                summary[p.drug_name].totalRevenue += Number(p.selling_price) || 0;
+                summary[p.drug_name].totalProfit += Number(p.profit) || 0;
             });
 
-            // Fetch revenue per drug from billing_history
             const drugNames = Object.keys(summary);
-            const revenueMap = {};
-            if (drugNames.length > 0) {
-                const { data: billingData } = await supabase
-                    .from('billing_history')
-                    .select('plan_name, amount, description')
-                for (const drug of drugNames) {
-                    const shortName = drug.split(' ')[0].toLowerCase();
-                    const revenue = (billingData || []).filter(b => {
-                        const desc = (b.plan_name || b.description || '').toLowerCase();
-                        return desc.includes(shortName);
-                    }).reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
-                    revenueMap[drug] = revenue;
-                }
-            }
-
             const summaryArr = drugNames.map(drug => ({
                 drug,
                 totalCost: summary[drug].totalCost,
                 totalUnits: summary[drug].totalUnits,
                 avgCostPerUnit: summary[drug].totalUnits > 0 ? summary[drug].totalCost / summary[drug].totalUnits : 0,
-                revenue: revenueMap[drug] || 0,
-                profit: (revenueMap[drug] || 0) - summary[drug].totalCost,
-                margin: summary[drug].totalCost > 0 && revenueMap[drug] > 0
-                    ? ((((revenueMap[drug] || 0) - summary[drug].totalCost) / (revenueMap[drug] || 1)) * 100).toFixed(1)
+                revenue: summary[drug].totalRevenue,
+                profit: summary[drug].totalProfit,
+                margin: summary[drug].totalRevenue > 0
+                    ? ((summary[drug].totalProfit / summary[drug].totalRevenue) * 100).toFixed(1)
                     : 'N/A'
             })).sort((a, b) => b.profit - a.profit);
 
@@ -5276,18 +5260,25 @@ const ProfitTrackerView = () => {
         setSaving(true); setMsg(null);
         try {
             const totalCost = parseFloat(form.cost_per_unit) * parseInt(form.quantity);
+            const sellingPrice = parseFloat(form.selling_price) || 0;
+            const stripeFee = sellingPrice > 0 ? (sellingPrice * 0.029 + 0.30) : 0;
+            const profit = sellingPrice - stripeFee - totalCost;
+
             const { error } = await supabase.from('pharmacy_purchases').insert([{
                 drug_name: form.drug_name,
                 pharmacy_name: form.pharmacy_name,
                 cost_per_unit: parseFloat(form.cost_per_unit),
                 quantity: parseInt(form.quantity),
                 total_cost: totalCost,
+                selling_price: sellingPrice,
+                stripe_fee: stripeFee,
+                profit: profit,
                 purchase_date: form.purchase_date,
                 notes: form.notes,
             }]);
             if (error) throw error;
             setMsg({ type: 'success', text: 'Purchase recorded successfully!' });
-            setForm({ drug_name: '', pharmacy_name: '', cost_per_unit: '', quantity: '', purchase_date: new Date().toISOString().split('T')[0], notes: '' });
+            setForm({ drug_name: '', pharmacy_name: '', cost_per_unit: '', quantity: '', selling_price: '', purchase_date: new Date().toISOString().split('T')[0], notes: '' });
             setDrugSearch('');
             setShowForm(false);
             fetchPurchases();
@@ -5405,28 +5396,33 @@ const ProfitTrackerView = () => {
                                                 <div style={{ padding: '8px 16px', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.25em', color: 'rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                                     {category}
                                                 </div>
-                                                {drugs.map(drug => (
-                                                    <button
-                                                        key={drug.name}
-                                                        type="button"
-                                                        onMouseDown={() => {
-                                                            setForm(f => ({ ...f, drug_name: drug.name }));
-                                                            setDrugSearch(drug.name);
-                                                            setDrugDropdownOpen(false);
-                                                        }}
-                                                        style={{
-                                                            width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                            fontSize: '13px', fontWeight: '600', color: form.drug_name === drug.name ? '#FFDE59' : '#ffffff',
-                                                            backgroundColor: form.drug_name === drug.name ? 'rgba(255,222,89,0.08)' : 'transparent',
-                                                            border: 'none', cursor: 'pointer', display: 'block',
-                                                            transition: 'background-color 0.15s'
-                                                        }}
-                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = form.drug_name === drug.name ? 'rgba(255,222,89,0.08)' : 'transparent'}
-                                                    >
-                                                        {drug.name}
-                                                    </button>
-                                                ))}
+                                                <button
+                                                    key={drug.name + drug.dosage}
+                                                    type="button"
+                                                    onMouseDown={() => {
+                                                        const formattedName = `${drug.name}${drug.dosage ? ' ' + drug.dosage : ''} ${drug.price}`;
+                                                        setForm(f => ({ ...f, drug_name: formattedName }));
+                                                        setDrugSearch(formattedName);
+                                                        setDrugDropdownOpen(false);
+                                                    }}
+                                                    style={{
+                                                        width: '100%', textAlign: 'left', padding: '12px 16px',
+                                                        fontSize: '13px', fontWeight: '600', color: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? '#FFDE59' : '#ffffff',
+                                                        backgroundColor: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent',
+                                                        border: 'none', cursor: 'pointer', display: 'block',
+                                                        transition: 'background-color 0.15s'
+                                                    }}
+                                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent'}
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-white font-bold">{drug.name}</span>
+                                                            <span className="text-[10px] text-white/40 uppercase tracking-widest">{drug.dosage}</span>
+                                                        </div>
+                                                        <span className="text-[#FFDE59] font-black">{drug.price}</span>
+                                                    </div>
+                                                </button>
                                             </div>
                                         ))}
                                     </div>
@@ -5441,7 +5437,25 @@ const ProfitTrackerView = () => {
 
                         <div>
                             <label style={labelStyle}>Pharmacy Name *</label>
-                            <input type="text" value={form.pharmacy_name} onChange={e => setForm(f => ({ ...f, pharmacy_name: e.target.value }))} placeholder="e.g. Empower Pharmacy" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                            <input
+                                type="text"
+                                list="pharmacies"
+                                value={form.pharmacy_name}
+                                onChange={e => setForm(f => ({ ...f, pharmacy_name: e.target.value }))}
+                                placeholder="e.g. Empower Pharmacy"
+                                style={inputStyle}
+                                required
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            />
+                            <datalist id="pharmacies">
+                                <option value="Empower Pharmacy" />
+                                <option value="Hallandale Pharmacy" />
+                                <option value="Strive Pharmacy" />
+                                <option value="Red Rock Pharmacy" />
+                                <option value="APS Pharmacy" />
+                                <option value="University Compounding" />
+                            </datalist>
                         </div>
 
                         <div>
@@ -5457,6 +5471,11 @@ const ProfitTrackerView = () => {
                         <div>
                             <label style={labelStyle}>Quantity *</label>
                             <input type="number" min="1" value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))} placeholder="e.g. 50" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                        </div>
+
+                        <div>
+                            <label style={labelStyle}>Expected Selling Price ($) *</label>
+                            <input type="number" step="0.01" min="0" value={form.selling_price} onChange={e => setForm(f => ({ ...f, selling_price: e.target.value }))} placeholder="e.g. 15000.00" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                         </div>
 
                         {form.cost_per_unit && form.quantity && (
@@ -5493,40 +5512,44 @@ const ProfitTrackerView = () => {
                         <table className="w-full text-left min-w-[800px]">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    {['Drug / Product', 'Units Purchased', 'Total Cost', 'Avg Cost/Unit', 'Revenue Recorded', 'Profit', 'Margin'].map(h => (
+                                    {['Drug / Product', 'Units Purchased', 'Total Cost', 'Gross Revenue', 'Stripe Fees (Est)', 'Net Profit', 'Margin'].map(h => (
                                         <th key={h} className="p-6 text-[9px] font-black uppercase tracking-widest text-white/40">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {profitSummary.map((row, i) => (
-                                    <tr key={i} className="hover:bg-white/[0.02] transition-all">
-                                        <td className="p-6">
-                                            <p className="text-sm font-bold text-white">{row.drug}</p>
-                                        </td>
-                                        <td className="p-6 text-xs font-bold text-white/60">{row.totalUnits.toLocaleString()}</td>
-                                        <td className="p-6 text-xs font-bold text-red-400">{fmtMoney(row.totalCost)}</td>
-                                        <td className="p-6 text-xs font-bold text-white/60">{fmtMoney(row.avgCostPerUnit)}</td>
-                                        <td className="p-6 text-xs font-bold text-[#bfff00]">{row.revenue > 0 ? fmtMoney(row.revenue) : <span className="text-white/25 italic">No data</span>}</td>
-                                        <td className="p-6">
-                                            <span className={`text-sm font-black ${row.profit > 0 ? 'text-[#FFDE59]' : row.profit < 0 ? 'text-red-400' : 'text-white/30'}`}>
-                                                {row.profit !== 0 ? `${row.profit > 0 ? '+' : ''}${fmtMoney(row.profit)}` : '�'}
-                                            </span>
-                                        </td>
-                                        <td className="p-6">
-                                            {row.margin !== 'N/A' ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden max-w-[80px]">
-                                                        <div className={`h-full rounded-full ${parseFloat(row.margin) > 0 ? 'bg-[#FFDE59]' : 'bg-red-400'}`} style={{ width: `${Math.min(100, Math.abs(parseFloat(row.margin)))}%` }} />
+                                {profitSummary.map((row, i) => {
+                                    const totalStripeFees = row.revenue * 0.029 + (row.totalUnits > 0 ? (row.revenue / (row.revenue / 100) * 0.3) : 0); // rough est
+                                    // Actually we stored profit in the DB now, but for retrospective or consistency:
+                                    return (
+                                        <tr key={i} className="hover:bg-white/[0.02] transition-all">
+                                            <td className="p-6">
+                                                <p className="text-sm font-bold text-white">{row.drug}</p>
+                                            </td>
+                                            <td className="p-6 text-xs font-bold text-white/60">{row.totalUnits.toLocaleString()}</td>
+                                            <td className="p-6 text-xs font-bold text-red-500">{fmtMoney(row.totalCost)}</td>
+                                            <td className="p-6 text-xs font-bold text-[#bfff00]">{fmtMoney(row.revenue)}</td>
+                                            <td className="p-6 text-xs font-bold text-red-400/60">{fmtMoney(row.revenue * 0.029 + (row.revenue > 0 ? 0.30 : 0))}</td>
+                                            <td className="p-6">
+                                                <span className={`text-sm font-black ${row.profit > 0 ? 'text-[#FFDE59]' : row.profit < 0 ? 'text-red-400' : 'text-white/30'}`}>
+                                                    {row.profit !== 0 ? `${row.profit > 0 ? '+' : ''}${fmtMoney(row.profit)}` : '$0.00'}
+                                                </span>
+                                            </td>
+                                            <td className="p-6">
+                                                {row.margin !== 'N/A' ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden max-w-[80px]">
+                                                            <div className={`h-full rounded-full ${parseFloat(row.margin) > 0 ? 'bg-[#FFDE59]' : 'bg-red-400'}`} style={{ width: `${Math.min(100, Math.abs(parseFloat(row.margin)))}%` }} />
+                                                        </div>
+                                                        <span className={`text-xs font-black ${parseFloat(row.margin) > 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>{row.margin}%</span>
                                                     </div>
-                                                    <span className={`text-xs font-black ${parseFloat(row.margin) > 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>{row.margin}%</span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-[10px] text-white/25 uppercase font-black">No revenue data</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
+                                                ) : (
+                                                    <span className="text-[10px] text-white/25 uppercase font-black">No revenue data</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
