@@ -76,7 +76,7 @@ const NewLandingPage = () => {
             <main>
                 {/* Hero & Treatment Grid */}
                 <section className="pt-8 pb-20">
-                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
+                    <div className="w-full lg:max-w-[75%] 2xl:max-w-[70%] px-6">
                         <div className="text-left mb-12 max-w-2xl">
                             <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
@@ -91,7 +91,7 @@ const NewLandingPage = () => {
                             <p className="text-gray-500 text-xl">Customized care starts here</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
                             {[
                                 { label: <span className="font-serif italic-u"><sub>u</sub>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
