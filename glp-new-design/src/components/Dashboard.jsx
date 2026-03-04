@@ -2967,7 +2967,19 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
-                                                    <p className="text-sm font-bold">{selectedAssessment.birthday || 'Not provided'}</p>
+                                                    <p className="text-sm font-bold">{(() => {
+                                                        const raw = selectedAssessment.birthday
+                                                            || selectedAssessment.intake_data?.date_of_birth
+                                                            || selectedAssessment.intake_data?.eligibility?.dob
+                                                            || selectedAssessment.intake_data?.dob;
+                                                        if (!raw) return 'Not provided';
+                                                        // Format ISO dates (YYYY-MM-DD) to a readable form
+                                                        const d = new Date(raw);
+                                                        if (!isNaN(d.getTime())) {
+                                                            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+                                                        }
+                                                        return raw;
+                                                    })()}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
