@@ -1801,34 +1801,31 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
     const [formData, setFormData] = useState(() => JSON.parse(JSON.stringify(submission)));
     const [showReportModal, setShowReportModal] = useState(false);
     const [showOrderModal, setShowOrderModal] = useState(false);
+    const [profileData, setProfileData] = useState(null);
     const [hasPaymentMethod, setHasPaymentMethod] = useState(true); // Default to true to avoid flash, or check immediately
 
     // Check for payment method on load
     useEffect(() => {
-        const checkPaymentMethod = async () => {
+        const syncProfileData = async () => {
             if (!submission?.user_id) return;
             try {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('stripe_customer_id')
+                    .select('stripe_customer_id, date_of_birth')
                     .eq('id', submission.user_id)
                     .single();
 
-                if (data && data.stripe_customer_id) {
-                    setHasPaymentMethod(true);
-                } else {
-                    setHasPaymentMethod(false);
+                if (data) {
+                    setProfileData(data);
+                    setHasPaymentMethod(!!data.stripe_customer_id);
                 }
             } catch (err) {
-                console.error('Error checking payment status:', err);
-                // Fallback: assume true or handle error? 
-                // Better safe: assume false if we can't verify, or true to not block if DB error.
-                // Assuming false to be strict based on user request.
+                console.error('Error syncing profile meta:', err);
                 setHasPaymentMethod(false);
             }
         };
-        checkPaymentMethod();
-    }, [submission]);
+        syncProfileData();
+    }, [submission.user_id]);
 
     // Use a ref to track save state - this won't trigger re-renders 
     // and won't be affected by React batching
@@ -2012,6 +2009,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 email: formData.email,
                 shipping_email: formData.shipping_email || formData.email,
                 sex: formData.sex,
+                date_of_birth: formData.date_of_birth,
                 state: formData.state || formData.shipping_state,
                 race_ethnicity: formData.race_ethnicity,
 
@@ -2226,10 +2224,12 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Email" field="email" value={formData.email || formData.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Sex" field="sex" value={formData.sex || intake.sex || intake.assigned_sex_intake || (intake.eligibility && intake.eligibility.sex)} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth ||
+                                        profileData?.date_of_birth ||
                                         (typeof intake.dob === 'object' ? `${intake.dob.month}/${intake.dob.day}/${intake.dob.year}` : intake.dob) ||
                                         (typeof intake.date_of_birth === 'object' ? `${intake.date_of_birth.month}/${intake.date_of_birth.day}/${intake.date_of_birth.year}` : intake.date_of_birth) ||
                                         (intake.eligibility && (typeof intake.eligibility.dob === 'object' ? `${intake.eligibility.dob.month}/${intake.eligibility.dob.day}/${intake.eligibility.dob.year}` : intake.eligibility.dob)) ||
-                                        formData.dob} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                        formData.dob ||
+                                        submission.birthday} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="State" field="shipping_state" value={formData.shipping_state || formData.state || (intake.eligibility && intake.eligibility.state)} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || intake.race || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
