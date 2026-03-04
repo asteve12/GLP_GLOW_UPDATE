@@ -23,7 +23,7 @@ const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue', peri
     return (
         <div className="h-[340px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 md:p-8 lg:p-10 relative overflow-hidden group">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} — {trendLabel}</h3>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} � {trendLabel}</h3>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }}></div>
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30">Live Stripe Data</span>
@@ -109,7 +109,7 @@ const AdminOverview = () => {
                 const data = await res.json();
                 setEarnings({ gross: data.gross, net: data.net, fees: data.fees, transactionCount: data.transactionCount, loading: false, error: null });
 
-                // Always update chart — use the returned chart data or build a single-point fallback
+                // Always update chart � use the returned chart data or build a single-point fallback
                 const chartArray = data.monthlyChart || data.dailyChart || data.chart || [];
                 if (chartArray.length > 0) {
                     setChartData(chartArray);
@@ -128,7 +128,7 @@ const AdminOverview = () => {
         fetchStripeEarnings();
     }, [period]);
 
-    const fmtMoney = (val) => val === null ? '—' : `$${Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const fmtMoney = (val) => val === null ? '�' : `$${Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const stripeRate = (earnings.gross && earnings.gross > 0) ? ((earnings.fees / earnings.gross) * 100).toFixed(1) : '2.9';
 
     return (
@@ -177,7 +177,7 @@ const AdminOverview = () => {
                 ))}
             </div>
 
-            {/* Earnings Cards — Live Stripe Data */}
+            {/* Earnings Cards � Live Stripe Data */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {/* Gross Earnings */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
@@ -567,7 +567,7 @@ const PatientPortalManager = () => {
                             const planLabel = formatPlanName(p.current_plan);
                             const hasCard = !!(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
                             const cardDisplay = p.last_four_digits_of_card
-                                ? `${p.card_name ? p.card_name + ' ' : ''}•••• ${p.last_four_digits_of_card}`
+                                ? `${p.card_name ? p.card_name + ' ' : ''}���� ${p.last_four_digits_of_card}`
                                 : (p.card_name || (p.stripe_payment_method_id ? 'Vaulted' : null));
 
                             return (
@@ -585,7 +585,7 @@ const PatientPortalManager = () => {
                                     </td>
                                     {/* Email */}
                                     <td className="py-4 md:py-5 pr-4">
-                                        <p className="text-[10px] md:text-xs text-white/60 break-all">{p.email || '—'}</p>
+                                        <p className="text-[10px] md:text-xs text-white/60 break-all">{p.email || '�'}</p>
                                     </td>
                                     {/* Subscription */}
                                     <td className="py-4 md:py-5 pr-4">
@@ -628,7 +628,7 @@ const PatientPortalManager = () => {
                                     {/* Joined */}
                                     <td className="py-4 md:py-5 pr-4">
                                         <p className="text-[10px] md:text-xs text-white/50">
-                                            {p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                                            {p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '�'}
                                         </p>
                                     </td>
                                     {/* Action */}
@@ -824,7 +824,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     {patient.subscribe_status ? 'Active' : 'Inactive'}
                                 </div>
                             </div>
-                            <p className="text-[11px] text-white/50 uppercase font-black tracking-[0.2em]">Patient Dossier • {patient.email}</p>
+                            <p className="text-[11px] text-white/50 uppercase font-black tracking-[0.2em]">Patient Dossier � {patient.email}</p>
                         </div>
                     </div>
                     <div className="hidden md:flex items-center gap-4">
@@ -868,7 +868,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     <div className="space-y-6">
                                         <DossierRow label="Gender" value={patient.sex || submissions[0]?.sex || 'Not Specified'} />
                                         <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
-                                        <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '—'} />
+                                        <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '�'} />
                                         <DossierRow label="Joined Data" value={new Date(patient.created_at).toLocaleDateString()} />
 
                                     </div>
@@ -929,19 +929,19 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                     patient.height_ft && patient.height_in ? `${patient.height_ft}'${patient.height_in}"` :
                                                         submissions[0]?.height_feet && submissions[0]?.height_inches ? `${submissions[0].height_feet}'${submissions[0].height_inches}"` :
                                                             submissions[0]?.height_ft && submissions[0]?.height_in ? `${submissions[0].height_ft}'${submissions[0].height_in}"` :
-                                                                submissions[0]?.height || patient.height || '—'}
+                                                                submissions[0]?.height || patient.height || '�'}
                                             </p>
                                         </div>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Weight</p>
                                             <p className="text-xl font-black text-white">
-                                                {patient.weight || submissions[0]?.weight || '—'}
+                                                {patient.weight || submissions[0]?.weight || '�'}
                                             </p>
                                         </div>
                                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                             <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">BMI</p>
                                             <p className="text-xl font-black text-white">
-                                                {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '—')}
+                                                {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '�')}
                                             </p>
                                         </div>
                                     </div>
@@ -970,7 +970,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                         {sub.approval_status}
                                                     </span>
                                                 </div>
-                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... • {new Date(sub.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... � {new Date(sub.created_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
@@ -1004,7 +1004,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                                    <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '—'} />
+                                    <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '�'} />
                                     <DossierStat label="Payment" value={patient.last_four_digits_of_card ? `Ends in ${patient.last_four_digits_of_card}` : 'No Card'} />
                                     <DossierStat label="Auto-Pay" value={patient.stripe_payment_method_id ? 'Enabled' : 'Disabled'} />
                                 </div>
@@ -1059,7 +1059,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                             </div>
                                             <div>
                                                 <h6 className="text-[11px] font-black uppercase text-white tracking-widest leading-none mb-1.5">{item.description || 'Service Charge'}</h6>
-                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} • {String(item.id).substring(0, 8)}</p>
+                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} � {String(item.id).substring(0, 8)}</p>
                                             </div>
                                         </div>
                                         <div className="md:text-right pt-2 md:pt-0 border-t border-white/10 md:border-t-0">
@@ -1204,7 +1204,6 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                     "Weight (lbs)": submission.weight || '0',
                     "BMI": submission.bmi || '0',
                     "Health Goals": (Array.isArray(submission.goals) ? submission.goals.join(', ') : submission.health_goals) || (Array.isArray(intakeBlob.goals) ? intakeBlob.goals.join(', ') : '') || 'N/A',
-                    "Selected Medication": submission.dosage_preference || submission.medication_preference || intakeBlob.medication_interest || 'N/A',
                     "Diabetes Status": submission.diabetes_status || intakeBlob.diabetes || 'N/A',
                     "Allergies": allergies,
                     "Current Medications": submission.current_medications ||
@@ -1775,12 +1774,12 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                 <div className="flex flex-wrap gap-2 mt-2 md:mt-0 justify-start md:justify-end">
                     {Array.isArray(value) ? (
                         value.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-black text-white border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                            <a key={i} href={url} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-green text-black border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">
                                 View {value.length > 1 ? `Doc ${i + 1}` : 'Document'}
                             </a>
                         ))
                     ) : (
-                        <a href={value} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-black text-white border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                        <a href={value} target="_blank" rel="noreferrer" className="px-4 py-2 bg-accent-green text-black border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all">
                             View Document
                         </a>
                     )}
@@ -2226,7 +2225,11 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Last Name" field="shipping_last_name" value={formData.shipping_last_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Email" field="email" value={formData.email || formData.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Sex" field="sex" value={formData.sex || intake.sex || intake.assigned_sex_intake || (intake.eligibility && intake.eligibility.sex)} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth || intake.date_of_birth || (intake.eligibility && intake.eligibility.dob) || intake.dob} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth ||
+                                        (typeof intake.dob === 'object' ? `${intake.dob.month}/${intake.dob.day}/${intake.dob.year}` : intake.dob) ||
+                                        (typeof intake.date_of_birth === 'object' ? `${intake.date_of_birth.month}/${intake.date_of_birth.day}/${intake.date_of_birth.year}` : intake.date_of_birth) ||
+                                        (intake.eligibility && (typeof intake.eligibility.dob === 'object' ? `${intake.eligibility.dob.month}/${intake.eligibility.dob.day}/${intake.eligibility.dob.year}` : intake.eligibility.dob)) ||
+                                        formData.dob} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="State" field="shipping_state" value={formData.shipping_state || formData.state || (intake.eligibility && intake.eligibility.state)} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || intake.race || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
@@ -2258,7 +2261,11 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         <InfoRow label="Height" value={
                                             formData.height_feet && formData.height_inches
                                                 ? `${formData.height_feet}'${formData.height_inches}"`
-                                                : (intake.height || (intake.height_feet && intake.height_inches ? `${intake.height_feet}'${intake.height_inches}"` : null) || (intake.bmi_height_feet && intake.bmi_height_inches ? `${intake.bmi_height_feet}'${intake.bmi_height_inches}"` : null) || 'N/A')
+                                                : (intake.height ||
+                                                    (intake.height_feet && intake.height_inches ? `${intake.height_feet}'${intake.height_inches}"` : null) ||
+                                                    (intake.bmi_height_feet && intake.bmi_height_inches ? `${intake.bmi_height_feet}'${intake.bmi_height_inches}"` : null) ||
+                                                    (intake.bmi_height ? intake.bmi_height : null) ||
+                                                    'N/A')
                                         } isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     )}
 
@@ -2274,9 +2281,13 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 <p className="text-4xl font-black  tracking-tighter text-white leading-none mb-1">
                                                     {/* Recalculate BMI if editing */}
                                                     {(() => {
-                                                        const h = (Number(formData.height_feet) * 12) + Number(formData.height_inches);
-                                                        const w = Number(formData.weight);
-                                                        if (h > 0 && w > 0) return ((w / (h * h)) * 703).toFixed(1);
+                                                        const hFeet = formData.height_feet || (intake.height_feet) || (intake.bmi_height_feet);
+                                                        const hInches = formData.height_inches || (intake.height_inches) || (intake.bmi_height_inches) || 0;
+                                                        const wVal = formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight;
+
+                                                        const hTotal = (Number(hFeet) * 12) + Number(hInches);
+                                                        const w = Number(wVal);
+                                                        if (hTotal > 0 && w > 0) return ((w / (hTotal * hTotal)) * 703).toFixed(1);
                                                         return formData.bmi || 'N/A';
                                                     })()}
                                                 </p>
@@ -2347,7 +2358,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 <select
                                                     value={formData.seen_pcp}
                                                     onChange={(e) => handleChange('seen_pcp', e.target.value)}
-                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full"
+                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                 >
                                                     <option value="Yes">Yes</option>
                                                     <option value="No">No</option>
@@ -2368,7 +2379,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                             </p>
                                             <div className="flex flex-wrap gap-2">
                                                 {(Array.isArray(formData.lab_results_url) ? formData.lab_results_url : [formData.lab_results_url]).map((url, i) => (
-                                                    <a key={i} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all">
+                                                    <a key={i} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-green/10 border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green hover:text-black transition-all">
                                                         View Lab Report {i + 1}
                                                     </a>
                                                 ))}
@@ -2383,84 +2394,86 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                             ? formData.medical_responses
                                             : (formData.intake_data || {});
 
-                                        return questions.map((q) => {
-                                            if (q.type === 'info') return null;
+                                        return questions
+                                            .filter(q => q.id !== 'other_health_goals' && q.id !== 'selected_medication' && q.id !== 'medication_preference' && q.id !== 'dosage_preference')
+                                            .map((q) => {
+                                                if (q.type === 'info') return null;
 
-                                            let answer = answers[q.id];
+                                                let answer = answers[q.id];
 
-                                            // Fallback for top-level keys if not in medical_responses
-                                            if (answer === undefined && formData[q.id]) answer = formData[q.id];
+                                                // Fallback for top-level keys if not in medical_responses
+                                                if (answer === undefined && formData[q.id]) answer = formData[q.id];
 
-                                            if ((answer === undefined || answer === null || answer === '') && !isEditing) return null;
+                                                if ((answer === undefined || answer === null || answer === '') && !isEditing) return null;
 
-                                            return (
-                                                <div key={q.id} className="flex flex-col gap-2 border-b border-white/10 pb-6 last:border-0">
-                                                    <p className="text-[10px] font-black tracking-widest text-white/50 mb-1">{q.question}</p>
-                                                    {isEditing ? (
-                                                        q.type === 'select' || q.type === 'boolean' || (q.options?.length > 0) ? (
-                                                            <select
-                                                                value={answer || ''}
-                                                                onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full"
-                                                            >
-                                                                <option value="">Select...</option>
-                                                                {q.options ? q.options.map(opt => (
-                                                                    <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value}>
-                                                                        {typeof opt === 'string' ? opt : opt.label}
-                                                                    </option>
-                                                                )) : (
-                                                                    <>
-                                                                        <option value="Yes">Yes</option>
-                                                                        <option value="No">No</option>
-                                                                    </>
-                                                                )}
-                                                            </select>
-                                                        ) : (
-                                                            <textarea
-                                                                value={answer || ''}
-                                                                onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
-                                                            />
-                                                        )
-                                                    ) : (
-                                                        <div className="text-sm font-bold text-white/90 leading-relaxed">
-                                                            {Array.isArray(answer) ? (
-                                                                <ul className="list-disc list-inside space-y-1 marker:text-white">
-                                                                    {answer.map((item, i) => <li key={i}>{item}</li>)}
-                                                                </ul>
-                                                            ) : (
-                                                                answer?.toString()
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    {/* Edit details if applicable */}
-                                                    {(q.details || answers[`${q.id}_details`]) && (
-                                                        <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
-                                                            <p className="text-[9px] text-white font-bold uppercase tracking-wider mb-1">Details:</p>
-                                                            {isEditing ? (
-                                                                <textarea
-                                                                    value={answers[`${q.id}_details`] || ''}
-                                                                    onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
+                                                return (
+                                                    <div key={q.id} className="flex flex-col gap-2 border-b border-white/10 pb-6 last:border-0">
+                                                        <p className="text-[10px] font-black tracking-widest text-white/50 mb-1">{q.question}</p>
+                                                        {isEditing ? (
+                                                            q.type === 'select' || q.type === 'boolean' || (q.options?.length > 0) ? (
+                                                                <select
+                                                                    value={answer || ''}
+                                                                    onChange={(e) => handleIntakeChange(q.id, e.target.value)}
                                                                     className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
-                                                                />
+                                                                >
+                                                                    <option value="">Select...</option>
+                                                                    {q.options ? q.options.map(opt => (
+                                                                        <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value}>
+                                                                            {typeof opt === 'string' ? opt : opt.label}
+                                                                        </option>
+                                                                    )) : (
+                                                                        <>
+                                                                            <option value="Yes">Yes</option>
+                                                                            <option value="No">No</option>
+                                                                        </>
+                                                                    )}
+                                                                </select>
                                                             ) : (
-                                                                <p className="text-sm text-white/80">{answers[`${q.id}_details`]}</p>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                                <textarea
+                                                                    value={answer || ''}
+                                                                    onChange={(e) => handleIntakeChange(q.id, e.target.value)}
+                                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
+                                                                />
+                                                            )
+                                                        ) : (
+                                                            <div className="text-sm font-bold text-white/90 leading-relaxed">
+                                                                {Array.isArray(answer) ? (
+                                                                    <ul className="list-disc list-inside space-y-1 marker:text-white">
+                                                                        {answer.map((item, i) => <li key={i}>{item}</li>)}
+                                                                    </ul>
+                                                                ) : (
+                                                                    answer?.toString()
+                                                                )}
+                                                            </div>
+                                                        )}
 
-                                                    {/* Files (e.g. current_meds upload) */}
-                                                    {q.upload && (answers[`${q.id}_file`] || formData.glp1_prescription_url) && (
-                                                        <div className="mt-3">
-                                                            <a href={answers[`${q.id}_file`] || (Array.isArray(formData.glp1_prescription_url) ? formData.glp1_prescription_url[0] : formData.glp1_prescription_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all">
-                                                                View Document
-                                                            </a>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        });
+                                                        {/* Edit details if applicable */}
+                                                        {(q.details || answers[`${q.id}_details`]) && (
+                                                            <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
+                                                                <p className="text-[9px] text-white font-bold uppercase tracking-wider mb-1">Details:</p>
+                                                                {isEditing ? (
+                                                                    <textarea
+                                                                        value={answers[`${q.id}_details`] || ''}
+                                                                        onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
+                                                                        className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
+                                                                    />
+                                                                ) : (
+                                                                    <p className="text-sm text-white/80">{answers[`${q.id}_details`]}</p>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Files (e.g. current_meds upload) */}
+                                                        {q.upload && (answers[`${q.id}_file`] || formData.glp1_prescription_url) && (
+                                                            <div className="mt-3">
+                                                                <a href={answers[`${q.id}_file`] || (Array.isArray(formData.glp1_prescription_url) ? formData.glp1_prescription_url[0] : formData.glp1_prescription_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all">
+                                                                    View Document
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            });
                                     })()}
                                 </div>
 
@@ -2468,7 +2481,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                 <SectionHeader title="Security & Verification" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                                     <InfoRow label="ID Type" field="identification_type" value={formData.identification_type || 'License'} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="ID Number" field="identification_number" value={formData.identification_number || '••••••••'} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="ID Number" field="identification_number" value={formData.identification_number || '��������'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Identification Document" value={formData.identification_url} isFile={!!formData.identification_url} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
 
@@ -2521,7 +2534,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                         {!hasPaymentMethod && submission.approval_status === 'pending' && (
                             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
                                 <p className="text-red-500 text-[10px] font-black uppercase tracking-widest">
-                                    ⚠️ Action Required: User has not added a payment method
+                                    ?? Action Required: User has not added a payment method
                                 </p>
                             </div>
                         )}
@@ -2728,8 +2741,8 @@ const ClinicalQueue = () => {
                             {cat.name}
                             {count > 0 && (
                                 <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black ${filter === cat.id
-                                    ? 'bg-white text-black'
-                                    : 'bg-white/20 text-white'
+                                    ? 'bg-accent-green text-black'
+                                    : 'bg-white/10 text-white/70'
                                     }`}>
                                     {count}
                                 </span>
@@ -2758,7 +2771,7 @@ const ClinicalQueue = () => {
             <div className="space-y-4">
                 {filteredQueue.length === 0 ? (
                     <div className="py-24 text-center border-2 border-dashed border-white/10 rounded-[40px] flex flex-col items-center">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-[#1a1a1a]/10 mb-4">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/10 mb-4">
                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <p className="opacity-20 uppercase font-black text-xs tracking-widest">No pending {filter !== 'all' ? filter.replace('-', ' ') : ''} submissions</p>
@@ -2926,7 +2939,7 @@ const DiscountManager = () => {
                                 value={newCoupon.code}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })}
                                 placeholder="GLOW50"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm focus:outline-none focus:border-accent-black transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2937,7 +2950,7 @@ const DiscountManager = () => {
                                 value={newCoupon.discount_value}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, discount_value: e.target.value })}
                                 placeholder="25"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm focus:outline-none focus:border-accent-black transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2969,7 +2982,7 @@ const DiscountManager = () => {
                                 value={newCoupon.description}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, description: e.target.value })}
                                 placeholder="Summer campaign discount for weight loss eligibility"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm focus:outline-none focus:border-accent-black transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2979,7 +2992,7 @@ const DiscountManager = () => {
                                 type="date"
                                 value={newCoupon.expiration_date}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, expiration_date: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm focus:outline-none focus:border-accent-black transition-all"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all"
                                 required
                             />
                         </div>
@@ -2991,7 +3004,7 @@ const DiscountManager = () => {
                             disabled={adding}
                             className="px-12 py-5 bg-accent-black text-white rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
                         >
-                            {adding ? 'Synchronizing Archive...' : 'Launch Promo Code →'}
+                            {adding ? 'Synchronizing Archive...' : 'Launch Promo Code ?'}
                         </button>
                     </div>
                 </form>
@@ -3042,7 +3055,7 @@ const DiscountManager = () => {
                                     <td className="px-8 py-6 text-right">
                                         <button
                                             onClick={() => handleDeleteCoupon(coupon.id)}
-                                            className="px-4 py-2 border border-red-500/20 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500 hover:text-[#1a1a1a] transition-all rounded-lg"
+                                            className="px-4 py-2 border border-red-500/20 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500 hover:text-white transition-all rounded-lg"
                                         >
                                             Purge
                                         </button>
@@ -3109,12 +3122,12 @@ const SubscriberAnalytics = () => {
                 >
                     <div className={`absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 ${activeTab === 'active' ? 'bg-accent-black' : 'bg-[#111111]'}`}></div>
                     <div className="flex items-center gap-4 mb-6">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'active' ? 'bg-accent-black text-white' : 'bg-white/5 text-[#1a1a1a]'}`}>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'active' ? 'bg-accent-black text-white' : 'bg-white/5 text-white'}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         </div>
                         <span className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'active' ? 'text-white' : 'text-white/50'}`}>Tracking Active</span>
                     </div>
-                    <p className={`text-4xl font-black  tracking-tighter ${activeTab === 'active' ? 'text-[#1a1a1a]' : 'text-white/60'}`}>{activeSubs.length}</p>
+                    <p className={`text-4xl font-black  tracking-tighter ${activeTab === 'active' ? 'text-white' : 'text-white/60'}`}>{activeSubs.length}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mt-1">Active Subscriptions</p>
                 </div>
 
@@ -3124,12 +3137,12 @@ const SubscriberAnalytics = () => {
                 >
                     <div className="absolute -right-10 -top-10 w-32 h-32 blur-3xl transition-opacity opacity-0 group-hover:opacity-20 bg-red-500"></div>
                     <div className="flex items-center gap-4 mb-6">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'expired' ? 'bg-red-500 text-white' : 'bg-white/5 text-[#1a1a1a]'}`}>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeTab === 'expired' ? 'bg-red-500 text-white' : 'bg-white/5 text-white'}`}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <span className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'expired' ? 'text-red-500' : 'text-white/50'}`}>Tracking Churn</span>
                     </div>
-                    <p className={`text-4xl font-black  tracking-tighter ${activeTab === 'expired' ? 'text-[#1a1a1a]' : 'text-white/60'}`}>{expiredSubs.length}</p>
+                    <p className={`text-4xl font-black  tracking-tighter ${activeTab === 'expired' ? 'text-white' : 'text-white/60'}`}>{expiredSubs.length}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mt-1">Expired / Cancelled</p>
                 </div>
             </div>
@@ -3177,19 +3190,19 @@ const SubscriberAnalytics = () => {
                                                     {(sub.first_name || sub.email || '?').charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-[#1a1a1a] mb-0.5">{sub.first_name} {sub.last_name}</p>
+                                                    <p className="text-sm font-bold text-white mb-0.5">{sub.first_name} {sub.last_name}</p>
                                                     <p className="text-[10px] text-white/50 font-medium">{sub.email}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <p className="text-xs font-bold text-[#1a1a1a]/80">{formatPlanName(sub.current_plan)}</p>
+                                            <p className="text-xs font-bold text-white/80">{formatPlanName(sub.current_plan)}</p>
                                             <p className="text-[9px] text-white/30 uppercase tracking-widest font-bold mt-1">
-                                                ID: {sub.stripe_subscription_id ? String(sub.stripe_subscription_id).substring(0, 12) + '...' : '—'}
+                                                ID: {sub.stripe_subscription_id ? String(sub.stripe_subscription_id).substring(0, 12) + '...' : '�'}
                                             </p>
                                         </td>
                                         <td className="px-8 py-6 text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                                            {sub.current_sub_end_date ? new Date(sub.current_sub_end_date).toLocaleDateString() : '—'}
+                                            {sub.current_sub_end_date ? new Date(sub.current_sub_end_date).toLocaleDateString() : '�'}
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === 'active'
@@ -3219,7 +3232,7 @@ const SubscriberAnalytics = () => {
                         </button>
                         <div className="flex gap-2">
                             <span className="text-[10px] font-black text-white/50 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-lg">
-                                Page <span className="text-[#1a1a1a]">{page}</span> of {totalPages}
+                                Page <span className="text-white">{page}</span> of {totalPages}
                             </span>
                         </div>
                         <button
@@ -3546,7 +3559,7 @@ const PatientExpressEntry = () => {
                             placeholder="patient@example.com"
                             value={patientEmail}
                             onChange={(e) => setPatientEmail(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-[#1a1a1a] font-bold focus:outline-none focus:border-accent-black transition-all"
+                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
                         />
                         <div className="flex gap-4">
                             <button
@@ -3579,7 +3592,7 @@ const PatientExpressEntry = () => {
                             <div>
                                 <h4 className="text-sm font-black uppercase text-orange-500 mb-1">Existing Submission Found</h4>
                                 <p className="text-[11px] text-white/60 font-medium leading-relaxed">
-                                    This user already submitted a request for {selectedCategory} on <span className="text-[#1a1a1a] font-bold">{new Date(existingInfo.submitted_at).toLocaleDateString()}</span>.
+                                    This user already submitted a request for {selectedCategory} on <span className="text-white font-bold">{new Date(existingInfo.submitted_at).toLocaleDateString()}</span>.
                                     Proceeding will create a new entry.
                                 </p>
                             </div>
@@ -3603,13 +3616,13 @@ const PatientExpressEntry = () => {
                                 if (q.condition && !q.condition(answers)) return null;
                                 if (q.type === 'info') return (
                                     <div key={q.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
-                                        <p className="text-sm font-bold text-[#1a1a1a]/80">{q.content}</p>
+                                        <p className="text-sm font-bold text-white/80">{q.content}</p>
                                     </div>
                                 );
 
                                 return (
                                     <div key={q.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <label className="block text-sm font-bold text-[#1a1a1a] mb-4">
+                                        <label className="block text-sm font-bold text-white mb-4">
                                             {q.question}
                                         </label>
 
@@ -3620,7 +3633,7 @@ const PatientExpressEntry = () => {
                                                 value={answers[q.id] || ''}
                                                 onChange={(e) => handleAnswerChange(q.id, e.target.value, 'text')}
                                                 placeholder={q.placeholder || "Enter details..."}
-                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black transition-all"
+                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black transition-all"
                                             />
                                         )}
 
@@ -3644,7 +3657,7 @@ const PatientExpressEntry = () => {
                                                     <div
                                                         key={opt}
                                                         onClick={() => handleAnswerChange(q.id, opt, 'multiselect')}
-                                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${answers[q.id]?.includes(opt) ? 'bg-white/5 border-accent-black text-[#1a1a1a]' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/5'}`}
+                                                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${answers[q.id]?.includes(opt) ? 'bg-white/5 border-accent-black text-white' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/5'}`}
                                                     >
                                                         <div className={`w-4 h-4 rounded border flex items-center justify-center ${answers[q.id]?.includes(opt) ? 'border-accent-black bg-accent-black text-white' : 'border-white/30'}`}>
                                                             {answers[q.id]?.includes(opt) && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
@@ -3689,17 +3702,17 @@ const PatientExpressEntry = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div className="space-y-4">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60">Provider Information</h4>
-                                <input placeholder="Provider Full Name" value={prescription.providerName} onChange={e => handlePrescriptionChange('providerName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <input type="date" value={prescription.date} onChange={e => handlePrescriptionChange('date', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Provider Full Name" value={prescription.providerName} onChange={e => handlePrescriptionChange('providerName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input type="date" value={prescription.date} onChange={e => handlePrescriptionChange('date', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                             </div>
                             <div className="space-y-4">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-white/60">Patient Information</h4>
-                                <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
-                                <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black h-24" />
+                                <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black h-24" />
                             </div>
                         </div>
 
@@ -3728,7 +3741,7 @@ const PatientExpressEntry = () => {
                                             <span className={`text-[10px] font-black uppercase tracking-widest ${prescription.titration === opt.label ? 'text-white' : 'text-white/50'}`}>{opt.label}</span>
                                             <span className="text-[10px] font-bold text-white/50">{opt.qty}</span>
                                         </div>
-                                        <p className="text-xs text-[#1a1a1a]/80 leading-relaxed">{opt.dose}</p>
+                                        <p className="text-xs text-white/80 leading-relaxed">{opt.dose}</p>
                                     </div>
                                 ))}
                             </div>
@@ -3744,7 +3757,7 @@ const PatientExpressEntry = () => {
                                             {prescription.diagnosis.includes(item) && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
                                         </div>
                                         <input type="checkbox" className="hidden" checked={prescription.diagnosis.includes(item)} onChange={() => toggleCheckbox('diagnosis', item)} />
-                                        <span className="text-sm text-[#1a1a1a]/80">{item}</span>
+                                        <span className="text-sm text-white/80">{item}</span>
                                     </label>
                                 ))}
                             </div>
@@ -3756,7 +3769,7 @@ const PatientExpressEntry = () => {
                                             {prescription.medicalNecessity.includes(item) && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><path d="M20 6L9 17l-5-5" /></svg>}
                                         </div>
                                         <input type="checkbox" className="hidden" checked={prescription.medicalNecessity.includes(item)} onChange={() => toggleCheckbox('medicalNecessity', item)} />
-                                        <span className="text-sm text-[#1a1a1a]/80">{item}</span>
+                                        <span className="text-sm text-white/80">{item}</span>
                                     </label>
                                 ))}
                             </div>
@@ -3764,11 +3777,11 @@ const PatientExpressEntry = () => {
 
                         {/* Signature */}
                         <div className="bg-black/20 border border-white/10 rounded-2xl p-6 mb-8">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Dispense As Written – Prescriber Electronic Signature</h4>
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Dispense As Written � Prescriber Electronic Signature</h4>
                             <div className="space-y-4">
-                                <input placeholder="Type your full legal name to sign" value={prescription.signature} onChange={e => handlePrescriptionChange('signature', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Type your full legal name to sign" value={prescription.signature} onChange={e => handlePrescriptionChange('signature', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <p className="text-[10px] text-white/50">By typing your name above, you are electronically signing this prescription and certifying that you are the authorized prescriber.</p>
-                                <input type="date" value={prescription.signatureDate} onChange={e => handlePrescriptionChange('signatureDate', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black max-w-[200px]" />
+                                <input type="date" value={prescription.signatureDate} onChange={e => handlePrescriptionChange('signatureDate', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black max-w-[200px]" />
                             </div>
                             <div className="mt-4 pt-4 border-t border-white/10">
                                 <p className="text-[10px]  text-white/30 leading-relaxed">
@@ -3912,7 +3925,7 @@ const SurveyManagement = () => {
                         onClick={() => setCategoryFilter(cat.id)}
                         className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${categoryFilter === cat.id
                             ? 'bg-accent-black text-white'
-                            : 'bg-white/5 text-white/50 hover:bg-white/5 hover:text-[#1a1a1a] border border-white/10'
+                            : 'bg-white/5 text-white/50 hover:bg-white/5 hover:text-white border border-white/10'
                             }`}
                     >
                         {cat.label}
@@ -3951,7 +3964,7 @@ const SurveyManagement = () => {
                                 surveys.map(survey => (
                                     <tr key={survey.id} className="hover:bg-[#111111]/[0.02] transition-colors group">
                                         <td className="p-8">
-                                            <p className="font-bold text-[#1a1a1a] group-hover:text-white transition-colors">{survey.email}</p>
+                                            <p className="font-bold text-white group-hover:text-white transition-colors">{survey.email}</p>
                                             <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mt-1">{survey.product}</p>
                                         </td>
                                         <td className="p-8">
@@ -3962,11 +3975,11 @@ const SurveyManagement = () => {
                                         {categoryFilter === 'weight-loss' && (
                                             <>
                                                 <td className="p-8">
-                                                    <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '—'}</p>
+                                                    <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '�'}</p>
                                                 </td>
                                                 <td className="p-8">
                                                     <p className={`text-sm font-black ${survey.weight_lost > 0 ? 'text-white' : 'text-white/50'}`}>
-                                                        {survey.weight_lost ? `${survey.weight_lost} lbs` : '—'}
+                                                        {survey.weight_lost ? `${survey.weight_lost} lbs` : '�'}
                                                     </p>
                                                 </td>
                                             </>
@@ -3989,7 +4002,7 @@ const SurveyManagement = () => {
                                         <td className="p-8 text-right">
                                             <button
                                                 onClick={() => setSelectedSurvey(survey)}
-                                                className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#1a1a1a] group-hover:bg-accent-black group-hover:text-white group-hover:border-accent-black transition-all"
+                                                className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-white group-hover:bg-accent-black group-hover:text-white group-hover:border-accent-black transition-all"
                                             >
                                                 View
                                             </button>
@@ -4011,21 +4024,21 @@ const SurveyManagement = () => {
                     >
                         <button
                             onClick={() => setSelectedSurvey(null)}
-                            className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/5 transition-all text-white/50 hover:text-[#1a1a1a]"
+                            className="absolute top-8 right-8 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/5 transition-all text-white/50 hover:text-white"
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                         </button>
 
                         <div className="mb-12">
                             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white mb-4">Patient Encounter</p>
-                            <h3 className="text-4xl font-black uppercase  tracking-tighter text-[#1a1a1a] mb-2 leading-none">Survey Results</h3>
+                            <h3 className="text-4xl font-black uppercase  tracking-tighter text-white mb-2 leading-none">Survey Results</h3>
                             <p className="text-white/50 font-bold uppercase tracking-widest text-[11px]">{selectedSurvey.email}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-8">
                             <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Protocol</p>
-                                <p className="text-sm font-black text-[#1a1a1a] uppercase ">{selectedSurvey.product}</p>
+                                <p className="text-sm font-black text-white uppercase ">{selectedSurvey.product}</p>
                             </div>
                             <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Progress</p>
@@ -4074,7 +4087,7 @@ const SurveyManagement = () => {
                             {selectedSurvey.additional_notes && (
                                 <div className="bg-[#111111]/[0.02] border border-white/10 p-8 rounded-[32px]">
                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Patient Notes</p>
-                                    <p className="text-[#1a1a1a]/80 font-medium leading-relaxed ">"{selectedSurvey.additional_notes}"</p>
+                                    <p className="text-white/80 font-medium leading-relaxed ">"{selectedSurvey.additional_notes}"</p>
                                 </div>
                             )}
 
@@ -4386,7 +4399,7 @@ const StaffManagement = () => {
                 </button>
                 <button
                     onClick={() => setShowBackOfficeModal(true)}
-                    className="px-8 py-4 bg-white/5 border border-white/10 text-[#1a1a1a] rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                    className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
                 >
                     + Add Back Office Staff
                 </button>
@@ -4406,7 +4419,7 @@ const StaffManagement = () => {
                 </div>
                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Back Office</p>
-                    <p className="text-4xl font-black uppercase  tracking-tighter text-[#1a1a1a]">
+                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">
                         {staff.filter(s => s.role === 'back_office').length}
                     </p>
                 </div>
@@ -4444,7 +4457,7 @@ const StaffManagement = () => {
                                 staff.map(member => (
                                     <tr key={member.id} className="border-b border-white/10 hover:bg-[#111111]/[0.02] transition-colors">
                                         <td className="p-6">
-                                            <p className="font-bold text-[#1a1a1a]">{member.first_name} {member.last_name}</p>
+                                            <p className="font-bold text-white">{member.first_name} {member.last_name}</p>
                                         </td>
                                         <td className="p-6">
                                             <p className="text-sm text-white/60">{member.email || 'N/A'}</p>
@@ -4475,7 +4488,7 @@ const StaffManagement = () => {
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
-                                                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-[#1a1a1a] transition-all group"
+                                                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
                                                     title="Delete Staff"
                                                 >
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -4509,7 +4522,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.firstName}
                                         onChange={(e) => setProviderForm({ ...providerForm, firstName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4519,7 +4532,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.lastName}
                                         onChange={(e) => setProviderForm({ ...providerForm, lastName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4531,7 +4544,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.dob}
                                     onChange={(e) => setProviderForm({ ...providerForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black [color-scheme:dark]"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black [color-scheme:dark]"
                                 />
                             </div>
 
@@ -4542,7 +4555,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.address}
                                     onChange={(e) => setProviderForm({ ...providerForm, address: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4553,7 +4566,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.phone}
                                     onChange={(e) => setProviderForm({ ...providerForm, phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4564,7 +4577,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.email}
                                     onChange={(e) => setProviderForm({ ...providerForm, email: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4575,7 +4588,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.password}
                                     onChange={(e) => setProviderForm({ ...providerForm, password: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4585,7 +4598,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.licenseType}
                                     onChange={(e) => setProviderForm({ ...providerForm, licenseType: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] font-bold focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-black"
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
@@ -4603,7 +4616,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.licenseNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, licenseNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4613,7 +4626,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.npiNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, npiNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4623,7 +4636,7 @@ const StaffManagement = () => {
                                         required
                                         value={providerForm.deaNumber}
                                         onChange={(e) => setProviderForm({ ...providerForm, deaNumber: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4634,7 +4647,7 @@ const StaffManagement = () => {
                                     type="file"
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     onChange={(e) => setProviderForm({ ...providerForm, deaCertFile: e.target.files[0] })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-black file:text-white file:font-bold file:text-xs file:uppercase"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-black file:text-white file:font-bold file:text-xs file:uppercase"
                                 />
                             </div>
 
@@ -4676,7 +4689,7 @@ const StaffManagement = () => {
                                         required
                                         value={backOfficeForm.firstName}
                                         onChange={(e) => setBackOfficeForm({ ...backOfficeForm, firstName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                                 <div>
@@ -4686,7 +4699,7 @@ const StaffManagement = () => {
                                         required
                                         value={backOfficeForm.lastName}
                                         onChange={(e) => setBackOfficeForm({ ...backOfficeForm, lastName: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                     />
                                 </div>
                             </div>
@@ -4698,7 +4711,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.dob}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, dob: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black [color-scheme:dark]"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black [color-scheme:dark]"
                                 />
                             </div>
 
@@ -4709,7 +4722,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.address}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, address: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4720,7 +4733,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.phone}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4731,7 +4744,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.email}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, email: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4742,7 +4755,7 @@ const StaffManagement = () => {
                                     required
                                     value={backOfficeForm.password}
                                     onChange={(e) => setBackOfficeForm({ ...backOfficeForm, password: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[#1a1a1a] focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
                                 />
                             </div>
 
@@ -4909,7 +4922,7 @@ const OrderManagement = () => {
             <div className="grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-6">
                 {paginatedOrders.length === 0 ? (
                     <div className="py-32 text-center border-2 border-dashed border-white/10 rounded-[40px] flex flex-col items-center">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-[#1a1a1a]/10 mb-4">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/10 mb-4">
                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         <p className="opacity-20 uppercase font-black text-xs tracking-widest">No matching records detected</p>
@@ -4951,7 +4964,7 @@ const OrderManagement = () => {
                                         {order.profiles?.email && (
                                             <div className="flex items-center gap-3 col-span-full">
                                                 <span className="text-white/30">Email:</span>
-                                                <span className="lowercase normal-case font-medium text-[#1a1a1a]/80">{order.profiles.email}</span>
+                                                <span className="lowercase normal-case font-medium text-white/80">{order.profiles.email}</span>
                                             </div>
                                         )}
                                     </div>
@@ -4961,7 +4974,7 @@ const OrderManagement = () => {
                                 <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div className="flex flex-col gap-1">
                                         <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em]">Clinical Protocol</p>
-                                        <h4 className="text-xl font-black text-[#1a1a1a]  tracking-tighter uppercase">{order.drug_name || <><span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup> Latanoprost Solution</>}</h4>
+                                        <h4 className="text-xl font-black text-white  tracking-tighter uppercase">{order.drug_name || <><span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup> Latanoprost Solution</>}</h4>
                                     </div>
                                     <div className="flex flex-col sm:items-end gap-1">
                                         <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em]">Fee Amount</p>
@@ -4989,7 +5002,7 @@ const OrderManagement = () => {
                                                 href={order.tracking_url || `https://www.fedex.com/fedextrack/?tracknumbers=${order.tracking_id}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex-1 md:flex-none px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/5 text-[#1a1a1a] flex items-center justify-center gap-2"
+                                                className="flex-1 md:flex-none px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/5 text-white flex items-center justify-center gap-2"
                                             >
                                                 Track Shipment
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" /></svg>
@@ -4999,7 +5012,7 @@ const OrderManagement = () => {
                                                     setEditingTrackingId(order.id);
                                                     setTrackingInputs({ ...trackingInputs, [order.id]: order.tracking_id });
                                                 }}
-                                                className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-[#1a1a1a]"
+                                                className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-white"
                                             >
                                                 Edit
                                             </button>
@@ -5011,14 +5024,14 @@ const OrderManagement = () => {
                                             <input
                                                 type="text"
                                                 placeholder="Enter FedEx Tracking Number..."
-                                                className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 py-3 text-xs font-bold tracking-widest placeholder:text-[#1a1a1a]/10 focus:outline-none focus:border-accent-black/40"
+                                                className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 py-3 text-xs font-bold tracking-widest placeholder:text-white/10 focus:outline-none focus:border-accent-black/40"
                                                 value={trackingInputs[order.id] || ''}
                                                 onChange={(e) => setTrackingInputs({ ...trackingInputs, [order.id]: e.target.value.trim() })}
                                             />
                                             {editingTrackingId === order.id && (
                                                 <button
                                                     onClick={() => setEditingTrackingId(null)}
-                                                    className="p-3 text-[10px] uppercase font-black tracking-widest text-white/30 hover:text-[#1a1a1a] transition-all"
+                                                    className="p-3 text-[10px] uppercase font-black tracking-widest text-white/30 hover:text-white transition-all"
                                                 >
                                                     Cancel
                                                 </button>
@@ -5046,7 +5059,7 @@ const OrderManagement = () => {
                                             onClick={() => handleUpdateStatus(order.id, { processing_status: order.processing_status === 'processed' ? 'not processed' : 'processed' })}
                                             className={`px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${order.processing_status === 'processed' ? 'bg-accent-black text-white' : 'bg-white/5 text-white/50 border border-white/10 hover:border-white/20'}`}
                                         >
-                                            {order.processing_status === 'processed' ? '✓ Processed' : 'Mark Processed'}
+                                            {order.processing_status === 'processed' ? '? Processed' : 'Mark Processed'}
                                         </button>
                                     </div>
                                 </div>
@@ -5079,7 +5092,7 @@ const OrderManagement = () => {
                     <button
                         disabled={page === 1}
                         onClick={() => setPage(p => p - 1)}
-                        className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center disabled:opacity-20 hover:bg-white/5 transition-all text-[#1a1a1a]"
+                        className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center disabled:opacity-20 hover:bg-white/5 transition-all text-white"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                     </button>
@@ -5097,7 +5110,7 @@ const OrderManagement = () => {
                     <button
                         disabled={page === totalPages}
                         onClick={() => setPage(p => p + 1)}
-                        className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center disabled:opacity-20 hover:bg-white/5 transition-all text-[#1a1a1a]"
+                        className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center disabled:opacity-20 hover:bg-white/5 transition-all text-white"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
                     </button>
@@ -5455,7 +5468,7 @@ const ProfitTrackerView = () => {
                                         <td className="p-6 text-xs font-bold text-[#bfff00]">{row.revenue > 0 ? fmtMoney(row.revenue) : <span className="text-white/25 italic">No data</span>}</td>
                                         <td className="p-6">
                                             <span className={`text-sm font-black ${row.profit > 0 ? 'text-[#FFDE59]' : row.profit < 0 ? 'text-red-400' : 'text-white/30'}`}>
-                                                {row.profit !== 0 ? `${row.profit > 0 ? '+' : ''}${fmtMoney(row.profit)}` : '—'}
+                                                {row.profit !== 0 ? `${row.profit > 0 ? '+' : ''}${fmtMoney(row.profit)}` : '�'}
                                             </span>
                                         </td>
                                         <td className="p-6">
@@ -5497,7 +5510,7 @@ const ProfitTrackerView = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm font-black text-white">{p.drug_name}</p>
-                                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.pharmacy_name} · {new Date(p.purchase_date).toLocaleDateString()}</p>
+                                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.pharmacy_name} � {new Date(p.purchase_date).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 text-right">
@@ -5533,9 +5546,9 @@ const ProfitTrackerView = () => {
     );
 };
 
-// ─────────────────────────────────────────────────────────────
-// STATEMENTS — Admin View
-// ─────────────────────────────────────────────────────────────
+// -------------------------------------------------------------
+// STATEMENTS � Admin View
+// -------------------------------------------------------------
 const StatementDocument = ({ stmt, rates }) => {
     const LOGO_TEXT = ['u', 'Glow', 'MD'];
     const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -5561,7 +5574,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
     return (
         <div>
-            {/* PAGE 1 — Summary Statement */}
+            {/* PAGE 1 � Summary Statement */}
             <div style={pageStyle}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
@@ -5570,12 +5583,12 @@ const StatementDocument = ({ stmt, rates }) => {
                         <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
                         <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
                     </div>
-                    {/* uGlowMD Logo — top right, large */}
+                    {/* uGlowMD Logo � top right, large */}
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
                             <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '16px', fontWeight: '700' }}>MD</sup>
                         </div>
-                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD · Provider Portal</div>
+                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD � Provider Portal</div>
                     </div>
                 </div>
 
@@ -5643,17 +5656,17 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD � Provider Compensation � Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
                 </div>
             </div>
 
-            {/* PAGE 2 — Patient Lists */}
+            {/* PAGE 2 � Patient Lists */}
             <div style={{ ...pageStyle, pageBreakAfter: 'auto' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
                     <div>
-                        <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL — {periodLabel}</div>
+                        <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL � {periodLabel}</div>
                         <div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -5668,7 +5681,7 @@ const StatementDocument = ({ stmt, rates }) => {
                 {/* New Patients */}
                 <div style={{ marginBottom: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients — {stmt.new_patient_count ?? 0} total</div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients � {stmt.new_patient_count ?? 0} total</div>
                         <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates?.new_patient_rate ?? stmt.new_patient_rate ?? 5)} each</div>
                     </div>
                     {(stmt.new_patients_list && stmt.new_patients_list.length > 0) ? (
@@ -5687,8 +5700,8 @@ const StatementDocument = ({ stmt, rates }) => {
                                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td>
                                         <td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || 'N/A'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '—'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '�'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '�'}</td>
                                         <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates?.new_patient_rate ?? stmt.new_patient_rate ?? 5)}</td>
                                     </tr>
                                 ))}
@@ -5704,7 +5717,7 @@ const StatementDocument = ({ stmt, rates }) => {
                 {/* Recurring Patients */}
                 <div style={{ marginBottom: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers — {stmt.recurring_patient_count ?? 0} total</div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers � {stmt.recurring_patient_count ?? 0} total</div>
                         <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates?.recurring_patient_rate ?? stmt.recurring_patient_rate ?? 5)} each</div>
                     </div>
                     {(stmt.recurring_patients_list && stmt.recurring_patients_list.length > 0) ? (
@@ -5722,7 +5735,7 @@ const StatementDocument = ({ stmt, rates }) => {
                                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td>
                                         <td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || 'N/A'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '�'}</td>
                                         <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates?.recurring_patient_rate ?? stmt.recurring_patient_rate ?? 5)}</td>
                                     </tr>
                                 ))}
@@ -5735,7 +5748,7 @@ const StatementDocument = ({ stmt, rates }) => {
                     )}
                 </div>
 
-                {/* Grand Total — Page 2 */}
+                {/* Grand Total � Page 2 */}
                 <div style={{ borderTop: '2px solid #111', paddingTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '8px' }}>Total Payout to Provider</div>
@@ -5746,7 +5759,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD � Provider Compensation � Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
                 </div>
             </div>
@@ -5996,7 +6009,7 @@ const StatementsAdminView = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
-                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} · {stmt.new_patient_count ?? 0} new · {stmt.recurring_patient_count ?? 0} recurring</p>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} � {stmt.new_patient_count ?? 0} new � {stmt.recurring_patient_count ?? 0} recurring</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 flex-wrap">
@@ -6025,12 +6038,12 @@ const StatementsAdminView = () => {
                         <div className="bg-[#111111] border border-white/10 rounded-[32px] p-6 md:p-8 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Statement Review</h3>
-                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.period_label} · {selectedStmt.statement_number}</p>
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.period_label} � {selectedStmt.statement_number}</p>
                             </div>
                             <div className="flex items-center gap-3 flex-wrap">
                                 {!editMode && <button onClick={() => setPreviewMode(!previewMode)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${previewMode ? 'bg-[#FFDE59] text-black' : 'bg-white/10 text-white/60 hover:text-white'}`}>{previewMode ? 'Hide Preview' : 'Preview Document'}</button>}
                                 {!previewMode && <button onClick={() => setEditMode(!editMode)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${editMode ? 'bg-white/20 text-white' : 'bg-white/10 text-white/60 hover:text-white'}`}>{editMode ? 'Cancel Edit' : 'Edit Values'}</button>}
-                                {selectedStmt.status !== 'approved' && !editMode && !previewMode && <button onClick={() => handleApprove(selectedStmt.id)} disabled={saving} className="px-5 py-2.5 bg-green-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-400 transition-all disabled:opacity-50">✓ Approve & Release</button>}
+                                {selectedStmt.status !== 'approved' && !editMode && !previewMode && <button onClick={() => handleApprove(selectedStmt.id)} disabled={saving} className="px-5 py-2.5 bg-green-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-400 transition-all disabled:opacity-50">? Approve & Release</button>}
                                 {editMode && <button onClick={handleSaveEdit} disabled={saving} className="px-5 py-2.5 bg-[#FFDE59] text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50">{saving ? 'Saving...' : 'Save Changes'}</button>}
                                 <button onClick={() => { setSelectedStmt(null); setEditMode(false); setPreviewMode(false); }} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5 transition-all">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -6048,7 +6061,7 @@ const StatementsAdminView = () => {
                                     <div><label style={labelStyle}>Recurring Patient Count</label><input type="number" min="0" value={editForm.recurring_patient_count} onChange={e => setEditForm(f => ({ ...f, recurring_patient_count: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} /></div>
                                     <div><label style={labelStyle}>Recurring Patient Rate ($)</label><input type="number" step="0.01" min="0" value={editForm.recurring_patient_rate} onChange={e => setEditForm(f => ({ ...f, recurring_patient_rate: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} /></div>
                                     <div className="md:col-span-2">
-                                        <label style={labelStyle}>Override Total Payout ($ — leave blank to auto-calculate)</label>
+                                        <label style={labelStyle}>Override Total Payout ($ � leave blank to auto-calculate)</label>
                                         <input type="number" step="0.01" min="0" value={editForm.total_payout_override} onChange={e => setEditForm(f => ({ ...f, total_payout_override: e.target.value }))} placeholder="Auto-calculated if blank" style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                         <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '6px' }}>
                                             Auto: {fmtMoney((Number(editForm.new_patient_rate) * Number(editForm.new_patient_count)) + (Number(editForm.recurring_patient_rate) * Number(editForm.recurring_patient_count)))}
@@ -6361,7 +6374,7 @@ const BlogManagement = () => {
                                         </span>
                                     </td>
                                     <td className="py-6 text-xs text-white/40 font-mono tracking-tighter">
-                                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : '—'}
+                                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : '�'}
                                     </td>
                                     <td className="py-6 text-right">
                                         <div className="flex items-center justify-end gap-3">
@@ -6509,7 +6522,7 @@ const AdminDashboard = () => {
                                 {item.label}
                             </div>
                             {item.badge > 0 && (
-                                <span className="bg-red-500 text-[#1a1a1a] text-[9px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse">
+                                <span className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse">
                                     {item.badge}
                                 </span>
                             )}
