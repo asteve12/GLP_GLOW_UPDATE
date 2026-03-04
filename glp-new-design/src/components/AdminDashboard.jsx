@@ -116,7 +116,13 @@ const AdminOverview = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h2 className="text-2xl font-black uppercase tracking-tighter">Platform Overview</h2>
                 <div className="flex gap-2">
-                    {[{ k: '30_days', l: '30 Days' }, { k: 'year', l: '1 Year' }, { k: 'all_time', l: 'All Time' }].map(opt => (
+                    {[
+                        { k: 'day', l: 'Daily' },
+                        { k: 'week', l: '1 Week' },
+                        { k: '30_days', l: '30 Days' },
+                        { k: 'year', l: '1 Year' },
+                        { k: 'all_time', l: 'All Time' }
+                    ].map(opt => (
                         <button
                             key={opt.k}
                             onClick={() => setPeriod(opt.k)}
@@ -238,6 +244,19 @@ const AdminOverview = () => {
 
 
 // --- Patient Manager ---
+// Helper to get category ID from drug name for intake questions
+const getMedicationCategoryId = (drugName) => {
+    const drug = (drugName || '').toLowerCase();
+    if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight') || drug.includes('retatrutide')) return 'weight-loss';
+    if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) return 'hair-restoration';
+    if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil')) return 'sexual-health';
+    if (drug.includes('nad') || drug.includes('longevity')) return 'longevity';
+    if (drug.includes('testosterone')) return 'testosterone';
+    if (drug.includes('skin')) return 'skin-care';
+    if (drug.includes('repair') || drug.includes('healing') || drug.includes('strength')) return 'repair-healing';
+    return drugName; // Fallback
+};
+
 const formatPlanName = (plan) => {
     try {
         if (!plan || plan === 'None' || plan === '{}') return 'Monthly Maintenance';
@@ -270,8 +289,16 @@ const PatientPortalManager = () => {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [cardFilter, setCardFilter] = useState('all');
-    const [planFilter, setPlanFilter] = useState('all');
-    const [availablePlans, setAvailablePlans] = useState([]);
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const categories = [
+        'Weight Loss',
+        'Hair Restoration',
+        'Sexual Health',
+        'Longevity',
+        'Testosterone',
+        'Skin Care',
+        'Repair & Healing'
+    ];
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [isDossierOpen, setIsDossierOpen] = useState(false);
     const [renderError, setRenderError] = useState(null);
@@ -345,8 +372,13 @@ const PatientPortalManager = () => {
                         (q.email && q.email.toLowerCase() === profile.email?.toLowerCase())
                     );
 
+                    // Ensure names are populated from submissions if profile is empty
+                    const latestSub = userSubmissions[0] || {};
+
                     return {
                         ...profile,
+                        first_name: profile.first_name || latestSub.shipping_first_name || '',
+                        last_name: profile.last_name || latestSub.shipping_last_name || '',
                         form_submissions: userSubmissions,
                         submission_count: userSubmissions.length,
                         billing_history: userBilling,
@@ -358,17 +390,9 @@ const PatientPortalManager = () => {
                 console.log('[PatientPortalManager] Combined data:', combinedData.length, 'records');
                 setPatients(combinedData);
 
-                // Extract unique plans for the filter
-                const plans = new Set();
-                combinedData.forEach(p => {
-                    if (p.current_plan) {
-                        const name = formatPlanName(p.current_plan);
-                        if (name && name !== 'Monthly Maintenance' && name !== 'Protocol Plan' && name !== 'None') {
-                            plans.add(name);
-                        }
-                    }
-                });
-                setAvailablePlans(Array.from(plans).sort());
+                // Categories are fixed now as per requirements
+                // No need to derive from data anymore as we want the system categories listed 
+
 
             } catch (err) {
                 console.error('[PatientPortalManager] Fetch exception:', err);
@@ -403,21 +427,45 @@ const PatientPortalManager = () => {
 
         const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
 
-        let matchesStatus = true;
-        if (statusFilter === 'active') matchesStatus = p.subscribe_status === true;
-        if (statusFilter === 'inactive') matchesStatus = p.subscribe_status === false;
+        const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.subscribe_status : !p.subscribe_status);
 
         let matchesCard = true;
-        if (cardFilter === 'vaulted') matchesCard = !!p.stripe_payment_method_id;
-        if (cardFilter === 'none') matchesCard = !p.stripe_payment_method_id;
+        if (cardFilter === 'vaulted') matchesCard = !!(p.stripe_payment_method_id || p.last_four_digits_of_card);
+        if (cardFilter === 'none') matchesCard = !(p.stripe_payment_method_id || p.last_four_digits_of_card);
 
-        let matchesPlan = true;
-        if (planFilter !== 'all') {
-            const planName = formatPlanName(p.current_plan).toLowerCase();
-            matchesPlan = planName.includes(planFilter.toLowerCase());
+        let matchesCategory = true;
+        if (categoryFilter !== 'all') {
+            const plan = p.current_plan;
+            if (!plan || plan === 'None' || plan === '{}') {
+                matchesCategory = false;
+            } else {
+                let planObj = {};
+                try {
+                    planObj = typeof plan === 'string' ? JSON.parse(plan) : (plan || {});
+                } catch (e) { planObj = {}; }
+
+                const categoryMap = {
+                    'Weight Loss': ['weight_loss', 'semaglutide', 'tirzepatide', 'weight'],
+                    'Hair Restoration': ['hair_restoration', 'hair', 'finasteride', 'minoxidil'],
+                    'Sexual Health': ['sexual_health', 'sexual', 'sildenafil', 'tadalafil'],
+                    'Longevity': ['longevity', 'nad', 'cjc', 'ipamorelin'],
+                    'Testosterone': ['testosterone'],
+                    'Skin Care': ['skin_care', 'skin'],
+                    'Repair & Healing': ['repair_healing', 'repair', 'healing', 'strength']
+                };
+
+                const keywords = categoryMap[categoryFilter] || [];
+                const keys = Object.keys(planObj).map(k => k.toLowerCase());
+                const values = Object.values(planObj).map(v => (v || '').toString().toLowerCase());
+
+                matchesCategory = keywords.some(kw =>
+                    keys.some(k => k.includes(kw)) ||
+                    values.some(v => v.includes(kw))
+                );
+            }
         }
 
-        return matchesSearch && matchesStatus && matchesCard && matchesPlan;
+        return matchesSearch && matchesStatus && matchesCard && matchesCategory;
     });
 
     return (
@@ -434,9 +482,9 @@ const PatientPortalManager = () => {
                         placeholder="Search by name or email..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-5 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-accent-black focus:bg-[#111111]/[0.08] transition-all placeholder:text-white/30 shadow-2xl"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-5 text-sm font-bold text-white focus:outline-none focus:border-accent-black focus:bg-[#111111]/[0.08] transition-all placeholder:text-white/30 shadow-2xl"
                     />
-                    <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-accent-black transition-colors">
+                    <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-white transition-colors">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                     </div>
                 </div>
@@ -464,14 +512,13 @@ const PatientPortalManager = () => {
                     </select>
 
                     <select
-                        value={planFilter}
-                        onChange={(e) => setPlanFilter(e.target.value)}
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
                         className="bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/60 focus:outline-none focus:border-accent-black hover:bg-white/5 transition-all cursor-pointer appearance-none flex-1 min-w-[140px] md:min-w-[180px]"
                     >
-                        <option value="all" className="bg-[#111111]">All Plans</option>
-                        <option value="Monthly Maintenance" className="bg-[#111111]">Monthly Maintenance</option>
-                        {availablePlans.map(plan => (
-                            <option key={plan} value={plan} className="bg-[#111111]">{plan}</option>
+                        <option value="all" className="bg-[#111111]">All Categories</option>
+                        {categories.map(cat => (
+                            <option key={cat} value={cat} className="bg-[#111111]">{cat}</option>
                         ))}
                     </select>
                 </div>
@@ -496,7 +543,7 @@ const PatientPortalManager = () => {
                         {filteredPatients.map((p) => (
                             <tr key={p.id} className="group hover:bg-[#111111]/[0.02] transition-all">
                                 <td className="py-4 md:py-6">
-                                    <p className="font-bold text-xs md:text-sm text-[#1a1a1a]">{p.first_name} {p.last_name}</p>
+                                    <p className="font-bold text-xs md:text-sm text-white">{p.first_name || p.last_name ? `${p.first_name} ${p.last_name}` : (p.email || 'Untitled Patient')}</p>
                                 </td>
                                 <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/60">{p.email}</td>
                                 <td className="py-4 md:py-6">
@@ -504,7 +551,7 @@ const PatientPortalManager = () => {
                                         {p.subscribe_status ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
-                                <td className="py-4 md:py-6 text-[10px] md:text-xs text-[#1a1a1a]/80 ">{formatPlanName(p.current_plan)}</td>
+                                <td className="py-4 md:py-6 text-[10px] md:text-xs text-white/80 ">{formatPlanName(p.current_plan)}</td>
                                 <td className="py-4 md:py-6">
                                     <span className="text-[10px] md:text-xs font-bold text-white/50">
                                         {p.submission_count || 0} Submitted
@@ -1603,7 +1650,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                 <div className="p-8 border-t border-white/10 bg-[#111111] flex gap-4 shrink-0">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-5 border border-white/10 text-[#1a1a1a] rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all"
+                        className="flex-1 py-5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all"
                     >
                         Cancel
                     </button>
@@ -1639,7 +1686,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                     <select
                         value={formData[field] || ''}
                         onChange={(e) => onChange(field, e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full md:w-auto"
+                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto"
                     >
                         <option value="">Select...</option>
                         {options.map((opt, i) => {
@@ -1656,7 +1703,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                         value={formData[field] || ''}
                         onChange={(e) => onChange(field, e.target.value)}
                         onBlur={(e) => onChange(field, e.target.value)} // Ensure value is committed on blur
-                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full md:w-auto text-right"
+                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto text-right"
                     />
                 )
             ) : isFile ? (
@@ -1674,7 +1721,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                     )}
                 </div>
             ) : (
-                <span className="mt-1 md:mt-0 text-sm font-bold text-[#1a1a1a]/90">
+                <span className="mt-1 md:mt-0 text-sm font-bold text-white/90">
                     {Array.isArray(value) ? value.join(', ') : (value || 'None')}
                 </span>
             )}
@@ -1827,11 +1874,21 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 if (profileUpdateError) {
                     console.warn('Submission approved but profile update failed:', profileUpdateError);
                 }
+
+                // 2.1 Send Approval SMS
+                console.log('Submission approved. Sending status SMS...');
+                await supabase.functions.invoke('send-sms', {
+                    method: 'POST',
+                    body: {
+                        phone: formData.shipping_phone || submission.shipping_phone,
+                        message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
+                    }
+                }).catch(err => console.warn('Approval SMS failed:', err));
             }
 
-            // 3. If rejected, send email notification
+            // 3. If rejected, send email & SMS notification
             if (status === 'rejected') {
-                console.log('Submission rejected. Sending notification email...');
+                console.log('Submission rejected. Sending notification email & SMS...');
                 const { error: emailError } = await supabase.functions.invoke('send-email', {
                     method: 'POST',
                     body: {
@@ -1846,6 +1903,15 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 } else {
                     console.log('Rejection email sent successfully.');
                 }
+
+                // Send Rejection SMS
+                await supabase.functions.invoke('send-sms', {
+                    method: 'POST',
+                    body: {
+                        phone: formData.shipping_phone || submission.shipping_phone,
+                        message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
+                    }
+                }).catch(err => console.warn('Rejection SMS failed:', err));
             }
 
             onAction(); // Refresh data
@@ -1882,7 +1948,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 email: formData.email,
                 shipping_email: formData.shipping_email || formData.email,
                 sex: formData.sex,
-                birthday: formData.birthday,
+                date_of_birth: formData.date_of_birth,
                 state: formData.state || formData.shipping_state,
                 race_ethnicity: formData.race_ethnicity,
 
@@ -2081,7 +2147,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                         <path d="M12 4v16m8-8H4" />
                                                     </svg>
                                                 </div>
-                                                <pre className="text-sm font-bold text-[#1a1a1a]/90 whitespace-pre-wrap font-sans leading-relaxed">
+                                                <pre className="text-sm font-bold text-white/90 whitespace-pre-wrap font-sans leading-relaxed">
                                                     {formData.additional_health_info}
                                                 </pre>
                                             </div>
@@ -2096,7 +2162,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Last Name" field="shipping_last_name" value={formData.shipping_last_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Email" field="email" value={formData.email || formData.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Sex" field="sex" value={formData.sex} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Date of Birth" field="birthday" value={formData.birthday} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="State" field="shipping_state" value={formData.shipping_state} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
@@ -2138,7 +2204,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         <div className="flex items-center justify-between p-8 bg-accent-black/[0.03] border border-accent-black/10 rounded-[32px]">
                                             <div>
                                                 <p className="text-[10px] text-accent-black uppercase font-black tracking-widest mb-1">Advanced Metric</p>
-                                                <h5 className="text-sm font-black uppercase text-[#1a1a1a]/80">Body Mass Index (BMI)</h5>
+                                                <h5 className="text-sm font-black uppercase text-white/80">Body Mass Index (BMI)</h5>
                                             </div>
                                             <div className="text-center">
                                                 <p className="text-4xl font-black  tracking-tighter text-accent-black leading-none mb-1">
@@ -2163,7 +2229,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Patient-Defined Objectives</p>
                                         <div className="flex flex-wrap gap-3">
                                             {(formData.goals || []).map((goal, i) => (
-                                                <span key={i} className="px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#1a1a1a]/80">{goal.replace(/-/g, ' ')}</span>
+                                                <span key={i} className="px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/80">{goal.replace(/-/g, ' ')}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -2225,7 +2291,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                     <option value="No">No</option>
                                                 </select>
                                             ) : (
-                                                <p className="text-sm font-bold text-[#1a1a1a]/90 leading-relaxed">
+                                                <p className="text-sm font-bold text-white/90 leading-relaxed">
                                                     {formData.seen_pcp}
                                                 </p>
                                             )}
@@ -2248,11 +2314,12 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         </div>
                                     )}
 
-                                    {/* Dynamic Question Loop */}
                                     {(() => {
-                                        const categoryId = formData.selected_drug || 'weight-loss';
+                                        const categoryId = getMedicationCategoryId(formData.selected_drug);
                                         const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
-                                        const answers = formData.medical_responses || formData.intake_data || {};
+                                        const answers = (formData.medical_responses && Object.keys(formData.medical_responses).length > 0)
+                                            ? formData.medical_responses
+                                            : (formData.intake_data || {});
 
                                         return questions.map((q) => {
                                             if (q.type === 'info') return null;
@@ -2290,11 +2357,11 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                             <textarea
                                                                 value={answer || ''}
                                                                 onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full h-24"
+                                                                className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
                                                             />
                                                         )
                                                     ) : (
-                                                        <div className="text-sm font-bold text-[#1a1a1a]/90 leading-relaxed">
+                                                        <div className="text-sm font-bold text-white/90 leading-relaxed">
                                                             {Array.isArray(answer) ? (
                                                                 <ul className="list-disc list-inside space-y-1 marker:text-accent-black">
                                                                     {answer.map((item, i) => <li key={i}>{item}</li>)}
@@ -2313,10 +2380,10 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                                 <textarea
                                                                     value={answers[`${q.id}_details`] || ''}
                                                                     onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
-                                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-[#1a1a1a] focus:outline-none focus:border-accent-black w-full"
+                                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                                 />
                                                             ) : (
-                                                                <p className="text-sm text-[#1a1a1a]/80">{answers[`${q.id}_details`]}</p>
+                                                                <p className="text-sm text-white/80">{answers[`${q.id}_details`]}</p>
                                                             )}
                                                         </div>
                                                     )}
@@ -2353,24 +2420,24 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         {isEditing ? (
                                             <div className="flex-1 grid grid-cols-1 gap-4">
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <input type="text" placeholder="First Name" value={formData.shipping_first_name || ''} onChange={(e) => handleChange('shipping_first_name', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
-                                                    <input type="text" placeholder="Last Name" value={formData.shipping_last_name || ''} onChange={(e) => handleChange('shipping_last_name', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
+                                                    <input type="text" placeholder="First Name" value={formData.shipping_first_name || ''} onChange={(e) => handleChange('shipping_first_name', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
+                                                    <input type="text" placeholder="Last Name" value={formData.shipping_last_name || ''} onChange={(e) => handleChange('shipping_last_name', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
                                                 </div>
-                                                <input type="text" placeholder="Address" value={formData.shipping_street || formData.shipping_address || ''} onChange={(e) => handleChange('shipping_address', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
+                                                <input type="text" placeholder="Address" value={formData.shipping_street || formData.shipping_address || ''} onChange={(e) => handleChange('shipping_address', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
                                                 <div className="grid grid-cols-3 gap-4">
-                                                    <input type="text" placeholder="City" value={formData.shipping_city || ''} onChange={(e) => handleChange('shipping_city', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
-                                                    <input type="text" placeholder="State" value={formData.shipping_state || ''} onChange={(e) => handleChange('shipping_state', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
-                                                    <input type="text" placeholder="Zip" value={formData.shipping_zip || ''} onChange={(e) => handleChange('shipping_zip', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
+                                                    <input type="text" placeholder="City" value={formData.shipping_city || ''} onChange={(e) => handleChange('shipping_city', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
+                                                    <input type="text" placeholder="State" value={formData.shipping_state || ''} onChange={(e) => handleChange('shipping_state', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
+                                                    <input type="text" placeholder="Zip" value={formData.shipping_zip || ''} onChange={(e) => handleChange('shipping_zip', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <input type="text" placeholder="Phone" value={formData.shipping_phone || ''} onChange={(e) => handleChange('shipping_phone', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
-                                                    <input type="text" placeholder="Email" value={formData.shipping_email || ''} onChange={(e) => handleChange('shipping_email', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-[#1a1a1a]" />
+                                                    <input type="text" placeholder="Phone" value={formData.shipping_phone || ''} onChange={(e) => handleChange('shipping_phone', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
+                                                    <input type="text" placeholder="Email" value={formData.shipping_email || ''} onChange={(e) => handleChange('shipping_email', e.target.value)} className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white" />
                                                 </div>
                                             </div>
                                         ) : (
                                             <div>
                                                 <h5 className="text-xl font-black uppercase  tracking-tighter mb-2">{formData.shipping_first_name} {formData.shipping_last_name}</h5>
-                                                <p className="text-[11px] text-[#1a1a1a]/70 leading-[1.8] font-bold uppercase tracking-widest">
+                                                <p className="text-[11px] text-white/70 leading-[1.8] font-bold uppercase tracking-widest">
                                                     {formData.shipping_street || formData.shipping_address}<br />
                                                     {formData.shipping_city}, {formData.shipping_state} {formData.shipping_zip}<br />
                                                     <span className="text-accent-black">PH: {formData.shipping_phone}</span><br />
@@ -2799,7 +2866,7 @@ const DiscountManager = () => {
                         </div>
                         <div>
                             <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-3 ml-2">Type</label>
-                            <div className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm font-bold opacity-60 flex items-center gap-2">
+                            <div className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm font-bold opacity-60 flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-accent-black"></span>
                                 Percent (%)
                             </div>
@@ -2809,7 +2876,7 @@ const DiscountManager = () => {
                             <select
                                 value={newCoupon.coupon_type}
                                 onChange={(e) => setNewCoupon({ ...newCoupon, coupon_type: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-[#1a1a1a] text-sm focus:outline-none focus:border-accent-black transition-all appearance-none"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm focus:outline-none focus:border-accent-black transition-all appearance-none"
                             >
                                 <option value="eligibility" className="bg-[#111111]">Eligibility Fee</option>
                                 <option value="product" className="bg-[#111111]">Product Discount</option>
@@ -6400,7 +6467,7 @@ const AdminDashboard = () => {
             <main className="flex-1 px-4 py-4 md:px-6 md:py-8 lg:px-4 lg:py-12 xl:px-4 2xl:px-2 3xl:px-0 pt-20 lg:pt-12 w-full overflow-x-hidden">
                 <header className="mb-8 md:mb-16">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase  tracking-tighter">
-                        {currentTab === 'overview' && 'System Analytics'}
+                        {currentTab === 'overview' && ''}
                         {currentTab === 'patients' && 'Patient Directory'}
                         {currentTab === 'clinical' && 'Submissions'}
                         {currentTab === 'orders' && 'Order Management'}

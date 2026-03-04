@@ -804,7 +804,7 @@ const Assessment = () => {
 
                 // Basics
                 sex: eligibilityData.sex || intakeData.assigned_sex_intake || intakeData.sex,
-                birthday: eligibilityData.dob || intakeData.dob,
+                date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : intakeData.dob),
                 state: eligibilityData.state || shippingData.state || intakeData.state,
                 seen_pcp: intakeData.pcp_labs || eligibilityData.pcpVisitLast6Months || intakeData.has_pcp_long,
                 email: user?.email || authData.email || shippingData.email,
@@ -898,7 +898,7 @@ const Assessment = () => {
                     last_name: lastName,
                     email: user?.email || authData.email,
                     gender: eligibilityData.sex,
-                    date_of_birth: eligibilityData.dob,
+                    date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null),
                     phone_number: shippingData.phone || eligibilityData.phone,
                     legal_address: `${shippingData.address}, ${shippingData.city}, ${shippingData.state} ${shippingData.zip}`
                 })
@@ -980,25 +980,33 @@ const Assessment = () => {
             }
 
             try {
-                // Check if email already exists in profiles
+                const cleanedEmail = authData.email.trim().toLowerCase();
+                const cleanedPhone = formattedPhone.replace(/\D/g, ''); // Use digits only for reliable matching if stored that way, or formatted if E.164
+
+                // Check if email or phone already exists in profiles
+                // We're being more aggressive here to prevent "shadow" accounts or duplicate registration
                 const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
-                    .select('id')
-                    .eq('email', authData.email)
+                    .select('id, email, phone_number')
+                    .or(`email.eq.${cleanedEmail},phone_number.eq.${formattedPhone}`)
                     .maybeSingle();
 
                 if (checkError) {
-                    console.warn('Email check error:', checkError);
+                    console.warn('Strict account check warning:', checkError);
                 }
 
                 if (existingUser) {
-                    toast.error('This email is already registered. Please sign in instead.');
+                    if (existingUser.email?.toLowerCase() === cleanedEmail) {
+                        toast.error('This email is already registered. Please sign in instead.');
+                    } else {
+                        toast.error('This phone number is already associated with an account. Please sign in or use a different number.');
+                    }
                     setAuthLoading(false);
                     return;
                 }
 
                 const { data: signUpData, error: signUpError } = await signUp({
-                    email: authData.email,
+                    email: cleanedEmail,
                     password: authData.password,
                     options: {
                         data: {
@@ -1016,7 +1024,23 @@ const Assessment = () => {
                         emailRedirectTo: `${window.location.origin}/assessment/${categoryId}`
                     }
                 });
-                if (signUpError) throw signUpError;
+
+                if (signUpError) {
+                    if (signUpError.message.includes('already registered') || signUpError.status === 400) {
+                        toast.error('This email is already registered. Please sign in instead.');
+                        setAuthLoading(false);
+                        return;
+                    }
+                    throw signUpError;
+                }
+
+                // Supabase enumeration protection check:
+                // If the user already exists, 'identities' will be an empty array
+                if (signUpData?.user && (!signUpData.user.identities || signUpData.user.identities.length === 0)) {
+                    toast.error('An account already exists with this email address. Please sign in.');
+                    setAuthLoading(false);
+                    return;
+                }
 
                 if (signUpData?.user) {
                     setTempUserId(signUpData.user.id);
@@ -1033,7 +1057,7 @@ const Assessment = () => {
                                 first_name: authData.firstName,
                                 last_name: authData.lastName,
                                 phone_number: formattedPhone,
-                                date_of_birth: eligibilityData.dob,
+                                date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null),
                                 updated_at: new Date().toISOString()
                             }, { onConflict: 'id' });
 
@@ -3554,12 +3578,8 @@ const Assessment = () => {
             }
             setIntakeError('');
 
-            // Validation for compulsory uploads
-            const isGlp1Selected = Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist'));
-            if (question.id === 'current_meds' && isGlp1Selected && !intakeData[`${question.id}_file`]) {
-                setIntakeError('⚠️ Please upload your prescription before continuing.');
-                return;
-            }
+            // Skip compulsory upload validation for current_meds as per user request
+            // (Used to require GLP-1 agonist prescription upload)
 
             // Step 19 Validation (Past Prescriptions)
             if (question.id === 'past_rx_weightloss') {
@@ -4458,9 +4478,7 @@ const Assessment = () => {
                         {question.upload && intakeData[question.id] && (
                             <div className="mt-8">
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">
-                                    {question.id === 'current_meds' && Array.isArray(intakeData.current_meds) && intakeData.current_meds.some(opt => opt.includes('GLP-1 agonist'))
-                                        ? 'Upload RX / Proof (Compulsory)'
-                                        : 'Upload RX / Proof (Optional)'}
+                                    Upload RX / Proof (Optional)
                                 </label>
 
                                 {intakeData[`${question.id}_file`] ? (
