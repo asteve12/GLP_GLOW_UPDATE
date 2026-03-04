@@ -1547,7 +1547,7 @@ const Assessment = () => {
     );
 
     const renderQuote2Step = () => (
-        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Image side (left on desktop) */}
                 <div className="w-full md:w-1/2 relative group">
@@ -1605,7 +1605,7 @@ const Assessment = () => {
     );
 
     const renderQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left Side: Quote Image with Fine Print */}
                 <div className="w-full md:w-1/2 relative group">
@@ -1659,7 +1659,7 @@ const Assessment = () => {
     );
 
     const renderSexualHealthQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left Side: Quote Image with Fine Print */}
                 <div className="w-full md:w-1/2 relative group">
@@ -1807,7 +1807,7 @@ const Assessment = () => {
     );
 
     const renderSexualHealthQuote2Step = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left Side: Quote Image with Fine Print */}
                 <div className="w-full md:w-1/2 relative group">
@@ -1873,7 +1873,7 @@ const Assessment = () => {
     // ─── Hair Restoration Intro Flow ───────────────────────────────────────────
 
     const renderHairQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left: Image */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2009,7 +2009,7 @@ const Assessment = () => {
     );
 
     const renderHairQuote2Step = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left: Image */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2072,7 +2072,7 @@ const Assessment = () => {
     );
 
     const renderLongevityQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left: Image */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2206,7 +2206,7 @@ const Assessment = () => {
     // ─── TESTOSTERONE FLOW ────────────────────────────────────────────────────
 
     const renderTestosteroneQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left: Image */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2338,7 +2338,7 @@ const Assessment = () => {
     );
 
     const renderTestosteroneQuote2Step = () => (
-        <div className="max-w-7xl mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-10 px-6 bg-white assessment-step" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left: Image */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2397,7 +2397,7 @@ const Assessment = () => {
     );
 
     const renderRepairQuoteStep = () => (
-        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left Side: Quote Image with APA fine print */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2517,7 +2517,7 @@ const Assessment = () => {
     );
 
     const renderRepairQuote2Step = () => (
-        <div className="max-w-7xl mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
+        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
             <div className="flex flex-col md:flex-row items-center gap-16">
                 {/* Left Side: Quote Image with APA fine print */}
                 <div className="w-full md:w-1/2 relative group">
@@ -2682,7 +2682,7 @@ const Assessment = () => {
     );
 
     const renderStatStep = () => (
-        <div className="assessment-step max-w-7xl mx-auto py-20 px-6 flex flex-col md:flex-row items-center gap-16">
+        <div className="assessment-step max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 flex flex-col md:flex-row items-center gap-16">
             {/* Left Image Section */}
             <div className="w-full md:w-[675px] aspect-[4/5] rounded-[40px] overflow-hidden relative shadow-2xl group flex-shrink-0">
                 <img
@@ -3833,7 +3833,7 @@ const Assessment = () => {
         };
 
         return (
-            <div className={`assessment-step ${question.id === 'quote3' ? 'max-w-7xl' : 'max-w-3xl'} mx-auto py-20 px-6`}>
+            <div className={`assessment-step ${question.id === 'quote3' ? 'max-w-[1400px] 2xl:max-w-[1800px]' : 'max-w-3xl'} mx-auto py-20 px-6`}>
                 <div className={`${question.id === 'quote3' ? 'bg-white p-0 overflow-hidden' : 'bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-16 backdrop-blur-xl'}`}>
                     {question.id !== 'quote3' && (
                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">Step {7 + medicalStep}: {question.title}</h3>
@@ -5620,7 +5620,7 @@ const Assessment = () => {
         >
             {/* Minimal Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 h-[84px] flex items-center">
-                <div className="max-w-7xl mx-auto w-full flex justify-between items-center h-full">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto w-full flex justify-between items-center h-full">
                     <Link to="/" className="relative flex items-center mt-[10px]">
                         <img
                             src={logo}

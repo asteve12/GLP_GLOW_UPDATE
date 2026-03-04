@@ -1558,7 +1558,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
             }
 
             if (data?.success || data?.status === 'succeeded' || data?.id) {
-                toast.success('Chare successfully!');
+                toast.success('Charge successfully!');
                 await onApprove();
                 onClose();
             } else {
@@ -6552,39 +6552,41 @@ const AdminDashboard = () => {
                 />
             )}
 
-            <main className="flex-1 px-4 py-4 md:px-6 md:py-8 lg:px-4 lg:py-12 xl:px-4 2xl:px-2 3xl:px-0 pt-20 lg:pt-12 w-full overflow-x-hidden">
-                <header className="mb-8 md:mb-16">
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase  tracking-tighter">
-                        {currentTab === 'overview' && ''}
-                        {currentTab === 'patients' && 'Patient Directory'}
-                        {currentTab === 'clinical' && 'Submissions'}
-                        {currentTab === 'orders' && 'Order Management'}
-                        {currentTab === 'discounts' && 'Discount Management'}
-                        {currentTab === 'users' && 'Admin & User Roles'}
-                        {currentTab === 'subscribers' && 'Subscriber Base'}
-                        {currentTab === 'profit-tracker' && 'Profit Tracker'}
-                        {currentTab === 'patient-express' && 'Patient Express Entry'}
-                        {currentTab === 'surveys' && 'Feedback & Surveys'}
-                        {currentTab === 'statements' && 'Statements'}
-                        {currentTab === 'blog' && 'Peer reviewed blog'}
-                    </h2>
-                </header>
+            <main className="flex-1 pt-20 lg:pt-12 w-full overflow-x-hidden">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 py-4 md:px-6 md:py-8 lg:px-8 lg:py-12">
+                    <header className="mb-8 md:mb-16">
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase  tracking-tighter">
+                            {currentTab === 'overview' && ''}
+                            {currentTab === 'patients' && 'Patient Directory'}
+                            {currentTab === 'clinical' && 'Submissions'}
+                            {currentTab === 'orders' && 'Order Management'}
+                            {currentTab === 'discounts' && 'Discount Management'}
+                            {currentTab === 'users' && 'Admin & User Roles'}
+                            {currentTab === 'subscribers' && 'Subscriber Base'}
+                            {currentTab === 'profit-tracker' && 'Profit Tracker'}
+                            {currentTab === 'patient-express' && 'Patient Express Entry'}
+                            {currentTab === 'surveys' && 'Feedback & Surveys'}
+                            {currentTab === 'statements' && 'Statements'}
+                            {currentTab === 'blog' && 'Peer reviewed blog'}
+                        </h2>
+                    </header>
 
-                <Routes>
-                    <Route path="/" element={<Navigate to="overview" replace />} />
-                    <Route path="overview" element={<AdminOverview />} />
-                    <Route path="patients" element={<PatientPortalManager />} />
-                    <Route path="clinical" element={<ClinicalQueue />} />
-                    <Route path="orders" element={<OrderManagement />} />
-                    <Route path="discounts" element={<DiscountManager />} />
-                    <Route path="users" element={<StaffManagement />} />
-                    <Route path="subscribers" element={<SubscriberAnalytics />} />
-                    <Route path="profit-tracker" element={<ProfitTrackerView />} />
-                    <Route path="patient-express" element={<PatientExpressEntry />} />
-                    <Route path="surveys" element={<SurveyManagement />} />
-                    <Route path="statements" element={<StatementsAdminView />} />
-                    <Route path="blog" element={<BlogManagement />} />
-                </Routes>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="overview" replace />} />
+                        <Route path="overview" element={<AdminOverview />} />
+                        <Route path="patients" element={<PatientPortalManager />} />
+                        <Route path="clinical" element={<ClinicalQueue />} />
+                        <Route path="orders" element={<OrderManagement />} />
+                        <Route path="discounts" element={<DiscountManager />} />
+                        <Route path="users" element={<StaffManagement />} />
+                        <Route path="subscribers" element={<SubscriberAnalytics />} />
+                        <Route path="profit-tracker" element={<ProfitTrackerView />} />
+                        <Route path="patient-express" element={<PatientExpressEntry />} />
+                        <Route path="surveys" element={<SurveyManagement />} />
+                        <Route path="statements" element={<StatementsAdminView />} />
+                        <Route path="blog" element={<BlogManagement />} />
+                    </Routes>
+                </div>
             </main>
         </div>
     );

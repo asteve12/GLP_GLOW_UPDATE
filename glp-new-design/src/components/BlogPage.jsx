@@ -40,7 +40,7 @@ const BlogPage = () => {
             <main className="pt-20 pb-32">
                 {/* Hero Section */}
                 <section className="bg-[#fcfbfa] py-32 border-b border-gray-100 mb-20">
-                    <div className="max-w-[1200px] mx-auto px-6 text-center">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 text-center">
                         <div className="inline-block py-2 px-4 bg-black/5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8">
                             Knowledge Base
                         </div>
@@ -53,7 +53,7 @@ const BlogPage = () => {
                     </div>
                 </section>
 
-                <div className="max-w-[1200px] mx-auto px-6">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                     {loading ? (
                         <div className="py-20 flex flex-col items-center justify-center gap-6">
                             <div className="w-12 h-12 border-4 border-gray-100 border-t-black rounded-full animate-spin"></div>

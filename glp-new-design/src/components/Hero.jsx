@@ -103,7 +103,7 @@ const Hero = () => {
             </div>
 
             <div className="hidden md:block absolute bottom-10 left-0 w-full z-20 px-5">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
                     {[
                         { title: "Weight Loss", desc: "Semaglutide & Tirzepatide", price: "Starts at $299", path: "weight-loss" },
                         { title: "Hair Restoration", desc: "Finasteride & Minoxidil", price: "Personalized Plans", path: "hair-restoration" },

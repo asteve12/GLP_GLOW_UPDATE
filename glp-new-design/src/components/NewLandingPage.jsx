@@ -75,16 +75,16 @@ const NewLandingPage = () => {
             <main>
                 {/* Hero & Treatment Grid */}
                 <section className="pt-8 pb-20">
-                    <div className="max-w-[1200px] mx-auto px-6">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                         <div className="text-left mb-12 max-w-2xl">
-                            <div className="h-[4.5rem] md:h-[6rem] overflow-hidden relative mb-2">
+                            <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
-                                    className={`absolute left-0 text-5xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
+                                    className={`absolute left-0 text-4xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
                                 >
                                     {categories[index].text}
                                 </span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-gray-900">
+                            <h1 className="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-gray-900">
                                 personalized to you
                             </h1>
                             <p className="text-gray-500 text-xl">Customized care starts here</p>
@@ -183,7 +183,7 @@ const NewLandingPage = () => {
 
                 {/* How It Works */}
                 <section id="how-it-works" className="py-24 overflow-hidden relative" ref={stepsRef}>
-                    <div className="max-w-[1400px] mx-auto px-6">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                         <div className="relative">
                             <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gray-200 -translate-x-1/2 hidden md:block"></div>
                             <div
@@ -240,8 +240,8 @@ const NewLandingPage = () => {
                 </section>
 
                 {/* Expert Care Section - Bird's Eye View Medical Team */}
-                <section className="py-24 bg-white">
-                    <div className="max-w-[1400px] mx-auto px-6">
+                <section className="py-24 animate-in fade-in duration-1000">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                         <div className="relative rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[21/9]">
                             <img
                                 src={medicalTeamImg}
@@ -262,9 +262,9 @@ const NewLandingPage = () => {
                     </div>
                 </section>
 
-                {/* Content Sections */}
-                <section className="py-24">
-                    <div className="max-w-[1200px] mx-auto px-6">
+                {/* Content Sections 2 */}
+                <section className="py-24 bg-white">
+                    <div className="max-w-[1000px] mx-auto px-6">
                         {/* Trusted Treatments */}
                         <div className="flex flex-col md:flex-row items-center gap-16 mb-32">
                             <div className="w-full md:w-1/2">
@@ -285,7 +285,7 @@ const NewLandingPage = () => {
                                 <button className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors">Get personalized treatment</button>
                             </div>
                             <div className="w-full md:w-1/2">
-                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFKvDu5E2tiAdDbbw8zc2oTEbwPE9XL4cgxcDT8CTQOU7kgfh7k54-jKTi_-rb1Ad4D_Q-aA1hynAdyBj17395EKIWttZB2CBlVOvugX6ZU4xlyWREqOvKXrIIr9LhGPvGWKlfho3Y7B9zD2nUord8icwoZQQWdipRpua8kxHoV4ITtX_fdamaKcWW77hpzQNTUfwpUSt6d3wwIraLR8olqt2TrG4mUMLc2CdXnrQCemMoBSmelBzF6YUQWK9oGEoHupfcOaVIbnCG" />
+                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFKvDu5E2tiAdDbbw8zc2oTEbwPE9XL4cgxcDT8CTQOU7kgfh7k54-jKTi_-rb1Ad4D_Q-aA1hynAdyBj17395EKIWttZB2CBlVOvugX6ZU4xlyWREqOvXJr9LhGPvGWKlfho3Y7B9zD2nUord8icwoZQQWdipRpua8kxHoV4ITtX_fdamaKcWW77hpzQNTUfwpUSt6d3wwIraLR8olqt2TrG4mUMLc2CdXnrQCemMoBSmelBzF6YUQWK9oGEoHupfcOaVIbnCG" />
                             </div>
                         </div>
                     </div>
@@ -294,7 +294,7 @@ const NewLandingPage = () => {
 
                 {/* Lab Testing Section */}
                 <section className="py-32 bg-[#fcfbfa] border-y border-gray-100 group/lab hover:!bg-black transition-all duration-700">
-                    <div className="max-w-[1200px] mx-auto px-6 text-center">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 text-center">
                         <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-300 group-hover/lab:text-red-900 transition-colors">LABS BY</p>
 
                         <div className="flex justify-center mb-4">
@@ -494,7 +494,7 @@ const NewLandingPage = () => {
 
             {/* Footer Section */}
             <footer className="bg-[#121212] text-white py-24">
-                <div className="max-w-[1200px] mx-auto px-6">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                     <div className="mb-32">
                         <h2 className="text-3xl mb-4" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Unlock the free Guide to Protein for Weight Loss</h2>
                         <p className="text-gray-400 text-lg mb-10 font-light">Written by board-certified doctors to support your journey.</p>

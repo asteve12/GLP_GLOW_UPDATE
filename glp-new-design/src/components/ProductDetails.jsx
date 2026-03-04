@@ -1696,7 +1696,7 @@ const ProductDetails = () => {
                                 {/* Title Section */}
                                 <div className="space-y-2">
                                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1a1a1a] tracking-tight leading-none uppercase" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#1a1a1a] tracking-tight leading-none uppercase" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
                                             {product.name}
                                         </h1>
                                         <button
@@ -1775,7 +1775,7 @@ const ProductDetails = () => {
                                 {/* Select Plan — shown for all products */}
                                 <div className="space-y-3">
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a]">Select Plan</h3>
-                                    <div className="grid grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                         {displayPlans.map((plan) => (
                                             <button
                                                 key={plan.name}
@@ -1879,7 +1879,7 @@ const ProductDetails = () => {
                 {/* Background decorative elements */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
 
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto relative z-10">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto relative z-10">
                     {/* Header with Crown Icon */}
                     <div className="benefits-header text-center mb-16 md:mb-24">
                         <div className="flex justify-center mb-6">
@@ -1997,7 +1997,7 @@ const ProductDetails = () => {
 
             {/* INGREDIENTS SECTION */}
             <section className="ingredients-section py-20 md:py-32 px-6 bg-[#F0F2EB]">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto flex flex-col md:flex-row gap-16 items-center">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto flex flex-col md:flex-row gap-16 items-center">
                     <div className="w-full md:w-1/2">
                         <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-none">
                             The Science <br /> Inside
@@ -2017,7 +2017,7 @@ const ProductDetails = () => {
 
             {/* HOW IT WORKS */}
             <section className="how-it-works-section py-20 md:py-32 px-6 bg-white">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
                     <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-20 text-center">How It Works</h3>
                     <div className={`grid grid-cols-1 ${product.howItWorks.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'} gap-16 relative`}>
                         {/* Connecting Line (Desktop) - only shown if multiple steps */}
@@ -2038,7 +2038,7 @@ const ProductDetails = () => {
 
             {/* GET STARTED SLIDER - BLOG STYLE TEMPLATE */}
             <section className="getting-started-section py-24 md:py-40 bg-[#F9F8F4] overflow-hidden">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto px-6">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                     <div className="flex flex-col lg:flex-row justify-between items-end mb-16 gap-8">
                         <div className="max-w-3xl">
                             <h2 className="text-5xl md:text-7xl font-black text-[#1a1a1a] uppercase tracking-tighter leading-[0.85] mb-8">

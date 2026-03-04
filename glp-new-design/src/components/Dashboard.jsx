@@ -637,7 +637,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <>
                                 <button
                                     onClick={() => onAction('dosage', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
+                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02]"
                                 >
                                     Adjust Dosage
                                 </button>
@@ -657,7 +657,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                         ) : (
                             <button
                                 onClick={() => onAction('activate', submission)}
-                                className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#111111] transition-all transform hover:scale-[1.02] "
+                                className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02] "
                             >
                                 Activate Subscription
                             </button>
@@ -669,7 +669,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                     )}
                     <button
                         onClick={() => onRetake && onRetake(submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all"
+                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 hover:text-white transition-all"
                     >
                         Retake Assessment
                     </button>
@@ -1511,7 +1511,7 @@ const Dashboard = () => {
                     const autoTriggerSms = async () => {
                         try {
                             console.log('[Dashboard] Triggering OTP for:', phoneNumber);
-                            // Update phone will trigger the SMS. 
+                            // Update phone will trigger the SMS.
                             // This specifically requires 'phone_change' type for verification.
                             const { error } = await updateUser({ phone: phoneNumber });
                             if (error) {
@@ -2338,7 +2338,7 @@ const Dashboard = () => {
                 )}
 
                 {/* Content Area */}
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto p-6 md:p-12">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto p-6 md:p-12">
 
 
                     {/* Tabbed Content */}
