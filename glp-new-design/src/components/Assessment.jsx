@@ -782,10 +782,18 @@ const Assessment = () => {
             const firstName = user?.user_metadata?.first_name || authData.firstName || '';
             const lastName = user?.user_metadata?.last_name || authData.lastName || '';
 
+            // Determine the correct goals array based on category
+            let resolvedGoals = selectedImprovements;
+            if (categoryId === 'sexual-health') resolvedGoals = selectedSexualHealthGoals;
+            else if (categoryId === 'hair-restoration') resolvedGoals = selectedHairGoals;
+            else if (categoryId === 'longevity') resolvedGoals = selectedLongevityGoals;
+            else if (categoryId === 'testosterone') resolvedGoals = selectedTestosteroneGoals;
+            else if (categoryId === 'repair-healing') resolvedGoals = selectedRepairGoals;
+
             // Prepare submission data mapping
             const submissionData = {
                 user_id: user?.id || tempUserId,
-                goals: selectedImprovements,
+                goals: resolvedGoals,
                 custom_goal: intakeData.other_goal_details,
 
                 // Biometrics (weight-loss specific — null for other categories)
@@ -1494,7 +1502,7 @@ const Assessment = () => {
                             Back
                         </button>
                         <button
-                            onClick={() => setShowQuote2(false)}
+                            onClick={() => { setShowQuote2(false); setStep(1); }}
                             className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:scale-105 flex items-center justify-center gap-3"
                             style={{ color: '#ffffff' }}
                             onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
@@ -2543,12 +2551,19 @@ const Assessment = () => {
             )}
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-                <Link
-                    to="/"
+                <button
+                    onClick={() => {
+                        if (categoryId === 'weight-loss') {
+                            setStep(0);
+                            setShowQuote2(true);
+                        } else {
+                            navigate('/');
+                        }
+                    }}
                     className="w-full md:w-auto px-12 py-8 bg-black/5 border border-black/10 text-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 hover:border-black/30 flex justify-center items-center"
                 >
                     Back
-                </Link>
+                </button>
                 <button
                     onClick={handleContinue}
                     disabled={selectedImprovements.length === 0}
@@ -2809,6 +2824,20 @@ const Assessment = () => {
                             >
                                 Back
                             </button>
+                            <button
+                                onClick={async () => {
+                                    await supabase.auth.signOut();
+                                    setShowOtpInput(false);
+                                    setAuthMode('signin');
+                                    setAuthData({ email: '', password: '', firstName: '', lastName: '', phoneNumber: '', countryCode: '+1' });
+                                }}
+                                className="w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all duration-500"
+                                style={{ backgroundColor: 'transparent', color: '#EF444499' }}
+                                onMouseEnter={e => e.currentTarget.style.color = '#EF4444'}
+                                onMouseLeave={e => e.currentTarget.style.color = '#EF444499'}
+                            >
+                                Logout / Use Different Account
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2945,11 +2974,12 @@ const Assessment = () => {
                                         />
                                         <input
                                             type="tel"
-                                            placeholder="555 000 0000"
+                                            placeholder="(555) 000-0000"
                                             value={authData.phoneNumber}
                                             onChange={(e) => {
-                                                const val = e.target.value;
-                                                setAuthData({ ...authData, phoneNumber: val.replace(/\D/g, '').slice(0, 15) });
+                                                const x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                                                const formatted = !x[2] ? x[1] : `(${x[1]}) ${x[2]}${x[3] ? `-${x[3]}` : ''}`;
+                                                setAuthData({ ...authData, phoneNumber: formatted });
                                             }}
                                             className="flex-1 rounded-2xl py-5 px-8 font-bold outline-none transition-all"
                                             style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
@@ -2986,6 +3016,17 @@ const Assessment = () => {
                                 onFocus={e => e.target.style.borderColor = '#FFDE59'}
                                 onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                             />
+                            {authMode === 'signin' && (
+                                <div className="mt-2 text-right">
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate('/forgot-password')}
+                                        className="text-[9px] font-black uppercase tracking-widest text-black/40 hover:text-black transition-all"
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {authMode === 'signup' && (
@@ -5488,6 +5529,7 @@ const Assessment = () => {
                                 showRepairQuote2 ? renderRepairQuote2Step() :
                                     renderRepairQuoteStep() // Safety Fallback
                     )}
+                    {categoryId === 'weight-loss' && step === 1 && renderStep0()}
                     {categoryId !== 'weight-loss' &&
                         categoryId !== 'sexual-health' &&
                         categoryId !== 'hair-restoration' &&
