@@ -901,8 +901,8 @@ const Assessment = () => {
                     first_name: firstName,
                     last_name: lastName,
                     email: user?.email || authData.email,
-                    gender: eligibilityData.sex,
-                    date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null),
+                    gender: authData.sex || eligibilityData.sex,
+                    date_of_birth: (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : (eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null))),
                     phone_number: shippingData.phone || eligibilityData.phone,
                     legal_address: `${shippingData.address}, ${shippingData.city}, ${shippingData.state} ${shippingData.zip}`
                 })
@@ -983,6 +983,12 @@ const Assessment = () => {
                 return;
             }
 
+            if (!authData.dobMonth || !authData.dobDay || !authData.dobYear) {
+                toast.error('Please enter your date of birth.');
+                setAuthLoading(false);
+                return;
+            }
+
             try {
                 const cleanedEmail = authData.email.trim().toLowerCase();
                 const cleanedPhone = formattedPhone.replace(/\D/g, '');
@@ -1010,6 +1016,8 @@ const Assessment = () => {
                     return;
                 }
 
+                const dobString = (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : null);
+
                 const { data: signUpData, error: signUpError } = await signUp({
                     email: cleanedEmail,
                     password: authData.password,
@@ -1020,6 +1028,8 @@ const Assessment = () => {
                             last_name: authData.lastName,
                             email: authData.email,
                             phone_number: formattedPhone,
+                            date_of_birth: dobString,
+                            gender: authData.sex,
                             // Save assessment progress server-side so
                             // confirmation link works in any browser
                             assessment_pending: true,
