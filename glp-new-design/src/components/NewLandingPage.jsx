@@ -285,7 +285,7 @@ const NewLandingPage = () => {
                                 <button className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors">Get personalized treatment</button>
                             </div>
                             <div className="w-full md:w-1/2">
-                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFKvDu5E2tiAdDbbw8zc2oTEbwPE9XL4cgxcDT8CTQOU7kgfh7k54-jKTi_-rb1Ad4D_Q-aA1hynAdyBj17395EKIWttZB2CBlVOvugX6ZU4xlyWREqOvXJr9LhGPvGWKlfho3Y7B9zD2nUord8icwoZQQWdipRpua8kxHoV4ITtX_fdamaKcWW77hpzQNTUfwpUSt6d3wwIraLR8olqt2TrG4mUMLc2CdXnrQCemMoBSmelBzF6YUQWK9oGEoHupfcOaVIbnCG" />
+                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow w-full h-[500px]" src="/artifacts/licensed_provider_hero_1772651954593.png" />
                             </div>
                         </div>
                     </div>

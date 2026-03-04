@@ -135,7 +135,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
               <img
                 src={logo}
                 alt="uGlowMD Logo"
-                className=" mt-[8px] h-[168px] md:h-[192px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2"
+                className=" mt-[8px] h-[168px] md:h-[192px] 2xl:h-[208px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2"
                 style={{
                   filter: 'brightness(1.2)',
                   maxWidth: 'none'
