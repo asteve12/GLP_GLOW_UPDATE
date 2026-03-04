@@ -2968,13 +2968,16 @@ const Dashboard = () => {
                                                         || selectedAssessment.intake_data?.sex
                                                         || selectedAssessment.intake_data?.assigned_sex_intake
                                                         || selectedAssessment.intake_data?.eligibility?.sex
+                                                        || profile?.gender
+                                                        || profile?.sex
                                                         || 'Not provided'
                                                     }</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
                                                     <p className="text-sm font-bold">{(() => {
-                                                        const raw = selectedAssessment.birthday
+                                                        const raw = profile?.date_of_birth
+                                                            || selectedAssessment.birthday
                                                             || selectedAssessment.intake_data?.date_of_birth
                                                             || selectedAssessment.intake_data?.eligibility?.dob
                                                             || selectedAssessment.intake_data?.dob;
@@ -2987,24 +2990,28 @@ const Dashboard = () => {
                                                         return raw;
                                                     })()}</p>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
-                                                    <p className="text-sm font-bold">{(() => {
-                                                        const w = selectedAssessment.weight
-                                                            || selectedAssessment.intake_data?.weight
-                                                            || selectedAssessment.intake_data?.weight_intake
-                                                            || selectedAssessment.intake_data?.weight_longevity;
-                                                        return w ? `${w} lbs` : 'Not provided';
-                                                    })()}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
-                                                    <p className="text-sm font-bold">{(() => {
-                                                        const b = selectedAssessment.bmi
-                                                            || selectedAssessment.intake_data?.bmi;
-                                                        return b ? String(b) : 'Not computed';
-                                                    })()}</p>
-                                                </div>
+                                                {(getMedicationCategoryId(selectedAssessment.selected_drug) === 'weight-loss' || selectedAssessment.category === 'weight-loss' || selectedAssessment.category === 'Weight Loss') && (
+                                                    <>
+                                                        <div>
+                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
+                                                            <p className="text-sm font-bold">{(() => {
+                                                                const w = selectedAssessment.weight
+                                                                    || selectedAssessment.intake_data?.weight
+                                                                    || selectedAssessment.intake_data?.weight_intake
+                                                                    || selectedAssessment.intake_data?.weight_longevity;
+                                                                return w ? `${w} lbs` : 'Not provided';
+                                                            })()}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
+                                                            <p className="text-sm font-bold">{(() => {
+                                                                const b = selectedAssessment.bmi
+                                                                    || selectedAssessment.intake_data?.bmi;
+                                                                return b ? String(b) : 'Not computed';
+                                                            })()}</p>
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         </section>
                                     </div>

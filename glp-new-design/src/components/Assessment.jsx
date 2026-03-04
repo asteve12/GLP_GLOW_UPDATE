@@ -271,7 +271,11 @@ const Assessment = () => {
         firstName: '',
         lastName: '',
         countryCode: '+1',
-        phoneNumber: ''
+        phoneNumber: '',
+        dobMonth: '',
+        dobDay: '',
+        dobYear: '',
+        sex: 'male'
     });
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [acceptedRisks, setAcceptedRisks] = useState(false);
@@ -981,14 +985,15 @@ const Assessment = () => {
 
             try {
                 const cleanedEmail = authData.email.trim().toLowerCase();
-                const cleanedPhone = formattedPhone.replace(/\D/g, ''); // Use digits only for reliable matching if stored that way, or formatted if E.164
+                const cleanedPhone = formattedPhone.replace(/\D/g, '');
+                const phoneForQuery = cleanedPhone.length > 10 ? cleanedPhone.slice(-10) : cleanedPhone;
 
                 // Check if email or phone already exists in profiles
                 // We're being more aggressive here to prevent "shadow" accounts or duplicate registration
                 const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
                     .select('id, email, phone_number')
-                    .or(`email.eq.${cleanedEmail},phone_number.eq.${formattedPhone}`)
+                    .or(`email.eq.${cleanedEmail},phone_number.ilike.%${phoneForQuery}%`)
                     .maybeSingle();
 
                 if (checkError) {
@@ -1057,7 +1062,8 @@ const Assessment = () => {
                                 first_name: authData.firstName,
                                 last_name: authData.lastName,
                                 phone_number: formattedPhone,
-                                date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null),
+                                date_of_birth: (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : null),
+                                gender: authData.sex,
                                 updated_at: new Date().toISOString()
                             }, { onConflict: 'id' });
 
@@ -1069,10 +1075,17 @@ const Assessment = () => {
                     }
                 }
 
+                // Sync to eligibilityData so the rest of the flow works
+                setEligibilityData(prev => ({
+                    ...prev,
+                    dob: (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : prev.dob),
+                    dobMonth: authData.dobMonth || prev.dobMonth,
+                    dobDay: authData.dobDay || prev.dobDay,
+                    dobYear: authData.dobYear || prev.dobYear,
+                    sex: authData.sex || prev.sex,
+                }));
+
                 // Show the email verification gate — do NOT advance yet.
-                // The user must confirm their email first. After clicking the
-                // link (in any browser), they land back on /assessment/{categoryId}
-                // as an authenticated user and the mount effect below resumes them.
                 toast.success('Account created! Please check your email to continue.');
                 setShowVerificationSent(true);
                 return;
@@ -3037,8 +3050,8 @@ const Assessment = () => {
                                     <div className="grid grid-cols-3 gap-3">
                                         <input
                                             type="text" maxLength="2" placeholder="MM"
-                                            value={eligibilityData.dobMonth}
-                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobMonth: e.target.value.replace(/\D/g, '') }))}
+                                            value={authData.dobMonth}
+                                            onChange={e => setAuthData(prev => ({ ...prev, dobMonth: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
                                             style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
                                             onFocus={e => e.target.style.borderColor = '#FFDE59'}
@@ -3046,8 +3059,8 @@ const Assessment = () => {
                                         />
                                         <input
                                             type="text" maxLength="2" placeholder="DD"
-                                            value={eligibilityData.dobDay}
-                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobDay: e.target.value.replace(/\D/g, '') }))}
+                                            value={authData.dobDay}
+                                            onChange={e => setAuthData(prev => ({ ...prev, dobDay: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
                                             style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
                                             onFocus={e => e.target.style.borderColor = '#FFDE59'}
@@ -3055,8 +3068,8 @@ const Assessment = () => {
                                         />
                                         <input
                                             type="text" maxLength="4" placeholder="YYYY"
-                                            value={eligibilityData.dobYear}
-                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobYear: e.target.value.replace(/\D/g, '') }))}
+                                            value={authData.dobYear}
+                                            onChange={e => setAuthData(prev => ({ ...prev, dobYear: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
                                             style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
                                             onFocus={e => e.target.style.borderColor = '#FFDE59'}
@@ -3072,13 +3085,13 @@ const Assessment = () => {
                                             <button
                                                 key={v}
                                                 type="button"
-                                                onClick={() => setEligibilityData(prev => ({ ...prev, sex: v.toLowerCase() }))}
+                                                onClick={() => setAuthData(prev => ({ ...prev, sex: v.toLowerCase() }))}
                                                 className="py-4 px-6 rounded-2xl text-[10px] font-bold tracking-widest transition-all border"
                                                 style={{
-                                                    backgroundColor: eligibilityData.sex === v.toLowerCase() ? '#fff' : 'rgba(0,0,0,0.04)',
-                                                    borderColor: eligibilityData.sex === v.toLowerCase() ? '#1a1a1a' : 'rgba(0,0,0,0.08)',
-                                                    color: eligibilityData.sex === v.toLowerCase() ? '#1a1a1a' : '#9ca3af',
-                                                    boxShadow: eligibilityData.sex === v.toLowerCase() ? '0 2px 8px rgba(0,0,0,0.08)' : 'none'
+                                                    backgroundColor: authData.sex === v.toLowerCase() ? '#fff' : 'rgba(0,0,0,0.04)',
+                                                    borderColor: authData.sex === v.toLowerCase() ? '#1a1a1a' : 'rgba(0,0,0,0.08)',
+                                                    color: authData.sex === v.toLowerCase() ? '#1a1a1a' : '#9ca3af',
+                                                    boxShadow: authData.sex === v.toLowerCase() ? '0 2px 8px rgba(0,0,0,0.08)' : 'none'
                                                 }}
                                             >
                                                 {v}
