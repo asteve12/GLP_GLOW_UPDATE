@@ -1419,37 +1419,34 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
 
 // --- Create Order Modal ---
 const CreateOrderModal = ({ submission, onClose, onApprove }) => {
+    // All current products from the navbar/site, grouped by category
     const PRODUCT_MAP = {
-        'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '2.5mg/ml', price: '299' },
-        'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '5mg/0.5ml', price: '399' },
-        'semaglutide-lozenges': { name: 'Semaglutide Lozenges', dosage: '3mg', price: '249' },
-        'sildenafil-tadalafil-troche': { name: 'Sildenafil / Tadalafil Troche', dosage: '100/20mg', price: '149' },
-        'sildenafil-yohimbe-troche': { name: 'Sildenafil / Yohimbe Troche', dosage: '100/5mg', price: '129' },
-        'tadalafil-yohimbe-troche': { name: 'Tadalafil / Yohimbe Troche', dosage: '20/5mg', price: '129' },
-        'sildenafil-tadalafil-tablets': { name: 'Sildenafil / Tadalafil Tablets', dosage: '100/20mg', price: '99' },
-        'sildenafil-tablets': { name: 'Sildenafil Tablets', dosage: '100mg', price: '79' },
-        'tadalafil-tablets': { name: 'Tadalafil Tablets', dosage: '20mg', price: '79' },
-        'oxytocin-troche': { name: 'Oxytocin Troche', dosage: '100IU', price: '89' },
-        'oxytocin-nasal-spray': { name: 'Oxytocin Nasal Spray', dosage: '100IU/ml', price: '99' },
-        'pt-141-nasal-spray': { name: 'PT-141 Nasal Spray', dosage: '10mg/ml', price: '149' },
-        'pt-141-injection': { name: 'PT-141 Injection', dosage: '10mg', price: '199' },
-        'scream-cream-gel': { name: 'Scream Cream Gel', dosage: '10%', price: '89' },
-        'minoxidil-finasteride-solution': { name: 'Minoxidil 5-10% / Finasteride 0.1% Solution', dosage: '', price: '89' },
-        'minoxidil-solution': { name: 'Minoxidil 5-10% Solution', dosage: '', price: '59' },
-        'finasteride-minoxidil-shampoo': { name: 'Finasteride / Minoxidil Shampoo', dosage: '', price: '69' },
-        'tretinoin-minoxidil-solution': { name: 'Tretinoin / Minoxidil Solution', dosage: '', price: '79' },
-        'latanoprost-solution': { name: 'Latanoprost Solution (Eyelash)', dosage: '0.03%', price: '99' },
-        'finasteride-capsules': { name: 'Finasteride Capsules', dosage: '1mg', price: '49' },
-        'dutasteride-capsules': { name: 'Dutasteride Capsules', dosage: '0.5mg', price: '59' },
-        'oral-minoxidil': { name: 'Oral Minoxidil', dosage: '2.5mg', price: '49' },
-        'spironolactone-capsules': { name: 'Spironolactone Capsules', dosage: '50mg', price: '49' },
-        'nad-injection': { name: 'NAD+ Injection', dosage: '200mg/ml', price: '199' },
-        'nad-nasal-spray': { name: 'NAD+ Nasal Spray', dosage: '100mg/ml', price: '149' },
-        'glutathione-injection': { name: 'Glutathione Injection', dosage: '200mg/ml', price: '129' },
-        'lipo-c-injection': { name: 'Lipo-C Injection', dosage: '1ml', price: '99' },
-        'b12-injection': { name: 'B12 Injection (Methylcobalamin)', dosage: '', price: '49' },
-        'sermorelin-injection': { name: 'Sermorelin Injection', dosage: '9mg', price: '249' },
-        'sermorelin-glycine-injection': { name: 'Sermorelin / Glycine Injection', dosage: '9/9mg', price: '299' },
+        // Weight Loss
+        'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '0.25–2.4 mg/wk', price: '299' },
+        'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '2.5–15 mg/wk', price: '399' },
+        'semaglutide-drops': { name: 'Semaglutide Sublingual Drops', dosage: '(Sublingual)', price: '249' },
+        'tirzepatide-drops': { name: 'Tirzepatide Sublingual Drops', dosage: '(Sublingual)', price: '349' },
+        // Hair Restoration
+        'finasteride-tablets': { name: 'Finasteride', dosage: '1 mg Oral Tablet', price: '49' },
+        'finasteride-minoxidil-liquid': { name: 'Dual Growth Formula', dosage: 'Finasteride + Minoxidil Topical', price: '79' },
+        'finasteride-minoxidil-tretinoin-liquid': { name: 'Triple Growth Liquid', dosage: 'Finasteride + Minoxidil + Tretinoin 3-in-1', price: '99' },
+        'minoxidil-max-compound-liquid': { name: 'Max Growth Compound', dosage: 'Minoxidil 5-in-1 Topical', price: '129' },
+        // Sexual Health
+        'sildenafil-tadalafil-troche': { name: 'Dual Performance Formula', dosage: 'Sildenafil + Tadalafil Troche', price: '89' },
+        'sildenafil-yohimbe-troche': { name: 'Synergy Performance Formula', dosage: 'Sildenafil + Yohimbe Troche', price: '79' },
+        'sildenafil-tadalafil-tablets': { name: 'Dual Action Tablets', dosage: 'Sildenafil + Tadalafil Oral', price: '69' },
+        'oxytocin-troche': { name: 'Oxytocin', dosage: 'Sublingual Troche', price: '129' },
+        'oxytocin-nasal-spray': { name: 'Oxytocin', dosage: 'Nasal Spray', price: '119' },
+        // Longevity
+        'nad-injection': { name: 'NAD+', dosage: '200 mg/mL Subcutaneous Injection', price: '119.99' },
+        'nad-nasal-spray': { name: 'NAD+ Nasal Spray', dosage: '100 mg/mL (15 mL)', price: '124.99' },
+        'glutathione-injection': { name: 'Glutathione', dosage: '200 mg/mL Subcutaneous Injection', price: '64.99' },
+        // Testosterone
+        'testosterone-injection': { name: 'Testosterone Cypionate', dosage: 'Subcutaneous Injection', price: '149' },
+        'testosterone-rdt': { name: 'Testosterone RDT', dosage: 'Rapid Dissolve Tablet', price: '99' },
+        // Repair & Healing
+        'bpc157-injection': { name: 'BPC-157', dosage: 'Subcutaneous Injection', price: '199' },
+        'bpc157-tb500-injection': { name: 'BPC-157 + TB-500', dosage: 'Subcutaneous Injection', price: '249' },
     };
 
     const [price, setPrice] = useState('');
@@ -1594,32 +1591,55 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                             onChange={(e) => handleProductChange(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black cursor-pointer"
                         >
-                            <option value="">Select a product</option>
+                            <option value="">Select a product...</option>
 
-                            {(() => {
-                                const cat = (submission.selected_drug || '').toLowerCase();
-                                const filteredProducts = Object.entries(PRODUCT_MAP).filter(([id, data]) => {
-                                    if (cat.includes('semaglutide') || cat.includes('tirzepatide') || cat.includes('weight')) {
-                                        return id.includes('semaglutide') || id.includes('tirzepatide');
-                                    }
-                                    if (cat.includes('sildenafil') || cat.includes('tadalafil') || cat.includes('oxytocin') || cat.includes('pt-141') || cat.includes('sexual')) {
-                                        return id.includes('sildenafil') || id.includes('tadalafil') || id.includes('oxytocin') || id.includes('pt-141') || id.includes('scream');
-                                    }
-                                    if (cat.includes('finasteride') || cat.includes('minoxidil') || cat.includes('hair')) {
-                                        return id.includes('minoxidil') || id.includes('finasteride') || id.includes('tretinoin') || id.includes('latanoprost') || id.includes('dutasteride') || id.includes('oral-minoxidil') || id.includes('spironolactone');
-                                    }
-                                    if (cat.includes('nad') || cat.includes('glutathione') || cat.includes('sermorelin') || cat.includes('longevity')) {
-                                        return id.includes('nad') || id.includes('glutathione') || id.includes('lipo-c') || id.includes('b12') || id.includes('sermorelin');
-                                    }
-                                    return true;
-                                });
-
-                                return filteredProducts.map(([id, data]) => (
-                                    <option key={id} value={id} className="bg-[#111111]">
-                                        {data.name}{data.dosage ? ` - ${data.dosage}` : ''} - ${data.price}
+                            <optgroup label="── Weight Loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['semaglutide-injection', 'tirzepatide-injection', 'semaglutide-drops', 'tirzepatide-drops'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
                                     </option>
-                                ));
-                            })()}
+                                ))}
+                            </optgroup>
+
+                            <optgroup label="── Hair Restoration" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['finasteride-tablets', 'finasteride-minoxidil-liquid', 'finasteride-minoxidil-tretinoin-liquid', 'minoxidil-max-compound-liquid'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                    </option>
+                                ))}
+                            </optgroup>
+
+                            <optgroup label="── Sexual Health" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['sildenafil-tadalafil-troche', 'sildenafil-yohimbe-troche', 'sildenafil-tadalafil-tablets', 'oxytocin-troche', 'oxytocin-nasal-spray'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                    </option>
+                                ))}
+                            </optgroup>
+
+                            <optgroup label="── Longevity" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['nad-injection', 'nad-nasal-spray', 'glutathione-injection'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                    </option>
+                                ))}
+                            </optgroup>
+
+                            <optgroup label="── Testosterone" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['testosterone-injection', 'testosterone-rdt'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                    </option>
+                                ))}
+                            </optgroup>
+
+                            <optgroup label="── Repair & Healing" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(PRODUCT_MAP).filter(([id]) => ['bpc157-injection', 'bpc157-tb500-injection'].includes(id)).map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111] text-white">
+                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                    </option>
+                                ))}
+                            </optgroup>
                         </select>
                     </div>
 
@@ -1816,6 +1836,13 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 if (data) {
                     setProfileData(data);
                     setHasPaymentMethod(!!data.stripe_customer_id);
+                    // Seed DOB into formData if not already present
+                    if (data.date_of_birth) {
+                        setFormData(prev => ({
+                            ...prev,
+                            date_of_birth: prev.date_of_birth || data.date_of_birth
+                        }));
+                    }
                 }
             } catch (err) {
                 console.error('Error syncing profile meta:', err);
@@ -2120,7 +2147,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                     <div className="p-8 md:p-10 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between bg-[#080808] shrink-0 gap-8">
                         <div>
                             <div className="flex items-center gap-4 mb-2">
-                                <h3 className="text-3xl font-black uppercase  tracking-tighter leading-none">Submission <span className="text-white">Dossier</span></h3>
+                                <h3 className="text-3xl font-black uppercase  tracking-tighter leading-none">Review <span className="text-white">Assessment</span></h3>
                                 <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-black text-white/50 uppercase tracking-widest">{String(submission.id).substring(0, 8)}</span>
                             </div>
                             <p className="text-[10px] text-white/50 uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
@@ -2369,21 +2396,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                         </div>
                                     )}
 
-                                    {/* Lab Results */}
-                                    {formData.lab_results_url && formData.lab_results_url.length > 0 && (
-                                        <div className="flex flex-col gap-2 border-b border-white/10 pb-6">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-1">
-                                                Recent Lab Results
-                                            </p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {(Array.isArray(formData.lab_results_url) ? formData.lab_results_url : [formData.lab_results_url]).map((url, i) => (
-                                                    <a key={i} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-green/10 border border-accent-green/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-accent-green hover:bg-accent-green hover:text-black transition-all">
-                                                        View Lab Report {i + 1}
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+
 
                                     {(() => {
                                         const categoryId = getMedicationCategoryId(formData.selected_drug);
@@ -2461,14 +2474,35 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                             </div>
                                                         )}
 
-                                                        {/* Files (e.g. current_meds upload) */}
-                                                        {q.upload && (answers[`${q.id}_file`] || formData.glp1_prescription_url) && (
-                                                            <div className="mt-3">
-                                                                <a href={answers[`${q.id}_file`] || (Array.isArray(formData.glp1_prescription_url) ? formData.glp1_prescription_url[0] : formData.glp1_prescription_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all">
-                                                                    View Document
-                                                                </a>
-                                                            </div>
-                                                        )}
+                                                        {/* Files (e.g. current_meds upload, lab results, ID) */}
+                                                        {q.upload && (() => {
+                                                            // Collect all possible file URLs for this question
+                                                            const fileUrls = [
+                                                                answers[`${q.id}_file`],
+                                                                q.id === 'current_medications' && formData.glp1_prescription_url,
+                                                                q.id === 'lab_results' && formData.lab_results_url,
+                                                                q.id === 'identification' && formData.identification_url,
+                                                            ].filter(Boolean).flat();
+
+                                                            if (fileUrls.length === 0) return null;
+
+                                                            return (
+                                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                                    {fileUrls.map((url, fi) => (
+                                                                        <a
+                                                                            key={fi}
+                                                                            href={url}
+                                                                            target="_blank"
+                                                                            rel="noreferrer"
+                                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/30 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all"
+                                                                        >
+                                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                                                            {fileUrls.length > 1 ? `View Document ${fi + 1}` : 'View Document'}
+                                                                        </a>
+                                                                    ))}
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </div>
                                                 );
                                             });
