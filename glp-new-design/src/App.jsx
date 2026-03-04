@@ -9,6 +9,7 @@ import QualifyNow from './components/QualifyNow';
 import Assessment from './components/Assessment';
 import ProgressQuestionnaire from './components/ProgressQuestionnaire';
 import LoginPage from './components/LoginPage';
+import AdminLogin from './components/AdminLogin';
 import { useEffect, useState } from 'react';
 import Loader from './components/Loader';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -80,6 +81,7 @@ function App() {
           <Route path="/satisfaction-survey" element={<SatisfactionSurvey />} />
 
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin-sign-in" element={<AdminLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/signup" element={<SignUpPage />} />

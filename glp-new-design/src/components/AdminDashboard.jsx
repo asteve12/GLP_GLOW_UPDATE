@@ -1948,7 +1948,6 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 email: formData.email,
                 shipping_email: formData.shipping_email || formData.email,
                 sex: formData.sex,
-                date_of_birth: formData.date_of_birth,
                 state: formData.state || formData.shipping_state,
                 race_ethnicity: formData.race_ethnicity,
 
@@ -2162,7 +2161,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Last Name" field="shipping_last_name" value={formData.shipping_last_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Email" field="email" value={formData.email || formData.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Sex" field="sex" value={formData.sex} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth || intake.date_of_birth} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="State" field="shipping_state" value={formData.shipping_state} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
