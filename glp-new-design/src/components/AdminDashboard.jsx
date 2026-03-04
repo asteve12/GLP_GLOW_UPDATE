@@ -1122,9 +1122,10 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
         try {
             const today = new Date().toISOString().split('T')[0];
 
-            // Build allergies string from submission
+            // Build a combined data source: merge top-level fields with intake_data JSON
+            const intakeBlob = submission.intake_data || submission.medical_responses || {};
             const allergies = submission.allergies ||
-                (submission.medical_responses?.allergies) ||
+                intakeBlob.allergies ||
                 'None reported';
 
             const payload = {
@@ -1133,18 +1134,20 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                     "First Name": submission.shipping_first_name || '',
                     "Last Name": submission.shipping_last_name || '',
                     "Email": submission.email || submission.shipping_email || '',
-                    "Sex": submission.sex || 'N/A',
-                    "Date of Birth": submission.birthday || 'N/A',
-                    "State": submission.state || submission.shipping_state || 'N/A',
+                    "Sex": submission.sex || intakeBlob.sex || 'N/A',
+                    "Date of Birth": intakeBlob.date_of_birth || intakeBlob.dob || submission.birthday || 'N/A',
+                    "State": submission.state || submission.shipping_state || intakeBlob.state || 'N/A',
                     "Height (feet)": submission.height_feet || '0',
                     "Height (inches)": submission.height_inches || '0',
                     "Weight (lbs)": submission.weight || '0',
                     "BMI": submission.bmi || '0',
-                    "Health Goals": submission.health_goals || 'N/A',
-                    "Selected Medication": submission.medication_preference || 'N/A',
-                    "Diabetes Status": submission.diabetes_status || 'N/A',
+                    "Health Goals": (Array.isArray(submission.goals) ? submission.goals.join(', ') : submission.health_goals) || (Array.isArray(intakeBlob.goals) ? intakeBlob.goals.join(', ') : '') || 'N/A',
+                    "Selected Medication": submission.dosage_preference || submission.medication_preference || intakeBlob.medication_interest || 'N/A',
+                    "Diabetes Status": submission.diabetes_status || intakeBlob.diabetes || 'N/A',
                     "Allergies": allergies,
-                    "Current Medications": submission.current_medications || 'None'
+                    "Current Medications": submission.current_medications ||
+                        (Array.isArray(intakeBlob.current_meds) ? intakeBlob.current_meds.join(', ') : intakeBlob.current_meds) ||
+                        'None'
                 },
                 labs: {
                     lipid: {
