@@ -1,0 +1,71 @@
+const fs = require('fs');
+const content = fs.readFileSync('src/components/Dashboard.jsx', 'utf8');
+const lines = content.split('\n');
+
+const cleanBlock = [
+    '',
+    '            {/* Duplicate Phone Modal */}',
+    '            {showDuplicatePhoneModal && (',
+    '                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">',
+    '                    <div className="absolute inset-0 bg-red-950/95 backdrop-blur-3xl"></div>',
+    '                    <div className="relative w-full max-w-md bg-[#111111] rounded-[40px] shadow-2xl p-10 text-center" style={{ border: \'1px solid rgba(255,0,0,0.1)\' }}>',
+    '                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: \'rgba(255,0,0,0.1)\', border: \'2px solid rgba(255,0,0,0.3)\' }}>',
+    '                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth="2.5">',
+    '                                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>',
+    '                                <line x1="12" y1="9" x2="12" y2="13"></line>',
+    '                                <line x1="12" y1="17" x2="12.01" y2="17"></line>',
+    '                            </svg>',
+    '                        </div>',
+    '                        <div className="inline-block py-1.5 px-4 bg-red-500 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">',
+    '                            Security Alert',
+    '                        </div>',
+    '                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">',
+    "                            Conflicting{' '}",
+    '                            <span style={{ backgroundColor: \'#ff4444\', color: \'#fff\', padding: \'2px 8px\', display: \'inline-block\' }}>Identity</span>',
+    '                        </h3>',
+    '                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed text-red-100/40">',
+    '                            The phone number linked to this account is already registered to another user. For security, please provide a unique number.',
+    '                        </p>',
+    '',
+    '                        <form onSubmit={handleUpdateDuplicatePhone} className="space-y-6">',
+    '                            <input',
+    '                                type="tel"',
+    '                                placeholder="(XXX) XXX-XXXX"',
+    '                                value={newPhone}',
+    '                                onChange={(e) => {',
+    "                                    const raw = e.target.value.replace(/[^0-9]/g, '');",
+    "                                    let formatted = '';",
+    '                                    if (raw.length > 0) {',
+    "                                        formatted = '(' + raw.substring(0, 3);",
+    "                                        if (raw.length > 3) formatted += ') ' + raw.substring(3, 6);",
+    "                                        if (raw.length > 6) formatted += '-' + raw.substring(6, 10);",
+    '                                    }',
+    '                                    setNewPhone(formatted);',
+    '                                }}',
+    '                                className="w-full rounded-2xl py-6 text-2xl font-black tracking-widest text-center text-white"',
+    "                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}",
+    '                                required',
+    '                            />',
+    '',
+    '                            <button',
+    '                                type="submit"',
+    "                                disabled={isUpdatingProfile || newPhone.replace(/[^0-9]/g, '').length < 10}",
+    '                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#ff4444] text-white hover:bg-white hover:text-red-600"',
+    '                            >',
+    "                                {isUpdatingProfile ? 'Processing...' : 'Transfer to New Number \u2192'}",
+    '                            </button>',
+    '                        </form>',
+    '                    </div>',
+    '                </div>',
+    '            )}',
+];
+
+// Lines are 0-indexed, so line 3078 = index 3077, line 3134 = index 3133
+const newLines = [
+    ...lines.slice(0, 3077),
+    ...cleanBlock,
+    ...lines.slice(3134),
+];
+
+fs.writeFileSync('src/components/Dashboard.jsx', newLines.join('\n'), 'utf8');
+console.log('Done! New total lines:', newLines.length);

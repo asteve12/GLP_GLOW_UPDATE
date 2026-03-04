@@ -54,14 +54,23 @@ const SignUpPage = () => {
         let formattedPhone = `${countryCode.trim()}${phone.replace(/\D/g, '')}`;
         if (!formattedPhone.startsWith('+')) formattedPhone = `+${formattedPhone}`;
 
+        const totalDigits = formattedPhone.replace(/\D/g, '').length;
+        if (totalDigits < 7 || totalDigits > 15) {
+            toast.error('Please enter a valid phone number.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const cleanedEmail = email.trim().toLowerCase();
+            const cleanedPhone = formattedPhone.replace(/\D/g, '');
+            const phoneForQuery = cleanedPhone.length > 10 ? cleanedPhone.slice(-10) : cleanedPhone;
 
             // Check if email or phone already exists
             const { data: existingUser, error: checkError } = await supabase
                 .from('profiles')
                 .select('id, email, phone_number')
-                .or(`email.eq.${cleanedEmail},phone_number.eq.${formattedPhone}`)
+                .or(`email.eq.${cleanedEmail},phone_number.ilike.%${phoneForQuery}%`)
                 .maybeSingle();
 
             if (checkError) {
