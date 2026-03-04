@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { intakeQuestions } from '../data/questions';
+import { intakeQuestions, categoryQuestions } from '../data/questions';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { toast } from 'react-hot-toast';
@@ -2986,11 +2986,25 @@ const Dashboard = () => {
                                         <section>
                                             <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
                                             <div className="flex flex-wrap gap-2">
-                                                {selectedAssessment.goals?.map((goal, i) => (
-                                                    <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
-                                                        {goal}
-                                                    </span>
-                                                )) || <p className="text-white/50 text-xs ">No goals listed</p>}
+                                                {selectedAssessment.goals?.map((goalId, i) => {
+                                                    const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
+                                                    const goalName = categoryQuestions[categoryId]?.improvements?.find(imp => imp.id === goalId)?.name || goalId;
+                                                    return (
+                                                        <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
+                                                            {goalName}
+                                                        </span>
+                                                    );
+                                                }) || <p className="text-white/50 text-xs ">No goals listed</p>}
+
+                                                {/* Custom Goal Rendering */}
+                                                {(selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data && (selectedAssessment.intake_data.other_goal_details || selectedAssessment.intake_data.other_goals))) && (
+                                                    <div className="mt-4 w-full p-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-2">Narrative / Custom Goal</p>
+                                                        <p className="text-xs text-white/70 italic leading-relaxed font-medium">
+                                                            "{selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data?.other_goal_details || selectedAssessment.intake_data?.other_goals)}"
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </section>
 

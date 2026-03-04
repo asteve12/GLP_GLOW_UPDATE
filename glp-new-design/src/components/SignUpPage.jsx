@@ -55,19 +55,25 @@ const SignUpPage = () => {
         if (!formattedPhone.startsWith('+')) formattedPhone = `+${formattedPhone}`;
 
         try {
-            // Check if email already exists
+            const cleanedEmail = email.trim().toLowerCase();
+
+            // Check if email or phone already exists
             const { data: existingUser, error: checkError } = await supabase
                 .from('profiles')
-                .select('id')
-                .eq('email', email)
+                .select('id, email, phone_number')
+                .or(`email.eq.${cleanedEmail},phone_number.eq.${formattedPhone}`)
                 .maybeSingle();
 
             if (checkError) {
-                console.warn('Email check error:', checkError);
+                console.warn('Strict account check warning:', checkError);
             }
 
             if (existingUser) {
-                toast.error('This email is already registered. Please sign in instead.');
+                if (existingUser.email?.toLowerCase() === cleanedEmail) {
+                    toast.error('This email is already registered. Please sign in instead.');
+                } else {
+                    toast.error('This phone number is already associated with an account. Please sign in or use a different number.');
+                }
                 setLoading(false);
                 return;
             }
@@ -81,7 +87,7 @@ const SignUpPage = () => {
                 : `${window.location.origin}/dashboard`;
 
             const { data: signUpData, error: signUpError } = await signUp({
-                email,
+                email: cleanedEmail,
                 password,
                 options: {
                     data: {
@@ -95,7 +101,21 @@ const SignUpPage = () => {
                 }
             });
 
-            if (signUpError) throw signUpError;
+            if (signUpError) {
+                if (signUpError.message.includes('already registered') || signUpError.status === 400) {
+                    toast.error('This email is already registered. Please sign in instead.');
+                    setLoading(false);
+                    return;
+                }
+                throw signUpError;
+            }
+
+            // Supabase enumeration protection check
+            if (signUpData?.user && (!signUpData.user.identities || signUpData.user.identities.length === 0)) {
+                toast.error('An account already exists with this email address. Please sign in.');
+                setLoading(false);
+                return;
+            }
 
             // 2. Create/Update Profile record immediately
             // This ensures the data is in our public profiles table even before email verification

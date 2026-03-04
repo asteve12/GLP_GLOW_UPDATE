@@ -17,6 +17,7 @@ import Dashboard from './components/Dashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SignUpPage from './components/SignUpPage';
 import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 import ReviewSlider from './components/ReviewSlider';
 import WellnessSection from './components/WellnessSection';
@@ -80,6 +81,7 @@ function App() {
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/dashboard/*" element={
             <ProtectedRoute>
