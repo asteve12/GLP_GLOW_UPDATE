@@ -2649,7 +2649,9 @@ const ClinicalQueue = () => {
         { id: 'weight-loss', name: 'Weight Loss', color: '#bfff00' },
         { id: 'hair-restoration', name: 'Hair Restoration', color: '#5CE1E6' },
         { id: 'sexual-health', name: 'Sexual Health', color: '#FFDE59' },
-        { id: 'longevity', name: 'Longevity', color: '#FF7E5F' }
+        { id: 'longevity', name: 'Longevity', color: '#FF7E5F' },
+        { id: 'testosterone', name: 'Testosterone', color: '#FFD700' },
+        { id: 'repair-healing', name: 'Repair & Healing', color: '#32CD32' }
     ];
 
     const [pendingCounts, setPendingCounts] = useState({});
@@ -2674,6 +2676,10 @@ const ClinicalQueue = () => {
                     category = 'sexual-health';
                 } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
                     category = 'longevity';
+                } else if (drug.includes('testosterone')) {
+                    category = 'testosterone';
+                } else if (drug.includes('repair') || drug.includes('bpc')) {
+                    category = 'repair-healing';
                 } else {
                     category = item.selected_drug || 'all';
                 }
@@ -3299,7 +3305,9 @@ const PatientExpressEntry = () => {
         { id: 'weight-loss', label: 'Weight Loss', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
         { id: 'hair-restoration', label: 'Hair Restoration', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'sexual-health', label: 'Sexual Health', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
-        { id: 'longevity', label: 'Longevity', icon: 'M13 10V3L4 14h7v7l9-11h-7z' }
+        { id: 'longevity', label: 'Longevity', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+        { id: 'testosterone', label: 'Testosterone', icon: 'M12 21a9 9 0 100-18 9 9 0 000 18zm0 0l-4-4m4 4l4-4' },
+        { id: 'repair-healing', label: 'Repair & Healing', icon: 'M13 10V3L4 14h7v7l9-11h-7z' }
     ];
 
     const handleCategorySelect = (id) => {
@@ -4632,7 +4640,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.licenseType}
                                     onChange={(e) => setProviderForm({ ...providerForm, licenseType: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-black [&>option]:text-black"
+                                    className="w-full bg-white border border-white/10 rounded-xl p-4 text-black font-bold focus:outline-none focus:border-accent-black"
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
@@ -6619,18 +6627,18 @@ const AdminDashboard = () => {
 
                     <Routes>
                         <Route path="/" element={<Navigate to={role === 'admin' ? 'overview' : 'orders'} replace />} />
-                        <Route path="overview" element={<AdminOverview />} />
-                        <Route path="patients" element={<PatientPortalManager />} />
-                        <Route path="clinical" element={<ClinicalQueue />} />
+                        {role === 'admin' && <Route path="overview" element={<AdminOverview />} />}
+                        {role === 'admin' && <Route path="patients" element={<PatientPortalManager />} />}
+                        {role === 'admin' && <Route path="clinical" element={<ClinicalQueue />} />}
                         <Route path="orders" element={<OrderManagement />} />
                         <Route path="discounts" element={<DiscountManager />} />
-                        <Route path="users" element={<StaffManagement />} />
+                        {role === 'admin' && <Route path="users" element={<StaffManagement />} />}
                         <Route path="subscribers" element={<SubscriberAnalytics />} />
-                        <Route path="profit-tracker" element={<ProfitTrackerView />} />
+                        {role === 'admin' && <Route path="profit-tracker" element={<ProfitTrackerView />} />}
                         <Route path="patient-express" element={<PatientExpressEntry />} />
-                        <Route path="surveys" element={<SurveyManagement />} />
-                        <Route path="statements" element={<StatementsAdminView />} />
-                        <Route path="blog" element={<BlogManagement />} />
+                        {role === 'admin' && <Route path="surveys" element={<SurveyManagement />} />}
+                        {role === 'admin' && <Route path="statements" element={<StatementsAdminView />} />}
+                        {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
                         <Route path="settings" element={
                             <div className="space-y-12">
                                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
