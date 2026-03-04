@@ -637,7 +637,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             <>
                                 <button
                                     onClick={() => onAction('dosage', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#111111] transition-all transform hover:scale-[1.02]"
+                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-[1.02]"
                                 >
                                     Adjust Dosage
                                 </button>
@@ -669,7 +669,7 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                     )}
                     <button
                         onClick={() => onRetake && onRetake(submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/30 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white/50 transition-all opacity-50 hover:opacity-100"
+                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all"
                     >
                         Retake Assessment
                     </button>
@@ -1369,7 +1369,7 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
                 <div className="pt-4 border-t border-white/10 flex gap-3">
                     <button
                         onClick={() => onPrescriptionClick(submission.provider_id)}
-                        className="flex-1 bg-[#FFDE59] text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all"
+                        className="flex-1 bg-[#FFDE59] text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
                     >
                         Prescription info
                     </button>
@@ -2341,59 +2341,6 @@ const Dashboard = () => {
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto p-6 md:p-12">
 
 
-                    {/* Renewal Management Section - High Visibility Placement */}
-                    {location.pathname === '/dashboard/overview' && hasActiveProtocol && (
-                        <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] overflow-hidden relative group mb-12">
-                            <div className="flex flex-col lg:flex-row items-center">
-                                <div className="w-full lg:w-1/2 p-10 md:p-14 order-2 lg:order-1 relative z-10">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-2 h-2 rounded-full bg-[#FFDE59] animate-pulse"></div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Protocol Status: Active</span>
-                                    </div>
-
-                                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-4 leading-none">
-                                        Congratulations <br />
-                                        <span className="text-white/50">
-                                            {activeCategories.length === 1
-                                                ? `On your ${activeCategories[0]} Approval`
-                                                : activeCategories.length > 1
-                                                    ? `On your ${activeCategories.join(' & ')} Approvals`
-                                                    : `On your ${approvedSubmissions[0]?.dosage_preference || approvedSubmissions[0]?.selected_drug || 'Protocol'} Approval`}
-                                        </span>
-                                    </h2>
-
-                                    <p className="text-sm text-white/60 mb-10 font-medium leading-relaxed max-w-md">
-                                        The clinical board has officially approved your transformation journey. Your protocol is now active and moving toward fulfillment. Here is how you can optimize your journey:
-                                    </p>
-
-                                    <div className="flex flex-wrap gap-4">
-                                        <button
-                                            onClick={() => navigate('/dashboard/medications')}
-                                            className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
-                                        >
-                                            Request Dosage Change
-                                        </button>
-                                        <button
-                                            onClick={() => window.open('https://trustpilot.com', '_blank')}
-                                            className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
-                                        >
-                                            Submit Wellness Review
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="w-full lg:w-1/2 min-h-[400px] relative order-1 lg:order-2 overflow-hidden">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop"
-                                        alt="Renewal Management"
-                                        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-r lg:bg-gradient-to-l from-transparent via-white/40 to-white"></div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
                     {/* Tabbed Content */}
                     <Routes>
                         <Route path="/" element={<Navigate to="overview" replace />} />
@@ -2521,6 +2468,58 @@ const Dashboard = () => {
                                         <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Active Orders</p>
                                     </div>
                                 </div>
+                                {/* Active Protocol Banner */}
+                                {hasActiveProtocol && (
+                                    <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] overflow-hidden relative group mb-12">
+                                        <div className="flex flex-col lg:flex-row items-center">
+                                            <div className="w-full lg:w-1/2 p-10 md:p-14 order-2 lg:order-1 relative z-10">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-2 h-2 rounded-full bg-[#FFDE59] animate-pulse"></div>
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Protocol Status: Active</span>
+                                                </div>
+
+                                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-4 leading-none">
+                                                    Congratulations <br />
+                                                    <span className="text-white/50">
+                                                        {activeCategories.length === 1
+                                                            ? `On your ${activeCategories[0]} Approval`
+                                                            : activeCategories.length > 1
+                                                                ? `On your ${activeCategories.join(' & ')} Approvals`
+                                                                : `On your ${approvedSubmissions[0]?.dosage_preference || approvedSubmissions[0]?.selected_drug || 'Protocol'} Approval`}
+                                                    </span>
+                                                </h2>
+
+                                                <p className="text-sm text-white/60 mb-10 font-medium leading-relaxed max-w-md">
+                                                    The clinical board has officially approved your transformation journey. Your protocol is now active and moving toward fulfillment. Here is how you can optimize your journey:
+                                                </p>
+
+                                                <div className="flex flex-wrap gap-4">
+                                                    <button
+                                                        onClick={() => navigate('/dashboard/medications')}
+                                                        className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
+                                                    >
+                                                        Request Dosage Change
+                                                    </button>
+                                                    <button
+                                                        onClick={() => window.open('https://trustpilot.com', '_blank')}
+                                                        className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                                                    >
+                                                        Submit Wellness Review
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="w-full lg:w-1/2 min-h-[400px] relative order-1 lg:order-2 overflow-hidden">
+                                                <img
+                                                    src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop"
+                                                    alt="Renewal Management"
+                                                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-r lg:bg-gradient-to-l from-transparent via-white/40 to-white"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Product Recommendations Carousel */}
                                 <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden relative group mb-12">
                                     <div className="flex items-center justify-between mb-8">
@@ -2637,7 +2636,7 @@ const Dashboard = () => {
                                                             )}
                                                         </div>
                                                         <h3 className="text-lg font-black uppercase tracking-tighter  mb-1 leading-tight">{product.title}</h3>
-                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : isApproved ? 'text-white' : 'text-white/60'}`}>
+                                                        <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : (isApproved || desc === "Retake Assessment") ? 'text-white' : 'text-white/60'}`}>
                                                             {desc}
                                                         </p>
                                                     </div>
@@ -2681,7 +2680,7 @@ const Dashboard = () => {
                                             ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                 <button
                                                     onClick={() => navigate('/qualify')}
-                                                    className="px-10 py-4 bg-[#111111] text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                                                    className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg"
                                                 >
                                                     Retake Assessment
                                                 </button>
@@ -2786,14 +2785,14 @@ const Dashboard = () => {
                                                 {submissions.length === 0 ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all"
+                                                        className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
                                                     >
                                                         Start Assessment
                                                     </button>
                                                 ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                     <button
                                                         onClick={() => navigate('/qualify')}
-                                                        className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.2)]"
+                                                        className="px-10 py-4 bg-white text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg"
                                                     >
                                                         Retake Assessment
                                                     </button>
@@ -2866,11 +2865,11 @@ const Dashboard = () => {
                                         <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Complete clinical log</p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
                                             New Assessment +
                                         </button>
                                     ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]">
+                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg">
                                             Retake Assessment
                                         </button>
                                     ) : (
@@ -3132,387 +3131,387 @@ const Dashboard = () => {
             )}
 
 
-{/* Assessment Details Modal */ }
-{
-    selectedAssessment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-12">
-            <div
-                className="absolute inset-0 bg-[#111111]/90 backdrop-blur-xl"
-                onClick={() => setSelectedAssessment(null)}
-            ></div>
+            {/* Assessment Details Modal */}
+            {
+                selectedAssessment && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-12">
+                        <div
+                            className="absolute inset-0 bg-[#111111]/90 backdrop-blur-xl"
+                            onClick={() => setSelectedAssessment(null)}
+                        ></div>
 
-            <div className="relative w-full max-w-4xl bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card h-[80vh] flex flex-col">
-                {/* Modal Header */}
-                <div className="p-8 border-b border-white/10 flex items-center justify-between">
-                    <div>
-                        <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
-                            Assessment <span className="text-white">Record</span>
-                        </h3>
-                        <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
-                            Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => setSelectedAssessment(null)}
-                        className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                            <path d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                {/* Modal Body */}
-                <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        {/* Left Column: Core Info */}
-                        <div className="space-y-8">
-                            <section>
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Protocol Details</h4>
-                                <div className="space-y-4">
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Target Treatment</p>
-                                        <p className="text-sm font-bold uppercase tracking-tight">{selectedAssessment.selected_drug}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Status</p>
-                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-[#FFDE59] text-black' : 'bg-orange-500/10 text-orange-400'
-                                            }`}>
-                                            {selectedAssessment.approval_status}
-                                        </span>
-                                    </div>
+                        <div className="relative w-full max-w-4xl bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card h-[80vh] flex flex-col">
+                            {/* Modal Header */}
+                            <div className="p-8 border-b border-white/10 flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
+                                        Assessment <span className="text-white">Record</span>
+                                    </h3>
+                                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
+                                        Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
+                                    </p>
                                 </div>
-                            </section>
+                                <button
+                                    onClick={() => setSelectedAssessment(null)}
+                                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                        <path d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                            <section>
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Clinical Biometrics</h4>
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Sex</p>
-                                        <p className="text-sm font-bold capitalize">{
-                                            selectedAssessment.sex
-                                            || selectedAssessment.intake_data?.sex
-                                            || selectedAssessment.intake_data?.assigned_sex_intake
-                                            || selectedAssessment.intake_data?.eligibility?.sex
-                                            || profile?.sex
-                                            || 'Not provided'
-                                        }</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
-                                        <p className="text-sm font-bold">{(() => {
-                                            const raw = profile?.date_of_birth
-                                                || selectedAssessment.birthday
-                                                || selectedAssessment.intake_data?.date_of_birth
-                                                || selectedAssessment.intake_data?.eligibility?.dob
-                                                || selectedAssessment.intake_data?.dob;
-                                            if (!raw) return 'Not provided';
-                                            // Format ISO dates (YYYY-MM-DD) to a readable form
-                                            const d = new Date(raw);
-                                            if (!isNaN(d.getTime())) {
-                                                return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
-                                            }
-                                            return raw;
-                                        })()}</p>
-                                    </div>
-                                    {(getMedicationCategoryId(selectedAssessment.selected_drug) === 'weight-loss' || selectedAssessment.category === 'weight-loss' || selectedAssessment.category === 'Weight Loss') && (
-                                        <>
-                                            <div>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
-                                                <p className="text-sm font-bold">{(() => {
-                                                    const w = selectedAssessment.weight
-                                                        || selectedAssessment.intake_data?.weight
-                                                        || selectedAssessment.intake_data?.weight_intake
-                                                        || selectedAssessment.intake_data?.weight_longevity;
-                                                    return w ? `${w} lbs` : 'Not provided';
-                                                })()}</p>
+                            {/* Modal Body */}
+                            <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                    {/* Left Column: Core Info */}
+                                    <div className="space-y-8">
+                                        <section>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Protocol Details</h4>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Target Treatment</p>
+                                                    <p className="text-sm font-bold uppercase tracking-tight">{selectedAssessment.selected_drug}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Status</p>
+                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-[#FFDE59] text-black' : 'bg-orange-500/10 text-orange-400'
+                                                        }`}>
+                                                        {selectedAssessment.approval_status}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
-                                                <p className="text-sm font-bold">{(() => {
-                                                    const b = selectedAssessment.bmi
-                                                        || selectedAssessment.intake_data?.bmi;
-                                                    return b ? String(b) : 'Not computed';
-                                                })()}</p>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </section>
-                        </div>
+                                        </section>
 
-                        {/* Right Column: Goals & Shipping */}
-                        <div className="space-y-8">
-                            <section>
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {selectedAssessment.goals?.map((goalId, i) => {
-                                        const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
-                                        const goalName = categoryQuestions[categoryId]?.improvements?.find(imp => imp.id === goalId)?.name || goalId;
-                                        return (
-                                            <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
-                                                {goalName}
-                                            </span>
-                                        );
-                                    }) || <p className="text-white/50 text-xs ">No goals listed</p>}
-
-                                    {/* Custom Goal Rendering */}
-                                    {(selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data && (selectedAssessment.intake_data.other_goal_details || selectedAssessment.intake_data.other_goals))) && (
-                                        <div className="mt-4 w-full p-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-2">Narrative / Custom Goal</p>
-                                            <p className="text-xs text-white/70 italic leading-relaxed font-medium">
-                                                "{selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data?.other_goal_details || selectedAssessment.intake_data?.other_goals)}"
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </section>
-
-                            <section>
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Fulfillment Details</h4>
-                                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Recipient</p>
-                                            <p className="text-sm font-bold">{selectedAssessment.shipping_first_name} {selectedAssessment.shipping_last_name}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Address</p>
-                                            <p className="text-xs text-white/60 leading-relaxed uppercase tracking-tight font-medium">
-                                                {selectedAssessment.shipping_address}<br />
-                                                {selectedAssessment.shipping_city}, {selectedAssessment.shipping_state} {selectedAssessment.shipping_zip}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-
-                    {/* Clinical Intake Responses */}
-                    <div className="mt-12 pt-12 border-t border-white/10">
-                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-8 border-b border-white/20 pb-2">Clinical Intake Responses</h4>
-
-                        {(() => {
-                            // Robust data merging to catch all answers across different schemas
-                            const combinedData = {
-                                ...selectedAssessment,
-                                ...(selectedAssessment.intake_data || {}),
-                                ...(selectedAssessment.medical_responses || {}),
-                            };
-
-                            // Deep merge common sub-objects if they exist
-                            if (selectedAssessment.intake_data?.eligibility) {
-                                Object.assign(combinedData, selectedAssessment.intake_data.eligibility);
-                            }
-                            if (selectedAssessment.intake_data?.shipping) {
-                                Object.assign(combinedData, selectedAssessment.intake_data.shipping);
-                            }
-
-                            const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
-                            const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
-
-                            // Track displayed keys to identify "unmapped" data
-                            const displayedKeys = new Set([
-                                'id', 'user_id', 'submitted_at', 'approval_status', 'shipping_address', 'shipping_city',
-                                'shipping_state', 'shipping_zip', 'shipping_first_name', 'shipping_last_name',
-                                'shipping_phone', 'shipping_email', 'selected_drug', 'category', 'intake_data',
-                                'medical_responses', 'lab_results_url', 'glp1_prescription_url', 'identification_url',
-                                'height_feet', 'height_inches', 'weight', 'bmi', 'sex', 'birthday', 'goals', 'email', 'custom_goal'
-                            ]);
-
-                            return (
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-1 gap-4">
-                                        {questions.map((q) => {
-                                            if (q.type === 'info') return null;
-
-                                            let answer = combinedData[q.id];
-                                            if (answer === undefined || answer === null || answer === '') return null;
-
-                                            displayedKeys.add(q.id);
-                                            const details = combinedData[`${q.id}_details`] || combinedData[`${q.id}_info`];
-                                            if (details) displayedKeys.add(`${q.id}_details`);
-
-                                            return (
-                                                <div key={q.id} className="group/resp p-6 bg-white/5 border border-white/10 rounded-3xl hover:border-[#FFDE59]/30 transition-all">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                        <section>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Clinical Biometrics</h4>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Sex</p>
+                                                    <p className="text-sm font-bold capitalize">{
+                                                        selectedAssessment.sex
+                                                        || selectedAssessment.intake_data?.sex
+                                                        || selectedAssessment.intake_data?.assigned_sex_intake
+                                                        || selectedAssessment.intake_data?.eligibility?.sex
+                                                        || profile?.sex
+                                                        || 'Not provided'
+                                                    }</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
+                                                    <p className="text-sm font-bold">{(() => {
+                                                        const raw = profile?.date_of_birth
+                                                            || selectedAssessment.birthday
+                                                            || selectedAssessment.intake_data?.date_of_birth
+                                                            || selectedAssessment.intake_data?.eligibility?.dob
+                                                            || selectedAssessment.intake_data?.dob;
+                                                        if (!raw) return 'Not provided';
+                                                        // Format ISO dates (YYYY-MM-DD) to a readable form
+                                                        const d = new Date(raw);
+                                                        if (!isNaN(d.getTime())) {
+                                                            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+                                                        }
+                                                        return raw;
+                                                    })()}</p>
+                                                </div>
+                                                {(getMedicationCategoryId(selectedAssessment.selected_drug) === 'weight-loss' || selectedAssessment.category === 'weight-loss' || selectedAssessment.category === 'Weight Loss') && (
+                                                    <>
                                                         <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-widest text-[#FFDE59] mb-3">Clinical Question</p>
-                                                            <p className="text-xs font-bold text-white/90 leading-relaxed">{q.question}</p>
+                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
+                                                            <p className="text-sm font-bold">{(() => {
+                                                                const w = selectedAssessment.weight
+                                                                    || selectedAssessment.intake_data?.weight
+                                                                    || selectedAssessment.intake_data?.weight_intake
+                                                                    || selectedAssessment.intake_data?.weight_longevity;
+                                                                return w ? `${w} lbs` : 'Not provided';
+                                                            })()}</p>
                                                         </div>
-                                                        <div className="md:pl-8 md:border-l border-white/10">
-                                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Patient Response</p>
-                                                            <div className="text-xs font-black uppercase tracking-tight text-white leading-relaxed">
-                                                                {Array.isArray(answer) ? (
-                                                                    <ul className="list-disc list-inside space-y-2">
-                                                                        {answer.map((item, i) => <li key={i}>{item}</li>)}
-                                                                    </ul>
-                                                                ) : (
-                                                                    <span className="bg-[#FFDE59]/10 text-[#FFDE59] px-3 py-1.5 rounded-lg border border-[#FFDE59]/20">
-                                                                        {answer.toString()}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            {details && (
-                                                                <div className="mt-6 pt-6 border-t border-white/10">
-                                                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-3">Internal Narrative</p>
-                                                                    <p className="text-[11px] text-white/70 font-medium leading-relaxed italic">"{details}"</p>
-                                                                </div>
-                                                            )}
+                                                        <div>
+                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
+                                                            <p className="text-sm font-bold">{(() => {
+                                                                const b = selectedAssessment.bmi
+                                                                    || selectedAssessment.intake_data?.bmi;
+                                                                return b ? String(b) : 'Not computed';
+                                                            })()}</p>
                                                         </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    {/* Right Column: Goals & Shipping */}
+                                    <div className="space-y-8">
+                                        <section>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedAssessment.goals?.map((goalId, i) => {
+                                                    const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
+                                                    const goalName = categoryQuestions[categoryId]?.improvements?.find(imp => imp.id === goalId)?.name || goalId;
+                                                    return (
+                                                        <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
+                                                            {goalName}
+                                                        </span>
+                                                    );
+                                                }) || <p className="text-white/50 text-xs ">No goals listed</p>}
+
+                                                {/* Custom Goal Rendering */}
+                                                {(selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data && (selectedAssessment.intake_data.other_goal_details || selectedAssessment.intake_data.other_goals))) && (
+                                                    <div className="mt-4 w-full p-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-2">Narrative / Custom Goal</p>
+                                                        <p className="text-xs text-white/70 italic leading-relaxed font-medium">
+                                                            "{selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data?.other_goal_details || selectedAssessment.intake_data?.other_goals)}"
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </section>
+
+                                        <section>
+                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Fulfillment Details</h4>
+                                            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Recipient</p>
+                                                        <p className="text-sm font-bold">{selectedAssessment.shipping_first_name} {selectedAssessment.shipping_last_name}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Address</p>
+                                                        <p className="text-xs text-white/60 leading-relaxed uppercase tracking-tight font-medium">
+                                                            {selectedAssessment.shipping_address}<br />
+                                                            {selectedAssessment.shipping_city}, {selectedAssessment.shipping_state} {selectedAssessment.shipping_zip}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                            );
-                                        })}
+                                            </div>
+                                        </section>
                                     </div>
+                                </div>
 
-                                    {/* Overflow Section for unmapped data */}
-                                    {Object.entries(combinedData).some(([key, val]) => {
-                                        if (displayedKeys.has(key) || key.startsWith('__')) return false;
-                                        if (typeof val === 'object' && val !== null) return false;
-                                        if (val === undefined || val === null || val === '') return false;
-                                        return true;
-                                    }) && (
-                                            <div className="mt-12">
-                                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6 flex items-center gap-4">
-                                                    <span>Supplementry Clinical Markers</span>
-                                                    <div className="h-px flex-1 bg-white/5"></div>
-                                                </h4>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {Object.entries(combinedData).map(([key, val]) => {
-                                                        if (displayedKeys.has(key) || key.startsWith('__')) return null;
-                                                        if (typeof val === 'object' && val !== null) return null;
-                                                        if (val === undefined || val === null || val === '') return null;
+                                {/* Clinical Intake Responses */}
+                                <div className="mt-12 pt-12 border-t border-white/10">
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-8 border-b border-white/20 pb-2">Clinical Intake Responses</h4>
+
+                                    {(() => {
+                                        // Robust data merging to catch all answers across different schemas
+                                        const combinedData = {
+                                            ...selectedAssessment,
+                                            ...(selectedAssessment.intake_data || {}),
+                                            ...(selectedAssessment.medical_responses || {}),
+                                        };
+
+                                        // Deep merge common sub-objects if they exist
+                                        if (selectedAssessment.intake_data?.eligibility) {
+                                            Object.assign(combinedData, selectedAssessment.intake_data.eligibility);
+                                        }
+                                        if (selectedAssessment.intake_data?.shipping) {
+                                            Object.assign(combinedData, selectedAssessment.intake_data.shipping);
+                                        }
+
+                                        const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
+                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
+
+                                        // Track displayed keys to identify "unmapped" data
+                                        const displayedKeys = new Set([
+                                            'id', 'user_id', 'submitted_at', 'approval_status', 'shipping_address', 'shipping_city',
+                                            'shipping_state', 'shipping_zip', 'shipping_first_name', 'shipping_last_name',
+                                            'shipping_phone', 'shipping_email', 'selected_drug', 'category', 'intake_data',
+                                            'medical_responses', 'lab_results_url', 'glp1_prescription_url', 'identification_url',
+                                            'height_feet', 'height_inches', 'weight', 'bmi', 'sex', 'birthday', 'goals', 'email', 'custom_goal'
+                                        ]);
+
+                                        return (
+                                            <div className="space-y-6">
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    {questions.map((q) => {
+                                                        if (q.type === 'info') return null;
+
+                                                        let answer = combinedData[q.id];
+                                                        if (answer === undefined || answer === null || answer === '') return null;
+
+                                                        displayedKeys.add(q.id);
+                                                        const details = combinedData[`${q.id}_details`] || combinedData[`${q.id}_info`];
+                                                        if (details) displayedKeys.add(`${q.id}_details`);
 
                                                         return (
-                                                            <div key={key} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center">
-                                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{key.replace(/_/g, ' ')}</p>
-                                                                <p className="text-[11px] font-bold text-white uppercase tracking-tight">{val.toString()}</p>
+                                                            <div key={q.id} className="group/resp p-6 bg-white/5 border border-white/10 rounded-3xl hover:border-[#FFDE59]/30 transition-all">
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                                                    <div>
+                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#FFDE59] mb-3">Clinical Question</p>
+                                                                        <p className="text-xs font-bold text-white/90 leading-relaxed">{q.question}</p>
+                                                                    </div>
+                                                                    <div className="md:pl-8 md:border-l border-white/10">
+                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Patient Response</p>
+                                                                        <div className="text-xs font-black uppercase tracking-tight text-white leading-relaxed">
+                                                                            {Array.isArray(answer) ? (
+                                                                                <ul className="list-disc list-inside space-y-2">
+                                                                                    {answer.map((item, i) => <li key={i}>{item}</li>)}
+                                                                                </ul>
+                                                                            ) : (
+                                                                                <span className="bg-[#FFDE59]/10 text-[#FFDE59] px-3 py-1.5 rounded-lg border border-[#FFDE59]/20">
+                                                                                    {answer.toString()}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        {details && (
+                                                                            <div className="mt-6 pt-6 border-t border-white/10">
+                                                                                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-3">Internal Narrative</p>
+                                                                                <p className="text-[11px] text-white/70 font-medium leading-relaxed italic">"{details}"</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         );
                                                     })}
                                                 </div>
+
+                                                {/* Overflow Section for unmapped data */}
+                                                {Object.entries(combinedData).some(([key, val]) => {
+                                                    if (displayedKeys.has(key) || key.startsWith('__')) return false;
+                                                    if (typeof val === 'object' && val !== null) return false;
+                                                    if (val === undefined || val === null || val === '') return false;
+                                                    return true;
+                                                }) && (
+                                                        <div className="mt-12">
+                                                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6 flex items-center gap-4">
+                                                                <span>Supplementry Clinical Markers</span>
+                                                                <div className="h-px flex-1 bg-white/5"></div>
+                                                            </h4>
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                {Object.entries(combinedData).map(([key, val]) => {
+                                                                    if (displayedKeys.has(key) || key.startsWith('__')) return null;
+                                                                    if (typeof val === 'object' && val !== null) return null;
+                                                                    if (val === undefined || val === null || val === '') return null;
+
+                                                                    return (
+                                                                        <div key={key} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center">
+                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{key.replace(/_/g, ' ')}</p>
+                                                                            <p className="text-[11px] font-bold text-white uppercase tracking-tight">{val.toString()}</p>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    )}
                                             </div>
-                                        )}
+                                        );
+                                    })()}
                                 </div>
-                            );
-                        })()}
-                    </div>
-                </div>
+                            </div>
 
-                {/* Modal Footer */}
-                <div className="p-8 border-t border-white/10 bg-[#111111]/50">
-                    <button
-                        onClick={() => setSelectedAssessment(null)}
-                        className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
-                    >
-                        Close Record
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-
-
-{/* Retake Warning Modal */ }
-{
-    retakeModal.isOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-            <div className="bg-[#111111] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
-
-                <div className="w-16 h-16 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 mx-auto">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
-                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-
-                <div className="text-center mb-8">
-                    <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
-                    <p className="text-sm text-white/60 font-medium leading-relaxed">
-                        Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
-                    </p>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                    <button
-                        onClick={handleRetakeSubmit}
-                        className="w-full py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                    >
-                        Confirm & Delete
-                    </button>
-                    <button
-                        onClick={() => setRetakeModal({ isOpen: false, submission: null })}
-                        className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-<MedicationActionModal
-    isOpen={actionModal.isOpen}
-    type={actionModal.type}
-    medication={actionModal.medication}
-    loading={actionLoading}
-    onClose={() => setActionModal({ isOpen: false, type: null, medication: null })}
-    onSubmit={handleActionSubmit}
-/>
-{/* Physician Details Modal */ }
-{
-    selectedPhysician && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-            <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
-            <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
-                <div className="text-center mb-10">
-                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
-                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
-                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
-                </div>
-
-                <div className="space-y-6">
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
-                        <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
-                            <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
-                        </div>
-                        <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
-                            <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
+                            {/* Modal Footer */}
+                            <div className="p-8 border-t border-white/10 bg-[#111111]/50">
+                                <button
+                                    onClick={() => setSelectedAssessment(null)}
+                                    className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                                >
+                                    Close Record
+                                </button>
+                            </div>
                         </div>
                     </div>
+                )
+            }
 
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-3xl border-dashed">
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-red-400/60 mb-2">DEA Registration</p>
-                        <p className="text-sm font-black tracking-[0.3em] text-white/80">{selectedPhysician.supervising_dea_number}</p>
+
+
+            {/* Retake Warning Modal */}
+            {
+                retakeModal.isOpen && (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+                        <div className="bg-[#111111] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
+
+                            <div className="w-16 h-16 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 mx-auto">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
+                                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
+                                <p className="text-sm text-white/60 font-medium leading-relaxed">
+                                    Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={handleRetakeSubmit}
+                                    className="w-full py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                                >
+                                    Confirm & Delete
+                                </button>
+                                <button
+                                    onClick={() => setRetakeModal({ isOpen: false, submission: null })}
+                                    className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )
+            }
 
-                <button
-                    onClick={() => setSelectedPhysician(null)}
-                    className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
-                >
-                    Dismiss
-                </button>
-            </div>
-        </div>
-    )
-}
+            <MedicationActionModal
+                isOpen={actionModal.isOpen}
+                type={actionModal.type}
+                medication={actionModal.medication}
+                loading={actionLoading}
+                onClose={() => setActionModal({ isOpen: false, type: null, medication: null })}
+                onSubmit={handleActionSubmit}
+            />
+            {/* Physician Details Modal */}
+            {
+                selectedPhysician && (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+                        <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
+                        <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
+                            <div className="text-center mb-10">
+                                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
+                                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
+                                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
+                                    <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
+                                        <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
+                                    </div>
+                                    <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
+                                        <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 bg-white/5 border border-white/10 rounded-3xl border-dashed">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-red-400/60 mb-2">DEA Registration</p>
+                                    <p className="text-sm font-black tracking-[0.3em] text-white/80">{selectedPhysician.supervising_dea_number}</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setSelectedPhysician(null)}
+                                className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
         </div >
     );
 };
