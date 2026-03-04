@@ -2343,7 +2343,9 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                                 { value: 'weight-loss', label: 'Weight Loss' },
                                                 { value: 'hair-restoration', label: 'Hair Restoration' },
                                                 { value: 'sexual-health', label: 'Sexual Health' },
-                                                { value: 'longevity', label: 'Longevity' }
+                                                { value: 'longevity', label: 'Longevity' },
+                                                { value: 'testosterone', label: 'Testosterone' },
+                                                { value: 'repair-healing', label: 'Repair & Healing' }
                                             ]}
                                             isEditing={isEditing} formData={formData} onChange={handleChange}
                                         />
@@ -4630,7 +4632,7 @@ const StaffManagement = () => {
                                     required
                                     value={providerForm.licenseType}
                                     onChange={(e) => setProviderForm({ ...providerForm, licenseType: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-black"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white font-bold focus:outline-none focus:border-accent-black [&>option]:text-black"
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
@@ -6499,8 +6501,30 @@ const AdminDashboard = () => {
 
     const currentTab = location.pathname.split('/').pop() || 'overview';
 
-    if (loading) return <div className="min-h-screen bg-[#111111] flex items-center justify-center text-accent-black">LOADING OS...</div>;
-    if (role !== 'admin' && role !== 'provider') return <Navigate to="/dashboard" replace />;
+    if (loading) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-accent-black">LOADING OS...</div>;
+    const isSubAdmin = ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(role);
+    if (role !== 'admin' && !isSubAdmin) return <Navigate to="/dashboard" replace />;
+
+    const navItems = role === 'admin' ? [
+        { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+        { id: 'patients', label: 'Patients', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+        { id: 'clinical', label: 'Submissions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: pendingCount },
+        { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+        { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
+        { id: 'users', label: 'Users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+        { id: 'subscribers', label: 'Subscribers', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+        { id: 'profit-tracker', label: 'Profit Tracker', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+        { id: 'patient-express', label: 'Patient Express', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { id: 'surveys', label: 'Surveys', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+        { id: 'blog', label: 'Peer reviewed blog', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
+    ] : [
+        { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+        { id: 'subscribers', label: 'Subscribers', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+        { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
+        { id: 'patient-express', label: 'Patient Express', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
+    ];
 
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex">
@@ -6527,20 +6551,7 @@ const AdminDashboard = () => {
                     </h1>
                 </div>
                 <nav className="space-y-1">
-                    {[
-                        { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-                        { id: 'patients', label: 'Patients', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
-                        { id: 'clinical', label: 'Submissions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: pendingCount },
-                        { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
-                        { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
-                        { id: 'users', label: 'Users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-                        { id: 'subscribers', label: 'Subscribers', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-                        { id: 'profit-tracker', label: 'Profit Tracker', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-                        { id: 'patient-express', label: 'Patient Express', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-                        { id: 'surveys', label: 'Surveys', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-                        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-                        { id: 'blog', label: 'Peer reviewed blog', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
-                    ].map(item => (
+                    {navItems.map(item => (
                         <button
                             key={item.id}
                             onClick={() => {
@@ -6602,11 +6613,12 @@ const AdminDashboard = () => {
                             {currentTab === 'surveys' && 'Feedback & Surveys'}
                             {currentTab === 'statements' && 'Statements'}
                             {currentTab === 'blog' && 'Peer reviewed blog'}
+                            {currentTab === 'settings' && 'Settings'}
                         </h2>
                     </header>
 
                     <Routes>
-                        <Route path="/" element={<Navigate to="overview" replace />} />
+                        <Route path="/" element={<Navigate to={role === 'admin' ? 'overview' : 'orders'} replace />} />
                         <Route path="overview" element={<AdminOverview />} />
                         <Route path="patients" element={<PatientPortalManager />} />
                         <Route path="clinical" element={<ClinicalQueue />} />
@@ -6619,6 +6631,59 @@ const AdminDashboard = () => {
                         <Route path="surveys" element={<SurveyManagement />} />
                         <Route path="statements" element={<StatementsAdminView />} />
                         <Route path="blog" element={<BlogManagement />} />
+                        <Route path="settings" element={
+                            <div className="space-y-12">
+                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
+                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-accent-black/20 flex items-center justify-center text-accent-black">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                        </div>
+                                        Profile Settings
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Legal Name</p>
+                                            <p className="text-sm font-bold text-white/90">{user?.user_metadata?.first_name} {user?.user_metadata?.last_name}</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Email Address</p>
+                                            <p className="text-sm font-bold text-white/90">{user?.email}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
+                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                                        </div>
+                                        License & DEA Details
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white/50 text-[10px] uppercase font-black">
+                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                                            <p className="mb-1 text-white/30">Role</p>
+                                            <p className="text-sm text-white">{role?.replace('_', ' ')}</p>
+                                        </div>
+                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                                            <p className="mb-1 text-white/30">Status</p>
+                                            <p className="text-sm text-accent-black">Verified & Active</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
+                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+                                        </div>
+                                        Security Section
+                                    </h3>
+                                    <button className="px-6 py-3 bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/20 transition-all">
+                                        Reset Administrative Password
+                                    </button>
+                                </div>
+                            </div>
+                        } />
                     </Routes>
                 </div>
             </main>
