@@ -23,7 +23,8 @@ const AdminLogin = () => {
                     .eq('user_id', user.id)
                     .single();
 
-                if (data && (data.role === 'admin' || data.role === 'provider')) {
+                const isAuthorized = data && (data.role === 'admin' || ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(data.role));
+                if (isAuthorized) {
                     navigate('/admin/overview');
                 } else {
                     navigate('/dashboard');
@@ -55,10 +56,12 @@ const AdminLogin = () => {
                 .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
                 .single();
 
-            if (roleError || !roleData || (roleData.role !== 'admin' && roleData.role !== 'provider')) {
+            const isAuthorized = roleData && (roleData.role === 'admin' || ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(roleData.role));
+
+            if (roleError || !isAuthorized) {
                 // If not an admin, sign them out or redirect them away from admin areas
                 // For now, just show an error on this page
-                throw new Error('Unauthorized: Administrative privileges required.');
+                throw new Error('Unauthorized: Administrative / Staff privileges required.');
             }
 
             navigate('/admin/overview');

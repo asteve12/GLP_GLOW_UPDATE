@@ -19,6 +19,7 @@ import exerciseImg from '../assets/exercise.jpg';
 import repairImg from '../assets/sec_quote_strenght_img.png';
 import medicalTeamImg from '../assets/medical-team.png';
 import fdaImg from '../assets/fda_image.webp';
+import doctorImg from '../assets/doctor_image.png';
 
 const NewLandingPage = () => {
     const categories = [
@@ -75,7 +76,7 @@ const NewLandingPage = () => {
             <main>
                 {/* Hero & Treatment Grid */}
                 <section className="pt-8 pb-20">
-                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
+                    <div className="w-full lg:max-w-[75%] 2xl:max-w-[70%] px-6">
                         <div className="text-left mb-12 max-w-2xl">
                             <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
@@ -90,7 +91,7 @@ const NewLandingPage = () => {
                             <p className="text-gray-500 text-xl">Customized care starts here</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
                             {[
                                 { label: <span className="font-serif italic-u"><sub>u</sub>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
@@ -159,9 +160,9 @@ const NewLandingPage = () => {
 
                 {/* Glow Smarter Banner */}
                 <section className="py-0">
-                    <div className="w-full relative overflow-hidden bg-[#0a0a0a] group">
-                        <img alt="Promotional banner" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" src={glpPromoImg} />
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500"></div>
+                    <div className="w-full relative overflow-hidden bg-[#0a0a0a]">
+                        <img alt="Promotional banner" className="w-full h-auto block" src={glpPromoImg} />
+                        <div className="absolute inset-0 bg-black/5"></div>
                         <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
                             <Link to="/qualify?category=weight-loss" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
                         </div>
@@ -171,9 +172,9 @@ const NewLandingPage = () => {
                 {/* Performance Banner */}
                 <section className="py-0">
                     <div className="w-full">
-                        <div className="relative overflow-hidden bg-[#0a0a0a] group h-[218vh] md:h-[133vh] flex items-center">
-                            <img alt="Performance banner" className="w-full h-full object-cover block transition-transform duration-700 group-hover:scale-105" src={performancePromoImg} />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                        <div className="relative overflow-hidden bg-[#0a0a0a] h-[218vh] md:h-[133vh] flex items-center">
+                            <img alt="Performance banner" className="w-full h-full object-cover block" src={performancePromoImg} />
+                            <div className="absolute inset-0 bg-black/20"></div>
                             <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
                                 <Link to="/qualify?category=sexual-health" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
                             </div>
@@ -285,7 +286,7 @@ const NewLandingPage = () => {
                                 <button className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors">Get personalized treatment</button>
                             </div>
                             <div className="w-full md:w-1/2">
-                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow w-full h-[500px]" src="/artifacts/licensed_provider_hero_1772651954593.png" />
+                                <img alt="Professional Doctor" className="rounded-3xl object-cover shadow-xl hover:shadow-2xl transition-shadow w-full h-[500px]" src={doctorImg} />
                             </div>
                         </div>
                     </div>
@@ -293,14 +294,14 @@ const NewLandingPage = () => {
 
 
                 {/* Lab Testing Section */}
-                <section className="py-32 bg-[#fcfbfa] border-y border-gray-100 group/lab hover:!bg-black transition-all duration-700">
+                <section className="py-32 bg-[#fcfbfa] border-y border-gray-100 transition-all duration-700">
                     <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 text-center">
-                        <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-300 group-hover/lab:text-red-900 transition-colors">LABS BY</p>
+                        <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-500 transition-colors">LABS BY</p>
 
                         <div className="flex justify-center mb-4">
-                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-all group-hover/lab:bg-red-600 group-hover/lab:border-red-500 hover:scale-105 duration-500">
+                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-all hover:scale-105 duration-500">
                                 <div className="flex items-center">
-                                    <span className="text-lg font-serif text-black tracking-tight group-hover/lab:text-white" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+                                    <span className="text-lg font-serif text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
                                         <sub>u</sub>Glow<sup>MD</sup>
                                     </span>
                                 </div>
@@ -308,37 +309,37 @@ const NewLandingPage = () => {
                         </div>
 
                         <h2 className="text-4xl md:text-5xl mb-8 tracking-tight leading-[1.15]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
-                            <span className="text-black font-bold block group-hover/lab:text-red-600 transition-colors">Get your labs.</span>
-                            <span className="text-gray-400 italic group-hover/lab:text-red-400">Go for your optimal.</span>
+                            <span className="text-black font-bold block transition-colors">Get your labs.</span>
+                            <span className="text-gray-400 italic">Go for your optimal.</span>
                         </h2>
 
                         <div className="mb-12 flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <span className="px-6 py-2 bg-[#FFDE59]/10 border border-[#FFDE59]/30 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-[#FFDE59]">
+                            <span className="px-6 py-2 bg-[#FFDE59] border border-[#d4b43c] rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-black shadow-md">
                                 Coming Soon • March 15th 2026
                             </span>
-                            <p className="text-gray-400 text-sm font-medium tracking-tight">
+                            <p className="text-gray-600 text-sm font-medium tracking-tight">
                                 Our comprehensive biomarker analysis becomes available mid-month.
                             </p>
                         </div>
 
                         <div className="flex flex-col md:flex-row justify-center items-center gap-5 mb-24">
-                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black group-hover/lab:bg-red-600 group-hover/lab:text-white hover:shadow-2xl transition-all duration-300 min-w-[160px]">
+                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black hover:shadow-2xl transition-all duration-300 min-w-[160px]">
                                 Start my labs
                             </button>
-                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 group-hover/lab:border-red-900 group-hover/lab:bg-transparent group-hover/lab:text-red-200 transition-all duration-300 min-w-[160px]">
+                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 transition-all duration-300 min-w-[160px]">
                                 Learn more
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mb-24 max-w-4xl mx-auto">
                             <div>
-                                <h3 className="font-bold text-lg mb-4 group-hover/lab:text-red-500">Find your baseline</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed group-hover/lab:text-red-300">Get a clear picture of your health with a simple lab test.</p>
+                                <h3 className="font-bold text-lg mb-4 text-gray-900">Find your baseline</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed">Get a clear picture of your health with a simple lab test.</p>
                             </div>
                             <div>
-                                <h3 className="font-bold text-lg mb-4 group-hover/lab:text-red-500">Plan your breakthrough</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed group-hover/lab:text-red-300">Optimize your health with a doctor-developed action plan.</p>
-                                <a className="text-xs font-bold border-b border-black pb-1 inline-block mt-4 hover:text-gray-600 hover:border-gray-600 transition-colors group-hover/lab:text-red-400 group-hover/lab:border-red-400" href="#">Explore the plan →</a>
+                                <h3 className="font-bold text-lg mb-4 text-gray-900">Plan your breakthrough</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed">Optimize your health with a doctor-developed action plan.</p>
+                                <a className="text-xs font-bold border-b border-black pb-1 inline-block mt-4 hover:text-gray-600 hover:border-gray-600 transition-colors" href="#">Explore the plan →</a>
                             </div>
                         </div>
 
