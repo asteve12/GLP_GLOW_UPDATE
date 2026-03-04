@@ -5370,10 +5370,10 @@ const ProfitTrackerView = () => {
                                     type="text"
                                     value={form.drug_name || drugSearch}
                                     onChange={e => { setDrugSearch(e.target.value); setForm(f => ({ ...f, drug_name: '' })); setDrugDropdownOpen(true); }}
-                                    onFocus={() => setDrugDropdownOpen(true)}
-                                    placeholder="Search for a drug or product..."
-                                    style={inputStyle}
-                                    onFocus={e => { e.target.style.borderColor = '#FFDE59'; setDrugDropdownOpen(true); }}
+                                    onFocus={e => {
+                                        e.target.style.borderColor = '#FFDE59';
+                                        setDrugDropdownOpen(true);
+                                    }}
                                     onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; setTimeout(() => setDrugDropdownOpen(false), 200); }}
                                     required={!form.drug_name}
                                 />
