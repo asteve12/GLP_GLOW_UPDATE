@@ -162,7 +162,7 @@ const ProgressQuestionnaire = () => {
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-accent-green selection:text-black pt-32 pb-20">
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-8 py-6">
-                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto flex justify-between items-center">
                     <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors">
                         uGlowMD
                     </Link>

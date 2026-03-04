@@ -6,7 +6,7 @@ const Footer = () => {
 
     return (
         <footer className="bg-[#050505] text-[#FAF9F6] pt-24 pb-12 px-6 border-t border-white/5">
-            <div className="max-w-[1400px] 2xl:max-w-[1800px] 3xl:max-w-none mx-auto">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
                     {/* Brand & Stats/Badges */}
                     <div className="lg:col-span-4 space-y-8">

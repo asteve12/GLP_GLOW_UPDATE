@@ -92,7 +92,7 @@ const BlogPostDetails = () => {
                 </header>
 
                 {/* Featured Image */}
-                <div className="max-w-[1200px] mx-auto px-6 mb-20">
+                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 mb-20">
                     <div className="aspect-[21/9] rounded-[48px] overflow-hidden shadow-2xl relative">
                         <img
                             src={post.image_url || 'https://images.unsplash.com/photo-1505751172177-51ad18610432?w=1200&q=80'}
@@ -141,7 +141,7 @@ const BlogPostDetails = () => {
                 {/* Related Posts */}
                 {relatedPosts.length > 0 && (
                     <section className="bg-[#fcfbfa] py-32 border-t border-gray-100">
-                        <div className="max-w-[1200px] mx-auto px-6">
+                        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                             <h2 className="text-3xl font-bold mb-16 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Related Reads</h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                 {relatedPosts.map(post => (

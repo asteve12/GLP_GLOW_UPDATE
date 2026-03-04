@@ -129,7 +129,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
   return (
     <>
       <header className="sticky top-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/5 " >
-        <nav className="max-w-[1200px] mx-auto px-6 h-16 md:h-20 relative flex items-center justify-between">
+        <nav className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 h-16 md:h-20 relative flex items-center justify-between">
           <div className="flex items-center h-full">
             <Link to="/" className="relative h-full flex items-center">
               <img
