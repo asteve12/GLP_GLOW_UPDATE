@@ -5396,33 +5396,35 @@ const ProfitTrackerView = () => {
                                                 <div style={{ padding: '8px 16px', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.25em', color: 'rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                                     {category}
                                                 </div>
-                                                <button
-                                                    key={drug.name + drug.dosage}
-                                                    type="button"
-                                                    onMouseDown={() => {
-                                                        const formattedName = `${drug.name}${drug.dosage ? ' ' + drug.dosage : ''} ${drug.price}`;
-                                                        setForm(f => ({ ...f, drug_name: formattedName }));
-                                                        setDrugSearch(formattedName);
-                                                        setDrugDropdownOpen(false);
-                                                    }}
-                                                    style={{
-                                                        width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                        fontSize: '13px', fontWeight: '600', color: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? '#FFDE59' : '#ffffff',
-                                                        backgroundColor: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent',
-                                                        border: 'none', cursor: 'pointer', display: 'block',
-                                                        transition: 'background-color 0.15s'
-                                                    }}
-                                                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent'}
-                                                >
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-white font-bold">{drug.name}</span>
-                                                            <span className="text-[10px] text-white/40 uppercase tracking-widest">{drug.dosage}</span>
+                                                {drugs.map(drug => (
+                                                    <button
+                                                        key={drug.name + drug.dosage}
+                                                        type="button"
+                                                        onMouseDown={() => {
+                                                            const formattedName = `${drug.name}${drug.dosage ? ' ' + drug.dosage : ''} ${drug.price}`;
+                                                            setForm(f => ({ ...f, drug_name: formattedName }));
+                                                            setDrugSearch(formattedName);
+                                                            setDrugDropdownOpen(false);
+                                                        }}
+                                                        style={{
+                                                            width: '100%', textAlign: 'left', padding: '12px 16px',
+                                                            fontSize: '13px', fontWeight: '600', color: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? '#FFDE59' : '#ffffff',
+                                                            backgroundColor: form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent',
+                                                            border: 'none', cursor: 'pointer', display: 'block',
+                                                            transition: 'background-color 0.15s'
+                                                        }}
+                                                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                                        onMouseLeave={e => e.currentTarget.style.backgroundColor = form.drug_name === `${drug.name} ${drug.dosage} ${drug.price}` ? 'rgba(255,222,89,0.08)' : 'transparent'}
+                                                    >
+                                                        <div className="flex justify-between items-center">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-white font-bold">{drug.name}</span>
+                                                                <span className="text-[10px] text-white/40 uppercase tracking-widest">{drug.dosage}</span>
+                                                            </div>
+                                                            <span className="text-[#FFDE59] font-black">{drug.price}</span>
                                                         </div>
-                                                        <span className="text-[#FFDE59] font-black">{drug.price}</span>
-                                                    </div>
-                                                </button>
+                                                    </button>
+                                                ))}
                                             </div>
                                         ))}
                                     </div>
