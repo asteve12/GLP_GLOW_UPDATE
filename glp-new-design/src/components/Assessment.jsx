@@ -1098,17 +1098,9 @@ const Assessment = () => {
                 if (categoryId === 'weight-loss') {
                     setMedicalStep(0);
                     setStep(8);
-                } else if (categoryId === 'sexual-health' || categoryId === 'hair-restoration') {
-                    setMedicalStep(0);
-                    setStep(8); // Go straight to Medical Intake (Eligibility is skipped)
-                } else if (categoryId === 'longevity') {
-                    setMedicalStep(0);
-                    setStep(8);
-                } else if (categoryId === 'testosterone' || categoryId === 'repair-healing') {
-                    setMedicalStep(0);
-                    setStep(8);
                 } else {
-                    // weight-loss: skip eligibility, go straight to medical intake
+                    // All non-weight-loss categories go directly to medical intake.
+                    // DOB and sex are already collected from the sign-up form or profile.
                     setMedicalStep(0);
                     setStep(8);
                 }
@@ -2729,6 +2721,7 @@ const Assessment = () => {
 
     const renderAuthStep = () => {
         // If already logged in, show a "Welcome back" continue screen
+        // and pre-fill DOB / sex from the profiles table
         if (user) {
             const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'there';
             return (
@@ -2765,9 +2758,33 @@ const Assessment = () => {
                         </div>
 
                         <button
-                            onClick={() => {
+                            onClick={async () => {
+                                // Load profile to pre-fill DOB / sex before entering assessment
+                                try {
+                                    const { data: profile } = await supabase
+                                        .from('profiles')
+                                        .select('date_of_birth, gender, phone_number')
+                                        .eq('id', user.id)
+                                        .maybeSingle();
+
+                                    if (profile) {
+                                        const dob = profile.date_of_birth || '';
+                                        const [dobYear = '', dobMonth = '', dobDay = ''] = dob ? dob.split('-') : [];
+                                        setEligibilityData(prev => ({
+                                            ...prev,
+                                            dob,
+                                            dobYear,
+                                            dobMonth: dobMonth.replace(/^0/, '') || dobMonth,
+                                            dobDay: dobDay.replace(/^0/, '') || dobDay,
+                                            sex: profile.gender || prev.sex,
+                                            phone: profile.phone_number || prev.phone,
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.warn('Could not pre-fill profile data:', e);
+                                }
                                 setMedicalStep(0);
-                                setStep(8); // All categories go to medical intake
+                                setStep(8);
                             }}
                             className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
                             style={{ backgroundColor: '#000', color: '#fff' }}
@@ -2791,8 +2808,8 @@ const Assessment = () => {
             );
         }
 
-        if (showOtpInput) {
 
+        if (showOtpInput) {
             return (
                 <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
                     <div className="text-center mb-12">
@@ -3011,6 +3028,62 @@ const Assessment = () => {
                                             onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                                             required
                                         />
+                                    </div>
+                                </div>
+
+                                {/* DOB + Sex — collected at sign-up so biometrics are always available */}
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Date of Birth</label>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <input
+                                            type="text" maxLength="2" placeholder="MM"
+                                            value={eligibilityData.dobMonth}
+                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobMonth: e.target.value.replace(/\D/g, '') }))}
+                                            className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                        />
+                                        <input
+                                            type="text" maxLength="2" placeholder="DD"
+                                            value={eligibilityData.dobDay}
+                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobDay: e.target.value.replace(/\D/g, '') }))}
+                                            className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                        />
+                                        <input
+                                            type="text" maxLength="4" placeholder="YYYY"
+                                            value={eligibilityData.dobYear}
+                                            onChange={e => setEligibilityData(prev => ({ ...prev, dobYear: e.target.value.replace(/\D/g, '') }))}
+                                            className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
+                                            style={{ backgroundColor: '#fff', border: '1.5px solid #1a1a1a15', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                            onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: '#1a1a1a60' }}>Biological Sex</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {['Male', 'Female'].map(v => (
+                                            <button
+                                                key={v}
+                                                type="button"
+                                                onClick={() => setEligibilityData(prev => ({ ...prev, sex: v.toLowerCase() }))}
+                                                className="py-4 px-6 rounded-2xl text-[10px] font-bold tracking-widest transition-all border"
+                                                style={{
+                                                    backgroundColor: eligibilityData.sex === v.toLowerCase() ? '#fff' : 'rgba(0,0,0,0.04)',
+                                                    borderColor: eligibilityData.sex === v.toLowerCase() ? '#1a1a1a' : 'rgba(0,0,0,0.08)',
+                                                    color: eligibilityData.sex === v.toLowerCase() ? '#1a1a1a' : '#9ca3af',
+                                                    boxShadow: eligibilityData.sex === v.toLowerCase() ? '0 2px 8px rgba(0,0,0,0.08)' : 'none'
+                                                }}
+                                            >
+                                                {v}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
                             </>
