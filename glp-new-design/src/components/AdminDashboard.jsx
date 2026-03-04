@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { toast } from 'react-hot-toast';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { intakeQuestions } from '../data/questions';
 import { gsap } from 'gsap';
@@ -1176,7 +1177,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
 
     const handleGenerateReport = async () => {
         if (!reportData.provider_first_name || !reportData.provider_last_name) {
-            alert('Please enter provider name');
+            toast.error('Please enter provider name');
             return;
         }
 
@@ -1418,21 +1419,61 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
 
 // --- Create Order Modal ---
 const CreateOrderModal = ({ submission, onClose, onApprove }) => {
-    const [price, setPrice] = useState('299');
+    const PRODUCT_MAP = {
+        'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '2.5mg/ml', price: '299' },
+        'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '5mg/0.5ml', price: '399' },
+        'semaglutide-lozenges': { name: 'Semaglutide Lozenges', dosage: '3mg', price: '249' },
+        'sildenafil-tadalafil-troche': { name: 'Sildenafil / Tadalafil Troche', dosage: '100/20mg', price: '149' },
+        'sildenafil-yohimbe-troche': { name: 'Sildenafil / Yohimbe Troche', dosage: '100/5mg', price: '129' },
+        'tadalafil-yohimbe-troche': { name: 'Tadalafil / Yohimbe Troche', dosage: '20/5mg', price: '129' },
+        'sildenafil-tadalafil-tablets': { name: 'Sildenafil / Tadalafil Tablets', dosage: '100/20mg', price: '99' },
+        'sildenafil-tablets': { name: 'Sildenafil Tablets', dosage: '100mg', price: '79' },
+        'tadalafil-tablets': { name: 'Tadalafil Tablets', dosage: '20mg', price: '79' },
+        'oxytocin-troche': { name: 'Oxytocin Troche', dosage: '100IU', price: '89' },
+        'oxytocin-nasal-spray': { name: 'Oxytocin Nasal Spray', dosage: '100IU/ml', price: '99' },
+        'pt-141-nasal-spray': { name: 'PT-141 Nasal Spray', dosage: '10mg/ml', price: '149' },
+        'pt-141-injection': { name: 'PT-141 Injection', dosage: '10mg', price: '199' },
+        'scream-cream-gel': { name: 'Scream Cream Gel', dosage: '10%', price: '89' },
+        'minoxidil-finasteride-solution': { name: 'Minoxidil 5-10% / Finasteride 0.1% Solution', dosage: '', price: '89' },
+        'minoxidil-solution': { name: 'Minoxidil 5-10% Solution', dosage: '', price: '59' },
+        'finasteride-minoxidil-shampoo': { name: 'Finasteride / Minoxidil Shampoo', dosage: '', price: '69' },
+        'tretinoin-minoxidil-solution': { name: 'Tretinoin / Minoxidil Solution', dosage: '', price: '79' },
+        'latanoprost-solution': { name: 'Latanoprost Solution (Eyelash)', dosage: '0.03%', price: '99' },
+        'finasteride-capsules': { name: 'Finasteride Capsules', dosage: '1mg', price: '49' },
+        'dutasteride-capsules': { name: 'Dutasteride Capsules', dosage: '0.5mg', price: '59' },
+        'oral-minoxidil': { name: 'Oral Minoxidil', dosage: '2.5mg', price: '49' },
+        'spironolactone-capsules': { name: 'Spironolactone Capsules', dosage: '50mg', price: '49' },
+        'nad-injection': { name: 'NAD+ Injection', dosage: '200mg/ml', price: '199' },
+        'nad-nasal-spray': { name: 'NAD+ Nasal Spray', dosage: '100mg/ml', price: '149' },
+        'glutathione-injection': { name: 'Glutathione Injection', dosage: '200mg/ml', price: '129' },
+        'lipo-c-injection': { name: 'Lipo-C Injection', dosage: '1ml', price: '99' },
+        'b12-injection': { name: 'B12 Injection (Methylcobalamin)', dosage: '', price: '49' },
+        'sermorelin-injection': { name: 'Sermorelin Injection', dosage: '9mg', price: '249' },
+        'sermorelin-glycine-injection': { name: 'Sermorelin / Glycine Injection', dosage: '9/9mg', price: '299' },
+    };
+
+    const [price, setPrice] = useState('');
     const [coupon, setCoupon] = useState('');
     const [product, setProduct] = useState('');
     const [charging, setCharging] = useState(false);
 
     // Provider & Status State
     const [orderData, setOrderData] = useState({
-        provider_first_name: 'John',
-        provider_last_name: 'Smith',
-        provider_type: 'MD',
-        delivery_status: 'Not Delivered'
+        provider_first_name: '',
+        provider_last_name: '',
+        provider_type: '',
+        delivery_status: 'Not delivered'
     });
 
     const handleDataChange = (field, value) => {
         setOrderData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleProductChange = (val) => {
+        setProduct(val);
+        if (PRODUCT_MAP[val]) {
+            setPrice(PRODUCT_MAP[val].price);
+        }
     };
 
     // Derived address
@@ -1445,7 +1486,11 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
     const handleCharge = async () => {
         if (!product) {
-            alert('Please select a product');
+            toast.error('Please select a product');
+            return;
+        }
+        if (!price || isNaN(parseFloat(price))) {
+            toast.error('Please enter a valid price');
             return;
         }
 
@@ -1456,7 +1501,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
         const patientId = submission.user_id;
 
         if (!patientId) {
-            alert('Error: This submission is not linked to a User ID. Cannot process charge.');
+            toast.error('Error: This submission is not linked to a User ID. Cannot process charge.');
             return;
         }
 
@@ -1513,7 +1558,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
             }
 
             if (data?.success || data?.status === 'succeeded' || data?.id) {
-                alert('Payment captured successfully!');
+                toast.success('Chare successfully!');
                 await onApprove();
                 onClose();
             } else {
@@ -1522,7 +1567,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
             }
         } catch (error) {
             console.error('Charge process failed:', error);
-            alert(`Charge Failed: ${error.message}`);
+            toast.error(`Charge Failed: ${error.message}`);
         } finally {
             setCharging(false);
         }
@@ -1546,81 +1591,34 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                         <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Product Name</label>
                         <select
                             value={product}
-                            onChange={(e) => setProduct(e.target.value)}
+                            onChange={(e) => handleProductChange(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black cursor-pointer"
                         >
                             <option value="">Select a product</option>
 
                             {(() => {
-                                // Helper to determine category
                                 const cat = (submission.selected_drug || '').toLowerCase();
+                                const filteredProducts = Object.entries(PRODUCT_MAP).filter(([id, data]) => {
+                                    if (cat.includes('semaglutide') || cat.includes('tirzepatide') || cat.includes('weight')) {
+                                        return id.includes('semaglutide') || id.includes('tirzepatide');
+                                    }
+                                    if (cat.includes('sildenafil') || cat.includes('tadalafil') || cat.includes('oxytocin') || cat.includes('pt-141') || cat.includes('sexual')) {
+                                        return id.includes('sildenafil') || id.includes('tadalafil') || id.includes('oxytocin') || id.includes('pt-141') || id.includes('scream');
+                                    }
+                                    if (cat.includes('finasteride') || cat.includes('minoxidil') || cat.includes('hair')) {
+                                        return id.includes('minoxidil') || id.includes('finasteride') || id.includes('tretinoin') || id.includes('latanoprost') || id.includes('dutasteride') || id.includes('oral-minoxidil') || id.includes('spironolactone');
+                                    }
+                                    if (cat.includes('nad') || cat.includes('glutathione') || cat.includes('sermorelin') || cat.includes('longevity')) {
+                                        return id.includes('nad') || id.includes('glutathione') || id.includes('lipo-c') || id.includes('b12') || id.includes('sermorelin');
+                                    }
+                                    return true;
+                                });
 
-                                // Weight Loss Products
-                                if (cat.includes('semaglutide') || cat.includes('tirzepatide') || cat.includes('weight')) {
-                                    return (
-                                        <>
-                                            <option value="semaglutide-injection" className="bg-[#111111]">Semaglutide Injection</option>
-                                            <option value="tirzepatide-injection" className="bg-[#111111]">Tirzepatide Injection</option>
-                                            <option value="semaglutide-lozenges" className="bg-[#111111]">Semaglutide Lozenges</option>
-                                        </>
-                                    );
-                                }
-                                // Sexual Health
-                                if (cat.includes('sildenafil') || cat.includes('tadalafil') || cat.includes('oxytocin') || cat.includes('pt-141') || cat.includes('sexual')) {
-                                    return (
-                                        <>
-                                            <option value="sildenafil-tadalafil-troche" className="bg-[#111111]">Sildenafil / Tadalafil Troche</option>
-                                            <option value="sildenafil-yohimbe-troche" className="bg-[#111111]">Sildenafil / Yohimbe Troche</option>
-                                            <option value="tadalafil-yohimbe-troche" className="bg-[#111111]">Tadalafil / Yohimbe Troche</option>
-                                            <option value="sildenafil-tadalafil-tablets" className="bg-[#111111]">Sildenafil / Tadalafil Tablets</option>
-                                            <option value="sildenafil-tablets" className="bg-[#111111]">Sildenafil Tablets</option>
-                                            <option value="tadalafil-tablets" className="bg-[#111111]">Tadalafil Tablets</option>
-                                            <option value="oxytocin-troche" className="bg-[#111111]">Oxytocin Troche</option>
-                                            <option value="oxytocin-nasal-spray" className="bg-[#111111]">Oxytocin Nasal Spray</option>
-                                            <option value="pt-141-nasal-spray" className="bg-[#111111]">PT-141 Nasal Spray</option>
-                                            <option value="pt-141-injection" className="bg-[#111111]">PT-141 Injection</option>
-                                            <option value="scream-cream-gel" className="bg-[#111111]">Scream Cream Gel</option>
-                                        </>
-                                    );
-                                }
-                                // Hair Restoration
-                                if (cat.includes('finasteride') || cat.includes('minoxidil') || cat.includes('hair')) {
-                                    return (
-                                        <>
-                                            <option value="minoxidil-finasteride-solution" className="bg-[#111111]">Minoxidil 5-10% / Finasteride 0.1% Solution</option>
-                                            <option value="minoxidil-solution" className="bg-[#111111]">Minoxidil 5-10% Solution</option>
-                                            <option value="finasteride-minoxidil-shampoo" className="bg-[#111111]">Finasteride / Minoxidil Shampoo</option>
-                                            <option value="tretinoin-minoxidil-solution" className="bg-[#111111]">Tretinoin / Minoxidil Solution</option>
-                                            <option value="latanoprost-solution" className="bg-[#111111]">Latanoprost Solution (Eyelash)</option>
-                                            <option value="finasteride-capsules" className="bg-[#111111]">Finasteride Capsules</option>
-                                            <option value="dutasteride-capsules" className="bg-[#111111]">Dutasteride Capsules</option>
-                                            <option value="oral-minoxidil" className="bg-[#111111]">Oral Minoxidil</option>
-                                            <option value="spironolactone-capsules" className="bg-[#111111]">Spironolactone Capsules</option>
-                                        </>
-                                    );
-                                }
-                                // Longevity
-                                if (cat.includes('nad') || cat.includes('glutathione') || cat.includes('sermorelin') || cat.includes('longevity')) {
-                                    return (
-                                        <>
-                                            <option value="nad-injection" className="bg-[#111111]">NAD+ Injection</option>
-                                            <option value="nad-nasal-spray" className="bg-[#111111]">NAD+ Nasal Spray</option>
-                                            <option value="glutathione-injection" className="bg-[#111111]">Glutathione Injection</option>
-                                            <option value="lipo-c-injection" className="bg-[#111111]">Lipo-C Injection</option>
-                                            <option value="b12-injection" className="bg-[#111111]">B12 Injection (Methylcobalamin)</option>
-                                            <option value="sermorelin-injection" className="bg-[#111111]">Sermorelin Injection</option>
-                                            <option value="sermorelin-glycine-injection" className="bg-[#111111]">Sermorelin / Glycine Injection</option>
-                                        </>
-                                    );
-                                }
-
-                                // Fallback / Unknown Category
-                                return (
-                                    <>
-                                        <option value="semaglutide-injection" className="bg-[#111111]">Semaglutide Injection</option>
-                                        <option value="tirzepatide-injection" className="bg-[#111111]">Tirzepatide Injection</option>
-                                    </>
-                                );
+                                return filteredProducts.map(([id, data]) => (
+                                    <option key={id} value={id} className="bg-[#111111]">
+                                        {data.name}{data.dosage ? ` - ${data.dosage}` : ''} - ${data.price}
+                                    </option>
+                                ));
                             })()}
                         </select>
                     </div>
@@ -1700,10 +1698,10 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     onChange={(e) => handleDataChange('delivery_status', e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-white focus:outline-none focus:border-accent-black cursor-pointer"
                                 >
-                                    <option value="Not Delivered" className="bg-[#111111]">Not Delivered</option>
-                                    <option value="Packaging" className="bg-[#111111]">Packaging</option>
-                                    <option value="Shipped" className="bg-[#111111]">Shipped</option>
-                                    <option value="Delivered" className="bg-[#111111]">Delivered</option>
+                                    <option value="Not delivered" className="bg-[#111111]">1. Not delivered</option>
+                                    <option value="Processing" className="bg-[#111111]">2. Processing</option>
+                                    <option value="Shipped" className="bg-[#111111]">3. Shipped</option>
+                                    <option value="Delivered" className="bg-[#111111]">4. Delivered</option>
                                 </select>
                             </div>
                         </div>
@@ -3496,12 +3494,12 @@ const PatientExpressEntry = () => {
                     setPdfUrl(data.url);
                 } else {
                     console.error('No URL returned:', data);
-                    alert('PDF generated but no URL returned.');
+                    toast.error('PDF generated but no URL returned.');
                 }
 
             } catch (err) {
                 console.error('Error generating PDF:', err);
-                alert('Failed to generate PDF: ' + err.message);
+                toast.error('Failed to generate PDF: ' + err.message);
             } finally {
                 setGeneratingPdf(false);
             }
@@ -4270,7 +4268,7 @@ const StaffManagement = () => {
 
             if (error) throw error;
 
-            alert('Provider created successfully!');
+            toast.success('Provider created successfully!');
             setShowProviderModal(false);
             setProviderForm({
                 firstName: '',
@@ -4289,7 +4287,7 @@ const StaffManagement = () => {
             fetchStaff();
         } catch (err) {
             console.error('Error creating provider:', err);
-            alert('Failed to create provider: ' + (err.message || 'Unknown error'));
+            toast.error('Failed to create provider: ' + (err.message || 'Unknown error'));
         } finally {
             setCreating(false);
         }
@@ -4316,7 +4314,7 @@ const StaffManagement = () => {
 
             if (error) throw error;
 
-            alert('Back office staff created successfully!');
+            toast.success('Back office staff created successfully!');
             setShowBackOfficeModal(false);
             setBackOfficeForm({
                 firstName: '',
@@ -4330,7 +4328,7 @@ const StaffManagement = () => {
             fetchStaff();
         } catch (err) {
             console.error('Error creating back office staff:', err);
-            alert('Failed to create staff: ' + (err.message || 'Unknown error'));
+            toast.error('Failed to create staff: ' + (err.message || 'Unknown error'));
         } finally {
             setCreating(false);
         }
@@ -4346,11 +4344,11 @@ const StaffManagement = () => {
 
             if (error) throw error;
 
-            alert('Staff member removed successfully');
+            toast.success('Staff member removed successfully');
             fetchStaff();
         } catch (err) {
             console.error('Error deleting staff:', err);
-            alert('Failed to delete staff: ' + (err.message || 'Unknown error'));
+            toast.error('Failed to delete staff: ' + (err.message || 'Unknown error'));
         }
     };
 
@@ -4827,14 +4825,14 @@ const OrderManagement = () => {
             await fetchOrders();
         } catch (err) {
             console.error('Status update failed:', err);
-            alert(`Update failed: ${err.message}`);
+            toast.error(`Update failed: ${err.message}`);
         } finally {
             setUpdatingId(null);
         }
     };
 
     const handleUpdateTracking = async (order, trackingId) => {
-        if (!trackingId) return alert('Please enter a tracking number.');
+        if (!trackingId) return toast.error('Please enter a tracking number.');
         setUpdatingId(order.id);
 
         try {
@@ -4866,16 +4864,16 @@ const OrderManagement = () => {
 
             if (emailError) {
                 console.warn('Tracking saved, but email notification failed:', emailError);
-                alert('Tracking updated, but email notification failed to send.');
+                toast.error('Tracking updated, but email notification failed to send.');
             } else {
-                alert('Tracking updated and patient has been notified.');
+                toast.success('Tracking updated and patient has been notified.');
             }
 
             await fetchOrders();
             setEditingTrackingId(null);
         } catch (err) {
             console.error('Failed to update tracking:', err);
-            alert(`Error updating tracking: ${err.message}`);
+            toast.error(`Error updating tracking: ${err.message}`);
         } finally {
             setUpdatingId(null);
         }
@@ -6142,7 +6140,7 @@ const BlogManagement = () => {
             setCurrentPost({ ...currentPost, image_url: publicUrl });
         } catch (error) {
             console.error('Upload error:', error);
-            alert('Error uploading image: ' + error.message);
+            toast.error('Error uploading image: ' + error.message);
         } finally {
             setUploading(false);
         }
@@ -6187,7 +6185,7 @@ const BlogManagement = () => {
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
         const { error } = await supabase.from('blog_posts').delete().eq('id', id);
-        if (error) alert('Error deleting post');
+        if (error) toast.error('Error deleting post');
         else fetchPosts();
     };
 
@@ -6200,7 +6198,7 @@ const BlogManagement = () => {
 
         if (error) {
             console.error('Save error:', error);
-            alert('Error saving post');
+            toast.error('Error saving post');
         } else {
             setIsEditing(false);
             fetchPosts();
