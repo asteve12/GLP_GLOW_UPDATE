@@ -1483,6 +1483,11 @@ const Dashboard = () => {
     const [otp, setOtp] = useState('');
     const [verifying, setVerifying] = useState(false);
     const [phoneVerified, setPhoneVerified] = useState(true); // Default to true to avoid flash
+    const [showMissingDOBModal, setShowMissingDOBModal] = useState(false);
+    const [showDuplicatePhoneModal, setShowDuplicatePhoneModal] = useState(false);
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+    const [newDob, setNewDob] = useState({ month: '', day: '', year: '' });
+    const [newPhone, setNewPhone] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -1594,6 +1599,77 @@ const Dashboard = () => {
             toast.success('Verification code resent.');
         } catch (error) {
             toast.error(error.message);
+        }
+    };
+
+    const handleUpdateMissingDob = async (e) => {
+        if (e) e.preventDefault();
+        if (!newDob.month || !newDob.day || !newDob.year) {
+            toast.error('Please enter your full date of birth');
+            return;
+        }
+
+        setIsUpdatingProfile(true);
+        try {
+            const dob = `${newDob.year}-${newDob.month.padStart(2, '0')}-${newDob.day.padStart(2, '0')}`;
+            const { error } = await supabase
+                .from('profiles')
+                .update({ date_of_birth: dob })
+                .eq('id', user.id);
+
+            if (error) throw error;
+
+            // Also update Auth metadata for consistency
+            await updateUser({ data: { date_of_birth: dob } });
+
+            toast.success('Profile updated successfully');
+            setShowMissingDOBModal(false);
+            fetchProfile();
+        } catch (err) {
+            console.error('DOB Update Error:', err);
+            toast.error(err.message);
+        } finally {
+            setIsUpdatingProfile(false);
+        }
+    };
+
+    const handleUpdateDuplicatePhone = async (e) => {
+        if (e) e.preventDefault();
+        const cleaned = newPhone.replace(/\D/g, '');
+        if (cleaned.length < 10) {
+            toast.error('Please enter a valid phone number');
+            return;
+        }
+
+        setIsUpdatingProfile(true);
+        try {
+            const formatted = `+1${cleaned.slice(-10)}`; // Standardize to +1 for now
+
+            // Check uniqueness of the NEW phone
+            const phoneForQuery = formatted.slice(-10);
+            const { data: duplicates } = await supabase
+                .from('profiles')
+                .select('id')
+                .ilike('phone_number', `%${phoneForQuery}%`);
+
+            if (duplicates && duplicates.length > 0) {
+                toast.error('This number is also taken. Please use a different one.');
+                setIsUpdatingProfile(false);
+                return;
+            }
+
+            // Update Auth Phone
+            const { error: authError } = await updateUser({ phone: formatted });
+            if (authError) throw authError;
+
+            // Note: Dashboard useEffect will pick up that phone is not confirmed and show verification modal
+            toast.success('Phone updated! Please verify your new number.');
+            setShowDuplicatePhoneModal(false);
+        } catch (err) {
+            console.error('Phone Update Error:', err);
+            toast.error(err.message);
+        } finally {
+            setIsUpdatingProfile(false);
         }
     };
 
@@ -1842,11 +1918,12 @@ const Dashboard = () => {
                 console.error('Error fetching profile:', error);
             } else {
                 const meta = user.user_metadata || {};
+                let profileData = data;
 
-                // If profile doesn't exist OR is missing key data, perform a sync
+                // 1. If profile doesn't exist OR is missing key data, perform a sync
                 if (!data || (!data.phone_number && meta.phone_number) || (!data.first_name && meta.first_name)) {
                     console.log('[Dashboard] Syncing identity from Auth to Public Profile...');
-                    const profileData = {
+                    const syncData = {
                         id: user.id,
                         email: user.email,
                         first_name: data?.first_name || meta.first_name || '',
@@ -1858,17 +1935,42 @@ const Dashboard = () => {
 
                     const { data: updatedProfile, error: upsertError } = await supabase
                         .from('profiles')
-                        .upsert(profileData, { onConflict: 'id' })
+                        .upsert(syncData, { onConflict: 'id' })
                         .select()
-                        .single();
+                        .maybeSingle();
 
                     if (!upsertError) {
+                        profileData = updatedProfile;
                         setProfile(updatedProfile);
                     } else {
                         console.error('Sync failed:', upsertError);
                     }
                 } else {
                     setProfile(data);
+                }
+
+                // 2. CHECK FOR MISSING DOB
+                if (profileData && !profileData.date_of_birth) {
+                    setShowMissingDOBModal(true);
+                }
+
+                // 3. CHECK FOR DUPLICATE PHONE
+                const activePhone = profileData?.phone_number || user.phone || meta.phone_number;
+                if (activePhone) {
+                    const cleanedPhone = activePhone.replace(/\D/g, '');
+                    const phoneForQuery = cleanedPhone.length > 10 ? cleanedPhone.slice(-10) : cleanedPhone;
+
+                    if (phoneForQuery) {
+                        const { data: duplicates } = await supabase
+                            .from('profiles')
+                            .select('id')
+                            .ilike('phone_number', `%${phoneForQuery}%`)
+                            .neq('id', user.id);
+
+                        if (duplicates && duplicates.length > 0) {
+                            setShowDuplicatePhoneModal(true);
+                        }
+                    }
                 }
             }
         } catch (err) {
@@ -2905,386 +3007,513 @@ const Dashboard = () => {
                 </div>
             )}
 
-
-            {/* Assessment Details Modal */}
-            {
-                selectedAssessment && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-12">
-                        <div
-                            className="absolute inset-0 bg-[#111111]/90 backdrop-blur-xl"
-                            onClick={() => setSelectedAssessment(null)}
-                        ></div>
-
-                        <div className="relative w-full max-w-4xl bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card h-[80vh] flex flex-col">
-                            {/* Modal Header */}
-                            <div className="p-8 border-b border-white/10 flex items-center justify-between">
-                                <div>
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
-                                        Assessment <span className="text-white">Record</span>
-                                    </h3>
-                                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
-                                        Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => setSelectedAssessment(null)}
-                                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                        <path d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+            {/* Missing DOB Modal */}
+            {showMissingDOBModal && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-xl"></div>
+                    <div className="relative w-full max-w-md bg-[#111111] rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
+                            Profile Completion
+                        </div>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">
+                            Verify Your{' '}
+                            <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '2px 8px', display: 'inline-block' }}>Birthdate</span>
+                        </h3>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed opacity-40 text-white">
+                            Clinical safety protocols require a verified date of birth. Please confirm yours below.
+                        </p>
+                        <form onSubmit={handleUpdateMissingDob} className="space-y-6">
+                            <div className="grid grid-cols-3 gap-3">
+                                <input
+                                    type="text"
+                                    maxLength="2"
+                                    placeholder="MM"
+                                    value={newDob.month}
+                                    onChange={(e) => setNewDob({ ...newDob, month: e.target.value.replace(/\D/g, '') })}
+                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    maxLength="2"
+                                    placeholder="DD"
+                                    value={newDob.day}
+                                    onChange={(e) => setNewDob({ ...newDob, day: e.target.value.replace(/\D/g, '') })}
+                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    maxLength="4"
+                                    placeholder="YYYY"
+                                    value={newDob.year}
+                                    onChange={(e) => setNewDob({ ...newDob, year: e.target.value.replace(/\D/g, '') })}
+                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    required
+                                />
                             </div>
 
-                            {/* Modal Body */}
-                            <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                    {/* Left Column: Core Info */}
-                                    <div className="space-y-8">
-                                        <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Protocol Details</h4>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Target Treatment</p>
-                                                    <p className="text-sm font-bold uppercase tracking-tight">{selectedAssessment.selected_drug}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Status</p>
-                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-[#FFDE59] text-black' : 'bg-orange-500/10 text-orange-400'
-                                                        }`}>
-                                                        {selectedAssessment.approval_status}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </section>
+                            <button
+                                type="submit"
+                                disabled={isUpdatingProfile}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#FFDE59] text-black hover:bg-white"
+                            >
+                                {isUpdatingProfile ? 'Saving...' : 'Confirm Birthdate'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
 
-                                        <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Clinical Biometrics</h4>
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Sex</p>
-                                                    <p className="text-sm font-bold capitalize">{
-                                                        selectedAssessment.sex
-                                                        || selectedAssessment.intake_data?.sex
-                                                        || selectedAssessment.intake_data?.assigned_sex_intake
-                                                        || selectedAssessment.intake_data?.eligibility?.sex
-                                                        || profile?.gender
-                                                        || profile?.sex
-                                                        || 'Not provided'
-                                                    }</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
-                                                    <p className="text-sm font-bold">{(() => {
-                                                        const raw = profile?.date_of_birth
-                                                            || selectedAssessment.birthday
-                                                            || selectedAssessment.intake_data?.date_of_birth
-                                                            || selectedAssessment.intake_data?.eligibility?.dob
-                                                            || selectedAssessment.intake_data?.dob;
-                                                        if (!raw) return 'Not provided';
-                                                        // Format ISO dates (YYYY-MM-DD) to a readable form
-                                                        const d = new Date(raw);
-                                                        if (!isNaN(d.getTime())) {
-                                                            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
-                                                        }
-                                                        return raw;
-                                                    })()}</p>
-                                                </div>
-                                                {(getMedicationCategoryId(selectedAssessment.selected_drug) === 'weight-loss' || selectedAssessment.category === 'weight-loss' || selectedAssessment.category === 'Weight Loss') && (
-                                                    <>
-                                                        <div>
-                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
-                                                            <p className="text-sm font-bold">{(() => {
-                                                                const w = selectedAssessment.weight
-                                                                    || selectedAssessment.intake_data?.weight
-                                                                    || selectedAssessment.intake_data?.weight_intake
-                                                                    || selectedAssessment.intake_data?.weight_longevity;
-                                                                return w ? `${w} lbs` : 'Not provided';
-                                                            })()}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
-                                                            <p className="text-sm font-bold">{(() => {
-                                                                const b = selectedAssessment.bmi
-                                                                    || selectedAssessment.intake_data?.bmi;
-                                                                return b ? String(b) : 'Not computed';
-                                                            })()}</p>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </section>
+            {/* Duplicate Phone Modal */}
+            {showDuplicatePhoneModal && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">
+                    <div className="absolute inset-0 bg-red-950/95 backdrop-blur-3xl"></div>
+                    <div className="relative w-full max-w-md bg-[#111111] rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid rgba(255,0,0,0.1)' }}>
+                        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: 'rgba(255,0,0,0.1)', border: '2px solid rgba(255,0,0,0.3)' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth="2.5">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div className="inline-block py-1.5 px-4 bg-red-500 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
+                            Security Alert
+                        </div>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">
+                            Conflicting{' '}
+                            <span style={{ backgroundColor: '#ff4444', color: '#fff', padding: '2px 8px', display: 'inline-block' }}>Identity</span>
+                        </h3>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed text-red-100/40">
+                            The phone number linked to this account is already registered to another user. For security, please provide a unique number.
+                        </p>
+
+                        <form onSubmit={handleUpdateDuplicatePhone} className="space-y-6">
+                            <input
+                                type="tel"
+                                placeholder="(XXX) XXX-XXXX"
+                                value={newPhone}
+                                onChange={(e) => {
+                                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                                    let formatted = '';
+                                    if (raw.length > 0) {
+                                        formatted = '(' + raw.substring(0, 3);
+                                        if (raw.length > 3) formatted += ') ' + raw.substring(3, 6);
+                                        if (raw.length > 6) formatted += '-' + raw.substring(6, 10);
+                                    }
+                                    setNewPhone(formatted);
+                                }}
+                                className="w-full rounded-2xl py-6 text-2xl font-black tracking-widest text-center text-white"
+                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                required
+                            />
+
+                            <button
+                                type="submit"
+                                disabled={isUpdatingProfile || newPhone.replace(/[^0-9]/g, '').length < 10}
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#ff4444] text-white hover:bg-white hover:text-red-600"
+                            >
+                                {isUpdatingProfile ? 'Processing...' : 'Transfer to New Number →'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+
+{/* Assessment Details Modal */ }
+{
+    selectedAssessment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-12">
+            <div
+                className="absolute inset-0 bg-[#111111]/90 backdrop-blur-xl"
+                onClick={() => setSelectedAssessment(null)}
+            ></div>
+
+            <div className="relative w-full max-w-4xl bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card h-[80vh] flex flex-col">
+                {/* Modal Header */}
+                <div className="p-8 border-b border-white/10 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-2xl font-black uppercase tracking-tighter  mb-1">
+                            Assessment <span className="text-white">Record</span>
+                        </h3>
+                        <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">
+                            Submitted {new Date(selectedAssessment.submitted_at).toLocaleString()}
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setSelectedAssessment(null)}
+                        className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <path d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        {/* Left Column: Core Info */}
+                        <div className="space-y-8">
+                            <section>
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Protocol Details</h4>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Target Treatment</p>
+                                        <p className="text-sm font-bold uppercase tracking-tight">{selectedAssessment.selected_drug}</p>
                                     </div>
-
-                                    {/* Right Column: Goals & Shipping */}
-                                    <div className="space-y-8">
-                                        <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {selectedAssessment.goals?.map((goalId, i) => {
-                                                    const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
-                                                    const goalName = categoryQuestions[categoryId]?.improvements?.find(imp => imp.id === goalId)?.name || goalId;
-                                                    return (
-                                                        <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
-                                                            {goalName}
-                                                        </span>
-                                                    );
-                                                }) || <p className="text-white/50 text-xs ">No goals listed</p>}
-
-                                                {/* Custom Goal Rendering */}
-                                                {(selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data && (selectedAssessment.intake_data.other_goal_details || selectedAssessment.intake_data.other_goals))) && (
-                                                    <div className="mt-4 w-full p-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-2">Narrative / Custom Goal</p>
-                                                        <p className="text-xs text-white/70 italic leading-relaxed font-medium">
-                                                            "{selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data?.other_goal_details || selectedAssessment.intake_data?.other_goals)}"
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </section>
-
-                                        <section>
-                                            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Fulfillment Details</h4>
-                                            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Recipient</p>
-                                                        <p className="text-sm font-bold">{selectedAssessment.shipping_first_name} {selectedAssessment.shipping_last_name}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Address</p>
-                                                        <p className="text-xs text-white/60 leading-relaxed uppercase tracking-tight font-medium">
-                                                            {selectedAssessment.shipping_address}<br />
-                                                            {selectedAssessment.shipping_city}, {selectedAssessment.shipping_state} {selectedAssessment.shipping_zip}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section>
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Status</p>
+                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedAssessment.approval_status === 'approved' ? 'bg-[#FFDE59] text-black' : 'bg-orange-500/10 text-orange-400'
+                                            }`}>
+                                            {selectedAssessment.approval_status}
+                                        </span>
                                     </div>
                                 </div>
+                            </section>
 
-                                {/* Clinical Intake Responses */}
-                                <div className="mt-12 pt-12 border-t border-white/10">
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-8 border-b border-white/20 pb-2">Clinical Intake Responses</h4>
+                            <section>
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Clinical Biometrics</h4>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Sex</p>
+                                        <p className="text-sm font-bold capitalize">{
+                                            selectedAssessment.sex
+                                            || selectedAssessment.intake_data?.sex
+                                            || selectedAssessment.intake_data?.assigned_sex_intake
+                                            || selectedAssessment.intake_data?.eligibility?.sex
+                                            || profile?.sex
+                                            || 'Not provided'
+                                        }</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Birthday</p>
+                                        <p className="text-sm font-bold">{(() => {
+                                            const raw = profile?.date_of_birth
+                                                || selectedAssessment.birthday
+                                                || selectedAssessment.intake_data?.date_of_birth
+                                                || selectedAssessment.intake_data?.eligibility?.dob
+                                                || selectedAssessment.intake_data?.dob;
+                                            if (!raw) return 'Not provided';
+                                            // Format ISO dates (YYYY-MM-DD) to a readable form
+                                            const d = new Date(raw);
+                                            if (!isNaN(d.getTime())) {
+                                                return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+                                            }
+                                            return raw;
+                                        })()}</p>
+                                    </div>
+                                    {(getMedicationCategoryId(selectedAssessment.selected_drug) === 'weight-loss' || selectedAssessment.category === 'weight-loss' || selectedAssessment.category === 'Weight Loss') && (
+                                        <>
+                                            <div>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Weight</p>
+                                                <p className="text-sm font-bold">{(() => {
+                                                    const w = selectedAssessment.weight
+                                                        || selectedAssessment.intake_data?.weight
+                                                        || selectedAssessment.intake_data?.weight_intake
+                                                        || selectedAssessment.intake_data?.weight_longevity;
+                                                    return w ? `${w} lbs` : 'Not provided';
+                                                })()}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">BMI Score</p>
+                                                <p className="text-sm font-bold">{(() => {
+                                                    const b = selectedAssessment.bmi
+                                                        || selectedAssessment.intake_data?.bmi;
+                                                    return b ? String(b) : 'Not computed';
+                                                })()}</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </section>
+                        </div>
 
-                                    {(() => {
-                                        // Robust data merging to catch all answers across different schemas
-                                        const combinedData = {
-                                            ...selectedAssessment,
-                                            ...(selectedAssessment.intake_data || {}),
-                                            ...(selectedAssessment.medical_responses || {}),
-                                        };
-
-                                        // Deep merge common sub-objects if they exist
-                                        if (selectedAssessment.intake_data?.eligibility) {
-                                            Object.assign(combinedData, selectedAssessment.intake_data.eligibility);
-                                        }
-                                        if (selectedAssessment.intake_data?.shipping) {
-                                            Object.assign(combinedData, selectedAssessment.intake_data.shipping);
-                                        }
-
+                        {/* Right Column: Goals & Shipping */}
+                        <div className="space-y-8">
+                            <section>
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Wellness Goals</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedAssessment.goals?.map((goalId, i) => {
                                         const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
-                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
-
-                                        // Track displayed keys to identify "unmapped" data
-                                        const displayedKeys = new Set([
-                                            'id', 'user_id', 'submitted_at', 'approval_status', 'shipping_address', 'shipping_city',
-                                            'shipping_state', 'shipping_zip', 'shipping_first_name', 'shipping_last_name',
-                                            'shipping_phone', 'shipping_email', 'selected_drug', 'category', 'intake_data',
-                                            'medical_responses', 'lab_results_url', 'glp1_prescription_url', 'identification_url',
-                                            'height_feet', 'height_inches', 'weight', 'bmi', 'sex', 'birthday', 'goals', 'email', 'custom_goal'
-                                        ]);
-
+                                        const goalName = categoryQuestions[categoryId]?.improvements?.find(imp => imp.id === goalId)?.name || goalId;
                                         return (
-                                            <div className="space-y-6">
-                                                <div className="grid grid-cols-1 gap-4">
-                                                    {questions.map((q) => {
-                                                        if (q.type === 'info') return null;
+                                            <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-tight">
+                                                {goalName}
+                                            </span>
+                                        );
+                                    }) || <p className="text-white/50 text-xs ">No goals listed</p>}
 
-                                                        let answer = combinedData[q.id];
-                                                        if (answer === undefined || answer === null || answer === '') return null;
+                                    {/* Custom Goal Rendering */}
+                                    {(selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data && (selectedAssessment.intake_data.other_goal_details || selectedAssessment.intake_data.other_goals))) && (
+                                        <div className="mt-4 w-full p-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-2">Narrative / Custom Goal</p>
+                                            <p className="text-xs text-white/70 italic leading-relaxed font-medium">
+                                                "{selectedAssessment.custom_goal || selectedAssessment.other_goal_details || (selectedAssessment.intake_data?.other_goal_details || selectedAssessment.intake_data?.other_goals)}"
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
 
-                                                        displayedKeys.add(q.id);
-                                                        const details = combinedData[`${q.id}_details`] || combinedData[`${q.id}_info`];
-                                                        if (details) displayedKeys.add(`${q.id}_details`);
+                            <section>
+                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-2">Fulfillment Details</h4>
+                                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Recipient</p>
+                                            <p className="text-sm font-bold">{selectedAssessment.shipping_first_name} {selectedAssessment.shipping_last_name}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Address</p>
+                                            <p className="text-xs text-white/60 leading-relaxed uppercase tracking-tight font-medium">
+                                                {selectedAssessment.shipping_address}<br />
+                                                {selectedAssessment.shipping_city}, {selectedAssessment.shipping_state} {selectedAssessment.shipping_zip}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    {/* Clinical Intake Responses */}
+                    <div className="mt-12 pt-12 border-t border-white/10">
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-8 border-b border-white/20 pb-2">Clinical Intake Responses</h4>
+
+                        {(() => {
+                            // Robust data merging to catch all answers across different schemas
+                            const combinedData = {
+                                ...selectedAssessment,
+                                ...(selectedAssessment.intake_data || {}),
+                                ...(selectedAssessment.medical_responses || {}),
+                            };
+
+                            // Deep merge common sub-objects if they exist
+                            if (selectedAssessment.intake_data?.eligibility) {
+                                Object.assign(combinedData, selectedAssessment.intake_data.eligibility);
+                            }
+                            if (selectedAssessment.intake_data?.shipping) {
+                                Object.assign(combinedData, selectedAssessment.intake_data.shipping);
+                            }
+
+                            const categoryId = getMedicationCategoryId(selectedAssessment.selected_drug);
+                            const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
+
+                            // Track displayed keys to identify "unmapped" data
+                            const displayedKeys = new Set([
+                                'id', 'user_id', 'submitted_at', 'approval_status', 'shipping_address', 'shipping_city',
+                                'shipping_state', 'shipping_zip', 'shipping_first_name', 'shipping_last_name',
+                                'shipping_phone', 'shipping_email', 'selected_drug', 'category', 'intake_data',
+                                'medical_responses', 'lab_results_url', 'glp1_prescription_url', 'identification_url',
+                                'height_feet', 'height_inches', 'weight', 'bmi', 'sex', 'birthday', 'goals', 'email', 'custom_goal'
+                            ]);
+
+                            return (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {questions.map((q) => {
+                                            if (q.type === 'info') return null;
+
+                                            let answer = combinedData[q.id];
+                                            if (answer === undefined || answer === null || answer === '') return null;
+
+                                            displayedKeys.add(q.id);
+                                            const details = combinedData[`${q.id}_details`] || combinedData[`${q.id}_info`];
+                                            if (details) displayedKeys.add(`${q.id}_details`);
+
+                                            return (
+                                                <div key={q.id} className="group/resp p-6 bg-white/5 border border-white/10 rounded-3xl hover:border-[#FFDE59]/30 transition-all">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase tracking-widest text-[#FFDE59] mb-3">Clinical Question</p>
+                                                            <p className="text-xs font-bold text-white/90 leading-relaxed">{q.question}</p>
+                                                        </div>
+                                                        <div className="md:pl-8 md:border-l border-white/10">
+                                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Patient Response</p>
+                                                            <div className="text-xs font-black uppercase tracking-tight text-white leading-relaxed">
+                                                                {Array.isArray(answer) ? (
+                                                                    <ul className="list-disc list-inside space-y-2">
+                                                                        {answer.map((item, i) => <li key={i}>{item}</li>)}
+                                                                    </ul>
+                                                                ) : (
+                                                                    <span className="bg-[#FFDE59]/10 text-[#FFDE59] px-3 py-1.5 rounded-lg border border-[#FFDE59]/20">
+                                                                        {answer.toString()}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {details && (
+                                                                <div className="mt-6 pt-6 border-t border-white/10">
+                                                                    <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-3">Internal Narrative</p>
+                                                                    <p className="text-[11px] text-white/70 font-medium leading-relaxed italic">"{details}"</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Overflow Section for unmapped data */}
+                                    {Object.entries(combinedData).some(([key, val]) => {
+                                        if (displayedKeys.has(key) || key.startsWith('__')) return false;
+                                        if (typeof val === 'object' && val !== null) return false;
+                                        if (val === undefined || val === null || val === '') return false;
+                                        return true;
+                                    }) && (
+                                            <div className="mt-12">
+                                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6 flex items-center gap-4">
+                                                    <span>Supplementry Clinical Markers</span>
+                                                    <div className="h-px flex-1 bg-white/5"></div>
+                                                </h4>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {Object.entries(combinedData).map(([key, val]) => {
+                                                        if (displayedKeys.has(key) || key.startsWith('__')) return null;
+                                                        if (typeof val === 'object' && val !== null) return null;
+                                                        if (val === undefined || val === null || val === '') return null;
 
                                                         return (
-                                                            <div key={q.id} className="group/resp p-6 bg-white/5 border border-white/10 rounded-3xl hover:border-[#FFDE59]/30 transition-all">
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                                                                    <div>
-                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#FFDE59] mb-3">Clinical Question</p>
-                                                                        <p className="text-xs font-bold text-white/90 leading-relaxed">{q.question}</p>
-                                                                    </div>
-                                                                    <div className="md:pl-8 md:border-l border-white/10">
-                                                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Patient Response</p>
-                                                                        <div className="text-xs font-black uppercase tracking-tight text-white leading-relaxed">
-                                                                            {Array.isArray(answer) ? (
-                                                                                <ul className="list-disc list-inside space-y-2">
-                                                                                    {answer.map((item, i) => <li key={i}>{item}</li>)}
-                                                                                </ul>
-                                                                            ) : (
-                                                                                <span className="bg-[#FFDE59]/10 text-[#FFDE59] px-3 py-1.5 rounded-lg border border-[#FFDE59]/20">
-                                                                                    {answer.toString()}
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                        {details && (
-                                                                            <div className="mt-6 pt-6 border-t border-white/10">
-                                                                                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-3">Internal Narrative</p>
-                                                                                <p className="text-[11px] text-white/70 font-medium leading-relaxed italic">"{details}"</p>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
+                                                            <div key={key} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center">
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{key.replace(/_/g, ' ')}</p>
+                                                                <p className="text-[11px] font-bold text-white uppercase tracking-tight">{val.toString()}</p>
                                                             </div>
                                                         );
                                                     })}
                                                 </div>
-
-                                                {/* Overflow Section for unmapped data */}
-                                                {Object.entries(combinedData).some(([key, val]) => {
-                                                    if (displayedKeys.has(key) || key.startsWith('__')) return false;
-                                                    if (typeof val === 'object' && val !== null) return false;
-                                                    if (val === undefined || val === null || val === '') return false;
-                                                    return true;
-                                                }) && (
-                                                        <div className="mt-12">
-                                                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6 flex items-center gap-4">
-                                                                <span>Supplementry Clinical Markers</span>
-                                                                <div className="h-px flex-1 bg-white/5"></div>
-                                                            </h4>
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                {Object.entries(combinedData).map(([key, val]) => {
-                                                                    if (displayedKeys.has(key) || key.startsWith('__')) return null;
-                                                                    if (typeof val === 'object' && val !== null) return null;
-                                                                    if (val === undefined || val === null || val === '') return null;
-
-                                                                    return (
-                                                                        <div key={key} className="p-4 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center">
-                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40">{key.replace(/_/g, ' ')}</p>
-                                                                            <p className="text-[11px] font-bold text-white uppercase tracking-tight">{val.toString()}</p>
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        </div>
-                                                    )}
                                             </div>
-                                        );
-                                    })()}
+                                        )}
                                 </div>
-                            </div>
-
-                            {/* Modal Footer */}
-                            <div className="p-8 border-t border-white/10 bg-[#111111]/50">
-                                <button
-                                    onClick={() => setSelectedAssessment(null)}
-                                    className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
-                                >
-                                    Close Record
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-
-
-            {/* Retake Warning Modal */}
-            {retakeModal.isOpen && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-                    <div className="bg-[#111111] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
-
-                        <div className="w-16 h-16 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 mx-auto">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
-                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
-                            <p className="text-sm text-white/60 font-medium leading-relaxed">
-                                Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col gap-3">
-                            <button
-                                onClick={handleRetakeSubmit}
-                                className="w-full py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                            >
-                                Confirm & Delete
-                            </button>
-                            <button
-                                onClick={() => setRetakeModal({ isOpen: false, submission: null })}
-                                className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                            );
+                        })()}
                     </div>
                 </div>
-            )}
 
-            <MedicationActionModal
-                isOpen={actionModal.isOpen}
-                type={actionModal.type}
-                medication={actionModal.medication}
-                loading={actionLoading}
-                onClose={() => setActionModal({ isOpen: false, type: null, medication: null })}
-                onSubmit={handleActionSubmit}
-            />
-            {/* Physician Details Modal */}
-            {selectedPhysician && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
-                    <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
-                        <div className="text-center mb-10">
-                            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
-                                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
-                            <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
-                                <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
-                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
-                                </div>
-                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
-                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
-                                </div>
-                            </div>
-
-                            <div className="p-6 bg-white/5 border border-white/10 rounded-3xl border-dashed">
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-red-400/60 mb-2">DEA Registration</p>
-                                <p className="text-sm font-black tracking-[0.3em] text-white/80">{selectedPhysician.supervising_dea_number}</p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => setSelectedPhysician(null)}
-                            className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
-                        >
-                            Dismiss
-                        </button>
-                    </div>
+                {/* Modal Footer */}
+                <div className="p-8 border-t border-white/10 bg-[#111111]/50">
+                    <button
+                        onClick={() => setSelectedAssessment(null)}
+                        className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                    >
+                        Close Record
+                    </button>
                 </div>
-            )}
+            </div>
         </div>
+    )
+}
+
+
+
+{/* Retake Warning Modal */ }
+{
+    retakeModal.isOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+            <div className="bg-[#111111] border border-red-500/20 rounded-[32px] max-w-md w-full p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
+
+                <div className="w-16 h-16 rounded-3xl bg-red-500/10 flex items-center justify-center border border-red-500/20 mb-6 mx-auto">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+
+                <div className="text-center mb-8">
+                    <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
+                    <p className="text-sm text-white/60 font-medium leading-relaxed">
+                        Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
+                    </p>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                    <button
+                        onClick={handleRetakeSubmit}
+                        className="w-full py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                    >
+                        Confirm & Delete
+                    </button>
+                    <button
+                        onClick={() => setRetakeModal({ isOpen: false, submission: null })}
+                        className="w-full py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+<MedicationActionModal
+    isOpen={actionModal.isOpen}
+    type={actionModal.type}
+    medication={actionModal.medication}
+    loading={actionLoading}
+    onClose={() => setActionModal({ isOpen: false, type: null, medication: null })}
+    onSubmit={handleActionSubmit}
+/>
+{/* Physician Details Modal */ }
+{
+    selectedPhysician && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+            <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
+            <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
+                <div className="text-center mb-10">
+                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
+                    <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
+                        <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
+                            <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
+                        </div>
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
+                            <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
+                        </div>
+                    </div>
+
+                    <div className="p-6 bg-white/5 border border-white/10 rounded-3xl border-dashed">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-red-400/60 mb-2">DEA Registration</p>
+                        <p className="text-sm font-black tracking-[0.3em] text-white/80">{selectedPhysician.supervising_dea_number}</p>
+                    </div>
+                </div>
+
+                <button
+                    onClick={() => setSelectedPhysician(null)}
+                    className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                >
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    )
+}
+        </div >
     );
 };
 

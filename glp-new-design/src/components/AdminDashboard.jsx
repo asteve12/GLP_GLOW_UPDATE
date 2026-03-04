@@ -866,7 +866,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 <div>
                                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Personal Identity</h4>
                                     <div className="space-y-6">
-                                        <DossierRow label="Gender" value={patient.sex || patient.gender || submissions[0]?.sex || 'Not Specified'} />
+                                        <DossierRow label="Gender" value={patient.sex || submissions[0]?.sex || 'Not Specified'} />
                                         <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
                                         <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '—'} />
                                         <DossierRow label="Joined Data" value={new Date(patient.created_at).toLocaleDateString()} />

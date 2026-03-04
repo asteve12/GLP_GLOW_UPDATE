@@ -61,7 +61,7 @@ const stateFullNames = {
     'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming'
 };
 
-const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, email }) => {
+const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, email, dob }) => {
     const stripe = useStripe();
     const elements = useElements();
     const { session } = useAuth();
@@ -155,7 +155,10 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                     if (userIdToUpdate) {
                         const { error: profileError } = await supabase
                             .from('profiles')
-                            .update({ stripe_payment_method_id: pmId })
+                            .update({
+                                stripe_payment_method_id: pmId,
+                                date_of_birth: dob || null
+                            })
                             .eq('id', userIdToUpdate);
 
                         if (profileError) {
@@ -617,14 +620,43 @@ const Assessment = () => {
             if (savedGoals.length > 0) {
                 setSelectedImprovements(savedGoals);
             }
+
+            // Sync DOB and Sex from metadata to eligibilityData for the current flow
+            if (meta.date_of_birth || meta.birthday) {
+                const rawDob = meta.date_of_birth || meta.birthday;
+                const [y, m, d] = rawDob.split('-');
+                setEligibilityData(prev => ({
+                    ...prev,
+                    dob: rawDob,
+                    dobYear: y || prev.dobYear,
+                    dobMonth: (m || '').replace(/^0/, '') || m || prev.dobMonth,
+                    dobDay: (d || '').replace(/^0/, '') || d || prev.dobDay,
+                    sex: meta.gender || meta.sex || prev.sex
+                }));
+            }
         } catch (e) {
             console.warn('Could not parse assessment_goals from metadata', e);
         }
 
+        // Secondary Sync: Ensure profile has DOB and Gender from metadata
+        // This is necessary because the initial upsert at signup might fail if the user is not yet confirmed (RLS)
+        if (meta.date_of_birth || meta.gender) {
+            supabase.from('profiles').update({
+                date_of_birth: meta.date_of_birth,
+                first_name: meta.first_name,
+                last_name: meta.last_name
+            }).eq('id', user.id).then(({ error }) => {
+                if (error) console.warn('Secondary profile sync failed:', error.message);
+            });
+        }
+
         // Advance to the correct next step based on category
-        // weight-loss needs BMI data (step 4) before medical intake (step 8)
+        // weight-loss needs BMI data (integrated into step 0) before medical intake (step 8)
         if (categoryId === 'weight-loss') {
-            setStep(4);
+            setStep(0);
+            setShowQuote(false);
+            setShowBMI(true);
+            setShowQuote2(false);
         } else {
             setMedicalStep(0);
             setStep(8);
@@ -795,8 +827,16 @@ const Assessment = () => {
             else if (categoryId === 'repair-healing') resolvedGoals = selectedRepairGoals;
 
             // Prepare submission data mapping
+            const resolvedUserId = user?.id || tempUserId;
+            if (!resolvedUserId) {
+                console.error("No valid user ID found for submission.");
+                alert("Session error: Please ensure you are logged in correctly.");
+                setSubmitLoading(false);
+                return;
+            }
+
             const submissionData = {
-                user_id: user?.id || tempUserId,
+                user_id: resolvedUserId,
                 goals: resolvedGoals,
                 custom_goal: intakeData.other_goal_details,
 
@@ -886,32 +926,35 @@ const Assessment = () => {
             };
 
 
-            // 1. Submit the form data
+            // 1. Parent-First Sync: Ensure the profile record exists BEFORE inserting the submission.
+            // This satisfies Foreign Key constraints (like form_submissions_user_id_fkey -> profiles).
+            const dob = (authData.dobYear && authData.dobMonth && authData.dobDay
+                ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}`
+                : (eligibilityData.dob || user?.user_metadata?.date_of_birth || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null)));
+
+            const { error: profileSyncError } = await supabase
+                .from('profiles')
+                .update({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: user?.email || authData.email || shippingData.email,
+                    date_of_birth: dob,
+                    phone_number: shippingData.phone || eligibilityData.phone,
+                    legal_address: `${shippingData.address || ''}, ${shippingData.city || ''}, ${shippingData.state || ''} ${shippingData.zip || ''}`.trim(),
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', resolvedUserId);
+
+            if (profileSyncError) {
+                console.warn("Pre-submission profile sync warning:", profileSyncError.message);
+            }
+
+            // 2. Submit the form data
             const { error: submitError } = await supabase
                 .from('form_submissions')
                 .insert([submissionData]);
 
             if (submitError) throw submitError;
-
-            // 2. Explicitly update the profile table to ensure email and names are stored
-            // This acts as a secondary sync in case triggers are missing
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .update({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: user?.email || authData.email,
-                    gender: authData.sex || eligibilityData.sex,
-                    date_of_birth: (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : (eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null))),
-                    phone_number: shippingData.phone || eligibilityData.phone,
-                    legal_address: `${shippingData.address}, ${shippingData.city}, ${shippingData.state} ${shippingData.zip}`
-                })
-                .eq('id', user?.id || tempUserId);
-
-            if (profileError) {
-                console.warn("Note: Profile update separate from submission failed, but submission succeeded:", profileError.message);
-                // We don't throw here to avoid blocking the success screen if it's just an RLS/schema issue on profiles
-            }
 
             console.log("Assessment submitted successfully!");
 
@@ -1057,31 +1100,25 @@ const Assessment = () => {
                     return;
                 }
 
+                // Create/Update Profile record immediately
+                // Note: This might fail if email confirmation is required and RLS blocks unconfirmed users.
+                // We have a secondary sync in the useEffect for when they return and are authenticated.
                 if (signUpData?.user) {
                     setTempUserId(signUpData.user.id);
-                }
-
-                // Create/Update Profile record immediately
-                if (signUpData?.user) {
                     try {
-                        const { error: profileError } = await supabase
+                        await supabase
                             .from('profiles')
-                            .upsert({
-                                id: signUpData.user.id,
+                            .update({
                                 email: authData.email,
                                 first_name: authData.firstName,
                                 last_name: authData.lastName,
                                 phone_number: formattedPhone,
-                                date_of_birth: (authData.dobYear && authData.dobMonth && authData.dobDay ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}` : null),
-                                gender: authData.sex,
+                                date_of_birth: dobString,
                                 updated_at: new Date().toISOString()
-                            }, { onConflict: 'id' });
-
-                        if (profileError) {
-                            console.warn('Initial profile sync warning:', profileError.message);
-                        }
+                            })
+                            .eq('id', signUpData.user.id);
                     } catch (err) {
-                        console.warn('Profile upsert failed:', err);
+                        console.warn('Initial profile update attempt failed (likely RLS or row not yet created by trigger):', err);
                     }
                 }
 
@@ -1463,13 +1500,21 @@ const Assessment = () => {
             {/* Actions */}
             <div className="flex flex-col md:flex-row justify-center items-center gap-4">
                 <button
-                    onClick={() => { setShowBMI(false); setShowQuote(true); }}
+                    onClick={() => {
+                        if (step === 4) setStep(0);
+                        setShowBMI(false);
+                        setShowQuote(true);
+                    }}
                     className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
                 >
                     Back
                 </button>
                 <button
-                    onClick={() => { setShowBMI(false); setShowQuote2(true); }}
+                    onClick={() => {
+                        if (step === 4) setStep(0);
+                        setShowBMI(false);
+                        setShowQuote2(true);
+                    }}
                     disabled={!computedBMI}
                     className={`w-full md:w-auto px-16 py-6 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3 ${!computedBMI
                         ? 'bg-black/10 text-black/20 cursor-not-allowed'
@@ -2786,12 +2831,15 @@ const Assessment = () => {
                                 try {
                                     const { data: profile } = await supabase
                                         .from('profiles')
-                                        .select('date_of_birth, gender, phone_number')
+                                        .select('date_of_birth, phone_number')
                                         .eq('id', user.id)
                                         .maybeSingle();
 
-                                    if (profile) {
-                                        const dob = profile.date_of_birth || '';
+                                    const meta = user?.user_metadata || {};
+                                    const dobFromMeta = meta.date_of_birth || meta.birthday;
+
+                                    if (profile || dobFromMeta) {
+                                        const dob = profile?.date_of_birth || dobFromMeta || '';
                                         const [dobYear = '', dobMonth = '', dobDay = ''] = dob ? dob.split('-') : [];
                                         setEligibilityData(prev => ({
                                             ...prev,
@@ -2799,8 +2847,7 @@ const Assessment = () => {
                                             dobYear,
                                             dobMonth: dobMonth.replace(/^0/, '') || dobMonth,
                                             dobDay: dobDay.replace(/^0/, '') || dobDay,
-                                            sex: profile.gender || prev.sex,
-                                            phone: profile.phone_number || prev.phone,
+                                            phone: profile?.phone_number || prev.phone,
                                         }));
                                     }
                                 } catch (e) {
@@ -3612,7 +3659,7 @@ const Assessment = () => {
                                 Back
                             </button>
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     // Validate all required fields
                                     const requiredFields = categoryId === 'longevity'
                                         ? ['state', 'phone', 'consent', 'dobMonth', 'dobDay', 'dobYear']
@@ -3633,6 +3680,28 @@ const Assessment = () => {
                                     // Format DOB
                                     const formattedDob = `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}`;
                                     setEligibilityData(prev => ({ ...prev, dob: formattedDob }));
+
+                                    // Proactive check: Ensure phone number isn't already used by another account
+                                    const rawPhone = eligibilityData.phone.replace(/\D/g, '');
+                                    const phoneForQuery = rawPhone.length > 10 ? rawPhone.slice(-10) : rawPhone;
+                                    if (phoneForQuery) {
+                                        try {
+                                            const { data: existingPhoneUser } = await supabase
+                                                .from('profiles')
+                                                .select('id')
+                                                .ilike('phone_number', `%${phoneForQuery}%`)
+                                                .maybeSingle();
+
+                                            if (existingPhoneUser && existingPhoneUser.id !== user?.id) {
+                                                toast.error('This phone number is already associated with an account. Please sign in or use a different number.');
+                                                setTriedToContinue(true);
+                                                return;
+                                            }
+                                        } catch (err) {
+                                            console.warn('Silent phone check warning:', err);
+                                        }
+                                    }
+
                                     // Longevity goes directly to medical intake; other categories go to medical intake too
                                     setMedicalStep(0);
                                     setStep(8);
@@ -3647,7 +3716,7 @@ const Assessment = () => {
                 <div className="mt-12 text-center text-[9px] font-black uppercase tracking-[0.3em] text-white/10">
                     clinical screening protocol v2.4 • secure encryption enabled
                 </div>
-            </div>
+            </div >
         );
     };
 
@@ -5332,6 +5401,9 @@ const Assessment = () => {
                                     categoryId={categoryId}
                                     tempUserId={tempUserId}
                                     email={authData.email || shippingData.email}
+                                    dob={(authData.dobYear && authData.dobMonth && authData.dobDay
+                                        ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}`
+                                        : (eligibilityData.dob || user?.user_metadata?.date_of_birth || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null)))}
                                 />
                             </Elements>
                         );
@@ -5653,7 +5725,7 @@ const Assessment = () => {
                         (step === 0 || step === 1) && renderStep0()}
                     {step === 2 && renderReviewStep()}
                     {step === 3 && renderAuthStep()}
-                    {step === 4 && renderBMIAndDrugStep()}
+                    {step === 4 && renderBMICalculatorStep()}
                     {(step === 5 || step === 6 || step === 7) && renderEligibilityStep()}
 
                     {step === 8 && renderDynamicIntakeStep()}
