@@ -7,13 +7,23 @@ import { gsap } from 'gsap';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // --- Sub-components ---
-const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue' }) => {
+const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue', period = 'all_time' }) => {
     const color = chartKey === 'net' ? '#FFDE59' : '#bfff00';
     const gradientId = chartKey === 'net' ? 'colorNet' : 'colorRevenue';
+
+    const periodLabels = {
+        day: 'Today by Hour',
+        week: '7 Day Breakdown',
+        '30_days': '30 Day Trend',
+        year: '12 Month Trend',
+        all_time: 'All Time Trend'
+    };
+    const trendLabel = periodLabels[period] || 'Revenue Trend';
+    const xKey = data?.[0]?.hour !== undefined ? 'hour' : (data?.[0]?.date !== undefined ? 'date' : 'month');
     return (
         <div className="h-[340px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 md:p-8 lg:p-10 relative overflow-hidden group">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} — 6 Month Trend</h3>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} — {trendLabel}</h3>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }}></div>
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30">Live Stripe Data</span>
@@ -28,7 +38,7 @@ const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue' }) =>
                         </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#ffffff40', fontSize: 10, fontWeight: 900 }} dy={10} />
+                    <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: '#ffffff40', fontSize: 10, fontWeight: 900 }} dy={10} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#ffffff40', fontSize: 10, fontWeight: 900 }} tickFormatter={(v) => `$${v}`} />
                     <Tooltip
                         contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #ffffff10', borderRadius: '16px', fontSize: '12px', fontWeight: 'bold' }}
@@ -78,6 +88,7 @@ const AdminOverview = () => {
     useEffect(() => {
         const fetchStripeEarnings = async () => {
             setEarnings(e => ({ ...e, loading: true, error: null }));
+            setChartData([]); // Clear stale chart data when period changes
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session?.access_token) throw new Error('Not authenticated');
@@ -97,7 +108,18 @@ const AdminOverview = () => {
 
                 const data = await res.json();
                 setEarnings({ gross: data.gross, net: data.net, fees: data.fees, transactionCount: data.transactionCount, loading: false, error: null });
-                if (data.monthlyChart?.length > 0) setChartData(data.monthlyChart);
+
+                // Always update chart — use the returned chart data or build a single-point fallback
+                const chartArray = data.monthlyChart || data.dailyChart || data.chart || [];
+                if (chartArray.length > 0) {
+                    setChartData(chartArray);
+                } else if (data.gross != null) {
+                    // Fallback: build a single data point from the totals for periods with no breakdown
+                    const labelMap = { day: 'Today', week: 'This Week', '30_days': 'Last 30d', year: 'This Year', all_time: 'All Time' };
+                    setChartData([{ month: labelMap[period] || period, amount: data.gross || 0, net: data.net || 0 }]);
+                } else {
+                    setChartData([]);
+                }
             } catch (err) {
                 console.error('Stripe earnings error:', err);
                 setEarnings(e => ({ ...e, loading: false, error: err.message }));
@@ -236,7 +258,7 @@ const AdminOverview = () => {
                         className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartView === 'net' ? 'bg-[#FFDE59] text-black' : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'}`}
                     >Net</button>
                 </div>
-                <RevenueChart data={chartData} chartKey={chartView} label={chartView === 'net' ? 'Net Earnings' : 'Gross Revenue'} />
+                <RevenueChart data={chartData} chartKey={chartView} label={chartView === 'net' ? 'Net Earnings' : 'Gross Revenue'} period={period} />
             </div>
         </div>
     );
