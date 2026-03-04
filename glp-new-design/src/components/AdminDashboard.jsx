@@ -5369,6 +5369,8 @@ const ProfitTrackerView = () => {
                                     ref={drugInputRef}
                                     type="text"
                                     value={form.drug_name || drugSearch}
+                                    placeholder="Search drug or product..."
+                                    style={inputStyle}
                                     onChange={e => { setDrugSearch(e.target.value); setForm(f => ({ ...f, drug_name: '' })); setDrugDropdownOpen(true); }}
                                     onFocus={e => {
                                         e.target.style.borderColor = '#FFDE59';
@@ -5391,12 +5393,12 @@ const ProfitTrackerView = () => {
                                     }}>
                                         {Object.entries(
                                             filteredDrugs.reduce((acc, d) => { (acc[d.category] = acc[d.category] || []).push(d); return acc; }, {})
-                                        ).map(([category, drugs]) => (
+                                        ).map(([category, drugList]) => (
                                             <div key={category}>
                                                 <div style={{ padding: '8px 16px', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.25em', color: 'rgba(255,255,255,0.25)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                                     {category}
                                                 </div>
-                                                {drugs.map((drugItem, idx) => {
+                                                {drugList.map((drugItem, idx) => {
                                                     const formattedDisplay = `${drugItem.name}${drugItem.dosage ? ' ' + drugItem.dosage : ''} ${drugItem.price}`;
                                                     const isSelected = form.drug_name === formattedDisplay;
 
