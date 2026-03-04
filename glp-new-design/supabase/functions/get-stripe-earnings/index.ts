@@ -41,17 +41,20 @@ serve(async (req) => {
             });
         }
 
-        // Stripe: Fetch balance transactions (charges) — paginate up to 500
-        // We get the last 30 days by default; accept optional `period` param
+        // Accept period param
         const url = new URL(req.url);
-        const period = url.searchParams.get("period") || "all_time"; // "30_days" | "year" | "all_time"
+        const period = url.searchParams.get("period") || "all_time";
 
-        let createdFilter: { gte?: number } = {};
         const now = Math.floor(Date.now() / 1000);
-        if (period === "30_days") createdFilter = { gte: now - 30 * 86400 };
-        else if (period === "year") createdFilter = { gte: now - 365 * 86400 };
+        let createdFilter: { gte?: number } = {};
 
-        // Fetch all balance transactions of type "charge" (real money in)
+        if (period === "day") createdFilter = { gte: now - 86400 };          // last 24h
+        else if (period === "week") createdFilter = { gte: now - 7 * 86400 };      // last 7 days
+        else if (period === "30_days") createdFilter = { gte: now - 30 * 86400 };     // last 30 days
+        else if (period === "year") createdFilter = { gte: now - 365 * 86400 };    // last 365 days
+        // "all_time" → no filter
+
+        // Fetch all matching balance transactions of type "charge"
         let allTransactions: Stripe.BalanceTransaction[] = [];
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
@@ -73,7 +76,7 @@ serve(async (req) => {
                 hasMore = false;
             }
 
-            // Safety: cap at 500 transactions
+            // Safety cap
             if (allTransactions.length >= 500) break;
         }
 
@@ -81,50 +84,151 @@ serve(async (req) => {
         let grossCents = 0;
         let feesCents = 0;
         let netCents = 0;
-
-        // Also build monthly data for the last 6 months
-        const monthlyMap: Record<string, { gross: number; net: number; fees: number }> = {};
-        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-        // Initialise last 6 months
-        for (let i = 5; i >= 0; i--) {
-            const d = new Date();
-            d.setMonth(d.getMonth() - i);
-            const key = monthNames[d.getMonth()];
-            monthlyMap[key] = { gross: 0, net: 0, fees: 0 };
-        }
-
-        for (const txn of allTransactions) {
-            grossCents += txn.amount;
-            feesCents += txn.fee;
-            netCents += txn.net;
-
-            // Monthly breakdown
-            const d = new Date(txn.created * 1000);
-            const key = monthNames[d.getMonth()];
-            if (monthlyMap[key] !== undefined) {
-                monthlyMap[key].gross += txn.amount;
-                monthlyMap[key].net += txn.net;
-                monthlyMap[key].fees += txn.fee;
-            }
-        }
-
-        // Convert cents → dollars
         const toDollars = (cents: number) => parseFloat((cents / 100).toFixed(2));
 
-        const monthlyChart = Object.entries(monthlyMap).map(([month, vals]) => ({
-            month,
-            amount: toDollars(vals.gross),
-            net: toDollars(vals.net),
-            fees: toDollars(vals.fees),
-        }));
+        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+        // --- Build chart data based on period ---
+        let chartData: Array<Record<string, string | number>> = [];
+
+        if (period === "day") {
+            // Hourly breakdown for the last 24 hours
+            const hourlyMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            for (let h = 23; h >= 0; h--) {
+                const d = new Date();
+                d.setHours(d.getHours() - h, 0, 0, 0);
+                const label = d.toLocaleTimeString('en-US', { hour: '2-digit', hour12: true });
+                hourlyMap[label] = { gross: 0, net: 0, fees: 0 };
+            }
+
+            for (const txn of allTransactions) {
+                grossCents += txn.amount;
+                feesCents += txn.fee;
+                netCents += txn.net;
+
+                const d = new Date(txn.created * 1000);
+                d.setMinutes(0, 0, 0);
+                const label = d.toLocaleTimeString('en-US', { hour: '2-digit', hour12: true });
+                if (hourlyMap[label] !== undefined) {
+                    hourlyMap[label].gross += txn.amount;
+                    hourlyMap[label].net += txn.net;
+                    hourlyMap[label].fees += txn.fee;
+                }
+            }
+
+            chartData = Object.entries(hourlyMap).map(([hour, vals]) => ({
+                hour,
+                month: hour, // alias so existing chart still works
+                amount: toDollars(vals.gross),
+                net: toDollars(vals.net),
+                fees: toDollars(vals.fees),
+            }));
+
+        } else if (period === "week") {
+            // Daily breakdown for last 7 days
+            const dayMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const label = `${dayLabels[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+                dayMap[label] = { gross: 0, net: 0, fees: 0 };
+            }
+
+            for (const txn of allTransactions) {
+                grossCents += txn.amount;
+                feesCents += txn.fee;
+                netCents += txn.net;
+
+                const d = new Date(txn.created * 1000);
+                const label = `${dayLabels[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+                if (dayMap[label] !== undefined) {
+                    dayMap[label].gross += txn.amount;
+                    dayMap[label].net += txn.net;
+                    dayMap[label].fees += txn.fee;
+                }
+            }
+
+            chartData = Object.entries(dayMap).map(([date, vals]) => ({
+                date,
+                month: date,
+                amount: toDollars(vals.gross),
+                net: toDollars(vals.net),
+                fees: toDollars(vals.fees),
+            }));
+
+        } else if (period === "30_days") {
+            // Daily breakdown for last 30 days (grouped by date label)
+            const dayMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const label = `${monthNames[d.getMonth()]} ${d.getDate()}`;
+                dayMap[label] = { gross: 0, net: 0, fees: 0 };
+            }
+
+            for (const txn of allTransactions) {
+                grossCents += txn.amount;
+                feesCents += txn.fee;
+                netCents += txn.net;
+
+                const d = new Date(txn.created * 1000);
+                const label = `${monthNames[d.getMonth()]} ${d.getDate()}`;
+                if (dayMap[label] !== undefined) {
+                    dayMap[label].gross += txn.amount;
+                    dayMap[label].net += txn.net;
+                    dayMap[label].fees += txn.fee;
+                }
+            }
+
+            chartData = Object.entries(dayMap).map(([date, vals]) => ({
+                date,
+                month: date,
+                amount: toDollars(vals.gross),
+                net: toDollars(vals.net),
+                fees: toDollars(vals.fees),
+            }));
+
+        } else {
+            // year & all_time → monthly breakdown
+            const monthlyMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const months = period === "year" ? 12 : 6;
+            for (let i = months - 1; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                const key = monthNames[d.getMonth()];
+                monthlyMap[key] = { gross: 0, net: 0, fees: 0 };
+            }
+
+            for (const txn of allTransactions) {
+                grossCents += txn.amount;
+                feesCents += txn.fee;
+                netCents += txn.net;
+
+                const d = new Date(txn.created * 1000);
+                const key = monthNames[d.getMonth()];
+                if (monthlyMap[key] !== undefined) {
+                    monthlyMap[key].gross += txn.amount;
+                    monthlyMap[key].net += txn.net;
+                    monthlyMap[key].fees += txn.fee;
+                }
+            }
+
+            chartData = Object.entries(monthlyMap).map(([month, vals]) => ({
+                month,
+                amount: toDollars(vals.gross),
+                net: toDollars(vals.net),
+                fees: toDollars(vals.fees),
+            }));
+        }
 
         return new Response(JSON.stringify({
             gross: toDollars(grossCents),
             fees: toDollars(feesCents),
             net: toDollars(netCents),
             transactionCount: allTransactions.length,
-            monthlyChart,
+            monthlyChart: chartData,  // kept as "monthlyChart" for backwards compat
+            chart: chartData,
             period,
         }), {
             status: 200,
