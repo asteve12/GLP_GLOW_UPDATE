@@ -284,7 +284,7 @@ const LoginPage = () => {
                                 borderTop: '1px solid rgba(255,255,255,0.07)',
                                 paddingTop: '24px'
                             }}>
-                                <Link to="/admin"
+                                <Link to="/admin-sign-in"
                                     onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.opacity = '1'; }}
                                     onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.opacity = '0.6'; }}
                                     style={{

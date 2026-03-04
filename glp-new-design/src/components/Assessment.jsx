@@ -804,7 +804,6 @@ const Assessment = () => {
 
                 // Basics
                 sex: eligibilityData.sex || intakeData.assigned_sex_intake || intakeData.sex,
-                date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : intakeData.dob),
                 state: eligibilityData.state || shippingData.state || intakeData.state,
                 seen_pcp: intakeData.pcp_labs || eligibilityData.pcpVisitLast6Months || intakeData.has_pcp_long,
                 email: user?.email || authData.email || shippingData.email,
@@ -863,6 +862,7 @@ const Assessment = () => {
                     ...piiData,
                     goals: selectedImprovements,
                     category: categoryId,
+                    date_of_birth: eligibilityData.dob || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : intakeData.dob),
                     eligibility: eligibilityData,
                     shipping: shippingData,
                     identification: idData,
