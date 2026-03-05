@@ -4961,31 +4961,42 @@ const SettingsView = ({ user, role }) => {
         setSaving(true);
         setMsg(null);
         try {
-            // 1. Update auth metadata first (always allowed)
-            const { error: authError } = await supabase.auth.updateUser({
+            // 1. Update auth metadata (reliable fallback)
+            await supabase.auth.updateUser({
                 data: {
                     first_name: profile?.first_name,
                     last_name: profile?.last_name,
                     phone: profile?.phone_number
                 }
             });
-            if (authError) throw authError;
 
-            // 2. Attempt to upsert profile record
-            // If RLS fails here, we catch it but at least the auth record is updated
-            const { error } = await supabase.from('profiles').upsert({
-                id: user?.id,
-                first_name: profile?.first_name,
-                last_name: profile?.last_name,
-                phone_number: profile?.phone_number,
-                date_of_birth: profile?.date_of_birth,
-            });
+            // 2. Database update
+            const { data: existing } = await supabase.from('profiles').select('id').eq('id', user?.id).single();
+
+            let query;
+            if (existing) {
+                query = supabase.from('profiles').update({
+                    first_name: profile?.first_name,
+                    last_name: profile?.last_name,
+                    phone_number: profile?.phone_number,
+                    date_of_birth: profile?.date_of_birth,
+                }).eq('id', user?.id);
+            } else {
+                query = supabase.from('profiles').insert({
+                    id: user?.id,
+                    first_name: profile?.first_name,
+                    last_name: profile?.last_name,
+                    phone_number: profile?.phone_number,
+                    date_of_birth: profile?.date_of_birth,
+                });
+            }
+
+            const { error } = await query;
 
             if (error) {
-                console.error('Profile table RLS error:', error);
-                // If it's the specific RLS error, we still consider it "locally" updated via auth metadata
+                console.error('Profile DB error:', error);
                 if (error.code === '42501' || error.message.includes('security policy')) {
-                    setMsg({ type: 'success', text: 'Auth profile updated. (Note: database sync limited by permissions)' });
+                    setMsg({ type: 'success', text: 'Core profile updated. (Note: database table sync restricted by RLS)' });
                 } else {
                     throw error;
                 }
@@ -5004,17 +5015,29 @@ const SettingsView = ({ user, role }) => {
         setSaving(true);
         setMsg(null);
         try {
-            // Ensure provider profile exists (upsert)
-            const { error } = await supabase.from('provider_profiles').upsert({
-                user_id: user?.id,
-                license_number: providerProfile?.license_number,
-                npi_number: providerProfile?.npi_number,
-                dea_number: providerProfile?.dea_number,
-            });
+            const { data: existing } = await supabase.from('provider_profiles').select('user_id').eq('user_id', user?.id).single();
+
+            let query;
+            if (existing) {
+                query = supabase.from('provider_profiles').update({
+                    license_number: providerProfile?.license_number,
+                    npi_number: providerProfile?.npi_number,
+                    dea_number: providerProfile?.dea_number,
+                }).eq('user_id', user?.id);
+            } else {
+                query = supabase.from('provider_profiles').insert({
+                    user_id: user?.id,
+                    license_number: providerProfile?.license_number,
+                    npi_number: providerProfile?.npi_number,
+                    dea_number: providerProfile?.dea_number,
+                });
+            }
+
+            const { error } = await query;
             if (error) throw error;
-            setMsg({ type: 'success', text: 'License & DEA information updated.' });
+            setMsg({ type: 'success', text: 'Clinical credentials updated successfully.' });
         } catch (err) {
-            setMsg({ type: 'error', text: err.message });
+            setMsg({ type: 'error', text: `Sync failed: ${err.message}` });
         } finally {
             setSaving(false);
         }

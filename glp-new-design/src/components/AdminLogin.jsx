@@ -13,12 +13,16 @@ const AdminLogin = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // OTP states
-    const [step, setStep] = useState('login'); // 'login' | 'otp'
+    // Unified states
+    const [step, setStep] = useState('login'); // 'login' | 'otp' | 'totp'
     const [otpCode, setOtpCode] = useState('');
     const [otpSending, setOtpSending] = useState(false);
     const [otpTimer, setOtpTimer] = useState(0);
     const [pendingRole, setPendingRole] = useState(null);
+
+    // MFA states
+    const [mfaFactor, setMfaFactor] = useState(null);
+    const [totpCode, setTotpCode] = useState('');
 
     const { signIn, user } = useAuth();
     const navigate = useNavigate();
@@ -60,13 +64,12 @@ const AdminLogin = () => {
     const sendOtp = async (emailAddr) => {
         setOtpSending(true);
         try {
-            // Use Supabase's built-in email OTP (signInWithOtp sends a 6-digit code)
             const { error } = await supabase.auth.signInWithOtp({
                 email: emailAddr,
                 options: { shouldCreateUser: false }
             });
             if (error) throw error;
-            setOtpTimer(60); // 60 second cooldown before resend
+            setOtpTimer(60);
         } catch (err) {
             console.error('OTP send failed:', err);
             setError('Failed to send OTP. Please try again.');
@@ -80,9 +83,27 @@ const AdminLogin = () => {
         setLoading(true);
         setError(null);
         try {
-            const { error: authError } = await signIn({ email, password });
+            const { data: authData, error: authError } = await signIn({ email, password });
             if (authError) throw authError;
 
+            // Check if MFA is required
+            const { data: aalData, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+            if (aalError) throw aalError;
+
+            if (aalData.nextLevel === 'aal2' && aalData.nextLevel !== aalData.currentLevel) {
+                // MFA required
+                const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+                if (factorsError) throw factorsError;
+
+                const totpFactor = factors.totp[0];
+                if (totpFactor) {
+                    setMfaFactor(totpFactor);
+                    setStep('totp');
+                    return;
+                }
+            }
+
+            // If no MFA but is sub-admin, proceed with email OTP
             const { data: roleData, error: roleError } = await supabase
                 .from('user_roles')
                 .select('role')
@@ -99,11 +120,9 @@ const AdminLogin = () => {
             setPendingRole(roleData.role);
 
             if (isSubAdmin) {
-                // Sub-admins always require OTP verification
                 await sendOtp(email);
                 setStep('otp');
             } else {
-                // Full admins go straight in
                 navigate('/admin/overview');
             }
         } catch (err) {
@@ -118,7 +137,6 @@ const AdminLogin = () => {
         setLoading(true);
         setError(null);
         try {
-            // Verify the 6-digit OTP with Supabase
             const { error } = await supabase.auth.verifyOtp({
                 email,
                 token: otpCode.trim(),
@@ -128,6 +146,31 @@ const AdminLogin = () => {
             navigate('/admin/overview');
         } catch (err) {
             setError('Invalid or expired OTP code. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyTotp = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        try {
+            const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+                factorId: mfaFactor.id
+            });
+            if (challengeError) throw challengeError;
+
+            const { error: verifyError } = await supabase.auth.mfa.verify({
+                factorId: mfaFactor.id,
+                challengeId: challengeData.id,
+                code: totpCode.trim()
+            });
+            if (verifyError) throw verifyError;
+
+            navigate('/admin/overview');
+        } catch (err) {
+            setError('Invalid Google Authenticator code. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -378,6 +421,81 @@ const AdminLogin = () => {
                                     Back to Login
                                 </button>
                             </div>
+                        </form>
+                    )}
+
+                    {/* ─── TOTP (GOOGLE AUTHENTICATOR) STEP ─── */}
+                    {step === 'totp' && (
+                        <form onSubmit={handleVerifyTotp} style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                            {/* Info Banner */}
+                            <div style={{
+                                padding: '16px 20px',
+                                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                                border: '1px solid rgba(59, 130, 246, 0.2)',
+                                borderRadius: '16px',
+                                fontSize: '11px', fontWeight: '600',
+                                color: '#60a5fa',
+                                textAlign: 'center'
+                            }}>
+                                Verification required via<br />
+                                <strong style={{ fontSize: '12px' }}>Google Authenticator</strong>
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>6-Digit Security Code</label>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="[0-9]{6}"
+                                    maxLength={6}
+                                    value={totpCode}
+                                    onChange={e => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                                    placeholder="000 000"
+                                    required
+                                    autoFocus
+                                    style={{
+                                        ...inputStyle,
+                                        fontSize: '28px',
+                                        fontWeight: '900',
+                                        letterSpacing: '0.4em',
+                                        textAlign: 'center',
+                                        paddingTop: '22px',
+                                        paddingBottom: '22px'
+                                    }}
+                                    onFocus={e => { e.target.style.borderColor = '#60a5fa'; e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.03)'; }}
+                                    onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading || totpCode.length < 6}
+                                style={{
+                                    width: '100%', padding: '20px', borderRadius: '16px',
+                                    backgroundColor: (loading || totpCode.length < 6) ? 'rgba(255,255,255,0.1)' : '#60a5fa',
+                                    color: '#000', border: 'none', fontSize: '11px', fontWeight: '900',
+                                    textTransform: 'uppercase', letterSpacing: '0.4em',
+                                    cursor: (loading || totpCode.length < 6) ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.4s cubic-bezier(0.175,0.885,0.32,1.275)',
+                                    boxShadow: (loading || totpCode.length < 6) ? 'none' : '0 10px 40px rgba(59, 130, 246, 0.2)'
+                                }}
+                            >
+                                {loading ? 'Verifying...' : 'Authenticate & Enter'}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => { setStep('login'); setTotpCode(''); setError(null); }}
+                                style={{
+                                    background: 'none', border: 'none',
+                                    fontSize: '9px', fontWeight: '900',
+                                    color: 'rgba(255,255,255,0.3)',
+                                    textTransform: 'uppercase', letterSpacing: '0.2em',
+                                    cursor: 'pointer', textAlign: 'center'
+                                }}
+                            >
+                                ← Back to Login
+                            </button>
                         </form>
                     )}
                 </div>

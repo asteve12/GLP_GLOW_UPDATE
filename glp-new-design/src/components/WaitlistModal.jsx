@@ -61,7 +61,8 @@ const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
                     last_name: formData.lastName,
                     email: formData.email,
                     phone: formData.phone,
-                    product: 'Retatrutide'
+                    product: 'Retatrutide',
+                    user_id: user?.id || null
                 }]);
 
             if (error) throw error;
