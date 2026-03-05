@@ -24,7 +24,7 @@ const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue', peri
     return (
         <div className="h-[340px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 md:p-8 lg:p-10 relative overflow-hidden group">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} � {trendLabel}</h3>
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} ? {trendLabel}</h3>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }}></div>
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30">Live Stripe Data</span>
@@ -110,7 +110,7 @@ const AdminOverview = () => {
                 const data = await res.json();
                 setEarnings({ gross: data.gross, net: data.net, fees: data.fees, transactionCount: data.transactionCount, loading: false, error: null });
 
-                // Always update chart � use the returned chart data or build a single-point fallback
+                // Always update chart ? use the returned chart data or build a single-point fallback
                 const chartArray = data.monthlyChart || data.dailyChart || data.chart || [];
                 if (chartArray.length > 0) {
                     setChartData(chartArray);
@@ -129,7 +129,7 @@ const AdminOverview = () => {
         fetchStripeEarnings();
     }, [period]);
 
-    const fmtMoney = (val) => val === null ? '�' : `$${Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const fmtMoney = (val) => val === null ? '?' : `$${Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const stripeRate = (earnings.gross && earnings.gross > 0) ? ((earnings.fees / earnings.gross) * 100).toFixed(1) : '2.9';
 
     return (
@@ -178,7 +178,7 @@ const AdminOverview = () => {
                 ))}
             </div>
 
-            {/* Earnings Cards � Live Stripe Data */}
+            {/* Earnings Cards ? Live Stripe Data */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {/* Gross Earnings */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
@@ -568,7 +568,7 @@ const PatientPortalManager = () => {
                             const planLabel = formatPlanName(p.current_plan);
                             const hasCard = !!(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
                             const cardDisplay = p.last_four_digits_of_card
-                                ? `${p.card_name ? p.card_name + ' ' : ''}���� ${p.last_four_digits_of_card}`
+                                ? `${p.card_name ? p.card_name + ' ' : ''}???? ${p.last_four_digits_of_card}`
                                 : (p.card_name || (p.stripe_payment_method_id ? 'Vaulted' : null));
 
                             return (
@@ -586,7 +586,7 @@ const PatientPortalManager = () => {
                                     </td>
                                     {/* Email */}
                                     <td className="py-4 md:py-5 pr-4">
-                                        <p className="text-[10px] md:text-xs text-white/60 break-all">{p.email || '�'}</p>
+                                        <p className="text-[10px] md:text-xs text-white/60 break-all">{p.email || '?'}</p>
                                     </td>
                                     {/* Subscription */}
                                     <td className="py-4 md:py-5 pr-4">
@@ -629,7 +629,7 @@ const PatientPortalManager = () => {
                                     {/* Joined */}
                                     <td className="py-4 md:py-5 pr-4">
                                         <p className="text-[10px] md:text-xs text-white/50">
-                                            {p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '�'}
+                                            {p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '?'}
                                         </p>
                                     </td>
                                     {/* Action */}
@@ -825,7 +825,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     {patient.subscribe_status ? 'Active' : 'Inactive'}
                                 </div>
                             </div>
-                            <p className="text-[11px] text-white/50 uppercase font-black tracking-[0.2em]">Patient Dossier � {patient.email}</p>
+                            <p className="text-[11px] text-white/50 uppercase font-black tracking-[0.2em]">Patient Dossier ? {patient.email}</p>
                         </div>
                     </div>
                     <div className="hidden md:flex items-center gap-4">
@@ -869,7 +869,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     <div className="space-y-6">
                                         <DossierRow label="Gender" value={patient.sex || submissions[0]?.sex || 'Not Specified'} />
                                         <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
-                                        <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '�'} />
+                                        <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '?'} />
                                         <DossierRow label="Joined Data" value={new Date(patient.created_at).toLocaleDateString()} />
 
                                     </div>
@@ -931,19 +931,19 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                         patient.height_ft && patient.height_in ? `${patient.height_ft}'${patient.height_in}"` :
                                                             submissions[0]?.height_feet && submissions[0]?.height_inches ? `${submissions[0].height_feet}'${submissions[0].height_inches}"` :
                                                                 submissions[0]?.height_ft && submissions[0]?.height_in ? `${submissions[0].height_ft}'${submissions[0].height_in}"` :
-                                                                    submissions[0]?.height || patient.height || '—'}
+                                                                    submissions[0]?.height || patient.height || '�'}
                                                 </p>
                                             </div>
                                             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                                 <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Weight</p>
                                                 <p className="text-xl font-black text-white">
-                                                    {patient.weight || submissions[0]?.weight || '—'}
+                                                    {patient.weight || submissions[0]?.weight || '�'}
                                                 </p>
                                             </div>
                                             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
                                                 <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">BMI</p>
                                                 <p className="text-xl font-black text-white">
-                                                    {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '—')}
+                                                    {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '�')}
                                                 </p>
                                             </div>
                                         </div>
@@ -973,7 +973,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                         {sub.approval_status}
                                                     </span>
                                                 </div>
-                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... � {new Date(sub.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... ? {new Date(sub.created_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
@@ -1007,7 +1007,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                                    <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '�'} />
+                                    <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '?'} />
                                     <DossierStat label="Payment" value={patient.last_four_digits_of_card ? `Ends in ${patient.last_four_digits_of_card}` : 'No Card'} />
                                     <DossierStat label="Auto-Pay" value={patient.stripe_payment_method_id ? 'Enabled' : 'Disabled'} />
                                 </div>
@@ -1062,7 +1062,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                             </div>
                                             <div>
                                                 <h6 className="text-[11px] font-black uppercase text-white tracking-widest leading-none mb-1.5">{item.description || 'Service Charge'}</h6>
-                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} � {String(item.id).substring(0, 8)}</p>
+                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} ? {String(item.id).substring(0, 8)}</p>
                                             </div>
                                         </div>
                                         <div className="md:text-right pt-2 md:pt-0 border-t border-white/10 md:border-t-0">
@@ -1424,8 +1424,8 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
     // All current products from the navbar/site, grouped by category
     const PRODUCT_MAP = {
         // Weight Loss
-        'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '0.25–2.4 mg/wk', price: '299' },
-        'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '2.5–15 mg/wk', price: '399' },
+        'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '0.25�2.4 mg/wk', price: '299' },
+        'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '2.5�15 mg/wk', price: '399' },
         'semaglutide-drops': { name: 'Semaglutide Sublingual Drops', dosage: '(Sublingual)', price: '249' },
         'tirzepatide-drops': { name: 'Tirzepatide Sublingual Drops', dosage: '(Sublingual)', price: '349' },
         // Hair Restoration
@@ -1595,50 +1595,50 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                         >
                             <option value="">Select a product...</option>
 
-                            <optgroup label="── Weight Loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Weight Loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['semaglutide-injection', 'tirzepatide-injection', 'semaglutide-drops', 'tirzepatide-drops'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
 
-                            <optgroup label="── Hair Restoration" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Hair Restoration" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['finasteride-tablets', 'finasteride-minoxidil-liquid', 'finasteride-minoxidil-tretinoin-liquid', 'minoxidil-max-compound-liquid'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
 
-                            <optgroup label="── Sexual Health" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Sexual Health" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['sildenafil-tadalafil-troche', 'sildenafil-yohimbe-troche', 'sildenafil-tadalafil-tablets', 'oxytocin-troche', 'oxytocin-nasal-spray'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
 
-                            <optgroup label="── Longevity" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Longevity" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['nad-injection', 'nad-nasal-spray', 'glutathione-injection'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
 
-                            <optgroup label="── Testosterone" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Testosterone" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['testosterone-injection', 'testosterone-rdt'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
 
-                            <optgroup label="── Repair & Healing" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Repair & Healing" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(PRODUCT_MAP).filter(([id]) => ['bpc157-injection', 'bpc157-tb500-injection'].includes(id)).map(([id, data]) => (
                                     <option key={id} value={id} className="bg-[#111111] text-white">
-                                        {data.name}{data.dosage ? ` — ${data.dosage}` : ''} — ${data.price}
+                                        {data.name}{data.dosage ? ` � ${data.dosage}` : ''} � ${data.price}
                                     </option>
                                 ))}
                             </optgroup>
@@ -2541,7 +2541,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 <SectionHeader title="Security & Verification" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                                     <InfoRow label="ID Type" field="identification_type" value={formData.identification_type || 'License'} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="ID Number" field="identification_number" value={formData.identification_number || '��������'} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="ID Number" field="identification_number" value={formData.identification_number || '????????'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                     <InfoRow label="Identification Document" value={formData.identification_url} isFile={!!formData.identification_url} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
 
@@ -3296,13 +3296,13 @@ const SubscriberAnalytics = () => {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <p className="text-xs font-bold text-white/80">{formatPlanName(sub.current_plan)}</p>
+                                            <p className="text-xs font-bold text-white/80">{formatPlanName(sub.current_plan) || <span className="text-white/30 italic font-normal">No Active Plan</span>}</p>
                                             <p className="text-[9px] text-white/30 uppercase tracking-widest font-bold mt-1">
-                                                ID: {sub.stripe_subscription_id ? String(sub.stripe_subscription_id).substring(0, 12) + '...' : '�'}
+                                                ID: {sub.stripe_subscription_id ? String(sub.stripe_subscription_id).substring(0, 12) + '...' : '?'}
                                             </p>
                                         </td>
                                         <td className="px-8 py-6 text-[10px] font-bold text-white/60 uppercase tracking-widest">
-                                            {sub.current_sub_end_date ? new Date(sub.current_sub_end_date).toLocaleDateString() : '�'}
+                                            {sub.current_sub_end_date ? new Date(sub.current_sub_end_date).toLocaleDateString() : '?'}
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === 'active'
@@ -3879,7 +3879,7 @@ const PatientExpressEntry = () => {
 
                         {/* Signature */}
                         <div className="bg-black/20 border border-white/10 rounded-2xl p-6 mb-8">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Dispense As Written � Prescriber Electronic Signature</h4>
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white/60 mb-4">Dispense As Written ? Prescriber Electronic Signature</h4>
                             <div className="space-y-4">
                                 <input placeholder="Type your full legal name to sign" value={prescription.signature} onChange={e => handlePrescriptionChange('signature', e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <p className="text-[10px] text-white/50">By typing your name above, you are electronically signing this prescription and certifying that you are the authorized prescriber.</p>
@@ -4077,11 +4077,11 @@ const SurveyManagement = () => {
                                         {categoryFilter === 'weight-loss' && (
                                             <>
                                                 <td className="p-8">
-                                                    <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '�'}</p>
+                                                    <p className="text-sm font-bold text-white/60">{survey.starting_weight ? `${survey.starting_weight} lbs` : '?'}</p>
                                                 </td>
                                                 <td className="p-8">
                                                     <p className={`text-sm font-black ${survey.weight_lost > 0 ? 'text-white' : 'text-white/50'}`}>
-                                                        {survey.weight_lost ? `${survey.weight_lost} lbs` : '�'}
+                                                        {survey.weight_lost ? `${survey.weight_lost} lbs` : '?'}
                                                     </p>
                                                 </td>
                                             </>
@@ -4886,30 +4886,22 @@ const StaffManagement = () => {
 };
 
 // --- Settings View ---
-const SettingsRow = ({ label, value }) => (
-    <div className="flex flex-col gap-2">
-        <p className="text-[9px] font-black uppercase tracking-widest text-white/20">{label}</p>
-        <p className="text-sm font-bold text-white/90">{value}</p>
-    </div>
-);
-
 const SettingsView = ({ user, role }) => {
     const [activeTab, setActiveTab] = useState('profile');
     const [profile, setProfile] = useState(null);
     const [providerProfile, setProviderProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [msg, setMsg] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch profile
                 const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user?.id).single();
-                setProfile(profileData);
-
-                // Fetch provider profile if applicable
+                setProfile(profileData || {});
                 const { data: providerData } = await supabase.from('provider_profiles').select('*').eq('user_id', user?.id).single();
-                setProviderProfile(providerData);
+                setProviderProfile(providerData || {});
             } catch (err) {
                 console.error('Error fetching settings data:', err);
             } finally {
@@ -4919,6 +4911,47 @@ const SettingsView = ({ user, role }) => {
         fetchData();
     }, [user]);
 
+    const handleSaveProfile = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        setMsg(null);
+        try {
+            const { error } = await supabase.from('profiles').upsert({
+                id: user?.id,
+                first_name: profile?.first_name,
+                last_name: profile?.last_name,
+                phone_number: profile?.phone_number,
+                date_of_birth: profile?.date_of_birth,
+            });
+            if (error) throw error;
+            setMsg({ type: 'success', text: 'Profile updated successfully.' });
+        } catch (err) {
+            setMsg({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSaveLicense = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        setMsg(null);
+        try {
+            const { error } = await supabase.from('provider_profiles').upsert({
+                user_id: user?.id,
+                license_number: providerProfile?.license_number,
+                npi_number: providerProfile?.npi_number,
+                dea_number: providerProfile?.dea_number,
+            });
+            if (error) throw error;
+            setMsg({ type: 'success', text: 'License & DEA information updated.' });
+        } catch (err) {
+            setMsg({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (loading) return <div className="p-12 text-white/30 font-black uppercase tracking-widest text-[10px]">Syncing secure data...</div>;
 
     const tabs = [
@@ -4927,14 +4960,17 @@ const SettingsView = ({ user, role }) => {
         { id: 'security', label: 'Security' }
     ];
 
+    const inputCls = "w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFDE59] transition-all placeholder:text-white/20";
+    const labelCls = "block text-[9px] font-black uppercase tracking-widest text-white/30 mb-2";
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Tab Navigation */}
-            <div className="flex gap-4 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
+            <div className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
+                        onClick={() => { setActiveTab(tab.id); setMsg(null); }}
                         className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white/60'}`}
                     >
                         {tab.label}
@@ -4942,48 +4978,151 @@ const SettingsView = ({ user, role }) => {
                 ))}
             </div>
 
+            {msg && (
+                <div className={`px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest ${msg.type === 'success' ? 'bg-[#FFDE59]/10 border border-[#FFDE59]/20 text-[#FFDE59]' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`}>
+                    {msg.text}
+                </div>
+            )}
+
             <div className="bg-white/[0.02] border border-white/10 rounded-[40px] p-8 md:p-12">
+                {/* Profile Tab */}
                 {activeTab === 'profile' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-8">
-                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-accent-black pl-4">Personal Identity</h4>
-                            <div className="space-y-6">
-                                <SettingsRow label="First Name" value={profile?.first_name || user?.user_metadata?.first_name || '—'} />
-                                <SettingsRow label="Last Name" value={profile?.last_name || user?.user_metadata?.last_name || '—'} />
-                                <SettingsRow label="Email Identity" value={user?.email || '—'} />
-                                <SettingsRow label="Phone Contact" value={profile?.phone_number || '—'} />
-                                <SettingsRow label="Date of Birth" value={profile?.date_of_birth || '—'} />
+                    <form onSubmit={handleSaveProfile}>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-[#FFDE59] pl-4">Personal Identity</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div>
+                                <label className={labelCls}>First Name</label>
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    value={profile?.first_name || ''}
+                                    onChange={e => setProfile(p => ({ ...p, first_name: e.target.value }))}
+                                    placeholder="Enter first name"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>Last Name</label>
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    value={profile?.last_name || ''}
+                                    onChange={e => setProfile(p => ({ ...p, last_name: e.target.value }))}
+                                    placeholder="Enter last name"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>Email Address</label>
+                                <input
+                                    type="email"
+                                    className={`${inputCls} opacity-50 cursor-not-allowed`}
+                                    value={user?.email || ''}
+                                    readOnly
+                                    title="Email cannot be changed here"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>Phone Number</label>
+                                <input
+                                    type="tel"
+                                    className={inputCls}
+                                    value={profile?.phone_number || ''}
+                                    onChange={e => setProfile(p => ({ ...p, phone_number: e.target.value }))}
+                                    placeholder="e.g. (305) 555-1234"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>Date of Birth</label>
+                                <input
+                                    type="date"
+                                    className={inputCls}
+                                    value={profile?.date_of_birth || ''}
+                                    onChange={e => setProfile(p => ({ ...p, date_of_birth: e.target.value }))}
+                                />
                             </div>
                         </div>
-                    </div>
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="px-10 py-4 bg-[#FFDE59] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+                        >
+                            {saving ? 'Saving...' : 'Save Profile'}
+                        </button>
+                    </form>
                 )}
 
+                {/* License & DEA Tab */}
                 {activeTab === 'license' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-8">
-                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-blue-500 pl-4">Professional Credentials</h4>
-                            <div className="space-y-6">
-                                <SettingsRow label="License Number" value={providerProfile?.license_number || 'Verification Pending'} />
-                                <SettingsRow label="NPI Registry" value={providerProfile?.npi_number || 'Verification Pending'} />
-                                <SettingsRow label="DEA Registration" value={providerProfile?.dea_number || 'Not Registered'} />
+                    <form onSubmit={handleSaveLicense}>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-blue-500 pl-4">Professional Credentials</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div>
+                                <label className={labelCls}>License Number</label>
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    value={providerProfile?.license_number || ''}
+                                    onChange={e => setProviderProfile(p => ({ ...p, license_number: e.target.value }))}
+                                    placeholder="e.g. ME12345678"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>NPI Number</label>
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    value={providerProfile?.npi_number || ''}
+                                    onChange={e => setProviderProfile(p => ({ ...p, npi_number: e.target.value }))}
+                                    placeholder="10-digit NPI"
+                                />
+                            </div>
+                            <div>
+                                <label className={labelCls}>DEA Number</label>
+                                <input
+                                    type="text"
+                                    className={inputCls}
+                                    value={providerProfile?.dea_number || ''}
+                                    onChange={e => setProviderProfile(p => ({ ...p, dea_number: e.target.value }))}
+                                    placeholder="e.g. AB1234567"
+                                />
                             </div>
                         </div>
-                    </div>
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="px-10 py-4 bg-[#FFDE59] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+                        >
+                            {saving ? 'Saving...' : 'Save Credentials'}
+                        </button>
+                    </form>
                 )}
 
+                {/* Security Tab */}
                 {activeTab === 'security' && (
-                    <div className="max-w-md space-y-12">
-                        <div className="space-y-4">
-                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-red-500 pl-4">Multi-Factor Authentication</h4>
-                            <p className="text-[10px] text-white/30 uppercase font-black leading-relaxed tracking-widest">Enable one-time password (OTP) verification for enhanced administrative security.</p>
-                            <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all border-dashed">
-                                Setup Secure OTP
-                            </button>
+                    <div className="max-w-lg space-y-8">
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-red-500 pl-4">Multi-Factor Authentication</h4>
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-8 flex items-start gap-5">
+                            <div className="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5">
+                                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-green-400 mb-2">OTP Automatically Managed</p>
+                                <p className="text-[10px] text-white/40 font-bold leading-relaxed">
+                                    One-time password (OTP) authentication is automatically configured and managed for your account. You will be prompted for OTP verification each time you sign in to the admin portal. No manual setup is required.
+                                </p>
+                            </div>
                         </div>
-                        <div className="pt-12 border-t border-white/10">
-                            <button className="text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 transition-all">
-                                Reset Administrative Credentials
-                            </button>
+                        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40">How it works</p>
+                            <ul className="space-y-2">
+                                {['An OTP is sent to your registered email on each sign-in', 'OTP codes expire after 10 minutes for security', 'Contact a system administrator to update your email', 'Past OTP sessions are logged for audit purposes'].map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-[10px] text-white/50 font-bold">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#FFDE59] shrink-0" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
                 )}
@@ -4991,7 +5130,6 @@ const SettingsView = ({ user, role }) => {
         </div>
     );
 };
-
 // --- Order Management ---
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
@@ -5331,7 +5469,7 @@ const OrderManagement = () => {
 
 // --- Profit Tracker ---
 const DRUGS_CATALOG = [
-    // ─── Weight Loss ───────────────────────────────────────────────────────────
+    // --- Weight Loss -----------------------------------------------------------
     { name: 'Semaglutide Injection', dosage: '0.25 mg', price: '$99.99/mo', category: 'Weight Loss' },
     { name: 'Semaglutide Injection', dosage: '0.5 mg', price: '$134.99/mo', category: 'Weight Loss' },
     { name: 'Semaglutide Injection', dosage: '1 mg', price: '$179.99/mo', category: 'Weight Loss' },
@@ -5348,7 +5486,7 @@ const DRUGS_CATALOG = [
     { name: 'Tirzepatide Sublingual Drops', dosage: '', price: '$349/mo', category: 'Weight Loss' },
     { name: 'Retatrutide', dosage: 'Research', price: '$499/mo', category: 'Weight Loss' },
 
-    // ─── Better Sex ────────────────────────────────────────────────────────────
+    // --- Better Sex ------------------------------------------------------------
     { name: 'Dual Performance Formula (Sildenafil/Tadalafil Troche)', dosage: '', price: '$89/mo', category: 'Better Sex' },
     { name: 'Synergy Performance Formula (Sildenafil/Yohimbe Troche)', dosage: '', price: '$79/mo', category: 'Better Sex' },
     { name: 'Dual Action Tablets (Sildenafil/Tadalafil)', dosage: '', price: '$69/mo', category: 'Better Sex' },
@@ -5365,7 +5503,7 @@ const DRUGS_CATALOG = [
     { name: 'QuickLover (Women Oxytocin RDT)', dosage: '50 IU', price: '$43.99 / 6-Pack', category: 'Better Sex' },
     { name: 'QuickLover (Women Oxytocin RDT)', dosage: '100 IU', price: '$49.99 / 6-Pack', category: 'Better Sex' },
 
-    // ─── Hair Loss ─────────────────────────────────────────────────────────────
+    // --- Hair Loss -------------------------------------------------------------
     { name: 'Finasteride', dosage: 'Oral Tablets', price: '$49/mo', category: 'Hair Loss' },
     { name: 'Dual Growth Formula (Finasteride + Minoxidil Topical)', dosage: '', price: '$79/mo', category: 'Hair Loss' },
     { name: 'Triple Growth Liquid (Finasteride + Minoxidil + Tretinoin)', dosage: '', price: '$99/mo', category: 'Hair Loss' },
@@ -5377,18 +5515,18 @@ const DRUGS_CATALOG = [
     { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '60 Day Supply', price: '$159.99', category: 'Hair Loss' },
     { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '90 Day Supply', price: '$224.99', category: 'Hair Loss' },
 
-    // ─── Longevity ─────────────────────────────────────────────────────────────
+    // --- Longevity -------------------------------------------------------------
     { name: 'NAD+ Nasal Spray', dosage: '100 mg/mL (15 mL)', price: '$124.99/mo', category: 'Longevity' },
     { name: 'NAD+ Nasal Spray', dosage: '100 IU (15 mL)', price: '$149.99/mo', category: 'Longevity' },
     { name: 'NAD+ Subcutaneous Injection', dosage: '200 mg/mL (5 mL)', price: '$119.99/mo', category: 'Longevity' },
     { name: 'Glutathione Injection', dosage: '200 mg/mL (10 mL)', price: '$64.99/mo', category: 'Longevity' },
 
-    // ─── Testosterone ───────────────────────────────────────────────────────────
+    // --- Testosterone -----------------------------------------------------------
     { name: 'Testosterone Cypionate Injection', dosage: 'TBA', price: '$99.99/mo', category: 'Testosterone' },
     { name: 'Testosterone RDT', dosage: 'TBA', price: '$125/mo', category: 'Testosterone' },
     { name: 'Estradiol Tabs', dosage: 'TBA', price: '$30/mo', category: 'Testosterone' },
 
-    // ─── Skin Care ─────────────────────────────────────────────────────────────
+    // --- Skin Care -------------------------------------------------------------
     { name: 'Anti-Aging Cream', dosage: 'Monthly', price: '$35/mo', category: 'Skin Care' },
     { name: 'Anti-Aging Cream', dosage: 'Every 2 Months', price: '$69.99', category: 'Skin Care' },
     { name: 'Face Spot Peel', dosage: 'Monthly', price: '$36/mo', category: 'Skin Care' },
@@ -5401,7 +5539,7 @@ const DRUGS_CATALOG = [
     { name: 'Body Acne Cream', dosage: 'Monthly', price: '$139.99/mo', category: 'Skin Care' },
     { name: 'Body Acne Cream', dosage: 'Every 2 Months', price: '$99.99', category: 'Skin Care' },
 
-    // ─── Repair & Healing ──────────────────────────────────────────────────────
+    // --- Repair & Healing ------------------------------------------------------
     { name: 'BPC-157', dosage: 'Subq Injection', price: '$149/mo', category: 'Repair & Healing' },
     { name: 'BPC-157 / TB-500', dosage: 'Subq Injection', price: '$199/mo', category: 'Repair & Healing' },
 ];
@@ -5805,7 +5943,7 @@ const ProfitTrackerView = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm font-black text-white">{p.drug_name}</p>
-                                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.pharmacy_name} � {new Date(p.purchase_date).toLocaleDateString()}</p>
+                                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.pharmacy_name} ? {new Date(p.purchase_date).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 text-right">
@@ -5842,7 +5980,7 @@ const ProfitTrackerView = () => {
 };
 
 // -------------------------------------------------------------
-// STATEMENTS � Admin View
+// STATEMENTS ? Admin View
 // -------------------------------------------------------------
 const StatementDocument = ({ stmt, rates }) => {
     const LOGO_TEXT = ['u', 'Glow', 'MD'];
@@ -5869,7 +6007,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
     return (
         <div>
-            {/* PAGE 1 � Summary Statement */}
+            {/* PAGE 1 ? Summary Statement */}
             <div style={pageStyle}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
@@ -5878,12 +6016,12 @@ const StatementDocument = ({ stmt, rates }) => {
                         <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
                         <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
                     </div>
-                    {/* uGlowMD Logo � top right, large */}
+                    {/* uGlowMD Logo ? top right, large */}
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
                             <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '16px', fontWeight: '700' }}>MD</sup>
                         </div>
-                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD � Provider Portal</div>
+                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD ? Provider Portal</div>
                     </div>
                 </div>
 
@@ -5951,17 +6089,17 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD � Provider Compensation � Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD ? Provider Compensation ? Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
                 </div>
             </div>
 
-            {/* PAGE 2 � Patient Lists */}
+            {/* PAGE 2 ? Patient Lists */}
             <div style={{ ...pageStyle, pageBreakAfter: 'auto' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
                     <div>
-                        <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL � {periodLabel}</div>
+                        <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL ? {periodLabel}</div>
                         <div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -5976,7 +6114,7 @@ const StatementDocument = ({ stmt, rates }) => {
                 {/* New Patients */}
                 <div style={{ marginBottom: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients � {stmt.new_patient_count ?? 0} total</div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients ? {stmt.new_patient_count ?? 0} total</div>
                         <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates?.new_patient_rate ?? stmt.new_patient_rate ?? 5)} each</div>
                     </div>
                     {(stmt.new_patients_list && stmt.new_patients_list.length > 0) ? (
@@ -5995,8 +6133,8 @@ const StatementDocument = ({ stmt, rates }) => {
                                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td>
                                         <td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || 'N/A'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '�'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '�'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '?'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '?'}</td>
                                         <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates?.new_patient_rate ?? stmt.new_patient_rate ?? 5)}</td>
                                     </tr>
                                 ))}
@@ -6012,7 +6150,7 @@ const StatementDocument = ({ stmt, rates }) => {
                 {/* Recurring Patients */}
                 <div style={{ marginBottom: '40px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers � {stmt.recurring_patient_count ?? 0} total</div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers ? {stmt.recurring_patient_count ?? 0} total</div>
                         <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates?.recurring_patient_rate ?? stmt.recurring_patient_rate ?? 5)} each</div>
                     </div>
                     {(stmt.recurring_patients_list && stmt.recurring_patients_list.length > 0) ? (
@@ -6030,7 +6168,7 @@ const StatementDocument = ({ stmt, rates }) => {
                                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td>
                                         <td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || 'N/A'}</td>
-                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '�'}</td>
+                                        <td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '?'}</td>
                                         <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates?.recurring_patient_rate ?? stmt.recurring_patient_rate ?? 5)}</td>
                                     </tr>
                                 ))}
@@ -6043,7 +6181,7 @@ const StatementDocument = ({ stmt, rates }) => {
                     )}
                 </div>
 
-                {/* Grand Total � Page 2 */}
+                {/* Grand Total ? Page 2 */}
                 <div style={{ borderTop: '2px solid #111', paddingTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '8px' }}>Total Payout to Provider</div>
@@ -6054,7 +6192,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD � Provider Compensation � Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD ? Provider Compensation ? Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
                 </div>
             </div>
@@ -6304,7 +6442,7 @@ const StatementsAdminView = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
-                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} � {stmt.new_patient_count ?? 0} new � {stmt.recurring_patient_count ?? 0} recurring</p>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} ? {stmt.new_patient_count ?? 0} new ? {stmt.recurring_patient_count ?? 0} recurring</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 flex-wrap">
@@ -6333,7 +6471,7 @@ const StatementsAdminView = () => {
                         <div className="bg-[#111111] border border-white/10 rounded-[32px] p-6 md:p-8 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Statement Review</h3>
-                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.period_label} � {selectedStmt.statement_number}</p>
+                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.period_label} ? {selectedStmt.statement_number}</p>
                             </div>
                             <div className="flex items-center gap-3 flex-wrap">
                                 {!editMode && <button onClick={() => setPreviewMode(!previewMode)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${previewMode ? 'bg-[#FFDE59] text-black' : 'bg-white/10 text-white/60 hover:text-white'}`}>{previewMode ? 'Hide Preview' : 'Preview Document'}</button>}
@@ -6356,7 +6494,7 @@ const StatementsAdminView = () => {
                                     <div><label style={labelStyle}>Recurring Patient Count</label><input type="number" min="0" value={editForm.recurring_patient_count} onChange={e => setEditForm(f => ({ ...f, recurring_patient_count: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} /></div>
                                     <div><label style={labelStyle}>Recurring Patient Rate ($)</label><input type="number" step="0.01" min="0" value={editForm.recurring_patient_rate} onChange={e => setEditForm(f => ({ ...f, recurring_patient_rate: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} /></div>
                                     <div className="md:col-span-2">
-                                        <label style={labelStyle}>Override Total Payout ($ � leave blank to auto-calculate)</label>
+                                        <label style={labelStyle}>Override Total Payout ($ ? leave blank to auto-calculate)</label>
                                         <input type="number" step="0.01" min="0" value={editForm.total_payout_override} onChange={e => setEditForm(f => ({ ...f, total_payout_override: e.target.value }))} placeholder="Auto-calculated if blank" style={inputStyle} onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                         <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '6px' }}>
                                             Auto: {fmtMoney((Number(editForm.new_patient_rate) * Number(editForm.new_patient_count)) + (Number(editForm.recurring_patient_rate) * Number(editForm.recurring_patient_count)))}
@@ -6669,7 +6807,7 @@ const BlogManagement = () => {
                                         </span>
                                     </td>
                                     <td className="py-6 text-xs text-white/40 font-mono tracking-tighter">
-                                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : '�'}
+                                        {post.created_at ? new Date(post.created_at).toLocaleDateString() : '?'}
                                     </td>
                                     <td className="py-6 text-right">
                                         <div className="flex items-center justify-end gap-3">
