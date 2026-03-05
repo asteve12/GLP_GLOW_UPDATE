@@ -1,13 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { supabase } from '../lib/supabaseClient';
+import { toast } from 'react-hot-toast';
 
-const WaitlistModal = ({ isOpen, onClose }) => {
+const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
     const modalRef = useRef(null);
     const overlayRef = useRef(null);
     const contentRef = useRef(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: ''
+    });
 
     useEffect(() => {
         if (isOpen) {
+            setFormData({
+                firstName: profile?.first_name || '',
+                lastName: profile?.last_name || '',
+                email: user?.email || '',
+                phone: profile?.phone_number || ''
+            });
             document.body.style.overflow = 'hidden';
 
             const tl = gsap.timeline();
@@ -34,6 +49,32 @@ const WaitlistModal = ({ isOpen, onClose }) => {
             });
         }
     }, [isOpen]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const { error } = await supabase
+                .from('waitlist')
+                .insert([{
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    product: 'Retatrutide'
+                }]);
+
+            if (error) throw error;
+            toast.success('Successfully added to the waitlist!');
+            setFormData({ firstName: '', lastName: '', email: '', phone: '' });
+            onClose();
+        } catch (err) {
+            console.error('Waitlist error:', err);
+            toast.error('Failed to join waitlist. Please try again.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     if (!isOpen && !overlayRef.current) return null;
 
@@ -81,21 +122,49 @@ const WaitlistModal = ({ isOpen, onClose }) => {
                         </p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="grid md:grid-cols-2 gap-4">
                             <input
                                 type="text"
+                                required
+                                value={formData.firstName}
+                                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
                                 placeholder="FIRST NAME"
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#FFC7A2]/50 transition-colors uppercase text-xs font-bold tracking-widest"
                             />
                             <input
-                                type="email"
-                                placeholder="EMAIL ADDRESS"
+                                type="text"
+                                required
+                                value={formData.lastName}
+                                onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                                placeholder="LAST NAME"
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#FFC7A2]/50 transition-colors uppercase text-xs font-bold tracking-widest"
                             />
                         </div>
-                        <button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-2xl flex items-center justify-center gap-3">
-                            Join the Waitlist <span>🔥</span>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <input
+                                type="email"
+                                required
+                                value={formData.email}
+                                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                placeholder="EMAIL ADDRESS"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#FFC7A2]/50 transition-colors uppercase text-xs font-bold tracking-widest"
+                            />
+                            <input
+                                type="tel"
+                                required
+                                value={formData.phone}
+                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                placeholder="PHONE NUMBER"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#FFC7A2]/50 transition-colors uppercase text-xs font-bold tracking-widest"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-2xl flex items-center justify-center gap-3 disabled:opacity-50"
+                        >
+                            {submitting ? 'Processing...' : 'Join the Waitlist'} <span>🔥</span>
                         </button>
                     </form>
 
@@ -109,3 +178,4 @@ const WaitlistModal = ({ isOpen, onClose }) => {
 };
 
 export default WaitlistModal;
+

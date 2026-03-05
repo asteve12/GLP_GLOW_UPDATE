@@ -24,10 +24,12 @@ import antiAgingImg from '../assets/ant-aging.png';
 import faceSpotImg from '../assets/face-spot.png';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
 import { useNavigate } from 'react-router-dom';
+import WaitlistModal from './WaitlistModal';
 
 const NewLandingPage = () => {
     const navigate = useNavigate();
     const [isSkincareModalOpen, setIsSkincareModalOpen] = useState(false);
+    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
     const categories = [
         { text: 'Weight loss', color: 'text-orange-600' },
         { text: 'Better sex', color: 'text-black' },
@@ -185,18 +187,21 @@ const NewLandingPage = () => {
                         <div className="mt-20">
                             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
-                                <Link to="/assessment/retatrutide" className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black border-2 border-red-500/20">
+                                <div
+                                    onClick={() => setIsWaitlistOpen(true)}
+                                    className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black border-2 border-red-500/20"
+                                >
                                     <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-black z-0"></div>
                                     <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm z-20">New Clinical Research</div>
                                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
                                         <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300 opacity-60">Retatrutide</span>
                                         <span className="text-lg font-bold text-center transition-colors duration-300 group-hover:text-red-500">Clinical Breakthrough</span>
                                         <span className="mt-3 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                                            Apply for Access
+                                            Join the Waitlist
                                         </span>
                                         <span className="mt-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-white/80 transition-colors">Eligibility Verification: $100</span>
                                     </div>
-                                </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -653,6 +658,8 @@ const NewLandingPage = () => {
                     </div>
                 </div>
             )}
+            {/* Waitlist Modal */}
+            <WaitlistModal isOpen={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
         </div >
     );
 };
