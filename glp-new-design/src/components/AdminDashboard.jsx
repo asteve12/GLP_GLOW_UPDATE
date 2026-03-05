@@ -5015,11 +5015,17 @@ const SettingsView = ({ user, role }) => {
         setSaving(true);
         setMsg(null);
         try {
+            // Get current names from profile state to satisfy NOT NULL constraints in provider_profiles
+            const firstName = profile?.first_name || '';
+            const lastName = profile?.last_name || '';
+
             const { data: existing } = await supabase.from('provider_profiles').select('user_id').eq('user_id', user?.id).single();
 
             let query;
             if (existing) {
                 query = supabase.from('provider_profiles').update({
+                    first_name: firstName,
+                    last_name: lastName,
                     license_number: providerProfile?.license_number,
                     npi_number: providerProfile?.npi_number,
                     dea_number: providerProfile?.dea_number,
@@ -5027,6 +5033,8 @@ const SettingsView = ({ user, role }) => {
             } else {
                 query = supabase.from('provider_profiles').insert({
                     user_id: user?.id,
+                    first_name: firstName,
+                    last_name: lastName,
                     license_number: providerProfile?.license_number,
                     npi_number: providerProfile?.npi_number,
                     dea_number: providerProfile?.dea_number,
@@ -5034,7 +5042,13 @@ const SettingsView = ({ user, role }) => {
             }
 
             const { error } = await query;
-            if (error) throw error;
+            if (error) {
+                console.error('License DB error:', error);
+                if (error.code === '42501' || error.message.includes('security policy')) {
+                    throw new Error('Update restricted by database permissions. Admin approval may be required.');
+                }
+                throw error;
+            }
             setMsg({ type: 'success', text: 'Clinical credentials updated successfully.' });
         } catch (err) {
             setMsg({ type: 'error', text: `Sync failed: ${err.message}` });
