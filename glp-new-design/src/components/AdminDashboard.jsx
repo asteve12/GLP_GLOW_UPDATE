@@ -6707,6 +6707,129 @@ const BlogManagement = () => {
     );
 };
 
+const WaitlistView = () => {
+    const [entries, setEntries] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchWaitlist();
+    }, []);
+
+    const fetchWaitlist = async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('waitlist')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setEntries(data || []);
+        } catch (err) {
+            console.error('Error fetching waitlist:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!confirm('Are you sure you want to remove this entry?')) return;
+        try {
+            const { error } = await supabase.from('waitlist').delete().eq('id', id);
+            if (error) throw error;
+            fetchWaitlist();
+        } catch (err) {
+            alert('Failed to delete entry');
+        }
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-10">
+                <div className="flex items-center justify-between mb-10">
+                    <div>
+                        <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Waitlist Management</h3>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Managing interest for Retatrutide (Subq Injection)</p>
+                    </div>
+                    <button
+                        onClick={fetchWaitlist}
+                        className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M4 4v5h.582M20 20v-5h-.581M18.46 6.54c1.86 1.86 2.44 4.53 1.54 7.46M5.54 17.46c-1.86-1.86-2.44-4.53-1.54-7.46" />
+                        </svg>
+                    </button>
+                </div>
+
+                {loading ? (
+                    <div className="py-20 text-center text-[10px] font-black uppercase tracking-[0.3em] text-white/20 animate-pulse">Loading Entries...</div>
+                ) : entries.length === 0 ? (
+                    <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-[40px]">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">No waitlist entries found</p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left min-w-[800px]">
+                            <thead>
+                                <tr className="border-b border-white/10">
+                                    <th className="pb-6 text-[10px] font-black uppercase tracking-widest text-white/40">Patient</th>
+                                    <th className="pb-6 text-[10px] font-black uppercase tracking-widest text-white/40">Contact Info</th>
+                                    <th className="pb-6 text-[10px] font-black uppercase tracking-widest text-white/40">Product</th>
+                                    <th className="pb-6 text-[10px] font-black uppercase tracking-widest text-white/40">Wait Duration</th>
+                                    <th className="pb-6 text-[10px] font-black uppercase tracking-widest text-white/40 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {entries.map(entry => (
+                                    <tr key={entry.id} className="group hover:bg-white/5 transition-all">
+                                        <td className="py-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-[#FFDE59]/10 border border-[#FFDE59]/20 flex items-center justify-center text-[#FFDE59] font-black text-xs">
+                                                    {entry.first_name?.[0]}{entry.last_name?.[0]}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-sm tracking-tight text-white">{entry.first_name} {entry.last_name}</p>
+                                                    <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">{entry.id.slice(0, 8)}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="py-6">
+                                            <div className="space-y-1">
+                                                <p className="text-xs text-white/80 font-bold">{entry.email}</p>
+                                                <p className="text-[10px] text-white/40 font-mono tracking-tighter">{entry.phone}</p>
+                                            </div>
+                                        </td>
+                                        <td className="py-6">
+                                            <span className="px-3 py-1 rounded-full bg-[#FFDE59]/10 text-[#FFDE59] border border-[#FFDE59]/20 text-[8px] font-black uppercase tracking-widest">
+                                                {entry.product}
+                                            </span>
+                                        </td>
+                                        <td className="py-6">
+                                            <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">
+                                                {Math.max(1, Math.floor((new Date() - new Date(entry.created_at)) / (1000 * 60 * 60 * 24)))} Days
+                                            </p>
+                                        </td>
+                                        <td className="py-6 text-right">
+                                            <button
+                                                onClick={() => handleDelete(entry.id)}
+                                                className="p-2 text-white/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 // --- Main Admin Dashboard ---
 const AdminDashboard = () => {
     const { user, signOut } = useAuth();
@@ -6778,6 +6901,7 @@ const AdminDashboard = () => {
         { id: 'patient-express', label: 'Patient Express', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'surveys', label: 'Surveys', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
         { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+        { id: 'waitlist', label: 'Waitlist', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'blog', label: 'Peer reviewed blog', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
     ] : [
         { id: 'clinical', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: pendingCount },
@@ -6886,6 +7010,7 @@ const AdminDashboard = () => {
                             {currentTab === 'patient-express' && 'Patient Express Entry'}
                             {currentTab === 'surveys' && 'Feedback & Surveys'}
                             {currentTab === 'statements' && 'Statements'}
+                            {currentTab === 'waitlist' && 'Retatrutide Waitlist'}
                             {currentTab === 'blog' && 'Peer reviewed blog'}
                             {currentTab === 'settings' && 'Settings'}
                         </h2>
@@ -6904,6 +7029,7 @@ const AdminDashboard = () => {
                         <Route path="patient-express" element={<PatientExpressEntry />} />
                         {role === 'admin' && <Route path="surveys" element={<SurveyManagement />} />}
                         {role === 'admin' && <Route path="statements" element={<StatementsAdminView />} />}
+                        {role === 'admin' && <Route path="waitlist" element={<WaitlistView />} />}
                         {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
                         <Route path="settings" element={<SettingsView user={user} role={role} />} />
                     </Routes>
