@@ -603,7 +603,7 @@ const SettingsView = ({ profile, user, onUpdate, setLastOptimisticUpdate }) => {
     );
 };
 
-const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onRetake }) => {
+const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAction, onRetake }) => {
 
     // Determine if user can manage subscription (must be approved by provider)
     const isApproved = submission.approval_status === 'approved';
@@ -625,9 +625,31 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
                             <h3 className="text-2xl font-black uppercase tracking-tighter text-white">
                                 {(() => {
-                                    const name = submission.approved_drug_name || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.name || submission.selected_drug?.replace(/-/g, ' ') || 'Active Protocol';
+                                    // FIND NAME STRICTLY FROM ORDER TABLE
+                                    const submissionCategory = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
+                                    const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === submissionCategory);
+
+                                    const name = matchingOrder?.drug_name || 'Active Protocol';
                                     const dosage = submission.approved_dosage || (submission.dosage_preference !== 'Dosage' ? submission.dosage_preference : '');
-                                    return dosage ? `${name} (${dosage})` : name;
+                                    const price = submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299';
+                                    const duration = '30-Day Supply'; // Standard duration
+                                    const category = submissionCategory;
+
+                                    return (
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2">
+                                                <span>{name}</span>
+                                                {dosage && <span className="text-white/40 text-lg">({dosage})</span>}
+                                            </div>
+                                            <div className="flex items-center gap-3 text-[10px] font-black tracking-[0.2em] text-[#FFDE59]">
+                                                <span>${price}.00</span>
+                                                <span className="w-1 h-1 rounded-full bg-white/20"></span>
+                                                <span>{duration}</span>
+                                                <span className="w-1 h-1 rounded-full bg-white/20"></span>
+                                                <span className="text-white/40">{category}</span>
+                                            </div>
+                                        </div>
+                                    );
                                 })()}
                             </h3>
                             <div className="flex gap-2">
@@ -1323,7 +1345,7 @@ const ReferralView = ({ profile, user, onUpdate }) => {
 };
 
 
-const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescriptionClick }) => {
+const SubmissionCard = ({ submission, orders, setSelectedAssessment, navigate, onPrescriptionClick }) => {
     const statusConfig = {
         pending: {
             color: 'orange',
@@ -1361,7 +1383,11 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
                     <div>
                         <div className="flex items-center gap-3 mb-1 flex-wrap">
                             <h4 className="text-lg font-black uppercase tracking-tight">
-                                {submission.selected_drug || submission.recommended_treatment || 'Assessment'}
+                                {(() => {
+                                    const cat = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
+                                    const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
+                                    return matchingOrder?.drug_name || submission.selected_drug?.replace(/-/g, ' ') || submission.recommended_treatment || 'Assessment';
+                                })()}
                             </h4>
                             <button
                                 onClick={() => setSelectedAssessment(submission)}
@@ -2482,7 +2508,11 @@ const Dashboard = () => {
                                                     </span>
                                                 </div>
                                                 <p className="text-3xl font-black text-white mb-1 relative z-10">
-                                                    {submissions[0].selected_drug || submissions[0].recommended_treatment || 'Protocol'}
+                                                    {(() => {
+                                                        const cat = getMedicationCategory(submissions[0].selected_drug || submissions[0].dosage_preference);
+                                                        const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
+                                                        return matchingOrder?.drug_name || submissions[0].selected_drug?.replace(/-/g, ' ') || 'Protocol';
+                                                    })()}
                                                 </p>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Latest Assessment</p>
                                             </>
@@ -2789,7 +2819,7 @@ const Dashboard = () => {
                                     ) : (
                                         <div className="space-y-4">
                                             {submissions.slice(0, 3).map((submission) => (
-                                                <SubmissionCard key={submission.id} submission={submission} setSelectedAssessment={setSelectedAssessment} navigate={navigate} />
+                                                <SubmissionCard key={submission.id} submission={submission} orders={orders} setSelectedAssessment={setSelectedAssessment} navigate={navigate} />
                                             ))}
                                         </div>
                                     )}
@@ -2940,6 +2970,7 @@ const Dashboard = () => {
                                                     <MedicationCard
                                                         key={submission.id}
                                                         submission={submission}
+                                                        orders={orders}
                                                         isSubscriptionActive={isSubscriptionActive}
                                                         onAction={(type, med) => setActionModal({ isOpen: true, type, medication: med })}
                                                         onRetake={(med) => setRetakeModal({ isOpen: true, submission: med })}
@@ -2984,25 +3015,22 @@ const Dashboard = () => {
                                             <SubmissionCard
                                                 key={submission.id}
                                                 submission={submission}
+                                                orders={orders}
                                                 setSelectedAssessment={setSelectedAssessment}
                                                 navigate={navigate}
                                                 onPrescriptionClick={async (submission) => {
+                                                    const cat = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
+                                                    const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
+                                                    const drugName = matchingOrder?.drug_name || submission.approved_drug_name || 'Active Treatment';
+
                                                     const drugKey = submission.selected_drug || submission.dosage_preference;
                                                     const product = PRODUCT_MAP[drugKey];
 
-                                                    if (product) {
-                                                        setSelectedMedicationInfo({
-                                                            name: product.name,
-                                                            price: product.price,
-                                                            dosage: submission.dosage_preference || product.dosage
-                                                        });
-                                                    } else {
-                                                        setSelectedMedicationInfo({
-                                                            name: drugKey || 'Active Treatment',
-                                                            price: '299',
-                                                            dosage: submission.dosage_preference || 'Standard'
-                                                        });
-                                                    }
+                                                    setSelectedMedicationInfo({
+                                                        name: drugName,
+                                                        price: submission.approved_price || product?.price || '299',
+                                                        dosage: submission.approved_dosage || submission.dosage_preference || product?.dosage || 'Standard'
+                                                    });
                                                 }}
                                             />
                                         ))
