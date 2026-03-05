@@ -4833,6 +4833,113 @@ const StaffManagement = () => {
     );
 };
 
+// --- Settings View ---
+const SettingsRow = ({ label, value }) => (
+    <div className="flex flex-col gap-2">
+        <p className="text-[9px] font-black uppercase tracking-widest text-white/20">{label}</p>
+        <p className="text-sm font-bold text-white/90">{value}</p>
+    </div>
+);
+
+const SettingsView = ({ user, role }) => {
+    const [activeTab, setActiveTab] = useState('profile');
+    const [profile, setProfile] = useState(null);
+    const [providerProfile, setProviderProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch profile
+                const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user?.id).single();
+                setProfile(profileData);
+
+                // Fetch provider profile if applicable
+                const { data: providerData } = await supabase.from('provider_profiles').select('*').eq('user_id', user?.id).single();
+                setProviderProfile(providerData);
+            } catch (err) {
+                console.error('Error fetching settings data:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [user]);
+
+    if (loading) return <div className="p-12 text-white/30 font-black uppercase tracking-widest text-[10px]">Syncing secure data...</div>;
+
+    const tabs = [
+        { id: 'profile', label: 'Profile' },
+        { id: 'license', label: 'License & DEA' },
+        { id: 'security', label: 'Security' }
+    ];
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Tab Navigation */}
+            <div className="flex gap-4 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white/60'}`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            <div className="bg-white/[0.02] border border-white/10 rounded-[40px] p-8 md:p-12">
+                {activeTab === 'profile' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-8">
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-accent-black pl-4">Personal Identity</h4>
+                            <div className="space-y-6">
+                                <SettingsRow label="First Name" value={profile?.first_name || user?.user_metadata?.first_name || '—'} />
+                                <SettingsRow label="Last Name" value={profile?.last_name || user?.user_metadata?.last_name || '—'} />
+                                <SettingsRow label="Email Identity" value={user?.email || '—'} />
+                                <SettingsRow label="Phone Contact" value={profile?.phone_number || '—'} />
+                                <SettingsRow label="Date of Birth" value={profile?.date_of_birth || '—'} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'license' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-8">
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-blue-500 pl-4">Professional Credentials</h4>
+                            <div className="space-y-6">
+                                <SettingsRow label="License Number" value={providerProfile?.license_number || 'Verification Pending'} />
+                                <SettingsRow label="NPI Registry" value={providerProfile?.npi_number || 'Verification Pending'} />
+                                <SettingsRow label="DEA Registration" value={providerProfile?.dea_number || 'Not Registered'} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'security' && (
+                    <div className="max-w-md space-y-12">
+                        <div className="space-y-4">
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 mb-8 border-l-2 border-red-500 pl-4">Multi-Factor Authentication</h4>
+                            <p className="text-[10px] text-white/30 uppercase font-black leading-relaxed tracking-widest">Enable one-time password (OTP) verification for enhanced administrative security.</p>
+                            <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all border-dashed">
+                                Setup Secure OTP
+                            </button>
+                        </div>
+                        <div className="pt-12 border-t border-white/10">
+                            <button className="text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 transition-all">
+                                Reset Administrative Credentials
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 // --- Order Management ---
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
@@ -6621,6 +6728,7 @@ const AdminDashboard = () => {
         { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
         { id: 'blog', label: 'Peer reviewed blog', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
     ] : [
+        { id: 'clinical', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: pendingCount },
         { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
         { id: 'subscribers', label: 'Subscribers', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
         { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
@@ -6687,6 +6795,18 @@ const AdminDashboard = () => {
                             </svg>
                             Patient Portal
                         </button>
+                        <button
+                            onClick={() => {
+                                signOut();
+                                navigate('/admin-sign-in');
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 mt-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all border border-red-500/10 hover:border-red-500/30"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                            </svg>
+                            Logout System
+                        </button>
                     </div>
                 </nav>
             </aside>
@@ -6723,7 +6843,7 @@ const AdminDashboard = () => {
                         <Route path="/" element={<Navigate to={role === 'admin' ? 'overview' : 'orders'} replace />} />
                         {role === 'admin' && <Route path="overview" element={<AdminOverview />} />}
                         {role === 'admin' && <Route path="patients" element={<PatientPortalManager />} />}
-                        {role === 'admin' && <Route path="clinical" element={<ClinicalQueue />} />}
+                        {(role === 'admin' || isSubAdmin) && <Route path="clinical" element={<ClinicalQueue />} />}
                         <Route path="orders" element={<OrderManagement />} />
                         <Route path="discounts" element={<DiscountManager />} />
                         {role === 'admin' && <Route path="users" element={<StaffManagement />} />}
@@ -6733,59 +6853,7 @@ const AdminDashboard = () => {
                         {role === 'admin' && <Route path="surveys" element={<SurveyManagement />} />}
                         {role === 'admin' && <Route path="statements" element={<StatementsAdminView />} />}
                         {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
-                        <Route path="settings" element={
-                            <div className="space-y-12">
-                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
-                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-accent-black/20 flex items-center justify-center text-accent-black">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                                        </div>
-                                        Profile Settings
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Legal Name</p>
-                                            <p className="text-sm font-bold text-white/90">{user?.user_metadata?.first_name} {user?.user_metadata?.last_name}</p>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Email Address</p>
-                                            <p className="text-sm font-bold text-white/90">{user?.email}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
-                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                                        </div>
-                                        License & DEA Details
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white/50 text-[10px] uppercase font-black">
-                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                                            <p className="mb-1 text-white/30">Role</p>
-                                            <p className="text-sm text-white">{role?.replace('_', ' ')}</p>
-                                        </div>
-                                        <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                                            <p className="mb-1 text-white/30">Status</p>
-                                            <p className="text-sm text-accent-black">Verified & Active</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8 md:p-12">
-                                    <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
-                                        </div>
-                                        Security Section
-                                    </h3>
-                                    <button className="px-6 py-3 bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/20 transition-all">
-                                        Reset Administrative Password
-                                    </button>
-                                </div>
-                            </div>
-                        } />
+                        <Route path="settings" element={<SettingsView user={user} role={role} />} />
                     </Routes>
                 </div>
             </main>
