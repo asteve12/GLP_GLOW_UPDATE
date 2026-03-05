@@ -5302,10 +5302,10 @@ const Assessment = () => {
                         {paymentData.appliedDiscount ? (
                             <>
                                 <span className="line-through text-gray-300 text-xl mr-2">
-                                    ${(baseFee + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}
+                                    ${baseFee.toFixed(2)}
                                 </span>
                                 ${(() => {
-                                    const base = baseFee + (labFulfillment === 'order' ? 29.99 : 0);
+                                    const base = baseFee;
                                     const disc = paymentData.appliedDiscount;
                                     let final = base;
                                     if (disc.discountType === 'percentage') {
@@ -5316,7 +5316,7 @@ const Assessment = () => {
                                     return final.toFixed(2);
                                 })()}
                             </>
-                        ) : `$${(baseFee + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}`}
+                        ) : `$${baseFee.toFixed(2)}`}
                     </span>
                 </div>
 
@@ -5368,16 +5368,18 @@ const Assessment = () => {
                 <div className="space-y-6">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-8">Secure 256-bit SSL encrypted payment</label>
                     {(() => {
-                        const baseCents = baseFeeCents + (labFulfillment === 'order' ? 2999 : 0);
+                        const eligibilityCents = baseFeeCents;
+                        const labCents = (labFulfillment === 'order' ? 2999 : 0);
                         const disc = paymentData.appliedDiscount;
-                        let finalAmountInCents = baseCents;
+                        let finalEligibilityCents = eligibilityCents;
                         if (disc) {
                             if (disc.discountType === 'percentage') {
-                                finalAmountInCents = Math.round(baseCents * (1 - disc.discountValue / 100));
+                                finalEligibilityCents = Math.round(eligibilityCents * (1 - disc.discountValue / 100));
                             } else {
-                                finalAmountInCents = Math.max(0, baseCents - (disc.discountValue * 100));
+                                finalEligibilityCents = Math.max(0, eligibilityCents - (disc.discountValue * 100));
                             }
                         }
+                        const finalAmountInCents = finalEligibilityCents + labCents;
 
                         if (finalAmountInCents === 0) {
                             return (
