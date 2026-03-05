@@ -240,6 +240,9 @@ const Assessment = () => {
     const navigate = useNavigate();
     const { signUp, signIn, signOut, user, verifyOtp, updateUser } = useAuth();
     const [step, setStep] = useState(0);
+
+    const baseFee = categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : 25.00);
+    const baseFeeCents = categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : 2500);
     const [showQuote, setShowQuote] = useState(true);
     const [showBMI, setShowBMI] = useState(false);
     const [showQuote2, setShowQuote2] = useState(false);
@@ -2182,7 +2185,7 @@ const Assessment = () => {
                     Back
                 </button>
                 <button
-                    onClick={() => { user ? setStep(5) : setStep(3); }}
+                    onClick={() => { user ? setStep(8) : setStep(3); }}
                     disabled={selectedLongevityGoals.length === 0}
                     className={`w-full md:w-auto px-20 py-8 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 relative overflow-hidden group flex items-center justify-center gap-4 ${selectedLongevityGoals.length > 0
                         ? 'bg-black text-white hover:scale-105 shadow-sm cursor-pointer'
@@ -4812,7 +4815,7 @@ const Assessment = () => {
                                         // For them, going back should return to their goals/improvements step (step 0).
                                         // For users who went through the full flow (step 4 → step 5 → step 8),
                                         // going back should return to step 5 (Eligibility).
-                                        if (categoryId === 'weight-loss') {
+                                        if (categoryId === 'weight-loss' || categoryId === 'longevity') {
                                             setStep(0);
                                         } else {
                                             setStep(5);
@@ -5299,10 +5302,10 @@ const Assessment = () => {
                         {paymentData.appliedDiscount ? (
                             <>
                                 <span className="line-through text-gray-300 text-xl mr-2">
-                                    ${(25.00 + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}
+                                    ${(baseFee + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}
                                 </span>
                                 ${(() => {
-                                    const base = 25.00 + (labFulfillment === 'order' ? 29.99 : 0);
+                                    const base = baseFee + (labFulfillment === 'order' ? 29.99 : 0);
                                     const disc = paymentData.appliedDiscount;
                                     let final = base;
                                     if (disc.discountType === 'percentage') {
@@ -5313,7 +5316,7 @@ const Assessment = () => {
                                     return final.toFixed(2);
                                 })()}
                             </>
-                        ) : `$${(25.00 + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}`}
+                        ) : `$${(baseFee + (labFulfillment === 'order' ? 29.99 : 0)).toFixed(2)}`}
                     </span>
                 </div>
 
@@ -5365,7 +5368,7 @@ const Assessment = () => {
                 <div className="space-y-6">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-8">Secure 256-bit SSL encrypted payment</label>
                     {(() => {
-                        const baseCents = 2500 + (labFulfillment === 'order' ? 2999 : 0);
+                        const baseCents = baseFeeCents + (labFulfillment === 'order' ? 2999 : 0);
                         const disc = paymentData.appliedDiscount;
                         let finalAmountInCents = baseCents;
                         if (disc) {

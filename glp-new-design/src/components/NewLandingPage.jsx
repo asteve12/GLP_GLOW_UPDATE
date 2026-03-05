@@ -397,8 +397,8 @@ const NewLandingPage = () => {
                         <div className="space-y-4">
                             {[
                                 {
-                                    q: "What is GLP Glow?",
-                                    a: "GLP-GLOW is an online platform providing tailored weight loss solutions. It connects you with licensed healthcare professionals for telehealth consultations, offers medications such as compounded semaglutide and tirzepatide. All services and medications are conveniently delivered to your doorstep."
+                                    q: "What is uGlowMD?",
+                                    a: "uGlowMD is an online platform providing tailored weight loss solutions. It connects you with licensed healthcare professionals for telehealth consultations, offers medications such as compounded semaglutide and tirzepatide. All services and medications are conveniently delivered to your doorstep."
                                 },
                                 {
                                     q: "How does the process work?",
@@ -410,7 +410,7 @@ const NewLandingPage = () => {
                                 },
                                 {
                                     q: "Do I automatically get approved if I complete the online form?",
-                                    a: "No. Completing the form does not guarantee approval. A licensed healthcare provider must review and verify your medical eligibility before any prescription can be issued. GLP Glow strictly follows medical, ethical, and legal standards."
+                                    a: "No. Completing the form does not guarantee approval. A licensed healthcare provider must review and verify your medical eligibility before any prescription can be issued. uGlowMD strictly follows medical, ethical, and legal standards."
                                 },
                                 {
                                     q: "What is the eligibility verification fee?",
@@ -453,8 +453,8 @@ const NewLandingPage = () => {
                                     a: "Once a provider has approved your eligibility and the prescription has been processed, orders cannot be canceled or refunded due to the nature of compounded medication."
                                 },
                                 {
-                                    q: "Is GLP Glow a weight loss clinic?",
-                                    a: "GLP Glow is not a traditional clinic. We are a telehealth service platform facilitating remote medical consultations and medication delivery for approved patients seeking weight loss solutions."
+                                    q: "Is uGlowMD a weight loss clinic?",
+                                    a: "uGlowMD is not a traditional clinic. We are a telehealth service platform facilitating remote medical consultations and medication delivery for approved patients seeking weight loss solutions."
                                 }
                             ].map((item, i) => (
                                 <div key={i} className="group border-b border-gray-100 last:border-0 overflow-hidden transition-all duration-500">
