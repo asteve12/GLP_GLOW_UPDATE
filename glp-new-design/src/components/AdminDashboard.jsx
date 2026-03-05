@@ -1813,7 +1813,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
     </div>
 );
 
-const SubmissionModal = ({ submission, onClose, onAction }) => {
+const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
     if (!submission) return null;
 
     const [processing, setProcessing] = useState(false);
@@ -2067,6 +2067,9 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 // Identification
                 identification_type: formData.identification_type,
                 identification_number: formData.identification_number,
+
+                // Assignment
+                assigned_provider_id: formData.assigned_provider_id || null,
             };
 
             console.log('Update payload:', updatePayload);
@@ -2075,7 +2078,7 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                 .from('form_submissions')
                 .update(updatePayload)
                 .eq('id', submission.id)
-                .select();
+                .select('*, assigned_provider:assigned_provider_id(id, first_name, last_name)');
 
             if (error) {
                 console.error('Supabase update error:', error);
@@ -2195,22 +2198,37 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     </button>
                                 </>
                             ) : (
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => { setIsEditing(false); setFormData(JSON.parse(JSON.stringify(submission))); }}
-                                        className="px-4 py-2 border border-red-500/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSaveChanges(); }}
-                                        disabled={processing}
-                                        className="px-6 py-2 bg-accent-black rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-[#111111] transition-all disabled:opacity-50"
-                                    >
-                                        {processing ? 'Saving...' : 'Save'}
-                                    </button>
+                                <div className="flex items-center gap-6">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Assign Provider</p>
+                                        <select
+                                            value={formData.assigned_provider_id || ''}
+                                            onChange={(e) => handleChange('assigned_provider_id', e.target.value)}
+                                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] font-black uppercase text-white focus:outline-none focus:border-accent-black min-w-[180px]"
+                                        >
+                                            <option value="">Unassigned</option>
+                                            {staff.map(s => (
+                                                <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex gap-2 pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => { setIsEditing(false); setFormData(JSON.parse(JSON.stringify(submission))); }}
+                                            className="px-4 py-2 border border-red-500/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSaveChanges(); }}
+                                            disabled={processing}
+                                            className="px-6 py-2 bg-accent-black rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-[#111111] transition-all disabled:opacity-50"
+                                        >
+                                            {processing ? 'Saving...' : 'Save'}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                             <button onClick={onClose} className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white/50 hover:text-white group">
@@ -2651,6 +2669,7 @@ const ClinicalQueue = () => {
     const [filter, setFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('pending');
     const [reviewingSubmission, setReviewingSubmission] = useState(null);
+    const [staff, setStaff] = useState([]);
 
     const categories = [
         { id: 'all', name: 'All Submissions', color: 'white' },
@@ -2698,13 +2717,33 @@ const ClinicalQueue = () => {
         }
     };
 
+    const fetchStaff = async () => {
+        try {
+            const { data: roles } = await supabase
+                .from('user_roles')
+                .select('user_id, role')
+                .in('role', ['admin', 'physician', 'nurse_practitioner', 'physician_assistant', 'provider']);
+
+            const userIds = roles?.map(r => r.user_id) || [];
+            if (userIds.length > 0) {
+                const { data: profiles } = await supabase
+                    .from('profiles')
+                    .select('id, first_name, last_name')
+                    .in('id', userIds);
+                setStaff(profiles || []);
+            }
+        } catch (err) {
+            console.error('Error fetching staff for assignment:', err);
+        }
+    };
+
     const fetchQueue = async () => {
         console.log('=== FETCHING QUEUE ===');
         setLoading(true);
         try {
             const { data, error } = await supabase
                 .from('form_submissions')
-                .select('*')
+                .select('*, assigned_provider:assigned_provider_id(id, first_name, last_name)')
                 .eq('approval_status', statusFilter)
                 .order('submitted_at', { ascending: true });
 
@@ -2735,6 +2774,10 @@ const ClinicalQueue = () => {
     useEffect(() => {
         fetchQueue();
     }, [statusFilter]);
+
+    useEffect(() => {
+        fetchStaff();
+    }, []);
 
     // Update reviewingSubmission when queue updates (to reflect changes in the modal)
     useEffect(() => {
@@ -2861,6 +2904,14 @@ const ClinicalQueue = () => {
                                             <span>Received {new Date(item.submitted_at).toLocaleDateString()}</span>
                                             <span className="w-1 h-1 bg-white/5 rounded-full"></span>
                                             <span>{item.shipping_state}</span>
+                                            {item.assigned_provider && (
+                                                <>
+                                                    <span className="w-1 h-1 bg-white/5 rounded-full"></span>
+                                                    <span className="text-accent-black bg-accent-black/10 px-2 py-0.5 rounded border border-accent-black/20">
+                                                        Assigned: {item.assigned_provider.first_name} {item.assigned_provider.last_name}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -2884,6 +2935,7 @@ const ClinicalQueue = () => {
                     submission={reviewingSubmission}
                     onClose={() => setReviewingSubmission(null)}
                     onAction={fetchQueue}
+                    staff={staff}
                 />
             )}
         </div>
