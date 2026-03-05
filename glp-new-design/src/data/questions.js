@@ -280,6 +280,14 @@ export const intakeQuestions = {
             ]
         },
         {
+            id: 'pcp_labs',
+            title: 'Primary Care & Labs',
+            question: 'Have you seen your primary care provider and/or did lab testing in the past 12 months?',
+            type: 'choice',
+            options: ['Yes', 'No'],
+            isStep23: true
+        },
+        {
             id: 'quote3',
             title: 'Metabolic Science',
             type: 'info',
@@ -328,7 +336,6 @@ export const intakeQuestions = {
             title: 'Past Prescription Medications',
             question: 'Which of the following prescription weight loss medications have you tried in the past?',
             type: 'multiselect',
-            isStep19: true,
             options: [
                 'Semaglutide (Wegovy/Ozempic)',
                 'Tirzepatide (Zepbound/Mounjaro)',
@@ -346,7 +353,8 @@ export const intakeQuestions = {
                 'Hydrogel compound (Plenity)',
                 'Other',
                 'None'
-            ]
+            ],
+            isStep19: true
         },
         {
             id: 'other_meds',
@@ -389,15 +397,6 @@ export const intakeQuestions = {
                 'None of the above'
             ]
         },
-        {
-            id: 'pcp_labs',
-            title: 'Primary Care & Labs',
-            question: 'Have you seen your primary care provider and/or did lab testing in the past 12 months?',
-            type: 'choice',
-            options: ['Yes', 'No'],
-            isStep23: true
-        },
-
         {
             id: 'additional_health_info',
             title: 'Additional Health Information',
