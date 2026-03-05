@@ -5164,25 +5164,79 @@ const OrderManagement = () => {
 
 // --- Profit Tracker ---
 const DRUGS_CATALOG = [
-    { name: 'Semaglutide', dosage: 'Injections', price: '$299', category: 'Weight Loss' },
-    { name: 'Tirzepatide', dosage: 'Injections', price: '$399', category: 'Weight Loss' },
-    { name: 'Semaglutide', dosage: 'Drops', price: '$249', category: 'Weight Loss' },
-    { name: 'Tirzepatide', dosage: 'Drops', price: '$349', category: 'Weight Loss' },
-    { name: 'Retatrutide', dosage: 'Research', price: '$499', category: 'Weight Loss' },
-    { name: 'ReadySetGo (2-in-1 RDT)', dosage: 'Men', price: '$89', category: 'Better Sex' },
-    { name: 'GrowTabs (Sildenafil)', dosage: 'Men', price: '$49', category: 'Better Sex' },
-    { name: 'GrowTabs (Tadalafil)', dosage: 'Men', price: '$49', category: 'Better Sex' },
-    { name: 'Sildenafil / Tadalafil', dosage: '2-in-1 Troche', price: '$89', category: 'Better Sex' },
-    { name: '3-in-1 Hair Growth Tabs', dosage: 'Rx', price: '$99', category: 'Hair Loss' },
-    { name: '2-in-1 Hair Growth Tabs', dosage: 'Rx', price: '$79', category: 'Hair Loss' },
-    { name: 'Finasteride', dosage: 'Oral', price: '$49', category: 'Hair Loss' },
-    { name: 'NAD + Spray', dosage: 'Nasal', price: '$99', category: 'Longevity' },
-    { name: 'NAD +', dosage: 'Subq Inj', price: '$199', category: 'Longevity' },
-    { name: 'Glutathione', dosage: 'Subq Inj', price: '$149', category: 'Longevity' },
-    { name: 'Testosterone', dosage: 'Injection', price: '$199', category: 'Testosterone' },
-    { name: 'Testosterone', dosage: 'RDT', price: '$159', category: 'Testosterone' },
-    { name: 'BPC 157', dosage: 'Subq Inj', price: '$149', category: 'Repair & Strength' },
-    { name: 'BPC 157 / TB 500', dosage: 'Subq Inj', price: '$199', category: 'Repair & Strength' },
+    // ─── Weight Loss ───────────────────────────────────────────────────────────
+    { name: 'Semaglutide Injection', dosage: '0.25 mg', price: '$99.99/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Injection', dosage: '0.5 mg', price: '$134.99/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Injection', dosage: '1 mg', price: '$179.99/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Injection', dosage: '1.5 mg', price: '$219.99/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Injection', dosage: '2 mg', price: '$249.99/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Injection', dosage: '2.4 mg', price: '$249.99/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '2.5 mg', price: '$190/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '5 mg', price: '$299.99/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '7.5 mg', price: '$320/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '10 mg', price: '$460/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '12.5 mg', price: '$500/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Injection', dosage: '15 mg', price: '$500/mo', category: 'Weight Loss' },
+    { name: 'Semaglutide Sublingual Drops', dosage: '', price: '$249/mo', category: 'Weight Loss' },
+    { name: 'Tirzepatide Sublingual Drops', dosage: '', price: '$349/mo', category: 'Weight Loss' },
+    { name: 'Retatrutide', dosage: 'Research', price: '$499/mo', category: 'Weight Loss' },
+
+    // ─── Better Sex ────────────────────────────────────────────────────────────
+    { name: 'Dual Performance Formula (Sildenafil/Tadalafil Troche)', dosage: '', price: '$89/mo', category: 'Better Sex' },
+    { name: 'Synergy Performance Formula (Sildenafil/Yohimbe Troche)', dosage: '', price: '$79/mo', category: 'Better Sex' },
+    { name: 'Dual Action Tablets (Sildenafil/Tadalafil)', dosage: '', price: '$69/mo', category: 'Better Sex' },
+    { name: 'Oxytocin Sublingual Troche', dosage: '', price: '$129/mo', category: 'Better Sex' },
+    { name: 'Oxytocin Nasal Spray', dosage: '', price: '$119/mo', category: 'Better Sex' },
+    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '40/14/2 mg', price: '$39 / 6-Pack', category: 'Better Sex' },
+    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '65/22/2 mg', price: '$42 / 6-Pack', category: 'Better Sex' },
+    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '80/22/3 mg', price: '$45 / 6-Pack', category: 'Better Sex' },
+    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '110/22/3 mg', price: '$50 / 6-Pack', category: 'Better Sex' },
+    { name: 'GrowTabs Sildenafil (Oral Men)', dosage: '30 mg', price: '$29.99 / 6-Pack', category: 'Better Sex' },
+    { name: 'GrowTabs Sildenafil (Oral Men)', dosage: '45 mg', price: '$35 / 6-Pack', category: 'Better Sex' },
+    { name: 'GrowTabs Tadalafil (Oral Men)', dosage: '6 mg', price: '$29.99 / 6-Pack', category: 'Better Sex' },
+    { name: 'GrowTabs Tadalafil (Oral Men)', dosage: '9 mg', price: '$35 / 6-Pack', category: 'Better Sex' },
+    { name: 'QuickLover (Women Oxytocin RDT)', dosage: '50 IU', price: '$43.99 / 6-Pack', category: 'Better Sex' },
+    { name: 'QuickLover (Women Oxytocin RDT)', dosage: '100 IU', price: '$49.99 / 6-Pack', category: 'Better Sex' },
+
+    // ─── Hair Loss ─────────────────────────────────────────────────────────────
+    { name: 'Finasteride', dosage: 'Oral Tablets', price: '$49/mo', category: 'Hair Loss' },
+    { name: 'Dual Growth Formula (Finasteride + Minoxidil Topical)', dosage: '', price: '$79/mo', category: 'Hair Loss' },
+    { name: 'Triple Growth Liquid (Finasteride + Minoxidil + Tretinoin)', dosage: '', price: '$99/mo', category: 'Hair Loss' },
+    { name: 'Max Growth Compound (5-in-1 Topical)', dosage: '', price: '$129/mo', category: 'Hair Loss' },
+    { name: '3-in-1 Hair Growth Tabs', dosage: '30 Day Supply', price: '$99.99', category: 'Hair Loss' },
+    { name: '3-in-1 Hair Growth Tabs', dosage: '60 Day Supply', price: '$179.99', category: 'Hair Loss' },
+    { name: '3-in-1 Hair Growth Tabs', dosage: '90 Day Supply', price: '$249.99', category: 'Hair Loss' },
+    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '30 Day Supply', price: '$89.99', category: 'Hair Loss' },
+    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '60 Day Supply', price: '$159.99', category: 'Hair Loss' },
+    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '90 Day Supply', price: '$224.99', category: 'Hair Loss' },
+
+    // ─── Longevity ─────────────────────────────────────────────────────────────
+    { name: 'NAD+ Nasal Spray', dosage: '100 mg/mL (15 mL)', price: '$124.99/mo', category: 'Longevity' },
+    { name: 'NAD+ Nasal Spray', dosage: '100 IU (15 mL)', price: '$149.99/mo', category: 'Longevity' },
+    { name: 'NAD+ Subcutaneous Injection', dosage: '200 mg/mL (5 mL)', price: '$119.99/mo', category: 'Longevity' },
+    { name: 'Glutathione Injection', dosage: '200 mg/mL (10 mL)', price: '$64.99/mo', category: 'Longevity' },
+
+    // ─── Testosterone ───────────────────────────────────────────────────────────
+    { name: 'Testosterone Cypionate Injection', dosage: 'TBA', price: '$99.99/mo', category: 'Testosterone' },
+    { name: 'Testosterone RDT', dosage: 'TBA', price: '$125/mo', category: 'Testosterone' },
+    { name: 'Estradiol Tabs', dosage: 'TBA', price: '$30/mo', category: 'Testosterone' },
+
+    // ─── Skin Care ─────────────────────────────────────────────────────────────
+    { name: 'Anti-Aging Cream', dosage: 'Monthly', price: '$35/mo', category: 'Skin Care' },
+    { name: 'Anti-Aging Cream', dosage: 'Every 2 Months', price: '$69.99', category: 'Skin Care' },
+    { name: 'Face Spot Peel', dosage: 'Monthly', price: '$36/mo', category: 'Skin Care' },
+    { name: 'Face Spot Peel', dosage: 'Every 2 Months', price: '$72', category: 'Skin Care' },
+    { name: 'Acne Cleanser', dosage: 'Monthly', price: '$29.99/mo', category: 'Skin Care' },
+    { name: 'Acne Cleanser', dosage: 'Every 2 Months', price: '$59.99', category: 'Skin Care' },
+    { name: 'Rosacea Relief Cream', dosage: 'Monthly', price: '$39.99/mo', category: 'Skin Care' },
+    { name: 'Rosacea Relief Cream', dosage: 'Every 2 Months', price: '$79.99', category: 'Skin Care' },
+    { name: 'Eye Serum', dosage: 'Monthly', price: '$79.99/mo', category: 'Skin Care' },
+    { name: 'Body Acne Cream', dosage: 'Monthly', price: '$139.99/mo', category: 'Skin Care' },
+    { name: 'Body Acne Cream', dosage: 'Every 2 Months', price: '$99.99', category: 'Skin Care' },
+
+    // ─── Repair & Healing ──────────────────────────────────────────────────────
+    { name: 'BPC-157', dosage: 'Subq Injection', price: '$149/mo', category: 'Repair & Healing' },
+    { name: 'BPC-157 / TB-500', dosage: 'Subq Injection', price: '$199/mo', category: 'Repair & Healing' },
 ];
 
 const ProfitTrackerView = () => {
