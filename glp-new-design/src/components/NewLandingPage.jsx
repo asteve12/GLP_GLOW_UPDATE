@@ -76,8 +76,8 @@ const NewLandingPage = () => {
             <main>
                 {/* Hero & Treatment Grid */}
                 <section className="pt-8 pb-20">
-                    <div className="w-full lg:max-w-[75%] 2xl:max-w-[70%] px-6">
-                        <div className="text-left mb-12 max-w-2xl">
+                    <div className="w-[80%] px-6">
+                        <div className="text-left mb-12">
                             <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
                                     className={`absolute left-0 text-4xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
