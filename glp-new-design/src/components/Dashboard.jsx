@@ -18,6 +18,35 @@ import testosteroneImg from '../assets/testosterone-image-v2.png';
 import skinCareImg from '../assets/skincare.png';
 import retatrutideImg from '../assets/clinical_breakthrough.png';
 import repairImg from '../assets/sec_quote_strenght_img.png';
+import antiAgingImg from '../assets/ant-aging.png';
+import faceSpotImg from '../assets/face-spot.png';
+import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
+
+const PRODUCT_MAP = {
+    'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '0.25–2.4 mg/wk', price: '299' },
+    'tirzepatide-injection': { name: 'Tirzepatide Injection', dosage: '2.5–15 mg/wk', price: '399' },
+    'semaglutide-drops': { name: 'Semaglutide Sublingual Drops', dosage: '(Sublingual)', price: '249' },
+    'tirzepatide-drops': { name: 'Tirzepatide Sublingual Drops', dosage: '(Sublingual)', price: '349' },
+    'finasteride-tablets': { name: 'Finasteride', dosage: '1 mg Oral Tablet', price: '49' },
+    'finasteride-minoxidil-liquid': { name: 'Dual Growth Formula', dosage: 'Finasteride + Minoxidil Topical', price: '79' },
+    'finasteride-minoxidil-tretinoin-liquid': { name: 'Triple Growth Liquid', dosage: 'Finasteride + Minoxidil + Tretinoin 3-in-1', price: '99' },
+    'minoxidil-max-compound-liquid': { name: 'Max Growth Compound', dosage: 'Minoxidil 5-in-1 Topical', price: '129' },
+    'sildenafil-tadalafil-troche': { name: 'Dual Performance Formula', dosage: 'Sildenafil + Tadalafil Troche', price: '89' },
+    'sildenafil-yohimbe-troche': { name: 'Synergy Performance Formula', dosage: 'Sildenafil + Yohimbe Troche', price: '79' },
+    'sildenafil-tadalafil-tablets': { name: 'Dual Action Tablets', dosage: 'Sildenafil + Tadalafil Oral', price: '69' },
+    'oxytocin-troche': { name: 'Oxytocin', dosage: 'Sublingual Troche', price: '129' },
+    'oxytocin-nasal-spray': { name: 'Oxytocin', dosage: 'Nasal Spray', price: '119' },
+    'nad-injection': { name: 'NAD+', dosage: '200 mg/mL Subcutaneous Injection', price: '119.99' },
+    'nad-nasal-spray': { name: 'NAD+ Nasal Spray', dosage: '100 mg/mL (15 mL)', price: '124.99' },
+    'glutathione-injection': { name: 'Glutathione', dosage: '200 mg/mL Subcutaneous Injection', price: '64.99' },
+    'testosterone-injection': { name: 'Testosterone Cypionate', dosage: 'Subcutaneous Injection', price: '149' },
+    'testosterone-rdt': { name: 'Testosterone RDT', dosage: 'Rapid Dissolve Tablet', price: '99' },
+    'bpc157-injection': { name: 'BPC-157', dosage: 'Subcutaneous Injection', price: '199' },
+    'bpc157-tb500-injection': { name: 'BPC-157 + TB-500', dosage: 'Subcutaneous Injection', price: '249' },
+    'anti-aging-cream': { name: 'Anti-Aging Cream', dosage: 'Tretinoin + Peptides', price: '79' },
+    'face-spot-peel': { name: 'Face Spot Peel', dosage: 'Alpha Hydroxy Acids', price: '69' },
+    'acne-cleanser': { name: 'Acne Cleanser', dosage: 'Salicylic Acid + Benzoyl', price: '49' }
+};
 
 
 // Helper to get category ID from drug name for intake questions
@@ -615,17 +644,31 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                             Submitted on {new Date(submission.submitted_at).toLocaleDateString()}
                         </p>
 
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Current Medication</p>
-                                <p className="text-sm font-bold text-white  capitalize">
-                                    {submission.dosage_preference || submission.selected_drug || 'Standard Protocol'}
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Medication Name</p>
+                                <p className="text-sm font-bold text-white capitalize">
+                                    {(PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.name || submission.selected_drug || 'Standard Protocol'}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Dosage</p>
+                                <p className="text-sm font-bold text-white capitalize">
+                                    {submission.dosage_preference || 'Standard'}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Monthly Price</p>
+                                <p className="text-sm font-black text-[#FFDE59]">
+                                    ${(PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299'}.00
                                 </p>
                             </div>
 
                             <div className="hidden lg:block">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Next Delivery</p>
-                                <p className="text-sm font-bold text-white ">Feb 14, 2026</p>
+                                <p className="text-sm font-bold text-white ">Next Sync</p>
                             </div>
                         </div>
                     </div>
@@ -1368,7 +1411,7 @@ const SubmissionCard = ({ submission, setSelectedAssessment, navigate, onPrescri
             {submission.approval_status === 'approved' && (
                 <div className="pt-4 border-t border-white/10 flex gap-3">
                     <button
-                        onClick={() => onPrescriptionClick(submission.provider_id)}
+                        onClick={() => onPrescriptionClick(submission)}
                         className="flex-1 bg-[#FFDE59] text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
                     >
                         Prescription info
@@ -1721,7 +1764,9 @@ const Dashboard = () => {
     const [hasAnimated, setHasAnimated] = useState(false);
     const [selectedAssessment, setSelectedAssessment] = useState(null);
     const [selectedPhysician, setSelectedPhysician] = useState(null);
+    const [selectedMedicationInfo, setSelectedMedicationInfo] = useState(null);
     const [loadingPhysician, setLoadingPhysician] = useState(false);
+    const [isSkincareModalOpen, setIsSkincareModalOpen] = useState(false);
     const [actionModal, setActionModal] = useState({ isOpen: false, type: null, medication: null });
     const [actionLoading, setActionLoading] = useState(false);
     const [lastOptimisticUpdate, setLastOptimisticUpdate] = useState(null);
@@ -2581,13 +2626,6 @@ const Dashboard = () => {
                                                 accent: '#FB923C'
                                             },
                                             {
-                                                id: 'retatrutide',
-                                                title: "Retatrutide (New Innovation)",
-                                                image: retatrutideImg,
-                                                path: "/assessment/weight-loss",
-                                                accent: '#FFDE59'
-                                            },
-                                            {
                                                 id: 'repair-healing',
                                                 title: "Repair & Strength Healing",
                                                 image: repairImg,
@@ -2615,8 +2653,14 @@ const Dashboard = () => {
                                             return (
                                                 <div
                                                     key={i}
-                                                    onClick={() => !isDisabled && navigate(product.path)}
-                                                    className={`min-w-[240px] h-[320px] rounded-3xl relative overflow-hidden transition-all snap-start ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer group/card hover:scale-[0.98]'}`}
+                                                    onClick={() => {
+                                                        if (product.id === 'skin-care') {
+                                                            setIsSkincareModalOpen(true);
+                                                        } else if (!isDisabled) {
+                                                            navigate(product.path);
+                                                        }
+                                                    }}
+                                                    className={`min-w-[240px] h-[320px] rounded-3xl relative overflow-hidden transition-all snap-start ${product.id !== 'skin-care' && isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer group/card hover:scale-[0.98]'}`}
                                                 >
                                                     <img
                                                         src={product.image}
@@ -2647,7 +2691,41 @@ const Dashboard = () => {
                                 </div>
 
 
-                                {/* Recently Relocated Section */}
+                                {/* Upcoming Products Section */}
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[40px] p-10 md:p-14 overflow-hidden relative group mb-12">
+                                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFDE59]/5 blur-[120px] -mr-32 -mt-32 rounded-full"></div>
+                                    <div className="flex flex-col lg:flex-row items-center gap-12 relative z-10">
+                                        <div className="w-full lg:w-1/2 text-left">
+                                            <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#FFDE59]/10 border border-[#FFDE59]/20 rounded-full mb-8">
+                                                <div className="w-1.5 h-1.5 bg-[#FFDE59] rounded-full animate-pulse shadow-[0_0_10px_#FFDE59]"></div>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59]">Upcoming Innovation</span>
+                                            </div>
+                                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">
+                                                Retatrutide <br />
+                                                <span className="text-white/40">(New Subq Injection)</span>
+                                            </h2>
+                                            <p className="text-sm text-white/50 mb-10 font-bold uppercase tracking-widest">The Next Generation of Weight Loss Biology</p>
+
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-10">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Eligibility Verification Cost</p>
+                                                <p className="text-2xl font-black text-white">$100.00</p>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-4">
+                                                <button className="px-8 py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-[0_0_40px_rgba(255,222,89,0.3)] transition-all transform hover:scale-[1.02]">
+                                                    Wait List for Retatrutide (Subq Inj)
+                                                </button>
+                                                <button className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
+                                                    Special Access Program (Today)
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="w-full lg:w-1/2 aspect-square rounded-[40px] overflow-hidden border border-white/10 relative">
+                                            <img src={retatrutideImg} alt="Retatrutide" className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-[2000ms]" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
                                 {/* Recent Assessments in Overview */}
@@ -2891,25 +2969,23 @@ const Dashboard = () => {
                                                 submission={submission}
                                                 setSelectedAssessment={setSelectedAssessment}
                                                 navigate={navigate}
-                                                onPrescriptionClick={async (providerId) => {
-                                                    if (!providerId) {
-                                                        alert('Clinician information not yet assigned to this record.');
-                                                        return;
-                                                    }
-                                                    setLoadingPhysician(true);
-                                                    const { data, error } = await supabase
-                                                        .from('supervising_physicians')
-                                                        .select('*')
-                                                        .eq('provider_id', providerId)
-                                                        .single();
+                                                onPrescriptionClick={async (submission) => {
+                                                    const drugKey = submission.selected_drug || submission.dosage_preference;
+                                                    const product = PRODUCT_MAP[drugKey];
 
-                                                    if (error) {
-                                                        console.error('Error fetching physician:', error);
-                                                        alert('Could not retrieve clinician details.');
+                                                    if (product) {
+                                                        setSelectedMedicationInfo({
+                                                            name: product.name,
+                                                            price: product.price,
+                                                            dosage: submission.dosage_preference || product.dosage
+                                                        });
                                                     } else {
-                                                        setSelectedPhysician(data);
+                                                        setSelectedMedicationInfo({
+                                                            name: drugKey || 'Active Treatment',
+                                                            price: '299',
+                                                            dosage: submission.dosage_preference || 'Standard'
+                                                        });
                                                     }
-                                                    setLoadingPhysician(false);
                                                 }}
                                             />
                                         ))
@@ -3464,54 +3540,125 @@ const Dashboard = () => {
                 onSubmit={handleActionSubmit}
             />
             {/* Physician Details Modal */}
-            {
-                selectedPhysician && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-                        <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
-                        <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
-                            <div className="text-center mb-10">
-                                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
-                                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-2xl font-black uppercase tracking-tighter  mb-2">Prescribing <span className="text-white">Authority</span></h3>
-                                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
+            {selectedPhysician && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedPhysician(null)}></div>
+                    <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] overflow-hidden shadow-2xl dashboard-card p-10">
+                        <div className="text-center mb-10">
+                            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mx-auto mb-6">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
+                                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
                             </div>
-
-                            <div className="space-y-6">
-                                <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
-                                    <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">Prescribing <span className="text-white">Authority</span></h3>
+                            <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Official Clinical Credentials</p>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-[#FFDE59]/40 transition-all">
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Full Name & Title</p>
+                                <p className="text-lg font-bold text-white tracking-tight">{selectedPhysician.supervising_physician_name}</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
+                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">License #</p>
-                                        <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_license_number}</p>
-                                    </div>
-                                    <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
-                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
-                                        <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
-                                    </div>
-                                </div>
-
-                                <div className="p-6 bg-white/5 border border-white/10 rounded-3xl border-dashed">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-red-400/60 mb-2">DEA Registration</p>
-                                    <p className="text-sm font-black tracking-[0.3em] text-white/80">{selectedPhysician.supervising_dea_number}</p>
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">NPI #</p>
+                                    <p className="text-xs font-black tracking-widest text-white">{selectedPhysician.supervising_npi_number}</p>
                                 </div>
                             </div>
+                        </div>
+                        <button onClick={() => setSelectedPhysician(null)} className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            )}
+            {/* Medication Details Modal */}
+            {selectedMedicationInfo && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-2xl" onClick={() => setSelectedMedicationInfo(null)}></div>
+                    <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl p-10">
+                        <div className="text-center mb-10">
+                            <div className="w-20 h-20 rounded-full bg-[#FFDE59]/10 border border-[#FFDE59]/20 flex items-center justify-center mx-auto mb-6">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="1.5">
+                                    <path d="M10.5 21l-7.5-7.5 3.5-3.5 7.5 7.5-3.5 3.5zM14.5 7L21 13.5l-3.5 3.5L11 10.5 14.5 7zM12 12l2.5-2.5" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">Prescription <span className="text-[#FFDE59]">Info</span></h3>
+                            <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Approved Treatment Details</p>
+                        </div>
 
+                        <div className="space-y-4">
+                            <div className="p-6 bg-white/5 border border-white/10 rounded-3xl">
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Medication Name</p>
+                                <p className="text-lg font-bold text-white tracking-tight">{selectedMedicationInfo.name}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Monthly Price</p>
+                                    <p className="text-base font-black tracking-widest text-[#FFDE59]">${selectedMedicationInfo.price}.00</p>
+                                </div>
+                                <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Dosage</p>
+                                    <p className="text-xs font-black tracking-widest text-white">{selectedMedicationInfo.dosage}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setSelectedMedicationInfo(null)}
+                            className="w-full mt-10 py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-lg"
+                        >
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            )}
+            {/* Skincare Category Products Modal */}
+            {isSkincareModalOpen && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-xl" onClick={() => setIsSkincareModalOpen(false)}></div>
+                    <div className="relative w-full max-w-4xl bg-[#111111] border border-white/10 rounded-[40px] shadow-2xl p-8 md:p-12 overflow-hidden max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="text-left">
+                                <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">Skin Care <span className="text-white/40">Collection</span></h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Prescription-grade formulas for clinical results</p>
+                            </div>
                             <button
-                                onClick={() => setSelectedPhysician(null)}
-                                className="w-full mt-10 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all"
+                                onClick={() => setIsSkincareModalOpen(false)}
+                                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
                             >
-                                Dismiss
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { title: "Anti-Aging Cream", price: "$79/mo", img: antiAgingImg, path: "/product/anti-aging-cream", desc: "Tretinoin + Peptides" },
+                                { title: "Face Spot Peel", price: "$69/mo", img: faceSpotImg, path: "/product/face-spot-peel", desc: "Alpha Hydroxy Acids" },
+                                { title: "Acne Cleanser", price: "$49/mo", img: acneCleanserImg, path: "/product/acne-cleanser", desc: "Salicylic Acid + Benzoyl" }
+                            ].map((item, i) => (
+                                <div key={i} onClick={() => { setIsSkincareModalOpen(false); navigate(item.path); }} className="bg-white/5 border border-white/10 rounded-3xl p-6 group cursor-pointer hover:border-[#FFDE59]/40 transition-all text-center">
+                                    <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-black">
+                                        <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" />
+                                    </div>
+                                    <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{item.title}</h4>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-4">{item.desc}</p>
+                                    <p className="text-sm font-bold text-white/60 mb-6">{item.price}</p>
+                                    <button className="w-full py-3 bg-white/5 border border-white/10 text-white rounded-xl text-[9px] font-black uppercase tracking-widest group-hover:bg-[#FFDE59] group-hover:text-black transition-all">
+                                        View Details
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                )
-            }
+                </div>
+            )}
         </div >
     );
 };

@@ -241,8 +241,8 @@ const Assessment = () => {
     const { signUp, signIn, signOut, user, verifyOtp, updateUser } = useAuth();
     const [step, setStep] = useState(0);
 
-    const baseFee = categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : 25.00);
-    const baseFeeCents = categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : 2500);
+    const baseFee = categoryId === 'retatrutide' ? 100.00 : (categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : 25.00));
+    const baseFeeCents = categoryId === 'retatrutide' ? 10000 : (categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : 2500));
     const [showQuote, setShowQuote] = useState(true);
     const [showBMI, setShowBMI] = useState(false);
     const [showQuote2, setShowQuote2] = useState(false);
@@ -3816,8 +3816,8 @@ const Assessment = () => {
             if (nextStep < medicalQuestions.length) {
                 setMedicalStep(nextStep);
             } else {
-                if (categoryId === 'weight-loss') {
-                    setStep(25); // Weight-loss: go to AI review step
+                if (categoryId === 'weight-loss' || categoryId === 'retatrutide') {
+                    setStep(25); // Weight-loss or Retatrutide: go to AI review step
                     callAIReview();
                 } else {
                     setStep(10); // Other categories: go directly to Identification

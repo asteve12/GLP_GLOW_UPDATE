@@ -20,8 +20,14 @@ import repairImg from '../assets/sec_quote_strenght_img.png';
 import medicalTeamImg from '../assets/medical-team.png';
 import fdaImg from '../assets/fda_image.webp';
 import doctorImg from '../assets/doctor_image.png';
+import antiAgingImg from '../assets/ant-aging.png';
+import faceSpotImg from '../assets/face-spot.png';
+import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
+import { useNavigate } from 'react-router-dom';
 
 const NewLandingPage = () => {
+    const navigate = useNavigate();
+    const [isSkincareModalOpen, setIsSkincareModalOpen] = useState(false);
     const categories = [
         { text: 'Weight loss', color: 'text-orange-600' },
         { text: 'Better sex', color: 'text-black' },
@@ -91,13 +97,13 @@ const NewLandingPage = () => {
                             <p className="text-gray-500 text-xl">Customized care starts here</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16">
                             {[
                                 { label: <span className="font-serif italic-u"><sub>u</sub>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
                                 { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAv6wve4IaUgF73Lo9B1lOz-pbcNVHhWnowiQfXy-87zYhvAlbWm2widJbI65HI5YwlAf2GzY6OQywDcS3OUvZixeZAoIq2P9qvgUkrXxhTZiYF06bSVuoAXspBMsea0t_am-c326QgzfcLrzcaeP6vQoTj-5Undg5PRT4U70mU39zB-vZZfWfujFbXUNXBXXRWkGDPfZ6d2aUr_NfcHh8D6Bagm_9YXhNGLq0IEeu7TwZAnfyEkRHCmdb_yBwn5j6BYouVBbyLzCHe' },
                                 { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7-ipYFRVrPiuFu-R6Y_Sz-aTOJh48jBupdGHajJ_3zcvE-HEH7Fa-rZJCHUh9FTSkjph_G0F6YOjwrz_JJYRujbnPMWM2l88Qyk7zmNryvB8vONuE5BZg46zVMGF81az-AjwmB06-apba4vUCwfGLi7vygGnzxAkW4bcYSqRInUyYms82vs8AOdBcPEyBVV7mZOqSzjnITQqtC-XkqrjAgtSGEwI1MRDULuhtG6vqyL9VrBOmYFPkPiuDxrBrn6bZAvI2CU5p31V' },
-                                { label: 'SKIN GLOW', title: 'Skin Care', slug: 'glutathione-injection', img: skincareImg },
+                                { label: 'SKIN GLOW', title: 'Skin Care', slug: 'anti-aging-cream', img: skincareImg },
                                 { label: 'TESTOSTERONE', title: 'Hormonal Therapy', slug: 'testosterone', img: testosteroneImg },
                                 { label: 'LAB TESTING', title: 'Biomarkers', slug: 'nad-nasal-spray', img: labTestingImg },
                             ]
@@ -111,13 +117,32 @@ const NewLandingPage = () => {
                                         'sildenafil-yohimbe-troche': 'sexual-health',
                                         'glutathione-injection': 'longevity',
                                         'testosterone': 'testosterone',
-                                        'retatrutide': 'weight-loss',
-                                        'repair-healing': 'repair-healing'
+                                        'retatrutide': 'retatrutide',
+                                        'repair-healing': 'repair-healing',
+                                        'anti-aging-cream': 'skin-care'
                                     };
                                     const categoryId = categoryMap[item.slug] || 'weight-loss';
 
+                                    if (categoryId === 'skin-care') {
+                                        return (
+                                            <div key={i} onClick={() => setIsSkincareModalOpen(true)} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
+                                                <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
+                                                    <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300">
+                                                        {item.label}
+                                                    </span>
+                                                    <span className="text-lg font-bold text-center transition-colors duration-300">
+                                                        {item.title}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    const linkTo = `/assessment/${categoryId}`;
+
                                     return (
-                                        <Link key={i} to={`/assessment/${categoryId}`} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
+                                        <Link key={i} to={linkTo} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                             {item.video ? (
                                                 <video
                                                     autoPlay
@@ -153,6 +178,25 @@ const NewLandingPage = () => {
                                 className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200 hover:border-black transition-colors"
                             >
                                 <span className="text-sm font-bold text-gray-500 hover:text-black">Browse all treatments →</span>
+                            </div>
+                        </div>
+
+                        {/* Upcoming Products Section */}
+                        <div className="mt-20">
+                            <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
+                                <Link to="/assessment/retatrutide" className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black border-2 border-red-500/20">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-black z-0"></div>
+                                    <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm z-20">New Clinical Research</div>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
+                                        <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300 opacity-60">Retatrutide</span>
+                                        <span className="text-lg font-bold text-center transition-colors duration-300 group-hover:text-red-500">Clinical Breakthrough</span>
+                                        <span className="mt-3 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+                                            Apply for Access
+                                        </span>
+                                        <span className="mt-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-white/80 transition-colors">Eligibility Verification: $100</span>
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -566,6 +610,49 @@ const NewLandingPage = () => {
                     </h1>
                 </div>
             </footer>
+
+            {/* Skincare Category Products Modal */}
+            {isSkincareModalOpen && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsSkincareModalOpen(false)}></div>
+                    <div className="relative w-full max-w-4xl bg-white border border-gray-200 rounded-[40px] shadow-2xl p-8 md:p-12 overflow-hidden max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="text-left">
+                                <h3 className="text-3xl font-black uppercase tracking-tighter text-gray-900 mb-2">Skin Care <span className="text-gray-400">Collection</span></h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Prescription-grade formulas for clinical results</p>
+                            </div>
+                            <button
+                                onClick={() => setIsSkincareModalOpen(false)}
+                                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-all"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { title: "Anti-Aging Cream", price: "$79/mo", img: antiAgingImg, path: "/product/anti-aging-cream", desc: "Tretinoin + Peptides" },
+                                { title: "Face Spot Peel", price: "$69/mo", img: faceSpotImg, path: "/product/face-spot-peel", desc: "Alpha Hydroxy Acids" },
+                                { title: "Acne Cleanser", price: "$49/mo", img: acneCleanserImg, path: "/product/acne-cleanser", desc: "Salicylic Acid + Benzoyl" }
+                            ].map((item, i) => (
+                                <div key={i} onClick={() => { setIsSkincareModalOpen(false); navigate(item.path); }} className="bg-gray-50 border border-gray-100 rounded-3xl p-6 group cursor-pointer hover:border-gray-300 transition-all text-center">
+                                    <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-white shadow-inner">
+                                        <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    </div>
+                                    <h4 className="text-lg font-black uppercase tracking-tight text-gray-900 mb-1">{item.title}</h4>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-4 bg-black inline-block px-2 py-1 rounded-full">{item.desc}</p>
+                                    <p className="text-sm font-bold text-gray-600 mb-6">{item.price}</p>
+                                    <button className="w-full py-3 bg-black text-white rounded-xl text-[9px] font-black uppercase tracking-widest group-hover:bg-[#FFDE59] group-hover:text-black transition-all">
+                                        View Details
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };

@@ -920,33 +920,35 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         })()}
                                     </div>
                                 </div>
-                                <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Vital Statistics</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
-                                            <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Height</p>
-                                            <p className="text-xl font-black text-white">
-                                                {patient.height_feet && patient.height_inches ? `${patient.height_feet}'${patient.height_inches}"` :
-                                                    patient.height_ft && patient.height_in ? `${patient.height_ft}'${patient.height_in}"` :
-                                                        submissions[0]?.height_feet && submissions[0]?.height_inches ? `${submissions[0].height_feet}'${submissions[0].height_inches}"` :
-                                                            submissions[0]?.height_ft && submissions[0]?.height_in ? `${submissions[0].height_ft}'${submissions[0].height_in}"` :
-                                                                submissions[0]?.height || patient.height || '�'}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
-                                            <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Weight</p>
-                                            <p className="text-xl font-black text-white">
-                                                {patient.weight || submissions[0]?.weight || '�'}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
-                                            <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">BMI</p>
-                                            <p className="text-xl font-black text-white">
-                                                {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '�')}
-                                            </p>
+                                {getMedicationCategoryId(submissions[0]?.selected_drug || submissions[0]?.dosage_preference) === 'weight-loss' && (
+                                    <div>
+                                        <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Vital Statistics</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
+                                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Height</p>
+                                                <p className="text-xl font-black text-white">
+                                                    {patient.height_feet && patient.height_inches ? `${patient.height_feet}'${patient.height_inches}"` :
+                                                        patient.height_ft && patient.height_in ? `${patient.height_ft}'${patient.height_in}"` :
+                                                            submissions[0]?.height_feet && submissions[0]?.height_inches ? `${submissions[0].height_feet}'${submissions[0].height_inches}"` :
+                                                                submissions[0]?.height_ft && submissions[0]?.height_in ? `${submissions[0].height_ft}'${submissions[0].height_in}"` :
+                                                                    submissions[0]?.height || patient.height || '—'}
+                                                </p>
+                                            </div>
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
+                                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Weight</p>
+                                                <p className="text-xl font-black text-white">
+                                                    {patient.weight || submissions[0]?.weight || '—'}
+                                                </p>
+                                            </div>
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center w-full">
+                                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">BMI</p>
+                                                <p className="text-xl font-black text-white">
+                                                    {patient.bmi ? Number(patient.bmi).toFixed(1) : (submissions[0]?.bmi ? Number(submissions[0].bmi).toFixed(1) : '—')}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -2259,68 +2261,74 @@ const SubmissionModal = ({ submission, onClose, onAction }) => {
                                     <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || intake.race || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
 
-                                {/* Physical Measurements */}
-                                <SectionHeader title="Physical Measurements" />
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                    {isEditing ? (
-                                        <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-white/10 px-4">
-                                            <span className="text-[10px] text-white/30 uppercase font-black tracking-widest leading-none shrink-0 md:w-1/3">Height</span>
-                                            <div className="flex gap-2 justify-end flex-1">
-                                                <input
-                                                    type="number"
-                                                    placeholder="Ft"
-                                                    value={formData.height_feet || ''}
-                                                    onChange={(e) => handleChange('height_feet', e.target.value)}
-                                                    className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    placeholder="In"
-                                                    value={formData.height_inches || ''}
-                                                    onChange={(e) => handleChange('height_inches', e.target.value)}
-                                                    className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
-                                                />
+                                {/* Physical Measurements - Only show for Weight Loss */}
+                                {(formData.selected_drug?.includes('weight') ||
+                                    formData.selected_drug?.includes('semaglutide') ||
+                                    formData.selected_drug?.includes('tirzepatide')) && (
+                                        <>
+                                            <SectionHeader title="Physical Measurements" />
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                                                {isEditing ? (
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-white/10 px-4">
+                                                        <span className="text-[10px] text-white/30 uppercase font-black tracking-widest leading-none shrink-0 md:w-1/3">Height</span>
+                                                        <div className="flex gap-2 justify-end flex-1">
+                                                            <input
+                                                                type="number"
+                                                                placeholder="Ft"
+                                                                value={formData.height_feet || ''}
+                                                                onChange={(e) => handleChange('height_feet', e.target.value)}
+                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
+                                                            />
+                                                            <input
+                                                                type="number"
+                                                                placeholder="In"
+                                                                value={formData.height_inches || ''}
+                                                                onChange={(e) => handleChange('height_inches', e.target.value)}
+                                                                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black text-right"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <InfoRow label="Height" value={
+                                                        formData.height_feet && formData.height_inches
+                                                            ? `${formData.height_feet}'${formData.height_inches}"`
+                                                            : (intake.height ||
+                                                                (intake.height_feet && intake.height_inches ? `${intake.height_feet}'${intake.height_inches}"` : null) ||
+                                                                (intake.bmi_height_feet && intake.bmi_height_inches ? `${intake.bmi_height_feet}'${intake.bmi_height_inches}"` : null) ||
+                                                                (intake.bmi_height ? intake.bmi_height : null) ||
+                                                                'N/A')
+                                                    } isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                                )}
+
+                                                <InfoRow label="Weight (lbs)" field="weight" value={formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight || 'N/A'} type="number" isEditing={isEditing} formData={formData} onChange={handleChange} />
+
+                                                <div className="md:col-span-2 mt-4">
+                                                    <div className="flex items-center justify-between p-8 bg-accent-black/[0.03] border border-accent-black/10 rounded-[32px]">
+                                                        <div>
+                                                            <p className="text-[10px] text-white uppercase font-black tracking-widest mb-1">Advanced Metric</p>
+                                                            <h5 className="text-sm font-black uppercase text-white/80">Body Mass Index (BMI)</h5>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-4xl font-black  tracking-tighter text-white leading-none mb-1">
+                                                                {/* Recalculate BMI if editing */}
+                                                                {(() => {
+                                                                    const hFeet = formData.height_feet || (intake.height_feet) || (intake.bmi_height_feet);
+                                                                    const hInches = formData.height_inches || (intake.height_inches) || (intake.bmi_height_inches) || 0;
+                                                                    const wVal = formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight;
+
+                                                                    const hTotal = (Number(hFeet) * 12) + Number(hInches);
+                                                                    const w = Number(wVal);
+                                                                    if (hTotal > 0 && w > 0) return ((w / (hTotal * hTotal)) * 703).toFixed(1);
+                                                                    return formData.bmi || 'N/A';
+                                                                })()}
+                                                            </p>
+                                                            <p className="text-[8px] font-black uppercase tracking-widest text-white/40">Clinical Grade</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <InfoRow label="Height" value={
-                                            formData.height_feet && formData.height_inches
-                                                ? `${formData.height_feet}'${formData.height_inches}"`
-                                                : (intake.height ||
-                                                    (intake.height_feet && intake.height_inches ? `${intake.height_feet}'${intake.height_inches}"` : null) ||
-                                                    (intake.bmi_height_feet && intake.bmi_height_inches ? `${intake.bmi_height_feet}'${intake.bmi_height_inches}"` : null) ||
-                                                    (intake.bmi_height ? intake.bmi_height : null) ||
-                                                    'N/A')
-                                        } isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                        </>
                                     )}
-
-                                    <InfoRow label="Weight (lbs)" field="weight" value={formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight || 'N/A'} type="number" isEditing={isEditing} formData={formData} onChange={handleChange} />
-
-                                    <div className="md:col-span-2 mt-4">
-                                        <div className="flex items-center justify-between p-8 bg-accent-black/[0.03] border border-accent-black/10 rounded-[32px]">
-                                            <div>
-                                                <p className="text-[10px] text-white uppercase font-black tracking-widest mb-1">Advanced Metric</p>
-                                                <h5 className="text-sm font-black uppercase text-white/80">Body Mass Index (BMI)</h5>
-                                            </div>
-                                            <div className="text-center">
-                                                <p className="text-4xl font-black  tracking-tighter text-white leading-none mb-1">
-                                                    {/* Recalculate BMI if editing */}
-                                                    {(() => {
-                                                        const hFeet = formData.height_feet || (intake.height_feet) || (intake.bmi_height_feet);
-                                                        const hInches = formData.height_inches || (intake.height_inches) || (intake.bmi_height_inches) || 0;
-                                                        const wVal = formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight;
-
-                                                        const hTotal = (Number(hFeet) * 12) + Number(hInches);
-                                                        const w = Number(wVal);
-                                                        if (hTotal > 0 && w > 0) return ((w / (hTotal * hTotal)) * 703).toFixed(1);
-                                                        return formData.bmi || 'N/A';
-                                                    })()}
-                                                </p>
-                                                <p className="text-[8px] font-black uppercase tracking-widest text-white/40">Clinical Grade</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 {/* Goals & Selection */}
                                 <SectionHeader title="Goals & Drug Selection" />
