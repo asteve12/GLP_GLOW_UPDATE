@@ -21,6 +21,7 @@ import repairImg from '../assets/sec_quote_strenght_img.png';
 import antiAgingImg from '../assets/ant-aging.png';
 import faceSpotImg from '../assets/face-spot.png';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
+import WaitlistModal from './WaitlistModal';
 
 const PRODUCT_MAP = {
     'semaglutide-injection': { name: 'Semaglutide Injection', dosage: '0.25–2.4 mg/wk', price: '299' },
@@ -102,131 +103,6 @@ const MedicationCategory = {
     SKIN_CARE: 'Skin Care',
     REPAIR_HEALING: 'Repair & Healing'
 };
-
-const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
-    const [formData, setFormData] = useState({
-        firstName: profile?.first_name || '',
-        lastName: profile?.last_name || '',
-        email: user?.email || '',
-        phone: profile?.phone_number || ''
-    });
-    const [submitting, setSubmitting] = useState(false);
-
-    if (!isOpen) return null;
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        try {
-            const { error } = await supabase
-                .from('waitlist')
-                .insert([{
-                    first_name: formData.firstName,
-                    last_name: formData.lastName,
-                    email: formData.email,
-                    phone: formData.phone,
-                    product: 'Retatrutide'
-                }]);
-
-            if (error) throw error;
-            toast.success('Successfully added to the waitlist!');
-            onClose();
-        } catch (err) {
-            console.error('Waitlist error:', err);
-            toast.error('Failed to join waitlist. Please try again.');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={onClose}></div>
-            <div className="relative w-full max-w-lg bg-[#0A0A0A] border border-white/10 rounded-[40px] p-8 md:p-12 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-[80px] -mr-32 -mt-32 rounded-full"></div>
-
-                <div className="relative z-10 text-center mb-10">
-                    <div className="w-16 h-16 rounded-3xl bg-[#FFDE59]/10 border border-[#FFDE59]/20 flex items-center justify-center mx-auto mb-6">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="1.5">
-                            <path d="M12 2v20M2 12h20" />
-                            <circle cx="12" cy="12" r="10" />
-                        </svg>
-                    </div>
-                    <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Join the <span className="text-[#FFDE59]">Waitlist</span></h2>
-                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em]">Retatrutide Subq Injection Access</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-4">First Name</label>
-                            <input
-                                type="text"
-                                required
-                                value={formData.firstName}
-                                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:border-[#FFDE59] transition-all outline-none font-bold placeholder:text-white/10"
-                                placeholder="First Name"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-4">Last Name</label>
-                            <input
-                                type="text"
-                                required
-                                value={formData.lastName}
-                                onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:border-[#FFDE59] transition-all outline-none font-bold placeholder:text-white/10"
-                                placeholder="Last Name"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-4">Email Address</label>
-                        <input
-                            type="email"
-                            required
-                            value={formData.email}
-                            onChange={e => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:border-[#FFDE59] transition-all outline-none font-bold placeholder:text-white/10"
-                            placeholder="Email Address"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 ml-4">Phone Number</label>
-                        <input
-                            type="tel"
-                            required
-                            value={formData.phone}
-                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:border-[#FFDE59] transition-all outline-none font-bold placeholder:text-white/10"
-                            placeholder="Phone Number"
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={submitting}
-                        className="w-full py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:shadow-[0_0_40px_rgba(255,222,89,0.3)] transition-all transform hover:scale-[1.01] flex items-center justify-center gap-3 mt-4"
-                    >
-                        {submitting ? 'Processing...' : 'Secure My Spot →'}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="w-full text-[9px] font-black uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors py-2"
-                    >
-                        Maybe later
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
-};
-
 
 const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
     const stripe = useStripe();
@@ -747,24 +623,24 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                     </div>
                     <div>
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter  text-white">
+                            <h3 className="text-2xl font-black uppercase tracking-tighter text-white">
                                 {(() => {
-                                    const drug = submission.selected_drug || submission.dosage_preference || '';
-                                    return getMedicationCategory(drug) || drug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Active Protocol';
+                                    const name = submission.approved_drug_name || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.name || submission.selected_drug?.replace(/-/g, ' ') || 'Active Protocol';
+                                    const dosage = submission.approved_dosage || (submission.dosage_preference !== 'Dosage' ? submission.dosage_preference : '');
+                                    return dosage ? `${name} (${dosage})` : name;
                                 })()}
                             </h3>
                             <div className="flex gap-2">
-                                {/* Subscription Status Badge - based on billing state */}
+                                {/* Subscription Status Badge */}
                                 {isSubscriptionActive ? (
-                                    <span className="px-3 py-1 bg-white/5 border border-white/20 text-white text-[9px] font-black uppercase tracking-widest rounded-full">
-                                        Active
+                                    <span className="px-3 py-1 bg-[#FFDE59]/10 border border-[#FFDE59]/20 text-[#FFDE59] text-[9px] font-black uppercase tracking-widest rounded-full">
+                                        Subscribed
                                     </span>
                                 ) : (
                                     <span className="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest rounded-full">
                                         Inactive
                                     </span>
                                 )}
-                                {/* Approval Status Badge - based on provider decision */}
                                 <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-widest rounded-full ${submission.approval_status === 'approved' ? 'bg-white/5 border-white/10 text-white/50' :
                                     submission.approval_status === 'pending' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' :
                                         'bg-red-500/10 border-red-500/20 text-red-500'
@@ -773,38 +649,30 @@ const MedicationCard = ({ submission, isSubscriptionActive = true, onAction, onR
                                 </span>
                             </div>
                         </div>
+
                         <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-6">
-                            Submitted on {new Date(submission.submitted_at).toLocaleDateString()}
+                            Clinical Program · Submitted {new Date(submission.submitted_at).toLocaleDateString()}
                         </p>
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Medication Name</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Therapeutic Area</p>
                                 <p className="text-sm font-bold text-white capitalize">
-                                    {submission.approved_drug_name || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.name || submission.selected_drug?.replace(/-/g, ' ') || 'Active Protocol'}
+                                    {getMedicationCategory(submission.selected_drug || submission.dosage_preference)}
                                 </p>
                             </div>
 
-                            {(submission.approved_dosage || submission.dosage_preference) && (submission.approved_dosage !== 'Dosage' && submission.dosage_preference !== 'Dosage') && (
-                                <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Dosage</p>
-                                    <p className="text-sm font-bold text-white capitalize">
-                                        {submission.approved_dosage || submission.dosage_preference}
-                                    </p>
-                                </div>
-                            )}
-
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Monthly Price</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Monthly Cost</p>
                                 <p className="text-sm font-black text-[#FFDE59]">
                                     ${submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299'}.00
                                 </p>
                             </div>
 
-                            <div className="hidden lg:block">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Next Delivery</p>
-                                <p className="text-sm font-bold text-white ">
-                                    {submission.next_delivery_date ? new Date(submission.next_delivery_date).toLocaleDateString() : 'Processing Shipment'}
+                            <div className="text-left">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Expected Delivery</p>
+                                <p className="text-sm font-bold text-white">
+                                    {submission.next_delivery_date ? new Date(submission.next_delivery_date).toLocaleDateString() : 'Awaiting Fulfillment'}
                                 </p>
                             </div>
                         </div>
@@ -3808,6 +3676,13 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+            {/* Waitlist Modal */}
+            <WaitlistModal
+                isOpen={isWaitlistModalOpen}
+                onClose={() => setIsWaitlistModalOpen(false)}
+                user={user}
+                profile={profile}
+            />
         </div >
     );
 };
