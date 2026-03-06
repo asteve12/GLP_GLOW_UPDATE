@@ -622,79 +622,56 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                         </svg>
                     </div>
                     <div>
-                        <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <h3 className="text-2xl font-black uppercase tracking-tighter text-white">
+                        <div className="flex items-center gap-3 mb-6">
+                            <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
                                 {(() => {
-                                    // FIND NAME STRICTLY FROM ORDER TABLE
+                                    // PRODUCT NAME ACCESSED FROM DRUG_NAME COLUMN IN ORDERS TABLE
+                                    // IDENTIFIED VIA CURRENT_PLAN IN THE USER PROFILE
                                     const submissionCategory = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
-                                    const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === submissionCategory);
 
-                                    const name = matchingOrder?.drug_name || 'Active Protocol';
-                                    const dosage = submission.approved_dosage || (submission.dosage_preference !== 'Dosage' ? submission.dosage_preference : '');
-                                    const price = submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299';
-                                    const duration = '30-Day Supply'; // Standard duration
-                                    const category = submissionCategory;
+                                    // 1. Try to find the exact order for this specific assessment
+                                    let match = orders?.find(o => o.form_submission_id === submission.id);
 
-                                    return (
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2">
-                                                <span>{name}</span>
-                                                {dosage && <span className="text-white/40 text-lg">({dosage})</span>}
-                                            </div>
-                                            <div className="flex items-center gap-3 text-[10px] font-black tracking-[0.2em] text-[#FFDE59]">
-                                                <span>${price}.00</span>
-                                                <span className="w-1 h-1 rounded-full bg-white/20"></span>
-                                                <span>{duration}</span>
-                                                <span className="w-1 h-1 rounded-full bg-white/20"></span>
-                                                <span className="text-white/40">{category}</span>
-                                            </div>
-                                        </div>
-                                    );
+                                    // 2. If not found, try to find an order that matches the plan name from current_plan
+                                    if (!match && submission.selected_drug) {
+                                        match = orders?.find(o =>
+                                            o.drug_name?.toLowerCase().includes(submission.selected_drug.toLowerCase()) ||
+                                            submission.selected_drug.toLowerCase().includes(o.drug_name?.toLowerCase())
+                                        );
+                                    }
+
+                                    // 3. Fallback to category match or same category order
+                                    if (!match) {
+                                        match = orders?.find(o => getMedicationCategory(o.drug_name) === submissionCategory);
+                                    }
+
+                                    // Return the drug_name from orders, or the plan name from profile, or fallback
+                                    return match?.drug_name || submission.selected_drug || 'Active Protocol';
                                 })()}
                             </h3>
-                            <div className="flex gap-2">
-                                {/* Subscription Status Badge */}
-                                {isSubscriptionActive ? (
-                                    <span className="px-3 py-1 bg-[#FFDE59]/10 border border-[#FFDE59]/20 text-[#FFDE59] text-[9px] font-black uppercase tracking-widest rounded-full">
-                                        Subscribed
-                                    </span>
-                                ) : (
-                                    <span className="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest rounded-full">
-                                        Inactive
-                                    </span>
-                                )}
-                                <span className={`px-3 py-1 border text-[9px] font-black uppercase tracking-widest rounded-full ${submission.approval_status === 'approved' ? 'bg-white/5 border-white/10 text-white/50' :
-                                    submission.approval_status === 'pending' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' :
-                                        'bg-red-500/10 border-red-500/20 text-red-500'
-                                    }`}>
-                                    {submission.approval_status}
-                                </span>
-                            </div>
+
                         </div>
 
-                        <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-6">
-                            Clinical Program · Submitted {new Date(submission.submitted_at).toLocaleDateString()}
-                        </p>
 
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                            <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Therapeutic Area</p>
-                                <p className="text-sm font-bold text-white capitalize">
-                                    {getMedicationCategory(submission.selected_drug || submission.dosage_preference)}
-                                </p>
-                            </div>
 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Monthly Cost</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Medication Price</p>
                                 <p className="text-sm font-black text-[#FFDE59]">
-                                    ${submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299'}.00
+                                    {(() => {
+                                        const price = submission.plan_details?.price || submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299';
+                                        return price.toString().includes('.') ? `$${price}` : `$${price}.00`;
+                                    })()}
                                 </p>
                             </div>
 
                             <div className="text-left">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Expected Delivery</p>
-                                <p className="text-sm font-bold text-white">
-                                    {submission.next_delivery_date ? new Date(submission.next_delivery_date).toLocaleDateString() : 'Awaiting Fulfillment'}
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">next delivery</p>
+                                <p className="text-sm font-bold text-white uppercase tracking-tighter">
+                                    {(() => {
+                                        const displayDate = submission.next_delivery_date || submission.plan_details?.Nextdelivery?.[0];
+                                        return displayDate ? new Date(displayDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Awaiting fulfillment';
+                                    })()}
                                 </p>
                             </div>
                         </div>
@@ -751,26 +728,34 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
 
 
 const OrdersView = ({ orders }) => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const currentMonthOrders = orders.filter(order => {
+        const orderDate = new Date(order.created_at);
+        return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+    });
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Order <span className="text-white">History</span></h2>
-                <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Track your clinical shipments and deliveries</p>
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Current Month <span className="text-white">Orders</span></h2>
+                <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Track your clinical shipments for {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-                {orders.length === 0 ? (
+                {currentMonthOrders.length === 0 ? (
                     <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-20 text-center">
                         <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
                                 <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
-                        <p className="text-white/50 font-black uppercase tracking-widest text-xs">No active orders found</p>
-                        <p className="text-[10px] text-white/30 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed</p>
+                        <p className="text-white/50 font-black uppercase tracking-widest text-xs">No orders for this month</p>
+                        <p className="text-[10px] text-white/30 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed for the current month</p>
                     </div>
                 ) : (
-                    orders.map(order => (
+                    currentMonthOrders.map(order => (
                         <div key={order.id} className="bg-[#111111] border border-white/10 rounded-[40px] p-8 md:p-10 hover:border-[#FFDE59]/50 transition-all group relative overflow-hidden">
                             {/* Decorative Background Element */}
                             <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
@@ -791,7 +776,7 @@ const OrdersView = ({ orders }) => {
                                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">ORD-{order.id.slice(0, 8).toUpperCase()}</span>
                                         </div>
                                         <h3 className="text-xl font-black uppercase  tracking-tighter mb-1">{order.drug_name}</h3>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Ordered on {new Date(order.created_at).toLocaleDateString()}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Scheduled for {new Date(order.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric', day: 'numeric' })}</p>
                                     </div>
                                 </div>
 
@@ -826,6 +811,7 @@ const OrdersView = ({ orders }) => {
         </div>
     );
 };
+
 
 const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
     const stripe = useStripe();
@@ -1034,24 +1020,47 @@ const BillingView = ({ profile, user }) => {
 
     // Format the plan name (handles JSON format like {"weight_loss":"Semaglutide Injection"})
     const formatPlanName = (plan) => {
-        if (!plan || plan === 'None' || plan === '{ }') return 'Monthly Maintenance';
-
-        // If it's already an object (not a string)
-        if (typeof plan === 'object' && plan !== null) {
-            const plans = Object.values(plan);
-            return plans.length > 0 ? plans.join(' + ') : 'Monthly Maintenance';
-        }
-
         try {
-            const parsed = JSON.parse(plan);
-            if (typeof parsed === 'object' && parsed !== null) {
-                const plans = Object.values(parsed);
+            if (!plan || plan === 'None' || plan === '{}' || plan === 'null' || plan === '{ }') return 'No Active Plan';
+
+            let data = plan;
+            if (typeof plan === 'string') {
+                try {
+                    data = JSON.parse(plan);
+                    if (typeof data === 'string') data = JSON.parse(data);
+                } catch (e) {
+                    return plan.trim() || 'Active Protocol';
+                }
+            }
+
+            if (typeof data === 'object' && data !== null) {
+                const forbidden = [
+                    'weight-loss', 'longevity', 'hair-restoration', 'sexual-health',
+                    'testosterone', 'skin-care', 'repair-healing', 'none', 'null',
+                    'weight_loss', 'hair_restoration', 'sexual_health', 'repair_healing'
+                ];
+
+                const plans = Object.values(data).map(val => {
+                    if (!val) return null;
+                    let display = '';
+                    if (typeof val === 'string') display = val;
+                    else if (typeof val === 'object' && val.name) {
+                        display = val.name;
+                        if (val.price) display += ` ($${val.price})`;
+                    }
+
+                    if (!display) return null;
+                    const dLow = display.toLowerCase().trim().replace(/_/g, '-');
+                    if (forbidden.includes(dLow)) return null;
+
+                    return display.trim();
+                }).filter(Boolean);
+
                 return plans.length > 0 ? plans.join(' + ') : 'Monthly Maintenance';
             }
-            return String(parsed);
-        } catch {
-            // If not JSON string, return as is (if it's a string)
-            return typeof plan === 'string' ? plan : 'Protocol Plan';
+            return typeof plan === 'string' ? plan.trim() : 'Active Protocol';
+        } catch (err) {
+            return 'Active Protocol';
         }
     };
 
@@ -1453,14 +1462,6 @@ const SubmissionCard = ({ submission, orders, setSelectedAssessment, navigate, o
                     >
                         Shipment
                     </button>
-                </div>
-            )}
-
-            {submission.approval_status === 'pending' && (
-                <div className="pt-4 border-t border-white/10">
-                    <p className="text-[10px] text-white/60 font-medium leading-relaxed">
-                        <span className="text-white">⏱</span> Review in progress. Average turnaround is 24-48 hours.
-                    </p>
                 </div>
             )}
         </div>
@@ -2809,12 +2810,7 @@ const Dashboard = () => {
                                                 >
                                                     Retake Assessment
                                                 </button>
-                                            ) : (
-                                                <div className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-full">
-                                                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.3)]"></div>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Clinical Review in Progress</span>
-                                                </div>
-                                            )}
+                                            ) : null}
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
@@ -2839,8 +2835,8 @@ const Dashboard = () => {
                                             {activeCategories.length === 1
                                                 ? activeCategories[0]
                                                 : activeCategories.length > 1
-                                                    ? 'My Protocols'
-                                                    : 'My Medications'}
+                                                    ? 'Active medication'
+                                                    : 'Active medication'}
                                         </h2>
                                         <p className="text-xs text-white/50 font-bold uppercase tracking-widest">
                                             {activeCategories.length === 1
@@ -2854,43 +2850,60 @@ const Dashboard = () => {
                                         <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
                                             Request New Consultation
                                         </button>
-                                    ) : (submissions[0]?.approval_status === 'pending' || submissions[0]?.approval_status === 'under_review') ? (
-                                        <div className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full">
-                                            <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/50">Clinical Review in Progress</span>
-                                        </div>
                                     ) : null}
                                 </div>
                                 <div className="space-y-6">
                                     {(() => {
-                                        // LOGIC: Show ALL active/approved submissions so users can manage multiple protocols (e.g. Weight Loss + Hair)
-                                        // Use approvedSubmissions as the source of truth.
-                                        let activeDisplayList = approvedSubmissions;
+                                        // PRIORITY: Use current_plan from profile table as the primary source of truth for active medications
+                                        let activeDisplayList = [];
 
-                                        // Fallback: If no approved submissions but profile has a plan, parse it and show legacy/synthetic cards
-                                        if (activeDisplayList.length === 0 && profile?.current_plan && profile.current_plan !== 'None') {
+                                        if (profile?.current_plan && profile.current_plan !== 'None' && profile.current_plan !== 'null' && profile.current_plan !== '') {
                                             try {
-                                                // Try parsing as JSON (new format with multiple categories)
-                                                const parsedPlans = JSON.parse(profile.current_plan);
-                                                activeDisplayList = Object.entries(parsedPlans).map(([category, plan]) => ({
-                                                    id: `plan-from-profile-${category}`,
-                                                    selected_drug: plan,
-                                                    dosage_preference: plan,
-                                                    submitted_at: profile.updated_at || new Date().toISOString(),
-                                                    approval_status: 'approved',
-                                                    dosage: 'Standard Protocol'
-                                                }));
-                                            } catch {
-                                                // If parsing fails, it's the old string format
-                                                activeDisplayList = [{
-                                                    id: 'plan-from-profile',
-                                                    selected_drug: profile.current_plan,
-                                                    dosage_preference: profile.current_plan,
-                                                    submitted_at: profile.updated_at || new Date().toISOString(),
-                                                    approval_status: 'approved',
-                                                    dosage: 'Standard Protocol'
-                                                }];
+                                                // Try parsing as JSON (multi-category format)
+                                                const parsedPlans = typeof profile.current_plan === 'string' && profile.current_plan.startsWith('{')
+                                                    ? JSON.parse(profile.current_plan)
+                                                    : null;
+
+                                                if (parsedPlans) {
+                                                    activeDisplayList = Object.entries(parsedPlans).map(([category, planData]) => {
+                                                        const planName = typeof planData === 'object' && planData !== null ? planData.name : planData;
+                                                        const categoryDisplayName = category.charAt(0).toUpperCase() + category.slice(1).replace(/_/g, ' ');
+
+                                                        // Attempt to find a real submission to enrich technical details
+                                                        const realSub = submissions.find(s =>
+                                                            getMedicationCategory(s.selected_drug || s.dosage_preference) === categoryDisplayName
+                                                        );
+
+                                                        return {
+                                                            ...(realSub || {}),
+                                                            id: realSub?.id || `plan-${category}`,
+                                                            selected_drug: planName,
+                                                            dosage_preference: planName,
+                                                            approval_status: 'approved',
+                                                            is_from_profile: true,
+                                                            plan_details: typeof planData === 'object' ? planData : null
+                                                        };
+                                                    });
+                                                } else {
+                                                    // Legacy string format
+                                                    const realSub = submissions.find(s => s.approval_status === 'approved');
+                                                    activeDisplayList = [{
+                                                        ...(realSub || {}),
+                                                        id: realSub?.id || 'plan-legacy',
+                                                        selected_drug: profile.current_plan,
+                                                        dosage_preference: profile.current_plan,
+                                                        approval_status: 'approved',
+                                                        is_from_profile: true
+                                                    }];
+                                                }
+                                            } catch (err) {
+                                                console.error("Error parsing current_plan:", err);
                                             }
+                                        }
+
+                                        // Only show approved submissons if no plan is found in profile (fallback)
+                                        if (activeDisplayList.length === 0) {
+                                            activeDisplayList = approvedSubmissions;
                                         }
 
                                         return activeDisplayList.length === 0 ? (
@@ -2998,12 +3011,7 @@ const Dashboard = () => {
                                         <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg">
                                             Retake Assessment
                                         </button>
-                                    ) : (
-                                        <div className="flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full">
-                                            <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Review in Progress</span>
-                                        </div>
-                                    )}
+                                    ) : null}
                                 </div>
                                 <div className="space-y-6">
                                     {submissions.length === 0 ? (
@@ -3028,7 +3036,7 @@ const Dashboard = () => {
 
                                                     setSelectedMedicationInfo({
                                                         name: drugName,
-                                                        price: submission.approved_price || product?.price || '299',
+                                                        price: submission.plan_details?.price || submission.approved_price || product?.price || '299',
                                                         dosage: submission.approved_dosage || submission.dosage_preference || product?.dosage || 'Standard'
                                                     });
                                                 }}
@@ -3644,7 +3652,9 @@ const Dashboard = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
                                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Monthly Price</p>
-                                    <p className="text-base font-black tracking-widest text-[#FFDE59]">${selectedMedicationInfo.price}.00</p>
+                                    <p className="text-base font-black tracking-widest text-[#FFDE59]">
+                                        {selectedMedicationInfo.price.toString().includes('.') ? `$${selectedMedicationInfo.price}` : `$${selectedMedicationInfo.price}.00`}
+                                    </p>
                                 </div>
                                 <div className="p-5 bg-white/5 border border-white/10 rounded-3xl">
                                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Dosage</p>

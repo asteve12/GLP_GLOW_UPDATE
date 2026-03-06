@@ -3819,8 +3819,17 @@ const Assessment = () => {
                 if (categoryId === 'weight-loss' || categoryId === 'retatrutide') {
                     setStep(25); // Weight-loss or Retatrutide: go to AI review step
                     callAIReview();
+                } else if (categoryId === 'sexual-health') {
+                    setStep(25);
+                    callSexualHealthAIReview();
+                } else if (categoryId === 'hair-restoration') {
+                    setStep(25);
+                    callHairRestorationAIReview();
                 } else {
-                    setStep(10); // Other categories: go directly to Identification
+                    // For other categories: go to AI result step (auto-approve for now)
+                    setStep(25);
+                    setAiApproved(true);
+                    setAiReviewing(false);
                 }
             }
         };
@@ -5431,6 +5440,52 @@ const Assessment = () => {
         </div>
     );
 
+    const renderSubscriptionPlanStep = () => (
+        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+            <div className="text-center mb-12">
+                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
+                    {categoryId === 'sexual-health' ? 'Step 33: Subscription' : 'Step 25: Subscription'}
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-4 leading-tight">
+                    Choose your <span className="text-accent-black">Subscription Plan.</span>
+                </h2>
+                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
+                    Select the plan that best fits your goals.
+                </p>
+            </div>
+
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl space-y-6">
+                <div className="space-y-4">
+                    {['Monthly Subscription', '3-Month Subscription', '6-Month Subscription'].map(plan => (
+                        <button
+                            key={plan}
+                            onClick={() => setIntakeData({ ...intakeData, subscription_plan: plan })}
+                            className={`w-full py-6 px-8 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${intakeData.subscription_plan === plan ? 'border-black text-black bg-white shadow-md scale-[1.01]' : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'}`}
+                        >
+                            {plan}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4 pt-8">
+                    <button
+                        onClick={() => setStep(25)}
+                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={() => setStep(10)} // Go to ID verification
+                        disabled={!intakeData.subscription_plan}
+                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${intakeData.subscription_plan ? 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
+                    >
+                        Continue to ID Verification
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderAIResultStep = () => (
         <div className="assessment-step max-w-4xl mx-auto py-20 px-6 text-center">
             {aiReviewing ? (
@@ -5496,10 +5551,10 @@ const Assessment = () => {
 
                     <div className="flex flex-col items-center gap-4">
                         <button
-                            onClick={() => setStep(10)}
+                            onClick={() => aiApproved ? setStep(9) : setStep(10)}
                             className="group relative inline-flex items-center justify-center px-16 py-8 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:bg-[#FFDE59] hover:text-black overflow-hidden"
                         >
-                            <span className="relative z-10">Continue to ID Verification</span>
+                            <span className="relative z-10">{aiApproved ? 'Choose Subscription Plan' : 'Continue to ID Verification'}</span>
                             <div className="absolute inset-x-0 bottom-0 h-1 bg-[#FFDE59] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                         </button>
 
@@ -5734,6 +5789,7 @@ const Assessment = () => {
                     {(step === 5 || step === 6 || step === 7) && renderEligibilityStep()}
 
                     {step === 8 && renderDynamicIntakeStep()}
+                    {step === 9 && renderSubscriptionPlanStep()}
 
                     {step === 10 && renderIdentificationStep()}
                     {step === 11 && renderShippingStep()}
