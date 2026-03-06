@@ -76,6 +76,24 @@ Deno.serve(async (req) => {
 
     const product_category = display_category;
 
+    // Determine Duration & Plan Type
+    let plan_duration_months = payload.plan_duration_months || 1;
+    let plan_label = 'Monthly';
+
+    // Explicit override check
+    if (plan_duration_months === 6) plan_label = '6 Month';
+    else if (plan_duration_months === 3) plan_label = '3 Month';
+    else {
+        // Fallback to string parsing if payload didn't specify
+        if (drug.includes('6 month')) {
+            plan_duration_months = 6;
+            plan_label = '6 Month';
+        } else if (drug.includes('3 month')) {
+            plan_duration_months = 3;
+            plan_label = '3 Month';
+        }
+    }
+
     // —————————————————————————————————————
     // 1. REACTIVATE SUBSCRIPTION (after full cancel)
     // —————————————————————————————————————
@@ -128,8 +146,8 @@ Deno.serve(async (req) => {
             const price = await stripe.prices.create({
                 unit_amount: product_price,
                 currency: "usd",
-                recurring: { interval: "month" },
-                product_data: { name: `${product_name || current_plan} – Monthly` },
+                recurring: { interval: "month", interval_count: plan_duration_months },
+                product_data: { name: `${product_name || current_plan} – ${plan_label}` },
             });
 
             const newSub = await stripe.subscriptions.create({
@@ -146,7 +164,7 @@ Deno.serve(async (req) => {
                     category: category_slug,
                     reactivation: "true",
                     shipping_address: JSON.stringify(shipping_address),
-                    note: "Reactivated after full cancel – trial until original period end",
+                    note: `Reactivated – ${plan_label} plan`,
                 },
                 description: `Reactivation: ${product_name} (${product_category})`,
             });
@@ -160,7 +178,13 @@ Deno.serve(async (req) => {
                     currentPlans = {};
                 }
             }
-            currentPlans[category_slug] = product_name || currentPlans[category_slug];
+            currentPlans[category_slug] = {
+                enddate: new Date(newSub.current_period_end * 1000).toISOString(),
+                Nextdelivery: [], // Array of next delivery dates if applicable
+                name: product_name || currentPlans[category_slug]?.name || current_plan,
+                type: plan_label,
+                price: (product_price / 100).toFixed(2)
+            };
 
             let subMap: any = {};
             try {
@@ -226,7 +250,7 @@ Deno.serve(async (req) => {
     </div>
     <div style="padding:30px;line-height:1.7;color:#333">
       <p>Dear ${first_name} ${last_name},</p>
-      <p>We're thrilled to have you back! Your GLP-GLOW subscription has been <strong>reactivated</strong>.</p>
+      <p>We're thrilled to have you back! Your GLP-GLOW subscription has been <strong>reactivated</strong> on our <strong>${plan_label}</strong> plan.</p>
       <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745;font-size:16px">
         <strong>You will NOT be charged today.</strong><br>
         Your next billing date is <strong>${nextBilling}</strong> — exactly when your original paid period ends.
@@ -357,8 +381,8 @@ Deno.serve(async (req) => {
             const newPrice = await stripe.prices.create({
                 unit_amount: real_price ?? product_price,
                 currency: "usd",
-                recurring: { interval: "month" },
-                product_data: { name: `${product_name} – Monthly` },
+                recurring: { interval: "month", interval_count: plan_duration_months },
+                product_data: { name: `${product_name} – ${plan_label}` },
             });
 
             // Create new subscription with trial
@@ -377,10 +401,35 @@ Deno.serve(async (req) => {
                     dosage_change: "true",
                     previous_plan: typeof current_plan === 'string' ? current_plan : JSON.stringify(current_plan),
                     shipping_address: JSON.stringify(shipping_address),
-                    note: "Dosage change – no charge until original period end",
+                    plan_type: plan_label,
+                    note: `Dosage change to ${plan_label} plan`,
                 },
                 description: `Dosage Change: ${product_name} (${product_category})`,
             });
+
+            // Update Profile immediately for UI
+            const { data: latestProfile } = await supabase.from("profiles").select("current_plan, stripe_subscription_id, subscription_status").eq("id", userId).single();
+
+            let currentPlans: any = {};
+            if (latestProfile?.current_plan) {
+                try {
+                    currentPlans = typeof latestProfile.current_plan === 'string' ? JSON.parse(latestProfile.current_plan) : latestProfile.current_plan;
+                } catch {
+                    currentPlans = {};
+                }
+            }
+            currentPlans[category_slug] = {
+                enddate: new Date(trialEnd * 1000).toISOString(),
+                Nextdelivery: [], // Staggered orders for dosage change can be handled by webhook or further logic
+                name: product_name,
+                type: plan_label,
+                price: ((real_price ?? product_price) / 100).toFixed(2)
+            };
+
+            await supabase.from("profiles").update({
+                current_plan: JSON.stringify(currentPlans),
+                current_sub_end_date: new Date(trialEnd * 1000).toISOString(),
+            }).eq("id", userId);
 
             // Approve form
             if (form_submission_id) {
@@ -415,7 +464,7 @@ Deno.serve(async (req) => {
       <p>Your request to update your medication dosage has been <strong>approved</strong> by our medical team.</p>
       <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745;font-size:16px">
         <strong>No charge today.</strong><br>
-        Your new plan (${product_name}) starts automatically on <strong>${nextBilling}</strong> when your current paid period ends.
+        Your new <strong>${plan_label}</strong> plan (${product_name}) starts automatically on <strong>${nextBilling}</strong> when your current paid period ends.
       </div>
       <p>Your next shipment will include the updated dosage.</p>
       <p style="text-align:center;margin:40px 0">
@@ -523,112 +572,107 @@ Deno.serve(async (req) => {
                 stripe_payment_method_id,
             } = profile;
 
-            // Charge first month if needed
-            if (product_price < real_price) {
-                const paymentIntent1 = await stripe.paymentIntents.create({
-                    amount: product_price,
-                    currency: "usd",
-                    customer: stripe_customer_id,
-                    payment_method: stripe_payment_method_id,
-                    confirm: true,
-                    off_session: true,
-                    description: `Initial: ${product_name} (${product_category})`,
-                    metadata: {
-                        user_id: userId,
-                        form_submission_id,
-                        product_name,
-                        product_category,
-                        category: category_slug,
-                    },
+            // 1. Charge today's amount (Initial Plan Cost)
+            const paymentIntentPrimary = await stripe.paymentIntents.create({
+                amount: product_price,
+                currency: "usd",
+                customer: stripe_customer_id,
+                payment_method: stripe_payment_method_id,
+                confirm: true,
+                off_session: true,
+                description: `Initial: ${product_name} (${product_category})`,
+                metadata: {
+                    user_id: userId,
+                    form_submission_id,
+                    product_name,
+                    product_category,
+                    category: category_slug,
+                    duration: `${plan_duration_months} months`,
+                },
+            });
+
+            if (paymentIntentPrimary.status !== "succeeded") {
+                return new Response("Initial payment failed", {
+                    status: 500,
+                    headers: { "Access-Control-Allow-Origin": "*" },
                 });
-                if (paymentIntent1.status !== "succeeded") {
-                    return new Response("Payment failed", {
-                        status: 500,
-                        headers: {
-                            "Access-Control-Allow-Origin": "*",
-                        },
-                    });
+            }
+
+            // 2. Create the recurring price
+            const recurringPrice = await stripe.prices.create({
+                unit_amount: real_price ?? product_price,
+                currency: "usd",
+                recurring: {
+                    interval: "month",
+                    interval_count: plan_duration_months
+                },
+                product_data: {
+                    name: `${product_name} – ${plan_label}`
+                },
+            });
+
+            // 3. Subscription starts now, but next charge is after plan_duration_months
+            const trialEndDate = new Date();
+            trialEndDate.setMonth(trialEndDate.getMonth() + plan_duration_months);
+            const trialEnd = Math.floor(trialEndDate.getTime() / 1000);
+
+            const subscription = await stripe.subscriptions.create({
+                customer: stripe_customer_id,
+                default_payment_method: stripe_payment_method_id,
+                items: [{ price: recurringPrice.id }],
+                collection_method: "charge_automatically",
+                trial_end: trialEnd,
+                metadata: {
+                    user_id: userId,
+                    form_submission_id,
+                    product_name,
+                    product_category,
+                    category: category_slug,
+                    shipping_address: JSON.stringify(shipping_address),
+                    plan_type: plan_label
+                },
+                description: `${product_name} (${product_category}) - ${plan_label}`,
+            });
+
+            if (subscription.status === "incomplete") throw Error("Subscription incomplete (insufficient funds)");
+
+            // 4. Update Database: Create multiple orders if 3-month or 6-month
+            const ordersToCreate = [];
+            const nextDeliveryDates = [];
+            for (let i = 0; i < plan_duration_months; i++) {
+                const scheduledDate = new Date();
+                scheduledDate.setMonth(scheduledDate.getMonth() + i);
+                const dateIso = scheduledDate.toISOString();
+
+                if (i > 0) {
+                    nextDeliveryDates.push(dateIso);
                 }
-            }
-            let subscription;
 
-            if (product_price < real_price) {
-                console.log("exceute product_price < real_price")
-                // 2. Always create monthly REAL PRICE
-                const price = await stripe.prices.create({
-                    unit_amount: real_price,
-                    currency: "usd",
-                    recurring: { interval: "month" },
-                    product_data: { name: `${product_name} – Monthly` },
-                });
-                const now = new Date();
-                const trialEndDate = new Date(now);
-                trialEndDate.setMonth(trialEndDate.getMonth() + 1);
-                trialEndDate.setHours(12, 0, 0, 0); // optional: consistent time
-
-                const trialEnd = Math.floor(trialEndDate.getTime() / 1000);
-
-                // 3. Create subscription WITHOUT charging today
-                subscription = await stripe.subscriptions.create({
-                    customer: stripe_customer_id,
-                    default_payment_method: stripe_payment_method_id,
-                    items: [{ price: price.id }],
-                    collection_method: "charge_automatically",
-
-                    // 👇 the magic line that prevents double billing
-                    trial_end: trialEnd,
-
-                    metadata: {
-                        user_id: userId,
-                        form_submission_id,
-                        product_name,
-                        product_category,
-                        category: category_slug,
-                        shipping_address: JSON.stringify(shipping_address),
-                    },
-                    description: `${product_name} (${product_category})`,
-                });
-            } else {
-                // 3. Create price + subscription
-                const price = await stripe.prices.create({
-                    unit_amount: real_price ?? product_price,
-                    currency: "usd",
-                    recurring: {
-                        interval: "month",
-                    },
-                    product_data: {
-                        name: `${product_name} – Monthly`,
-                    },
-                });
-                subscription = await stripe.subscriptions.create({
-                    customer: stripe_customer_id,
-                    default_payment_method: stripe_payment_method_id,
-                    items: [
-                        {
-                            price: price.id,
-                        },
-                    ],
-                    collection_method: "charge_automatically",
-                    metadata: {
-                        user_id: userId,
-                        form_submission_id,
-                        product_name,
-                        product_category,
-                        category: category_slug,
-                        shipping_address: JSON.stringify(shipping_address),
-                    },
-                    description: `${product_name} (${product_category})`,
+                ordersToCreate.push({
+                    user_id: userId,
+                    drug_name: plan_duration_months > 1 ? `${product_name} (Month ${i + 1} of ${plan_duration_months})` : product_name,
+                    drug_price: (product_price / plan_duration_months) / 100, // Allocation per month
+                    shipping_address,
+                    payment_status: "completed",
+                    delivery_status: i === 0 ? "in transit" : "pending",
+                    form_submission_id,
+                    created_at: dateIso,
                 });
             }
 
-            if (subscription.status === "incomplete") throw Error("insufficient funds")
+            const { data: orders, error: ordersError } = await supabase
+                .from("orders")
+                .insert(ordersToCreate)
+                .select("id");
 
-            console.log("active", subscription)
+            if (ordersError) {
+                console.error("Order creation failed:", ordersError);
+            }
 
-            // Handle current_plan as JSON
-            let currentPlans: any = {};
-            // Fetch latest profile for plans
+            // 5. Update Profile
             const { data: latestProfile } = await supabase.from("profiles").select("current_plan, stripe_subscription_id, subscription_status").eq("id", userId).single();
+
+            let currentPlans: any = {};
             if (latestProfile?.current_plan) {
                 try {
                     currentPlans = typeof latestProfile.current_plan === 'string' ? JSON.parse(latestProfile.current_plan) : latestProfile.current_plan;
@@ -636,9 +680,14 @@ Deno.serve(async (req) => {
                     currentPlans = {};
                 }
             }
-            currentPlans[category_slug] = product_name;
+            currentPlans[category_slug] = {
+                enddate: trialEndDate.toISOString(),
+                Nextdelivery: nextDeliveryDates,
+                name: product_name,
+                type: plan_label,
+                price: (product_price / 100).toFixed(2)
+            };
 
-            // Update profile
             let subMapNew: any = {};
             try {
                 const currentVal = latestProfile?.stripe_subscription_id || '';
@@ -650,7 +699,6 @@ Deno.serve(async (req) => {
             } catch { }
             subMapNew[category_slug] = subscription.id;
 
-            // Update Active Status Map
             let statusMapNew: any = {};
             try {
                 const currentStatus = latestProfile?.subscription_status;
@@ -663,7 +711,6 @@ Deno.serve(async (req) => {
             } catch { }
             statusMapNew[category_slug] = true;
 
-            // Update profile
             await supabase
                 .from("profiles")
                 .update({
@@ -671,28 +718,11 @@ Deno.serve(async (req) => {
                     subscription_status: JSON.stringify(statusMapNew),
                     subscribe_status: true,
                     current_plan: JSON.stringify(currentPlans),
-                    current_sub_end_date: new Date(
-                        subscription.current_period_end * 1000
-                    ).toISOString(),
+                    current_sub_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
                 })
                 .eq("id", userId);
 
-            // Create order
-            const { data: order } = await supabase
-                .from("orders")
-                .insert({
-                    user_id: userId,
-                    drug_name: product_name,
-                    drug_price: product_price / 100,
-                    shipping_address,
-                    payment_status: "completed",
-                    delivery_status: "in transit",
-                    form_submission_id,
-                })
-                .select("id")
-                .single();
-
-            // Approve form
+            // 6. Approve Form
             await supabase
                 .from("form_submissions")
                 .update({
@@ -701,45 +731,39 @@ Deno.serve(async (req) => {
                 })
                 .eq("id", form_submission_id);
 
-            // Send welcome email
+            // 7. Send Email
             const amount = (product_price / 100).toFixed(2);
-            const nextDate = new Date(
-                subscription.current_period_end * 1000
-            ).toLocaleDateString("en-US", {
+            const nextDateLabel = new Date(subscription.current_period_end * 1000).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
             });
 
             const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Welcome to GLP-GLOW!</title></head>
+<html><head><meta charset="UTF-8"><title>Your GLP-GLOW ${plan_label} Plan is Active!</title></head>
 <body style="font-family:Arial;background:#f9f9f9;margin:0;padding:20px">
   <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
     <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
-      <h1 style="margin:0;font-size:28px">Welcome to GLP-GLOW!</h1>
+      <h1 style="margin:0;font-size:28px">Success! Welcome to GLP-GLOW.</h1>
     </div>
     <div style="padding:30px;line-height:1.7;color:#333">
       <p>Dear ${first_name} ${last_name},</p>
-      <p>Congratulations! Your <strong>${product_name}</strong> subscription is now <strong>active</strong>.</p>
+      <p>Your <strong>${plan_label}</strong> subscription for <strong>${product_name}</strong> is now <strong>active</strong>.</p>
       <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745">
-        Your medication will ship in 3–5 business days.
+        Your first month's medication will ship in 3–5 business days. Your subsequent supplies are covered under your ${plan_duration_months}-month plan.
       </div>
       <div style="background:#f8f9fa;padding:20px;border-radius:8px">
-        <p><strong>Plan:</strong> ${product_name}</p>
-        <p><strong>Charged Today:</strong> $${amount}</p>
-        <p><strong>Next Billing:</strong> ${nextDate}</p>
-        <p><strong>Order ID:</strong> ${order?.id || "See dashboard"}</p>
+        <p><strong>Plan Duration:</strong> ${plan_label}</p>
+        <p><strong>Total Charged Today:</strong> $${amount}</p>
+        <p><strong>Next Billing Date:</strong> ${nextDateLabel} (Next $${amount} renewal)</p>
       </div>
       <p style="text-align:center;margin:30px 0">
         <a href="https://quiz.americahealthsolutions.com/dashboard" style="background:#28a745;color:#fff;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold">Go to Dashboard</a>
       </p>
       <p><strong>The GLP-GLOW Team</strong></p>
-      <a href="https://quiz.americahealthsolutions.com" style="color: #0066cc; text-decoration: underline;text-align:center">unsubscribe here</a>.
     </div>
   </div>
 </body></html>`;
-
-            console.log("checking email", email)
 
             if (SENDGRID_API_KEY) {
                 await fetch("https://api.sendgrid.com/v3/mail/send", {
@@ -751,7 +775,7 @@ Deno.serve(async (req) => {
                     body: JSON.stringify({
                         personalizations: [{ to: [{ email }] }],
                         from: { email: MAILER_FROM, name: "GLP-GLOW" },
-                        subject: "Your GLP-GLOW Subscription is Active!",
+                        subject: `Your ${plan_label} GLP-GLOW Subscription is Active!`,
                         content: [{ type: "text/html", value: html }],
                     }),
                 });
@@ -760,9 +784,9 @@ Deno.serve(async (req) => {
             return new Response(
                 JSON.stringify({
                     success: true,
-                    message: "Subscription activated!",
+                    message: `Subscription activated for ${plan_label} plan!`,
                     subscription_id: subscription.id,
-                    order_id: order?.id,
+                    orders_created: ordersToCreate.length,
                 }),
                 {
                     status: 200,
@@ -773,7 +797,7 @@ Deno.serve(async (req) => {
                 }
             );
         } catch (error: any) {
-            console.error("New subscription failed:", error);
+            console.error("Subscription process failed:", error);
             return new Response(
                 JSON.stringify({ error: error.message || "Server error" }),
                 {

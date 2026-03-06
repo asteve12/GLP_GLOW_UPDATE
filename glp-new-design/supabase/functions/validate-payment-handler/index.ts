@@ -1,65 +1,24 @@
 import Stripe from "npm:stripe@15.0.0";
 import { createClient } from "npm:@supabase/supabase-js@2.33.0";
 
-// --- SendGrid helper ---
-async function sendEmailSendGrid(apiKey: string, fromEmail: string, toEmail: string, subject: string, plainText: string, html: string) {
-    const payload = {
-        personalizations: [
-            {
-                to: [
-                    {
-                        email: toEmail
-                    }
-                ]
-            }
-        ],
-        from: {
-            email: fromEmail,
-            name: "GLP-GLOW"
-        },
-        subject,
-        content: [
-            {
-                type: "text/plain",
-                value: plainText
-            },
-            {
-                type: "text/html",
-                value: html
-            }
-        ]
-    };
-    const resp = await fetch("https://api.sendgrid.com/v3/mail/send", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
-    if (!resp.ok) {
-        const text = await resp.text().catch(() => "");
-        throw new Error(`SendGrid send failed: ${resp.status} ${text}`);
-    }
-    return true;
-}
-
-// Never lets SendGrid get empty plain text
-function safePlain(text: string, name: string): string {
-    if (text && text.trim().length > 0) return text.trim();
-    return `Hi ${name.split(" ")[0] || "there"}, this is an important update from GLP-GLOW.`;
-}
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, stripe-signature"
+};
 
 Deno.serve(async (req) => {
+    // Handle CORS preflight
+    if (req.method === "OPTIONS") {
+        return new Response(null, { headers: corsHeaders });
+    }
+
     if (req.method !== "POST") {
-        return new Response("Method Not Allowed", {
-            status: 405
-        });
+        return new Response("Method Not Allowed", { status: 405 });
     }
 
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY");
@@ -67,266 +26,370 @@ Deno.serve(async (req) => {
 
     if (!STRIPE_SECRET_KEY || !STRIPE_WEBHOOK_SECRET || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
         console.error("Missing required environment variables");
-        return new Response("Server configuration error", {
-            status: 500
-        });
+        return new Response("Server configuration error", { status: 500 });
     }
 
-    const stripe = new Stripe(STRIPE_SECRET_KEY, {
-        apiVersion: "2023-10-16"
-    });
+    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2023-10-16" });
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const bodyUint8 = new Uint8Array(await req.arrayBuffer());
     const signature = req.headers.get("stripe-signature");
 
     if (!signature) {
-        console.warn("Missing stripe-signature header");
-        return new Response("Missing signature", {
-            status: 400
-        });
+        return new Response("Missing stripe-signature header", { status: 400 });
     }
 
-    // --- Handlers ---
+    // --- Helper Functions ---
+    function safePlain(text: string, name: string): string {
+        if (text && text.trim().length > 0) return text.trim();
+        return `Hi ${name.split(" ")[0] || "there"}, this is an important update from GLP-GLOW.`;
+    }
+
+    async function sendEmailSendGrid(apiKey: string, fromEmail: string, toEmail: string, subject: string, plainText: string, html: string) {
+        const payload = {
+            personalizations: [{ to: [{ email: toEmail }] }],
+            from: { email: fromEmail, name: "GLP-GLOW" },
+            subject,
+            content: [
+                { type: "text/plain", value: plainText },
+                { type: "text/html", value: html }
+            ]
+        };
+        const resp = await fetch("https://api.sendgrid.com/v3/mail/send", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!resp.ok) {
+            const text = await resp.text().catch(() => "");
+            throw new Error(`SendGrid send failed: ${resp.status} ${text}`);
+        }
+        return true;
+    }
 
     async function handlePaymentFailed(event: any) {
         const invoice = event.data.object;
-        const userId = invoice?.parent?.subscription_details?.metadata?.user_id || invoice?.subscription_details?.metadata?.user_id;
-        if (!userId) return;
+        const customerEmail = invoice.customer_email;
+        const userId = invoice.subscription_details?.metadata?.user_id || invoice.metadata?.user_id;
 
-        const invoiceId = invoice.id;
-        const amountInCents = invoice.amount_due;
-        const currency = invoice.currency;
-        const lineItem = invoice.lines.data[0];
-        if (!lineItem) throw new Error("No line items");
+        // Find user by email if ID is missing (backup)
+        let finalUserId = userId;
+        if (!finalUserId && customerEmail) {
+            const { data } = await supabase.from('profiles').select('id').eq('email', customerEmail).single();
+            finalUserId = data?.id;
+        }
 
-        const periodStart = new Date(lineItem.period.start * 1000).toISOString();
-        const periodEnd = new Date(lineItem.period.end * 1000).toISOString();
-        const status = false;
-        const productName = lineItem.metadata?.product_name || 'Unknown Product';
+        if (!finalUserId) return;
+
+        const periodStart = new Date(invoice.lines.data[0]?.period?.start * 1000).toISOString();
+        const periodEnd = new Date(invoice.lines.data[0]?.period?.end * 1000).toISOString();
+        const productName = invoice.lines.data[0]?.metadata?.product_name || 'Unknown Product';
 
         try {
-            const { error } = await supabase.from('billing_history').insert({
-                user_id: userId,
-                invoice_id: invoiceId,
-                amount: amountInCents / 100,
-                currency: currency,
+            await supabase.from('billing_history').insert({
+                user_id: finalUserId,
+                invoice_id: invoice.id,
+                amount: invoice.amount_due / 100,
+                currency: invoice.currency,
                 description: `Failed subscription for ${productName}`,
                 billing_date: new Date(invoice.created * 1000).toISOString(),
-                status: status,
+                status: false,
                 recurring: true,
                 start: periodStart,
                 end: periodEnd
             });
-            if (error) throw error;
-            console.log('Failed payment processed and billing history record created successfully');
+
+            await supabase.from('profiles').update({
+                payment_failed: true,
+                last_payment_failure: new Date().toISOString()
+            }).eq('id', finalUserId);
         } catch (error) {
-            console.error('Error creating billing history for failed payment:', error);
-            throw error;
+            console.error('Error handling payment failure:', error);
         }
     }
 
-    async function handleSubscriptionCreate(event: any) {
+    async function handleSubscriptionEvent(event: any, isInitial: boolean) {
         const invoice = event.data.object;
-        const userId = invoice?.parent?.subscription_details?.metadata?.user_id || invoice?.subscription_details?.metadata?.user_id;
-        if (!userId) return;
+        const subscriptionId = invoice.subscription;
 
-        const invoiceId = invoice.id;
-        const amountInCents = invoice.amount_due;
-        const currency = invoice.currency;
-        const lineItem = invoice.lines.data[0];
-        if (!lineItem) throw new Error("No line items");
+        // Fetch full subscription to get metadata
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const userId = subscription.metadata?.user_id;
 
-        const periodStart = new Date(lineItem.period.start * 1000).toISOString();
-        const periodEnd = new Date(lineItem.period.end * 1000).toISOString();
-        const status = invoice.status;
-        const productName = lineItem.metadata?.product_name || 'Unknown Product';
+        if (!userId) {
+            console.error("No user_id found in subscription metadata", subscriptionId);
+            return;
+        }
 
-        try {
-            const { error } = await supabase.from('billing_history').insert({
+        const periodStart = new Date(invoice.lines.data[0]?.period?.start * 1000).toISOString();
+        const periodEnd = new Date(invoice.lines.data[0]?.period?.end * 1000).toISOString();
+        const productName = subscription.metadata?.product_name || invoice.lines.data[0]?.metadata?.product_name || 'GLP-GLOW Program';
+        const categorySlug = subscription.metadata?.category || 'weight_loss';
+        const planType = subscription.metadata?.plan_type || 'Monthly';
+        const formSubmissionId = subscription.metadata?.form_submission_id;
+
+        // 1. Log Billing History
+        await supabase.from('billing_history').insert({
+            user_id: userId,
+            invoice_id: invoice.id,
+            amount: invoice.amount_due / 100,
+            currency: invoice.currency,
+            description: `${isInitial ? 'Initial' : 'Renewal'} Subscription for ${productName}`,
+            billing_date: new Date(invoice.created * 1000).toISOString(),
+            status: invoice.status === 'paid',
+            recurring: true,
+            start: periodStart,
+            end: periodEnd
+        });
+
+        // 2. Handle Orders for multi-month plans
+        const planDurationMonths = planType.includes('6') ? 6 : (planType.includes('3') ? 3 : 1);
+        const nextDeliveryDates = [];
+        const ordersToCreate = [];
+
+        const shippingAddressStr = subscription.metadata?.shipping_address || '{}';
+        let shippingAddress = {};
+        try { shippingAddress = JSON.parse(shippingAddressStr); } catch { }
+
+        for (let i = 0; i < planDurationMonths; i++) {
+            const scheduledDate = new Date();
+            scheduledDate.setMonth(scheduledDate.getMonth() + i);
+            const dateIso = scheduledDate.toISOString();
+
+            if (i > 0) nextDeliveryDates.push(dateIso);
+
+            ordersToCreate.push({
                 user_id: userId,
-                invoice_id: invoiceId,
-                amount: amountInCents / 100,
-                currency: currency,
-                description: `Subscription for ${productName}`,
-                billing_date: new Date(invoice.created * 1000).toISOString(),
-                status: status === 'paid',
-                recurring: true,
-                start: periodStart,
-                end: periodEnd
+                form_submission_id: formSubmissionId,
+                drug_name: planDurationMonths > 1 ? `${productName} (Month ${i + 1} of ${planDurationMonths})` : productName,
+                drug_price: (invoice.amount_paid / planDurationMonths) / 100,
+                shipping_address: shippingAddress,
+                payment_status: 'completed',
+                delivery_status: i === 0 ? 'in transit' : 'pending',
+                is_renewal: !isInitial,
+                created_at: dateIso
             });
-            if (error) throw error;
+        }
 
-            const { error: profileError } = await supabase.from('profiles').update({
-                current_sub_end_date: periodEnd
-            }).eq('id', userId);
-            if (profileError) throw profileError;
+        if (ordersToCreate.length > 0) {
+            await supabase.from('orders').insert(ordersToCreate);
+        }
 
-            console.log('New subscription invoice processed successfully');
-        } catch (error) {
-            console.error('Error processing subscription invoice:', error);
-            throw error;
+        // 3. Update Profile with NEW COMPLEX STRUCTURE
+        const { data: profile } = await supabase.from('profiles').select('current_plan').eq('id', userId).single();
+        let currentPlans: any = {};
+        try {
+            currentPlans = typeof profile?.current_plan === 'string' ? JSON.parse(profile.current_plan) : (profile?.current_plan || {});
+            // Fix double stringification if present
+            if (typeof currentPlans === 'string') currentPlans = JSON.parse(currentPlans);
+        } catch { }
+
+        // THE IMPROVED STRUCTURE
+        currentPlans[categorySlug] = {
+            enddate: periodEnd,
+            Nextdelivery: nextDeliveryDates,
+            name: productName,
+            type: planType
+        };
+
+        await supabase.from('profiles').update({
+            current_plan: JSON.stringify(currentPlans),
+            current_sub_end_date: periodEnd,
+            subscribe_status: true,
+            subscription_status: subscription.status
+        }).eq('id', userId);
+
+        // 4. Send Email
+        const { data: userData } = await supabase.from('profiles').select('email, first_name, last_name').eq('id', userId).single();
+        if (userData?.email) {
+            const year = new Date().getFullYear();
+            const emailHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;">
+                <div style="max-width:600px;margin:auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="background:#e6f7e8;color:#1e7b34;padding:40px;text-align:center;">
+                        <h1 style="margin:0;">Subscription ${isInitial ? 'Activated' : 'Renewed'}!</h1>
+                    </div>
+                    <div style="padding:30px;line-height:1.7;color:#333;">
+                        <p>Hi ${userData.first_name},</p>
+                        <p>Your <strong>${productName}</strong> program is active. Your next billing date is ${new Date(subscription.current_period_end * 1000).toLocaleDateString()}.</p>
+                        <p>Thank you for choosing GLP-GLOW!</p>
+                        <p style="text-align:center;"><a href="https://quiz.americahealthsolutions.com/dashboard" style="background:#28a745;color:#fff;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Go to Dashboard</a></p>
+                    </div>
+                    <div style="background:#f4f4f4;padding:15px;text-align:center;font-size:12px;color:#666;">
+                        <p>© ${year} GLP-GLOW. All rights reserved.</p>
+                    </div>
+                </div>
+            </body></html>`;
+
+            await sendEmailSendGrid(
+                SENDGRID_API_KEY,
+                MAILER_FROM,
+                userData.email,
+                `GLP-GLOW: Subscription ${isInitial ? 'Activation' : 'Renewal'} Success`,
+                safePlain(`Your ${productName} subscription has been ${isInitial ? 'activated' : 'renewed'}.`, userData.first_name),
+                emailHtml
+            );
         }
     }
 
     async function handleChargeEvent(event: any) {
         const charge = event.data.object;
         const amountInCents = charge.amount;
-        const currency = charge.currency?.toLowerCase();
         const status = charge.status;
         const userId = charge.metadata?.user_id;
 
-        if (!userId) {
-            console.warn("Charge event missing user_id:", charge.id);
-            return;
-        }
-
-        const lastFour = charge.payment_method_details?.card?.last4 || "XXXX";
-        const cardBrand = (charge.payment_method_details?.card?.network || "card").toUpperCase();
-        const chargeDate = new Date(charge.created * 1000).toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-        });
+        if (!userId) return;
 
         try {
-            const { data: profile } = await supabase
-                .from("profiles")
-                .select("first_name, last_name, email, current_plan")
-                .eq("id", userId)
-                .single();
+            const { data: profile } = await supabase.from("profiles").select("*").eq("id", userId).single();
+            if (!profile) return;
 
-            if (!profile?.email) return;
-            const { first_name, last_name, email, current_plan } = profile;
+            // Log Billing History
+            await supabase.from("billing_history").insert({
+                user_id: userId,
+                invoice_id: charge.payment_intent || charge.id,
+                amount: amountInCents / 100,
+                currency: charge.currency,
+                description: charge.description || "General Payment",
+                billing_date: new Date(charge.created * 1000).toISOString(),
+                status: status === "succeeded",
+                recurring: false,
+                start: new Date(charge.created * 1000).toISOString(),
+                end: null
+            });
 
-            // Dosage Change Fee or Eligibility Fee
-            if ((amountInCents === 500 || amountInCents === 2500) && currency === "usd") {
-                const isDosageFee = amountInCents === 500;
-                const description = isDosageFee ? "Dosage change request fee" : "Eligibility verification charge";
+            if (status === "succeeded") {
+                const lastFour = charge.payment_method_details?.card?.last4 || "XXXX";
+                const cardBrand = (charge.payment_method_details?.card?.network || "card").toUpperCase();
 
-                await supabase.from("billing_history").insert({
-                    user_id: userId,
-                    invoice_id: charge.payment_intent || charge.id,
-                    amount: amountInCents / 100,
-                    currency: "usd",
-                    description: description,
-                    billing_date: new Date(charge.created * 1000).toISOString(),
-                    status: status === "succeeded",
-                    recurring: false,
-                    start: new Date(charge.created * 1000).toISOString(),
-                    end: null,
-                });
-
-                await supabase.from("profiles").update({
-                    current_payment_type: charge.payment_method_details?.card?.type,
+                const updatePayload: any = {
                     last_four_digits_of_card: lastFour,
                     card_name: cardBrand,
-                }).eq("id", userId);
+                    current_payment_type: charge.payment_method_details?.card?.type
+                };
 
-                if (status === "succeeded") {
-                    const subject = isDosageFee ? "$5 Dosage Change Fee – GLP-GLOW" : "Receipt – GLP-GLOW Eligibility Payment";
-                    const html = isDosageFee ? `
-            <html><body><h1>Payment Successful!</h1><p>Hi ${first_name}, your $5 dosage change request fee has been processed.</p></body></html>
-           ` : `
-            <html><body><h1>Payment Successful!</h1><p>Dear ${first_name} ${last_name}, your $25 eligibility verification fee has been charged.</p></body></html>
-           `;
-                    if (SENDGRID_API_KEY) {
-                        await sendEmailSendGrid(SENDGRID_API_KEY, MAILER_FROM, email, subject, safePlain(`Your payment of $${amountInCents / 100} was successful.`, first_name), html);
-                    }
-                } else if (status === "failed") {
-                    const subject = isDosageFee ? "We couldn't process your $5 dosage change fee" : "GLP-GLOW: Quick Update Needed for Your Eligibility";
-                    const html = `<html><body><h1>Payment Failed</h1><p>Hi ${first_name}, we were unable to process your payment. Please update your card.</p></body></html>`;
-                    if (SENDGRID_API_KEY) {
-                        await sendEmailSendGrid(SENDGRID_API_KEY, MAILER_FROM, email, subject, safePlain(`Your payment of $${amountInCents / 100} failed.`, first_name), html);
+                // Check for eligibility fee payment
+                if (charge.metadata?.type === 'eligibility_verification') {
+                    updatePayload.eligibility_fee_paid = true;
+
+                    // Send Email
+                    const category = charge.metadata?.product_category || "General Consultation";
+                    const firstName = profile.first_name || "Valued Member";
+                    const email = profile.email;
+
+                    if (email) {
+                        const amount = (charge.amount / 100).toFixed(2);
+                        const year = new Date().getFullYear();
+                        const emailHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;">
+                            <div style="max-width:600px;margin:auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                                <div style="background:#e8f4fd;color:#007bff;padding:40px;text-align:center;">
+                                    <h1 style="margin:0;">Consultation Fee Received</h1>
+                                </div>
+                                <div style="padding:30px;line-height:1.7;color:#333;">
+                                    <p>Hi ${firstName},</p>
+                                    <p>Your eligibility verification payment for the <strong>${category}</strong> program has been successfully processed.</p>
+                                    
+                                    <div style="margin: 25px 0; padding: 20px; border: 1px dashed #ddd; border-radius: 8px; background: #fafafa;">
+                                        <p style="margin: 0; font-size: 13px; color: #666; text-transform: uppercase;">Payment Summary</p>
+                                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                            <span style="font-weight: bold;">Amount Paid:</span>
+                                            <span style="font-size: 18px; font-weight: 900;">$${amount}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 14px;">
+                                            <span style="color: #666;">Payment Method:</span>
+                                            <span>${cardBrand} •••• ${lastFour}</span>
+                                        </div>
+                                    </div>
+
+                                    <p>Our clinical team has been notified and is currently reviewing your assessment details. You will receive an update regarding your clinical approval shortly.</p>
+                                    <p>Thank you for choosing GLP-GLOW!</p>
+                                    <p style="text-align:center; margin-top: 30px;"><a href="https://quiz.americahealthsolutions.com/dashboard" style="background:#000;color:#fff;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Go to Dashboard</a></p>
+                                </div>
+                                <div style="background:#f4f4f4;padding:15px;text-align:center;font-size:12px;color:#666;">
+                                    <p>© ${year} GLP-GLOW. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body></html>`;
+
+                        await sendEmailSendGrid(
+                            SENDGRID_API_KEY,
+                            MAILER_FROM,
+                            email,
+                            `GLP-GLOW: Consultation Fee Received - ${category}`,
+                            safePlain(`Your payment of $${amount} for ${category} has been received.`, firstName),
+                            emailHtml
+                        ).catch(err => console.error("Error sending eligibility email:", err));
                     }
                 }
+
+                await supabase.from("profiles").update(updatePayload).eq("id", userId);
             }
-
-            // Subscription Renewal Failure
-            if (status === "failed" && amountInCents > 2500) {
-                await supabase.from("billing_history").insert({
-                    user_id: userId,
-                    invoice_id: charge.payment_intent || charge.id,
-                    amount: amountInCents / 100,
-                    currency: "usd",
-                    description: `Failed renewal – ${current_plan || "Monthly Plan"}`,
-                    billing_date: new Date(charge.created * 1000).toISOString(),
-                    status: false,
-                    recurring: true,
-                });
-
-                await supabase.from("profiles").update({
-                    payment_failed: true,
-                    last_payment_failure: new Date().toISOString()
-                }).eq("id", userId);
-
-                const html = `<html><body><h1>Payment Failed</h1><p>Hey ${first_name}, we were not able to charge you for your subscription renewal.</p></body></html>`;
-                if (SENDGRID_API_KEY) {
-                    await sendEmailSendGrid(SENDGRID_API_KEY, MAILER_FROM, email, "Action Required: Payment Failed", safePlain(`Your subscription renewal failed.`, first_name), html);
-                }
-            }
-        } catch (error) {
-            console.error("Error in handleChargeEvent:", error);
+        } catch (e) {
+            console.error("handleChargeEvent error:", e);
         }
     }
 
-    // --- Main Logic ---
-
+    // --- Main Event Construction ---
     let event;
     try {
         event = await stripe.webhooks.constructEventAsync(bodyUint8, signature, STRIPE_WEBHOOK_SECRET);
     } catch (err: any) {
-        console.warn("Stripe webhook signature verification failed:", err?.message);
-        return new Response(`Webhook Error: ${err?.message}`, { status: 400 });
+        console.warn("Stripe webhook verification failed:", err.message);
+        return new Response(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
-    try {
-        console.log("Processing event:", event.type);
+    // --- Event Routing ---
+    const background = (async () => {
+        try {
+            console.log("Processing event:", event.type);
 
-        if (event.type === "charge.succeeded" || event.type === "charge.failed") {
-            await handleChargeEvent(event);
-        } else if (event.type === "invoice.payment_succeeded") {
-            const invoice = event.data.object;
-            if (invoice.billing_reason === "subscription_create") {
-                await handleSubscriptionCreate(event);
-            } else {
-                // Renewal logic
-                const subscriptionId = invoice.subscription;
-                const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-                const userId = subscription.metadata?.user_id;
-                if (userId) {
-                    const { data: lastOrder } = await supabase.from("orders").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(1).single();
-                    await supabase.from("orders").insert({
-                        user_id: userId,
-                        drug_name: subscription.metadata?.previous_plan || "Monthly Subscription",
-                        drug_price: invoice.amount_paid / 100,
-                        shipping_address: lastOrder?.shipping_address || "Same as previous",
-                        form_submission_id: lastOrder?.form_submission_id,
-                        payment_status: "completed",
-                        delivery_status: "pending",
-                        is_renewal: true
-                    });
-                    await handleSubscriptionCreate(event);
-                    // Send renewal email
-                    const { data: profile } = await supabase.from("profiles").select("email, first_name").eq("id", userId).single();
-                    if (profile?.email && SENDGRID_API_KEY) {
-                        await sendEmailSendGrid(SENDGRID_API_KEY, MAILER_FROM, profile.email, "Your GLP-GLOW Subscription Has Been Renewed", safePlain("Your subscription was renewed.", profile.first_name), "<html><body><h1>Subscription Renewed</h1></body></html>");
+            if (event.type === "invoice.payment_succeeded") {
+                const invoice = event.data.object;
+
+                // Idempotency check using custom table
+                if (invoice.id) {
+                    const { error } = await supabase.from("stripe_webhook_events").insert({ id: invoice.id });
+                    if (error) {
+                        console.log("Invoice already processed:", invoice.id);
+                        return;
                     }
                 }
-            }
-        } else if (event.type === "invoice.payment_failed") {
-            await handlePaymentFailed(event);
-        } else if (event.type === "customer.subscription.deleted") {
-            const subscription = event.data.object;
-            const userId = subscription.metadata?.user_id;
-            if (userId) {
-                await supabase.from("profiles").update({ subscribe_status: false }).eq("id", userId);
-            }
-        }
 
-        return new Response(JSON.stringify({ received: true }), { status: 200, headers: { "Content-Type": "application/json" } });
-    } catch (err: any) {
-        console.error("Handler error:", err);
-        return new Response(`Handler error: ${err?.message}`, { status: 500 });
+                const isInitial = invoice.billing_reason === "subscription_create";
+                await handleSubscriptionEvent(event, isInitial);
+            }
+            else if (event.type === "invoice.payment_failed") {
+                await handlePaymentFailed(event);
+            }
+            else if (event.type === "charge.succeeded" || event.type === "charge.failed") {
+                await handleChargeEvent(event);
+            }
+            else if (event.type === "customer.subscription.deleted") {
+                const sub = event.data.object;
+                const userId = sub.metadata?.user_id;
+                if (userId) {
+                    await supabase.from("profiles").update({
+                        subscribe_status: false,
+                        subscription_status: 'canceled'
+                    }).eq("id", userId);
+                }
+            }
+        } catch (e) {
+            console.error("Background processing exception:", e);
+        }
+    })();
+
+    // Keep function alive in Deno/Edge runtime
+    if (typeof globalThis.EdgeRuntime?.waitUntil === "function") {
+        globalThis.EdgeRuntime.waitUntil(background);
+    } else {
+        background.catch(e => console.error("Background task failed:", e));
     }
+
+    return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+    });
 });
