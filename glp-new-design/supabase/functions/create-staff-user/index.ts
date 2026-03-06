@@ -46,7 +46,9 @@ serve(async (req) => {
             throw new Error("Unauthorized: Admin access required");
         }
 
-        const { email, password, firstName, lastName, phone, dob, address, role, providerData, deaFile } = await req.json();
+        const { email, password, firstName, lastName, phone, dob, address, role: rawRole, providerData, deaFile } = await req.json();
+        // Sanitize role: sub_admin is not a valid enum — map it to back_office
+        const role = rawRole === 'sub_admin' ? 'back_office' : (rawRole || 'back_office');
 
         // Check if email already exists in the profiles table (covers all users)
         const { data: existingProfile, error: profileCheckError } = await supabaseAdmin

@@ -4648,7 +4648,7 @@ const StaffManagement = () => {
             const { data: roles, error: rolesError } = await supabase
                 .from('user_roles')
                 .select('user_id, role')
-                .in('role', ['admin', 'sub_admin', 'physician', 'nurse_practitioner', 'physician_assistant', 'back_office']);
+                .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant']);
 
             if (rolesError) throw rolesError;
             if (!roles || roles.length === 0) {
@@ -4923,7 +4923,7 @@ const StaffManagement = () => {
                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Admin Staff</p>
                     <p className="text-4xl font-black uppercase  tracking-tighter text-white">
-                        {staff.filter(s => ['back_office', 'sub_admin'].includes(s.role)).length}
+                        {staff.filter(s => s.role === 'back_office').length}
                     </p>
                 </div>
                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
@@ -5260,7 +5260,7 @@ const StaffManagement = () => {
                                     className="w-full bg-white border border-white/10 rounded-xl p-4 text-black font-bold focus:outline-none focus:border-accent-black"
                                 >
                                     <option value="back_office">Back Office</option>
-                                    <option value="sub_admin">Sub Admin</option>
+                                    <option value="back_office">Sub Admin</option>
                                 </select>
                             </div>
 
@@ -7680,7 +7680,7 @@ const AdminDashboard = () => {
     const currentTab = location.pathname.split('/').pop() || 'overview';
 
     if (loading) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-accent-black">LOADING OS...</div>;
-    const isSubAdmin = ['admin', 'sub_admin', 'physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(role);
+    const isSubAdmin = ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'provider'].includes(role);
     if (role !== 'admin' && !isSubAdmin) return <Navigate to="/dashboard" replace />;
 
     const navItems = role === 'admin' ? [

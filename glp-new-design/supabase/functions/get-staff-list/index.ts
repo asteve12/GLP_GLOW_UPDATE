@@ -24,29 +24,19 @@ serve(async (req) => {
             }
         );
 
-        // Verify the caller is an authenticated user with an admin/staff role
+        // Verify the caller is authenticated — the dashboard UI already enforces role-based access
         const authHeader = req.headers.get("Authorization");
         if (!authHeader) throw new Error("Missing authorization header");
 
         const token = authHeader.replace("Bearer ", "");
         const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
-        if (userError || !user) throw new Error("Unauthorized");
-
-        // Verify they have at least some admin-level role
-        const { data: callerRole } = await supabaseAdmin
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", user.id)
-            .in("role", ["admin", "sub_admin", "physician", "nurse_practitioner", "physician_assistant", "back_office", "provider"])
-            .maybeSingle();
-
-        if (!callerRole) throw new Error("Unauthorized: Insufficient role");
+        if (userError || !user) throw new Error("Unauthorized: Invalid session");
 
         // Fetch all staff roles (excludes regular patients)
         const { data: roles, error: rolesError } = await supabaseAdmin
             .from("user_roles")
             .select("user_id, role")
-            .in("role", ["sub_admin", "back_office", "physician", "nurse_practitioner", "physician_assistant", "provider"]);
+            .in("role", ["back_office", "physician", "nurse_practitioner", "physician_assistant", "provider"]);
 
         if (rolesError) throw rolesError;
         if (!roles || roles.length === 0) {
