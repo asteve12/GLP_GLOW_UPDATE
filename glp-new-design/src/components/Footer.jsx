@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -10,6 +11,9 @@ const Footer = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
                     {/* Brand & Stats/Badges */}
                     <div className="lg:col-span-4 space-y-8">
+                        <div className="pt-4">
+                            <img src={logo} alt="uGlowMD Logo" className="h-80 w-auto brightness-0 invert opacity-80 hover:opacity-100 transition-opacity" />
+                        </div>
                         <p className="text-[#FAF9F6]/50 text-sm leading-relaxed max-w-xs pt-4">
                             Leading the revolution in personalized metabolic science and longevity.
                             Built for peak performance and sustainable health.
@@ -117,7 +121,7 @@ const Footer = () => {
                 <div className="pt-16 pb-12 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-[10px] font-medium uppercase tracking-widest text-white/30 leading-relaxed">
                     <div className="space-y-4">
                         <h5 className="text-white/60 font-black tracking-[0.2em] mb-4">Patient Safety & Risk</h5>
-                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. <span className="font-brand"><sub>u</sub>Glow<sup>MD</sup></span> ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
+                        <p>Patient Risk Prevention Protocols are integrated into every treatment cycle. <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block brightness-0 invert opacity-60 ml-1 mr-1" /> ensures all protocols meet the highest safety standards for metabolic and lifestyle medicine.</p>
                         <p>All medications are sourced exclusively from FDA Approved Pharmacies and compounded under strict quality control.</p>
                     </div>
                     <div className="space-y-4">
@@ -156,13 +160,8 @@ const Footer = () => {
 
                 {/* Massive Branding Worldmark */}
                 <div className="w-full pt-12 pb-4 flex justify-center border-t border-white/5">
-                    <div
-                        className="text-[clamp(4rem,22vw,22rem)] text-white/20 select-none inline-flex items-baseline leading-[0.8] tracking-tighter"
-                        style={{ fontFamily: '"Cormorant Garamond", serif', fontWeight: 600 }}
-                    >
-                        <sub className="italic lowercase mr-2 text-[0.7em]">u</sub>
-                        <span>Glow</span>
-                        <sup className="text-[0.4em] ml-2 font-light tracking-tight">MD</sup>
+                    <div className="w-full max-w-4xl opacity-10 select-none pointer-events-none">
+                        <img src={logo} alt="uGlowMD" className="w-full h-auto brightness-0 invert" />
                     </div>
                 </div>
             </div>

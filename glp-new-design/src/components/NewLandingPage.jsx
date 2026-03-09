@@ -10,7 +10,6 @@ import labTestingImg from '../assets/lab-testing-image.png';
 import testosteroneImg from '../assets/testosterone-image-v2.png';
 import skincareImg from '../assets/skincare.png';
 import glpPromoImg from '../assets/glp-promo-image.png';
-import performancePromoImg from '../assets/performance-promo-image.png';
 import registrationImg from '../assets/account-registration-image.jpg';
 import prescribedImg from '../assets/get-prescribed-image.jpg';
 import rxShipmentImg from '../assets/rx-shipment-image.jpg';
@@ -25,17 +24,22 @@ import faceSpotImg from '../assets/face-spot.png';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
 import { useNavigate } from 'react-router-dom';
 import WaitlistModal from './WaitlistModal';
+import { FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
+
+const categories = [
+    { text: 'Weight loss', color: 'text-[#93C5FD]' },
+    { text: 'Better sex', color: 'text-[#D8B4FE]' },
+    { text: 'Hair loss', color: 'text-[#FCD34D]' },
+    { text: 'Longevity', color: 'text-[#FB923C]' },
+    { text: 'Testosterone', color: 'text-[#34D399]' },
+    { text: 'Skincare', color: 'text-[#FBCFE8]' },
+    { text: 'Lab testing', color: 'text-[#4ADE80]' },
+];
 
 const NewLandingPage = () => {
     const navigate = useNavigate();
     const [isSkincareModalOpen, setIsSkincareModalOpen] = useState(false);
     const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-    const categories = [
-        { text: 'Weight loss', color: 'text-orange-600' },
-        { text: 'Better sex', color: 'text-black' },
-        { text: 'Hair growth', color: 'text-pink-600' },
-        { text: 'Lab testing', color: 'text-green-600' },
-    ];
 
     const [index, setIndex] = useState(0);
     const [animationClass, setAnimationClass] = useState('translate-y-0 opacity-100');
@@ -84,7 +88,7 @@ const NewLandingPage = () => {
             <main>
                 {/* Hero & Treatment Grid */}
                 <section className="pt-8 pb-20">
-                    <div className="w-[80%] px-6">
+                    <div className="w-[80%] mx-auto px-6">
                         <div className="text-left mb-12">
                             <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
@@ -99,9 +103,9 @@ const NewLandingPage = () => {
                             <p className="text-gray-500 text-xl">Customized care starts here</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16 mx-auto">
                             {[
-                                { label: <span className="font-serif italic-u"><sub>u</sub>Glow<sup>MD</sup></span>, title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
+                                { label: 'GLP-GLOW', title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
                                 { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAv6wve4IaUgF73Lo9B1lOz-pbcNVHhWnowiQfXy-87zYhvAlbWm2widJbI65HI5YwlAf2GzY6OQywDcS3OUvZixeZAoIq2P9qvgUkrXxhTZiYF06bSVuoAXspBMsea0t_am-c326QgzfcLrzcaeP6vQoTj-5Undg5PRT4U70mU39zB-vZZfWfujFbXUNXBXXRWkGDPfZ6d2aUr_NfcHh8D6Bagm_9YXhNGLq0IEeu7TwZAnfyEkRHCmdb_yBwn5j6BYouVBbyLzCHe' },
                                 { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7-ipYFRVrPiuFu-R6Y_Sz-aTOJh48jBupdGHajJ_3zcvE-HEH7Fa-rZJCHUh9FTSkjph_G0F6YOjwrz_JJYRujbnPMWM2l88Qyk7zmNryvB8vONuE5BZg46zVMGF81az-AjwmB06-apba4vUCwfGLi7vygGnzxAkW4bcYSqRInUyYms82vs8AOdBcPEyBVV7mZOqSzjnITQqtC-XkqrjAgtSGEwI1MRDULuhtG6vqyL9VrBOmYFPkPiuDxrBrn6bZAvI2CU5p31V' },
@@ -127,7 +131,7 @@ const NewLandingPage = () => {
 
                                     if (categoryId === 'skin-care') {
                                         return (
-                                            <div key={i} onClick={() => setIsSkincareModalOpen(true)} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
+                                            <div key={i} onClick={() => navigate(`/assessment/skin-care?product=anti-aging-cream`)} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
                                                     <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300">
@@ -218,18 +222,6 @@ const NewLandingPage = () => {
                     </div>
                 </section>
 
-                {/* Performance Banner */}
-                <section className="py-0">
-                    <div className="w-full">
-                        <div className="relative overflow-hidden bg-[#0a0a0a] h-[218vh] md:h-[133vh] flex items-center">
-                            <img alt="Performance banner" className="w-full h-full object-cover block" src={performancePromoImg} />
-                            <div className="absolute inset-0 bg-black/20"></div>
-                            <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
-                                <Link to="/qualify?category=sexual-health" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* How It Works */}
                 <section id="how-it-works" className="py-24 overflow-hidden relative" ref={stepsRef}>
@@ -281,7 +273,7 @@ const NewLandingPage = () => {
                                 <div className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white z-20 hidden md:block transition-colors duration-500 ${scrollProgress > 90 ? 'bg-black' : 'bg-gray-300'}`}></div>
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>3. Rx Shipment Arrived</h3>
-                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <span className="font-serif"><sub>u</sub>Glow<sup>MD</sup></span>, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
+                                    <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <img src={logo} alt="uGlowMD" className="h-[56px] w-auto inline-block align-baseline brightness-0" />, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
                                     <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
@@ -350,9 +342,7 @@ const NewLandingPage = () => {
                         <div className="flex justify-center mb-4">
                             <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-all hover:scale-105 duration-500">
                                 <div className="flex items-center">
-                                    <span className="text-lg font-serif text-black tracking-tight" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-                                        <sub>u</sub>Glow<sup>MD</sup>
-                                    </span>
+                                    <img src={logo} alt="uGlowMD" className="h-32 w-auto brightness-0" />
                                 </div>
                             </div>
                         </div>
@@ -598,21 +588,19 @@ const NewLandingPage = () => {
                     </div>
 
                     <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-600 pt-12 border-t border-white/5">
-                        <div className="flex gap-6 mb-4 md:mb-0">
-                            <a className="hover:text-white transition-colors font-medium tracking-tight" href="#">uGlow™</a>
-                            <a className="hover:text-white transition-colors font-medium" href="https://www.instagram.com/uglowmd?igsh=MXc0bjB5aHR0MGR5Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a>
-                            <a className="hover:text-white transition-colors font-medium" href="https://www.facebook.com/share/1CXFW9dXa9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Facebook</a>
-                            <a className="hover:text-white transition-colors font-medium" href="https://x.com/uglowmd?s=21&t=AWKB5Ql2CQkOFAgP0xqEJg" target="_blank" rel="noopener noreferrer">Twitter/X</a>
+                        <div className="flex items-center gap-6 mb-4 md:mb-0">
+                            <img src={logo} alt="uGlowMD" className="h-24 w-auto brightness-0 invert opacity-60 ml-1" />
+                            <a className="hover:text-white transition-colors text-lg" href="https://www.instagram.com/uglowmd?igsh=MXc0bjB5aHR0MGR5Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram /></a>
+                            <a className="hover:text-white transition-colors text-lg" href="https://www.facebook.com/share/1CXFW9dXa9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebook /></a>
+                            <a className="hover:text-white transition-colors text-lg" href="https://x.com/uglowmd?s=21&t=AWKB5Ql2CQkOFAgP0xqEJg" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X"><FaXTwitter /></a>
                         </div>
-                        <p className="font-medium tracking-tight">© 2024 uGlowMD. All rights reserved.</p>
+                        <p className="font-medium tracking-tight">© 2024 <img src={logo} alt="uGlowMD" className="h-[56px] w-auto inline-block align-baseline brightness-0 invert opacity-60" />. All rights reserved.</p>
                     </div>
                 </div>
 
                 {/* Massive Styled Footer Logo (uGlow MD Style) */}
                 <div className="w-full mt-10 md:mt-0 overflow-hidden select-none pointer-events-none flex justify-center items-end opacity-[0.05] translate-y-20">
-                    <h1 className="text-[30vw] font-brand tracking-tighter text-white whitespace-nowrap leading-[0.8]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-                        <span className="italic">u</span>Glow<sup className="text-[0.4em] uppercase tracking-normal">MD</sup>
-                    </h1>
+                    <img src={logo} alt="uGlowMD" className="w-[80%] h-auto brightness-0 invert" />
                 </div>
             </footer>
 
@@ -638,11 +626,11 @@ const NewLandingPage = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
-                                { title: "Anti-Aging Cream", price: "$79/mo", img: antiAgingImg, path: "/product/anti-aging-cream", desc: "Tretinoin + Peptides" },
-                                { title: "Face Spot Peel", price: "$69/mo", img: faceSpotImg, path: "/product/face-spot-peel", desc: "Alpha Hydroxy Acids" },
-                                { title: "Acne Cleanser", price: "$49/mo", img: acneCleanserImg, path: "/product/acne-cleanser", desc: "Salicylic Acid + Benzoyl" }
+                                { title: "Anti-Aging Cream", price: "$69/mo", img: antiAgingImg, slug: "anti-aging-cream", desc: "Tretinoin + Peptides" },
+                                { title: "Face Spot Peel", price: "$72/mo", img: faceSpotImg, slug: "face-spot-peel", desc: "Alpha Hydroxy Acids" },
+                                { title: "Acne Cleanser", price: "$59/mo", img: acneCleanserImg, slug: "acne-cleanser", desc: "Salicylic Acid + Benzoyl" }
                             ].map((item, i) => (
-                                <div key={i} onClick={() => { setIsSkincareModalOpen(false); navigate(item.path); }} className="bg-gray-50 border border-gray-100 rounded-3xl p-6 group cursor-pointer hover:border-gray-300 transition-all text-center">
+                                <div key={i} onClick={() => { setIsSkincareModalOpen(false); navigate(`/assessment/skin-care?product=${item.slug}`); }} className="bg-gray-50 border border-gray-100 rounded-3xl p-6 group cursor-pointer hover:border-gray-300 transition-all text-center">
                                     <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-white shadow-inner">
                                         <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                     </div>

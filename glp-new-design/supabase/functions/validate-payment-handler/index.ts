@@ -174,9 +174,26 @@ Deno.serve(async (req) => {
             });
         }
 
-        if (ordersToCreate.length > 0) {
-            await supabase.from('orders').insert(ordersToCreate);
+        // Look up the approving provider from the form submission
+        let approving_provider_id: string | null = null;
+        if (formSubmissionId) {
+            const { data: submissionData } = await supabase
+                .from('form_submissions')
+                .select('assigned_provider_id')
+                .eq('id', formSubmissionId)
+                .maybeSingle();
+            approving_provider_id = submissionData?.assigned_provider_id || null;
         }
+
+        if (ordersToCreate.length > 0) {
+            // Attach approving_provider_id to every order row
+            const ordersWithProvider = ordersToCreate.map((o: any) => ({
+                ...o,
+                approving_provider_id,
+            }));
+            await supabase.from('orders').insert(ordersWithProvider);
+        }
+
 
         // 3. Update Profile with NEW COMPLEX STRUCTURE
         const { data: profile } = await supabase.from('profiles').select('current_plan').eq('id', userId).single();

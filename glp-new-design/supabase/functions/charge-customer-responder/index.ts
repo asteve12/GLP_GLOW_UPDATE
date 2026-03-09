@@ -52,7 +52,29 @@ Deno.serve(async (req) => {
         shipping_address,
         form_submission_id,
         request_type,
+        approving_provider_id,
+        provider_first_name,
+        provider_last_name,
+        provider_type,
+        delivery_status
     } = payload;
+
+    // Map delivery status to DB valid values
+    let final_delivery_status = "pending";
+    const status_input = (delivery_status || "").toLowerCase();
+    if (status_input.includes("shipped")) final_delivery_status = "shipped";
+    else if (status_input.includes("delivered")) final_delivery_status = "delivered";
+    else if (status_input.includes("processing")) final_delivery_status = "processing";
+    else if (status_input.includes("transit")) final_delivery_status = "in transit";
+    else if (status_input === "pending") final_delivery_status = "pending";
+
+    const providerHtml = provider_first_name ? `
+      <div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+        <h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">Medical Review Details</h3>
+        <p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Approving Practitioner:</strong> ${provider_first_name} ${provider_last_name}</p>
+        <p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Provider Type:</strong> ${provider_type || 'Physician'}</p>
+      </div>
+    ` : '';
 
     // Robust Category Determination
     let display_category = 'Weight Loss';
@@ -255,6 +277,7 @@ Deno.serve(async (req) => {
         <strong>You will NOT be charged today.</strong><br>
         Your next billing date is <strong>${nextBilling}</strong> — exactly when your original paid period ends.
       </div>
+      ${providerHtml}
       <p style="text-align:center;margin:40px 0">
         <a href="https://quiz.americahealthsolutions.com/dashboard" 
            style="background:#28a745;color:#fff;padding:16px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:17px">
@@ -466,6 +489,7 @@ Deno.serve(async (req) => {
         <strong>No charge today.</strong><br>
         Your new <strong>${plan_label}</strong> plan (${product_name}) starts automatically on <strong>${nextBilling}</strong> when your current paid period ends.
       </div>
+      ${providerHtml}
       <p>Your next shipment will include the updated dosage.</p>
       <p style="text-align:center;margin:40px 0">
         <a href="https://quiz.americahealthsolutions.com/dashboard" 
@@ -636,29 +660,26 @@ Deno.serve(async (req) => {
 
             if (subscription.status === "incomplete") throw Error("Subscription incomplete (insufficient funds)");
 
-            // 4. Update Database: Create multiple orders if 3-month or 6-month
-            const ordersToCreate = [];
+            // 4. Update Database: Create only ONE order regardless of duration
+            const dateIso = new Date().toISOString();
             const nextDeliveryDates = [];
-            for (let i = 0; i < plan_duration_months; i++) {
+            for (let i = 1; i < plan_duration_months; i++) {
                 const scheduledDate = new Date();
                 scheduledDate.setMonth(scheduledDate.getMonth() + i);
-                const dateIso = scheduledDate.toISOString();
-
-                if (i > 0) {
-                    nextDeliveryDates.push(dateIso);
-                }
-
-                ordersToCreate.push({
-                    user_id: userId,
-                    drug_name: plan_duration_months > 1 ? `${product_name} (Month ${i + 1} of ${plan_duration_months})` : product_name,
-                    drug_price: (product_price / plan_duration_months) / 100, // Allocation per month
-                    shipping_address,
-                    payment_status: "completed",
-                    delivery_status: i === 0 ? "in transit" : "pending",
-                    form_submission_id,
-                    created_at: dateIso,
-                });
+                nextDeliveryDates.push(scheduledDate.toISOString());
             }
+
+            const ordersToCreate = [{
+                user_id: userId,
+                drug_name: product_name,
+                drug_price: product_price / 100,
+                shipping_address,
+                payment_status: "completed",
+                delivery_status: final_delivery_status,
+                form_submission_id,
+                approving_provider_id: approving_provider_id || null,
+                created_at: dateIso,
+            }];
 
             const { data: orders, error: ordersError } = await supabase
                 .from("orders")
@@ -752,6 +773,7 @@ Deno.serve(async (req) => {
       <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745">
         Your first month's medication will ship in 3–5 business days. Your subsequent supplies are covered under your ${plan_duration_months}-month plan.
       </div>
+      ${providerHtml}
       <div style="background:#f8f9fa;padding:20px;border-radius:8px">
         <p><strong>Plan Duration:</strong> ${plan_label}</p>
         <p><strong>Total Charged Today:</strong> $${amount}</p>

@@ -134,6 +134,28 @@ export const categoryQuestions = {
             { id: 'tissue', name: 'Support soft tissue, ligament, or tendon integrity', desc: 'Long-term structural support for connective tissue health.' },
             { id: 'prevention', name: 'Enhance overall injury prevention and physical performance', desc: 'Proactive peptide strategy for athletes and active individuals.' }
         ]
+    },
+    'skin-care': {
+        title: 'Precision Skin Care Assessment',
+        question: ['What are your primary', 'skin care goals?'],
+        stat: {
+            pct: '95%',
+            text: 'of users report visible skin',
+            highlight: 'improvement*',
+            image: null,
+            disclaimer: '*Based on a survey of 114 active uGLOWMD patients, conducted in May 2025.',
+            reviews: [
+                { name: "Emily S.", result: "Radiant Skin", text: "My dark spots have faded significantly in just 8 weeks." },
+                { name: "John D.", result: "Clear Complexion", text: "Finally an acne treatment that works without irritation." },
+                { name: "Sarah L.", result: "Youthful Glow", text: "The anti-aging cream is a literal fountain of youth." }
+            ]
+        },
+        improvements: [
+            { id: 'anti-aging', name: 'Anti-Aging & Wrinkles', desc: 'Reduce fine lines and restore youthful elasticity.' },
+            { id: 'pigmentation', name: 'Pigmentation & Dark Spots', desc: 'Even out skin tone and fade stubborn sun damage.' },
+            { id: 'acne', name: 'Acne & Breakouts', desc: 'Clear active acne and prevent future congestion.' },
+            { id: 'redness', name: 'Redness & Rosacea', desc: 'Calm sensitive skin and reduce visible flushing.' }
+        ]
     }
 };
 
@@ -250,7 +272,7 @@ export const intakeQuestions = {
             id: 'cancer_history',
             title: 'Cancer History',
             question: 'Have you or a family member ever been diagnosed with cancer?',
-            type: 'multiselect',
+            type: 'choice',
             options: [
                 'Yes, I have or have had cancer',
                 'Yes, I have a family member who has had cancer',
@@ -1597,6 +1619,37 @@ export const intakeQuestions = {
             question: 'I consent to telehealth evaluation for therapy.',
             type: 'choice',
             options: ['Agree']
+        }
+    ],
+    'skin-care': [
+        {
+            id: 'allergies',
+            title: 'Allergies',
+            question: 'Type all the allergies you have, if more than one allergy, use a common (,). Include allergies to prescription or over-the-counter medicines, herbs, vitamins, supplements, food, dyes, or anything else. Enter "No" if you have no allergies.',
+            type: 'text',
+            placeholder: 'Type your allergies here...'
+        },
+        {
+            id: 'current_meds',
+            title: 'Current Medications',
+            question: 'Are you currently taking any prescription or over-the-counter medications, vitamins, or supplements? Enter "No" if not applicable.',
+            type: 'text',
+            placeholder: 'Type your current medications here...'
+        },
+        {
+            id: 'skin_photos',
+            title: 'Skin Photo Upload',
+            question: 'Upload clear images of your face or target areas for evaluation:',
+            subtext: 'Multiple Photos accepted; max 6. Accepted formats: JPG, PNG, PDF',
+            type: 'file',
+            maxFiles: 6
+        },
+        {
+            id: 'photo_details',
+            title: 'Photo Details',
+            question: 'Please provide any additional details about the pictures you uploaded or your skin concerns.',
+            type: 'text',
+            placeholder: 'Additional details here...'
         }
     ]
 };

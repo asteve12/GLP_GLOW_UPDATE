@@ -1,16 +1,142 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.png';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { intakeQuestions } from '../data/questions';
 import { gsap } from 'gsap';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
+// --- Shared Product Catalog ---
+const getMasterProductMap = () => {
+    const map = {};
+    const add = (id, prodName, category, strengths) => {
+        strengths.forEach(s => {
+            const dosage = s.dosage || '';
+            const plans = s.plans || [];
+            plans.forEach(p => {
+                const planName = p.name;
+                const priceValue = p.price.replace('$', '').replace('/mo', '').trim();
+                const key = `${id}-${dosage.replace(/\s+/g, '')}-${planName.toLowerCase().replace(/\s+/g, '')}`.replace(/-$/, '');
+                map[key] = {
+                    name: prodName,
+                    dosage: dosage || 'Standard',
+                    plan: planName,
+                    price: priceValue,
+                    category: category
+                };
+            });
+        });
+    };
+
+    // 1. Weight Loss Injections
+    add('semaglutide-injection', 'Semaglutide Injection', 'Weight Loss', [
+        { dosage: '0.25 mg', plans: [{ name: 'Monthly', price: '99.99' }, { name: '3 Month', price: '269.99' }, { name: '6 Month', price: '499.99' }] },
+        { dosage: '0.5 mg', plans: [{ name: 'Monthly', price: '134.99' }, { name: '3 Month', price: '364.50' }, { name: '6 Month', price: '674.99' }] },
+        { dosage: '1 mg', plans: [{ name: 'Monthly', price: '179.99' }, { name: '3 Month', price: '484.99' }, { name: '6 Month', price: '899.99' }] },
+        { dosage: '1.5 mg', plans: [{ name: 'Monthly', price: '219.99' }, { name: '3 Month', price: '594.99' }, { name: '6 Month', price: '1099.99' }] },
+        { dosage: '2 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
+        { dosage: '2.4 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
+    ]);
+    add('tirzepatide-injection', 'Tirzepatide Injection', 'Weight Loss', [
+        { dosage: '2.5 mg', plans: [{ name: 'Monthly', price: '190.00' }, { name: '3 Month', price: '499.99' }, { name: '6 Month', price: '999.99' }] },
+        { dosage: '5 mg', plans: [{ name: 'Monthly', price: '299.99' }, { name: '3 Month', price: '799.99' }, { name: '6 Month', price: '1499.99' }] },
+        { dosage: '7.5 mg', plans: [{ name: 'Monthly', price: '320.00' }, { name: '3 Month', price: '864.99' }, { name: '6 Month', price: '1599.99' }] },
+        { dosage: '10 mg', plans: [{ name: 'Monthly', price: '460.00' }, { name: '1242.00', price: '1242.00' }, { name: '6 Month', price: '2299.99' }] },
+        { dosage: '12.5 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
+        { dosage: '15 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
+    ]);
+
+    // 2. Hair Growth Tabs
+    add('hair-growth-tabs-3in1', 'Hair Growth Tabs (3-in-1)', 'Hair Restoration', [
+        { dosage: 'Triple Action', plans: [{ name: '30 Day Supply', price: '99.99' }, { name: '60 Day Supply', price: '179.99' }, { name: '90 Day Supply', price: '249.99' }] }
+    ]);
+    add('hair-growth-tabs-2in1', 'Hair Growth Tabs (2-in-1)', 'Hair Restoration', [
+        { dosage: 'Dual Action', plans: [{ name: '30 Day Supply', price: '89.99' }, { name: '60 Day Supply', price: '159.99' }, { name: '90 Day Supply', price: '224.99' }] }
+    ]);
+
+    // 3. Sexual Health (Packs)
+    add('readysetgo-men', 'ReadySetGo', 'Sexual Health', [
+        { dosage: '40/14/2 mg', plans: [{ name: '6 Pack', price: '39' }, { name: '10 Pack', price: '59.99' }, { name: '17 Pack', price: '94.99' }, { name: '34 Pack', price: '189.99' }] },
+        { dosage: '65/22/2 mg', plans: [{ name: '6 Pack', price: '42' }, { name: '10 Pack', price: '62.99' }, { name: '17 Pack', price: '99.99' }, { name: '34 Pack', price: '199.99' }] },
+        { dosage: '80/22/3 mg', plans: [{ name: '6 Pack', price: '45' }, { name: '10 Pack', price: '67.50' }, { name: '17 Pack', price: '104.99' }, { name: '34 Pack', price: '209.99' }] },
+        { dosage: '110/22/3 mg', plans: [{ name: '6 Pack', price: '50' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
+    ]);
+    add('growtabs-sildenafil', 'GrowTabs (Sildenafil)', 'Sexual Health', [
+        { dosage: '30 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
+        { dosage: '45 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
+    ]);
+    add('growtabs-tadalafil', 'GrowTabs (Tadalafil)', 'Sexual Health', [
+        { dosage: '6 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
+        { dosage: '9 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
+    ]);
+    add('quicklover-women', 'QuickLover (Women)', 'Sexual Health', [
+        { dosage: '50 IU', plans: [{ name: '6 Pack', price: '43.99' }, { name: '10 Pack', price: '64.99' }, { name: '17 Pack', price: '102.99' }, { name: '34 Pack', price: '204.99' }] },
+        { dosage: '100 IU', plans: [{ name: '6 Pack', price: '49.99' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
+    ]);
+
+    // 4. Skincare
+    add('anti-aging-cream', 'Anti-Aging Cream', 'Skin Care', [{ dosage: 'Tretinoin', plans: [{ name: 'Once', price: '79.99' }, { name: 'Every 2 Months', price: '69.99' }, { name: 'Monthly', price: '35.00' }] }]);
+    add('face-spot-peel', 'Face Spot Peel', 'Skin Care', [{ dosage: 'AHA', plans: [{ name: 'Once', price: '99.99' }, { name: 'Every 2 Months', price: '72.00' }, { name: 'Monthly', price: '36.00' }] }]);
+    add('acne-cleanser', 'Acne Cleanser', 'Skin Care', [{ dosage: 'Salicylic', plans: [{ name: 'Once', price: '84.99' }, { name: 'Every 2 Months', price: '59.99' }, { name: 'Monthly', price: '29.99' }] }]);
+    add('rosacea-red-cream', 'Rosacea Relief Cream', 'Skin Care', [{ dosage: 'Metronidazole', plans: [{ name: 'Once', price: '114.99' }, { name: 'Every 2 Months', price: '79.99' }, { name: 'Monthly', price: '39.99' }] }]);
+    add('eye-serum', 'Eye Serum', 'Skin Care', [{ dosage: 'Peptides', plans: [{ name: 'Once', price: '114.99' }, { name: 'Monthly', price: '79.99' }] }]);
+    add('body-acne-cream', 'Body Acne Cream', 'Skin Care', [{ dosage: 'Prescription', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Months', price: '99.99' }] }]);
+
+    // 5. Longevity
+    add('nad-nasal-spray', 'NAD+ Nasal Spray', 'Longevity', [{ dosage: '100 mg/mL', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU', plans: [{ name: 'Monthly', price: '149.99' }] }]);
+    add('nad-injection', 'NAD+ Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '119.99' }] }]);
+    add('glutathione-injection', 'Glutathione Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '64.99' }] }]);
+
+    // 6. Generic/Other (with 1/3/6 month durations as fallback)
+    const OTHERS = [
+        { id: 'semaglutide-drops', name: 'Semaglutide sublingual drops', base: 249, cat: 'Weight Loss' },
+        { id: 'tirzepatide-drops', name: 'Tirzepatide sublingual drops', base: 349, cat: 'Weight Loss' },
+        { id: 'finasteride-tablets', name: 'Finasteride', base: 49, cat: 'Hair Restoration' },
+        { id: 'finasteride-minoxidil-liquid', name: 'Dual Growth Formula', base: 79, cat: 'Hair Restoration' },
+        { id: 'finasteride-minoxidil-tretinoin-liquid', name: 'Triple Growth Liquid', base: 99, cat: 'Hair Restoration' },
+        { id: 'minoxidil-max-compound-liquid', name: 'Max Growth Compound', base: 129, cat: 'Hair Restoration' },
+        { id: 'sildenafil-tadalafil-troche', name: 'Dual Performance Formula', base: 89, cat: 'Sexual Health' },
+        { id: 'sildenafil-yohimbe-troche', name: 'Synergy Performance Formula', base: 79, cat: 'Sexual Health' },
+        { id: 'sildenafil-tadalafil-tablets', name: 'Dual Action Tablets', base: 69, cat: 'Sexual Health' },
+        { id: 'oxytocin-troche', name: 'Oxytocin', base: 129, cat: 'Sexual Health' },
+        { id: 'oxytocin-nasal-spray', name: 'Oxytocin', base: 119, cat: 'Sexual Health' },
+        { id: 'testosterone-injection', name: 'Testosterone Cypionate', base: 149, cat: 'Testosterone' },
+        { id: 'testosterone-rdt', name: 'Testosterone RDT', base: 125, cat: 'Testosterone' },
+        { id: 'estradiol-tabs', name: 'Estradiol Tabs', base: 30, cat: 'Hormone Therapy' },
+        { id: 'bpc-157-injection', name: 'BPC-157', base: 249, cat: 'Repair & Healing' },
+        { id: 'bpc-157-tb500-injection', name: 'BPC-157 / TB 500', base: 299, cat: 'Repair & Healing' },
+        { id: 'loverspray-women', name: 'LoverSpray', base: 99.99, cat: 'Sexual Health' },
+        { id: 'retatruide-injection', name: 'Retatruide', base: 499.99, cat: 'Weight Loss' },
+    ];
+    OTHERS.forEach(o => {
+        ['Monthly', '3 Month', '6 Month'].forEach(plan => {
+            let price = o.base;
+            if (plan === '3 Month') price = Math.round(o.base * 2.7);
+            if (plan === '6 Month') price = Math.round(o.base * 5);
+            const key = `${o.id}-${plan.toLowerCase().replace(/\s+/g, '')}`;
+            map[key] = { name: o.name, dosage: 'Standard', plan, price: price.toString(), category: o.cat };
+        });
+    });
+
+    return map;
+};
+
+const MASTER_PRODUCT_MAP = getMasterProductMap();
+const MASTER_DRUGS_CATALOG = Object.entries(MASTER_PRODUCT_MAP).map(([id, data]) => ({
+    name: `${data.name} ${data.dosage} ${data.plan}`,
+    dosage: `$${data.price}`,
+    category: data.category
+}));
 
 // --- Sub-components ---
 const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue', period = 'all_time' }) => {
     const color = chartKey === 'net' ? '#FFDE59' : '#bfff00';
     const gradientId = chartKey === 'net' ? 'colorNet' : 'colorRevenue';
+
 
     const periodLabels = {
         day: 'Today by Hour',
@@ -260,6 +386,386 @@ const AdminOverview = () => {
                     >Net</button>
                 </div>
                 <RevenueChart data={chartData} chartKey={chartView} label={chartView === 'net' ? 'Net Earnings' : 'Gross Revenue'} period={period} />
+            </div>
+        </div>
+    );
+};
+
+const MarketingOverview = () => {
+    const { user } = useAuth();
+    const [period, setPeriod] = useState('all_time');
+    const [chartView, setChartView] = useState('amount');
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        myDoctors: 0,
+        approvedOrders: 0,
+        pendingSubmissions: 0,
+        grossRevenue: 0,
+        stripeFees: 0,
+        netRevenue: 0,
+    });
+    const [orders, setOrders] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const [doctorNames, setDoctorNames] = useState({});
+
+    const STRIPE_RATE = 0.029;
+    const STRIPE_FIXED = 0.30;
+
+    const fmtMoney = (val) => `$${Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    const getPeriodStart = (p) => {
+        const now = new Date();
+        if (p === 'day') { const d = new Date(now); d.setHours(0, 0, 0, 0); return d.toISOString(); }
+        if (p === 'week') { const d = new Date(now); d.setDate(d.getDate() - 7); return d.toISOString(); }
+        if (p === '30_days') { const d = new Date(now); d.setDate(d.getDate() - 30); return d.toISOString(); }
+        if (p === 'year') { const d = new Date(now); d.setFullYear(d.getFullYear() - 1); return d.toISOString(); }
+        return null; // all_time
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!user) return;
+            setLoading(true);
+            try {
+                // 1. Get doctors this rep added
+                const { data: myDoctorsData } = await supabase
+                    .from('user_roles')
+                    .select('user_id')
+                    .eq('added_by', user.id);
+
+                const doctorIds = myDoctorsData?.map(d => d.user_id) || [];
+
+                if (doctorIds.length === 0) {
+                    setStats({ myDoctors: 0, approvedOrders: 0, pendingSubmissions: 0, grossRevenue: 0, stripeFees: 0, netRevenue: 0 });
+                    setOrders([]);
+                    setChartData([]);
+                    setLoading(false);
+                    return;
+                }
+
+                // Fetch doctor names for display
+                const { data: profiles } = await supabase
+                    .from('profiles')
+                    .select('id, first_name, last_name')
+                    .in('id', doctorIds);
+
+                const namesMap = (profiles || []).reduce((acc, p) => {
+                    const name = p.first_name || p.last_name ? `${p.first_name || ''} ${p.last_name || ''}`.trim() : 'Unknown Doctor';
+                    acc[p.id] = name;
+                    return acc;
+                }, {});
+                setDoctorNames(namesMap);
+
+                // 2. Pending submissions assigned to these doctors
+                const { count: pendingCount } = await supabase
+                    .from('form_submissions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('approval_status', 'pending')
+                    .in('assigned_provider_id', doctorIds);
+
+                // 3. Find approved form_submissions assigned to the rep's doctors
+                let approvalsQuery = supabase
+                    .from('form_submissions')
+                    .select('id, assigned_provider_id, updated_at')
+                    .eq('approval_status', 'approved')
+                    .in('assigned_provider_id', doctorIds);
+
+                const periodStart = getPeriodStart(period);
+                if (periodStart) {
+                    approvalsQuery = approvalsQuery.gte('updated_at', periodStart);
+                }
+
+                const { data: approvedSubs } = await approvalsQuery;
+                const approvedSubIds = (approvedSubs || []).map(s => s.id);
+
+                // Map subId to doctorId for easier lookup later
+                const subToDoctorMap = (approvedSubs || []).reduce((acc, s) => {
+                    acc[s.id] = s.assigned_provider_id;
+                    return acc;
+                }, {});
+
+                // 4. Fetch orders for those approved submissions OR matching approving_provider_id
+                let allOrders = [];
+
+                // Method A: Via form_submission_id (works for historical data)
+                if (approvedSubIds.length > 0) {
+                    const batches = [];
+                    for (let i = 0; i < approvedSubIds.length; i += 100) {
+                        batches.push(approvedSubIds.slice(i, i + 100));
+                    }
+                    for (const batch of batches) {
+                        const { data: batchOrders } = await supabase
+                            .from('orders')
+                            .select('*')
+                            .in('form_submission_id', batch);
+
+                        if (batchOrders) {
+                            // Backfill approving_provider_id from the submission if it's null in order
+                            const enhanced = batchOrders.map(o => ({
+                                ...o,
+                                approving_provider_id: o.approving_provider_id || subToDoctorMap[o.form_submission_id]
+                            }));
+                            allOrders = allOrders.concat(enhanced);
+                        }
+                    }
+                }
+
+                // Method B: Via approving_provider_id directly (works for newer data, ensuring we don't miss any)
+                // Filter out duplicates (if any) by ID
+                let providerQuery = supabase
+                    .from('orders')
+                    .select('*')
+                    .in('approving_provider_id', doctorIds);
+
+                if (periodStart) {
+                    providerQuery = providerQuery.gte('created_at', periodStart);
+                }
+
+                const { data: ordersByProv } = await providerQuery;
+                if (ordersByProv) {
+                    const seenIds = new Set(allOrders.map(o => o.id));
+                    const newOnes = ordersByProv.filter(o => !seenIds.has(o.id));
+                    allOrders = allOrders.concat(newOnes);
+                }
+
+                // Sort final list by date
+                allOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                // 5. Compute gross, fees, net
+                const getAmt = (o) => parseFloat(o.drug_price || o.amount || 0);
+                const gross = allOrders.reduce((acc, o) => acc + getAmt(o), 0);
+                const fees = allOrders.reduce((acc, o) => {
+                    const amt = getAmt(o);
+                    return acc + (amt > 0 ? (amt * STRIPE_RATE + STRIPE_FIXED) : 0);
+                }, 0);
+                const net = Math.max(0, gross - fees);
+
+                // 6. Build monthly chart data
+                const monthMap = {};
+                allOrders.forEach(o => {
+                    const d = new Date(o.created_at);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    const label = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+                    if (!monthMap[key]) monthMap[key] = { month: label, amount: 0, net: 0 };
+                    const amt = getAmt(o);
+                    const fee = amt > 0 ? (amt * STRIPE_RATE + STRIPE_FIXED) : 0;
+                    monthMap[key].amount += amt;
+                    monthMap[key].net += Math.max(0, amt - fee);
+                });
+                const chartArr = Object.keys(monthMap).sort().map(k => monthMap[k]);
+
+                setStats({
+                    myDoctors: doctorIds.length,
+                    approvedOrders: allOrders.length,
+                    pendingSubmissions: pendingCount || 0,
+                    grossRevenue: gross,
+                    stripeFees: fees,
+                    netRevenue: net,
+                });
+                setOrders(allOrders);
+                setChartData(chartArr.length > 0 ? chartArr : [{ month: 'Period', amount: gross, net }]);
+
+            } catch (err) {
+                console.error('Error fetching marketing stats:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [user, period]);
+
+    const stripeRate = stats.grossRevenue > 0 ? ((stats.stripeFees / stats.grossRevenue) * 100).toFixed(1) : '2.9';
+
+    return (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+            {/* Header + Period Selector */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="text-2xl font-black uppercase tracking-tighter">Representative <span className="text-amber-400">Overview</span></h2>
+                <div className="flex gap-2 flex-wrap">
+                    {[
+                        { k: 'day', l: 'Daily' },
+                        { k: 'week', l: '1 Week' },
+                        { k: '30_days', l: '30 Days' },
+                        { k: 'year', l: '1 Year' },
+                        { k: 'all_time', l: 'All Time' }
+                    ].map(opt => (
+                        <button
+                            key={opt.k}
+                            onClick={() => setPeriod(opt.k)}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${period === opt.k ? 'bg-amber-400 text-black' : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'}`}
+                        >{opt.l}</button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Core Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {[
+                    { label: 'My Doctors', value: stats.myDoctors, color: 'amber', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                    { label: 'Approved Orders', value: loading ? '...' : stats.approvedOrders, color: 'green', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+                    { label: 'Pending Submissions', value: loading ? '...' : stats.pendingSubmissions, color: 'orange', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
+                    { label: 'Total Transactions', value: loading ? '...' : stats.approvedOrders, color: 'purple', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
+                        <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${stat.color}-500/5 blur-3xl transition-opacity group-hover:opacity-10 opacity-0`}></div>
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`w-12 h-12 rounded-2xl bg-${stat.color}-500/10 flex items-center justify-center`}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color}-400`}>
+                                    <path d={stat.icon} />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-2xl md:text-3xl font-black tracking-tighter mb-1">{stat.value}</p>
+                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/50">{stat.label}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Revenue Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                {/* Gross Revenue */}
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none rounded-3xl" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="w-11 h-11 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                            </svg>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-amber-400">Gross</span>
+                        </div>
+                    </div>
+                    {loading ? (
+                        <div className="w-7 h-7 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mb-4" />
+                    ) : (
+                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-amber-400 mb-2">{fmtMoney(stats.grossRevenue)}</p>
+                    )}
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Gross Revenue</p>
+                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total product value approved</p>
+                </div>
+
+                {/* Stripe Fees */}
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none rounded-3xl" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="w-11 h-11 rounded-2xl bg-red-500/10 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2">
+                                <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </div>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-red-400/70 px-3 py-1 bg-red-500/10 rounded-full">~{stripeRate}% rate</span>
+                    </div>
+                    {loading ? (
+                        <div className="w-7 h-7 border-2 border-red-500/30 border-t-red-400 rounded-full animate-spin mb-4" />
+                    ) : (
+                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-red-400 mb-2">- {fmtMoney(stats.stripeFees)}</p>
+                    )}
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Stripe Processing Fees</p>
+                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">2.9% + $0.30 per transaction</p>
+                </div>
+
+                {/* Net Revenue */}
+                <div className="bg-white/5 border border-amber-400/20 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-amber-400/40 transition-all">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-400/8 to-transparent pointer-events-none rounded-3xl" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="w-11 h-11 rounded-2xl bg-amber-400/10 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                                <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                        </div>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 bg-amber-400/10 rounded-full">Net Profit</span>
+                    </div>
+                    {loading ? (
+                        <div className="w-7 h-7 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin mb-4" />
+                    ) : (
+                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-amber-400 mb-2">{fmtMoney(stats.netRevenue)}</p>
+                    )}
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Net Earnings</p>
+                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">After all Stripe charges</p>
+                </div>
+            </div>
+
+            {/* Chart */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Chart View:</span>
+                    <button
+                        onClick={() => setChartView('amount')}
+                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartView === 'amount' ? 'bg-amber-400 text-black' : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'}`}
+                    >Gross</button>
+                    <button
+                        onClick={() => setChartView('net')}
+                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartView === 'net' ? 'bg-amber-400 text-black' : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'}`}
+                    >Net</button>
+                </div>
+                <RevenueChart data={chartData} chartKey={chartView} label={chartView === 'net' ? 'Net Profit' : 'Gross Revenue'} period={period} />
+            </div>
+
+            {/* Recent Conversions Table */}
+            <div className="bg-[#111111] border border-white/10 rounded-3xl overflow-hidden">
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                    <div>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Recent Conversions</h4>
+                        <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Product approvals generating network revenue</p>
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/70 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">{orders.length} records</span>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-white/5">
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50">Plan / Product</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50">Gross</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50">Stripe Fee</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50">Net</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50">Date</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-white/50 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {orders.length === 0 ? (
+                                <tr><td colSpan="6" className="p-12 text-center text-xs text-white/30 uppercase font-black tracking-widest">No approved orders in this period</td></tr>
+                            ) : (
+                                orders.slice(0, 10).map(order => {
+                                    const getAmt = (o) => parseFloat(o.drug_price || o.amount || 0);
+                                    const amt = getAmt(order);
+                                    const fee = amt > 0 ? (amt * STRIPE_RATE + STRIPE_FIXED) : 0;
+                                    const net = Math.max(0, amt - fee);
+                                    return (
+                                        <tr key={order.id} className="group hover:bg-white/5 transition-colors">
+                                            <td className="px-6 py-5">
+                                                <p className="text-sm font-bold text-white mb-0.5">{order.drug_name || order.plan_name || 'Product'}</p>
+                                                <div className="flex items-center gap-1.5">
+                                                    <p className="text-[9px] text-white/30 uppercase tracking-widest font-black">Plan: {order.plan_name || 'Individual'}</p>
+                                                    <span className="w-1 h-1 rounded-full bg-white/10"></span>
+                                                    <p className="text-[9px] text-amber-400/60 uppercase tracking-widest font-black">Dr. {doctorNames[order.approving_provider_id] || 'N/A'}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <p className="text-sm font-black text-amber-400">{fmtMoney(amt)}</p>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <p className="text-sm font-black text-red-400">- {fmtMoney(fee)}</p>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <p className="text-sm font-black text-green-400">{fmtMoney(net)}</p>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
+                                            </td>
+                                            <td className="px-6 py-5 text-right">
+                                                <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[9px] font-black uppercase tracking-widest rounded-full">Approved</span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
@@ -1239,6 +1745,25 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                     "Health Goals": (Array.isArray(submission.goals) ? submission.goals.join(', ') : submission.health_goals) || (Array.isArray(intakeBlob.goals) ? intakeBlob.goals.join(', ') : '') || 'N/A',
                     "Diabetes Status": submission.diabetes_status || intakeBlob.diabetes || 'N/A',
                     "Allergies": allergies,
+                    "Cancer History": Array.isArray(submission.cancer_history)
+                        ? submission.cancer_history.join(', ')
+                        : (submission.cancer_history || 'None reported'),
+                    "Personal Cancer Details": (() => {
+                        const raw = submission.personal_cancer_list || intakeBlob.personal_cancer_list;
+                        if (!raw) return 'N/A';
+                        try {
+                            const list = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                            return Array.isArray(list) ? list.map(e => e.type).filter(Boolean).join(', ') : 'N/A';
+                        } catch { return String(raw) || 'N/A'; }
+                    })(),
+                    "Family Cancer Details": (() => {
+                        const raw = submission.family_cancer_list || intakeBlob.family_cancer_list;
+                        if (!raw) return 'N/A';
+                        try {
+                            const list = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                            return Array.isArray(list) ? list.map(e => `${e.type} (${e.relative})`).filter(Boolean).join('; ') : 'N/A';
+                        } catch { return String(raw) || 'N/A'; }
+                    })(),
                     "Current Medications": submission.current_medications ||
                         (Array.isArray(intakeBlob.current_meds) ? intakeBlob.current_meds.join(', ') : intakeBlob.current_meds) ||
                         'None'
@@ -1452,117 +1977,7 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
 // --- Create Order Modal ---
 const CreateOrderModal = ({ submission, onClose, onApprove }) => {
     // All current products from the navbar/site, grouped by category
-    const FINAL_PRODUCT_MAP = {};
-
-    // Helper to add multiple entries
-    const addProductEntries = (id, prodName, category, strengths) => {
-        strengths.forEach(s => {
-            const dosage = s.dosage || '';
-            const plans = s.plans || [];
-            plans.forEach(p => {
-                const planName = p.name;
-                const priceValue = p.price.replace('$', '').replace('/mo', '').trim();
-                const key = `${id}-${dosage.replace(/\s+/g, '')}-${planName.toLowerCase().replace(/\s+/g, '')}`.replace(/-$/, '');
-                FINAL_PRODUCT_MAP[key] = {
-                    name: prodName,
-                    dosage: dosage || 'Standard',
-                    plan: planName,
-                    price: priceValue,
-                    category: category
-                };
-            });
-        });
-    };
-
-    // 1. Weight Loss Injections
-    addProductEntries('semaglutide-injection', 'Semaglutide Injection', 'Weight Loss', [
-        { dosage: '0.25 mg', plans: [{ name: 'Monthly', price: '99.99' }, { name: '3 Month', price: '269.99' }, { name: '6 Month', price: '499.99' }] },
-        { dosage: '0.5 mg', plans: [{ name: 'Monthly', price: '134.99' }, { name: '3 Month', price: '364.50' }, { name: '6 Month', price: '674.99' }] },
-        { dosage: '1 mg', plans: [{ name: 'Monthly', price: '179.99' }, { name: '3 Month', price: '484.99' }, { name: '6 Month', price: '899.99' }] },
-        { dosage: '1.5 mg', plans: [{ name: 'Monthly', price: '219.99' }, { name: '3 Month', price: '594.99' }, { name: '6 Month', price: '1099.99' }] },
-        { dosage: '2 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
-        { dosage: '2.4 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
-    ]);
-    addProductEntries('tirzepatide-injection', 'Tirzepatide Injection', 'Weight Loss', [
-        { dosage: '2.5 mg', plans: [{ name: 'Monthly', price: '190.00' }, { name: '3 Month', price: '499.99' }, { name: '6 Month', price: '999.99' }] },
-        { dosage: '5 mg', plans: [{ name: 'Monthly', price: '299.99' }, { name: '3 Month', price: '799.99' }, { name: '6 Month', price: '1499.99' }] },
-        { dosage: '7.5 mg', plans: [{ name: 'Monthly', price: '320.00' }, { name: '3 Month', price: '864.99' }, { name: '6 Month', price: '1599.99' }] },
-        { dosage: '10 mg', plans: [{ name: 'Monthly', price: '460.00' }, { name: '3 Month', price: '1242.00' }, { name: '6 Month', price: '2299.99' }] },
-        { dosage: '12.5 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
-        { dosage: '15 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
-    ]);
-
-    // 2. Hair Growth Tabs
-    addProductEntries('hair-growth-tabs-3in1', 'Hair Growth Tabs (3-in-1)', 'Hair Restoration', [
-        { dosage: 'Triple Action', plans: [{ name: '30 Day Supply', price: '99.99' }, { name: '60 Day Supply', price: '179.99' }, { name: '90 Day Supply', price: '249.99' }] }
-    ]);
-    addProductEntries('hair-growth-tabs-2in1', 'Hair Growth Tabs (2-in-1)', 'Hair Restoration', [
-        { dosage: 'Dual Action', plans: [{ name: '30 Day Supply', price: '89.99' }, { name: '60 Day Supply', price: '159.99' }, { name: '90 Day Supply', price: '224.99' }] }
-    ]);
-
-    // 3. Sexual Health (Packs)
-    addProductEntries('readysetgo-men', 'ReadySetGo', 'Sexual Health', [
-        { dosage: '40/14/2 mg', plans: [{ name: '6 Pack', price: '39' }, { name: '10 Pack', price: '59.99' }, { name: '17 Pack', price: '94.99' }, { name: '34 Pack', price: '189.99' }] },
-        { dosage: '65/22/2 mg', plans: [{ name: '6 Pack', price: '42' }, { name: '10 Pack', price: '62.99' }, { name: '17 Pack', price: '99.99' }, { name: '34 Pack', price: '199.99' }] },
-        { dosage: '80/22/3 mg', plans: [{ name: '6 Pack', price: '45' }, { name: '10 Pack', price: '67.50' }, { name: '17 Pack', price: '104.99' }, { name: '34 Pack', price: '209.99' }] },
-        { dosage: '110/22/3 mg', plans: [{ name: '6 Pack', price: '50' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
-    ]);
-    addProductEntries('growtabs-sildenafil', 'GrowTabs (Sildenafil)', 'Sexual Health', [
-        { dosage: '30 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
-        { dosage: '45 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
-    ]);
-    addProductEntries('growtabs-tadalafil', 'GrowTabs (Tadalafil)', 'Sexual Health', [
-        { dosage: '6 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
-        { dosage: '9 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
-    ]);
-    addProductEntries('quicklover-women', 'QuickLover (Women)', 'Sexual Health', [
-        { dosage: '50 IU', plans: [{ name: '6 Pack', price: '43.99' }, { name: '10 Pack', price: '64.99' }, { name: '17 Pack', price: '102.99' }, { name: '34 Pack', price: '204.99' }] },
-        { dosage: '100 IU', plans: [{ name: '6 Pack', price: '49.99' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
-    ]);
-
-    // 4. Skincare
-    addProductEntries('anti-aging-cream', 'Anti-Aging Cream', 'Skin Care', [{ dosage: 'Tretinoin', plans: [{ name: 'Once', price: '79.99' }, { name: 'Every 2 Months', price: '69.99' }, { name: 'Monthly', price: '35.00' }] }]);
-    addProductEntries('face-spot-peel', 'Face Spot Peel', 'Skin Care', [{ dosage: 'AHA', plans: [{ name: 'Once', price: '99.99' }, { name: 'Every 2 Months', price: '72.00' }, { name: 'Monthly', price: '36.00' }] }]);
-    addProductEntries('acne-cleanser', 'Acne Cleanser', 'Skin Care', [{ dosage: 'Salicylic', plans: [{ name: 'Once', price: '84.99' }, { name: 'Every 2 Months', price: '59.99' }, { name: 'Monthly', price: '29.99' }] }]);
-    addProductEntries('rosacea-red-cream', 'Rosacea Relief Cream', 'Skin Care', [{ dosage: 'Metronidazole', plans: [{ name: 'Once', price: '114.99' }, { name: 'Every 2 Months', price: '79.99' }, { name: 'Monthly', price: '39.99' }] }]);
-    addProductEntries('eye-serum', 'Eye Serum', 'Skin Care', [{ dosage: 'Peptides', plans: [{ name: 'Once', price: '114.99' }, { name: 'Monthly', price: '79.99' }] }]);
-    addProductEntries('body-acne-cream', 'Body Acne Cream', 'Skin Care', [{ dosage: 'Prescription', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Months', price: '99.99' }] }]);
-
-    // 5. Longevity
-    addProductEntries('nad-nasal-spray', 'NAD+ Nasal Spray', 'Longevity', [{ dosage: '100 mg/mL', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU', plans: [{ name: 'Monthly', price: '149.99' }] }]);
-    addProductEntries('nad-injection', 'NAD+ Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '119.99' }] }]);
-    addProductEntries('glutathione-injection', 'Glutathione Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '64.99' }] }]);
-
-    // 6. Generic/Other (with 1/3/6 month durations as fallback)
-    const OTHERS = [
-        { id: 'semaglutide-drops', name: 'Semaglutide sublingual drops', base: 249, cat: 'Weight Loss' },
-        { id: 'tirzepatide-drops', name: 'Tirzepatide sublingual drops', base: 349, cat: 'Weight Loss' },
-        { id: 'finasteride-tablets', name: 'Finasteride', base: 49, cat: 'Hair Restoration' },
-        { id: 'finasteride-minoxidil-liquid', name: 'Dual Growth Formula', base: 79, cat: 'Hair Restoration' },
-        { id: 'finasteride-minoxidil-tretinoin-liquid', name: 'Triple Growth Liquid', base: 99, cat: 'Hair Restoration' },
-        { id: 'minoxidil-max-compound-liquid', name: 'Max Growth Compound', base: 129, cat: 'Hair Restoration' },
-        { id: 'sildenafil-tadalafil-troche', name: 'Dual Performance Formula', base: 89, cat: 'Sexual Health' },
-        { id: 'sildenafil-yohimbe-troche', name: 'Synergy Performance Formula', base: 79, cat: 'Sexual Health' },
-        { id: 'sildenafil-tadalafil-tablets', name: 'Dual Action Tablets', base: 69, cat: 'Sexual Health' },
-        { id: 'oxytocin-troche', name: 'Oxytocin', base: 129, cat: 'Sexual Health' },
-        { id: 'oxytocin-nasal-spray', name: 'Oxytocin', base: 119, cat: 'Sexual Health' },
-        { id: 'testosterone-injection', name: 'Testosterone Cypionate', base: 149, cat: 'Testosterone' },
-        { id: 'testosterone-rdt', name: 'Testosterone RDT', base: 125, cat: 'Testosterone' },
-        { id: 'estradiol-tabs', name: 'Estradiol Tabs', base: 30, cat: 'Hormone Therapy' },
-        { id: 'bpc-157-injection', name: 'BPC-157', base: 249, cat: 'Repair & Healing' },
-        { id: 'bpc-157-tb500-injection', name: 'BPC-157 / TB 500', base: 299, cat: 'Repair & Healing' },
-        { id: 'loverspray-women', name: 'LoverSpray', base: 99.99, cat: 'Sexual Health' },
-        { id: 'retatruide-injection', name: 'Retatruide', base: 499.99, cat: 'Weight Loss' },
-    ];
-    OTHERS.forEach(o => {
-        ['Monthly', '3 Month', '6 Month'].forEach(plan => {
-            let price = o.base;
-            if (plan === '3 Month') price = Math.round(o.base * 2.7);
-            if (plan === '6 Month') price = Math.round(o.base * 5);
-            const key = `${o.id}-${plan.toLowerCase().replace(/\s+/g, '')}`;
-            FINAL_PRODUCT_MAP[key] = { name: o.name, dosage: 'Standard', plan, price: price.toString(), category: o.cat };
-        });
-    });
+    const FINAL_PRODUCT_MAP = MASTER_PRODUCT_MAP;
 
     const [price, setPrice] = useState('');
     const [coupon, setCoupon] = useState('');
@@ -1574,7 +1989,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
         provider_first_name: '',
         provider_last_name: '',
         provider_type: '',
-        delivery_status: 'Not delivered'
+        delivery_status: 'pending'
     });
 
     const handleDataChange = (field, value) => {
@@ -1653,6 +2068,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
             real_price: basePriceCents,
             plan_duration_months: plan_duration_months,
             form_submission_id: submission.id,
+            approving_provider_id: submission.assigned_provider_id || null,
             shipping_address: {
                 line1: submission.shipping_street || submission.shipping_address || '',
                 line2: '',
@@ -1660,7 +2076,11 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                 state: submission.shipping_state || '',
                 postal_code: submission.shipping_zip || '',
                 country: 'US'
-            }
+            },
+            provider_first_name: orderData.provider_first_name,
+            provider_last_name: orderData.provider_last_name,
+            provider_type: orderData.provider_type,
+            delivery_status: orderData.delivery_status
         };
 
         setCharging(true);
@@ -1863,10 +2283,10 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     onChange={(e) => handleDataChange('delivery_status', e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-white focus:outline-none focus:border-accent-black cursor-pointer"
                                 >
-                                    <option value="Not delivered" className="bg-[#111111]">1. Not delivered</option>
-                                    <option value="Processing" className="bg-[#111111]">2. Processing</option>
-                                    <option value="Shipped" className="bg-[#111111]">3. Shipped</option>
-                                    <option value="Delivered" className="bg-[#111111]">4. Delivered</option>
+                                    <option value="pending" className="bg-[#111111]">1. Not delivered (Pending)</option>
+                                    <option value="processing" className="bg-[#111111]">2. Processing</option>
+                                    <option value="shipped" className="bg-[#111111]">3. Shipped</option>
+                                    <option value="delivered" className="bg-[#111111]">4. Delivered</option>
                                 </select>
                             </div>
                         </div>
@@ -2336,19 +2756,29 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
     const handleIntakeChange = (questionId, value) => {
         console.log('Intake change:', questionId, '=', value);
-        setFormData(prev => {
-            // Get current responses, prioritizing medical_responses
-            const currentResponses = prev.medical_responses || prev.intake_data || {};
 
-            // Create a new object for responses to alert React of the change
-            const newResponses = { ...currentResponses, [questionId]: value };
+        // Helper to ensure values are arrays if they correspond to known TEXT[] columns
+        const textArrayColumns = [
+            'heart_conditions', 'hormone_conditions', 'cancer_history',
+            'gi_conditions', 'mental_health_conditions', 'additional_conditions',
+            'past_weight_loss_methods', 'past_prescription_meds', 'other_health_goals',
+            'goals'
+        ];
+
+        const processedValue = textArrayColumns.includes(questionId) && !Array.isArray(value) && value
+            ? [value]
+            : value;
+
+        setFormData(prev => {
+            const currentResponses = prev.medical_responses || prev.intake_data || {};
+            const newResponses = { ...currentResponses, [questionId]: processedValue };
 
             return {
                 ...prev,
                 medical_responses: newResponses,
-                // If specific top-level fields are mapped from questions, update them too
-                ...(questionId === 'dosage_preference' && { dosage_preference: value }),
-                ...(questionId === 'other_health_goals' && { other_health_goals: value })
+                ...(questionId === 'dosage_preference' && { dosage_preference: processedValue }),
+                ...(questionId === 'other_health_goals' && { other_health_goals: processedValue }),
+                ...(textArrayColumns.includes(questionId) && { [questionId]: processedValue })
             };
         });
     };
@@ -2653,28 +3083,103 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         </div>
                                     )}
 
-                                    {/* Manual entry for Eligibility Check */}
-                                    {formData.seen_pcp && (
-                                        <div className="flex flex-col gap-2 border-b border-white/10 pb-6">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-1">
-                                                Have you seen a primary care physician in the last 6 months?
-                                            </p>
-                                            {isEditing ? (
-                                                <select
-                                                    value={formData.seen_pcp}
-                                                    onChange={(e) => handleChange('seen_pcp', e.target.value)}
-                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
-                                                >
-                                                    <option value="Yes">Yes</option>
-                                                    <option value="No">No</option>
-                                                </select>
-                                            ) : (
-                                                <p className="text-sm font-bold text-white/90 leading-relaxed">
-                                                    {formData.seen_pcp}
+                                    {/* PCP & Lab Testing Section */}
+                                    {(() => {
+                                        const pcpAnswer = formData.seen_pcp || intake.pcp_labs;
+                                        const labUrls = [
+                                            ...(Array.isArray(formData.lab_results_url) ? formData.lab_results_url : (formData.lab_results_url ? [formData.lab_results_url] : [])),
+                                            ...(Array.isArray(intake.lab_results_url) ? intake.lab_results_url : (intake.lab_results_url ? [intake.lab_results_url] : []))
+                                        ].filter((v, i, a) => v && typeof v === 'string' && a.indexOf(v) === i); // robust deduplicate
+
+                                        const pcpFirst = intake.pcpFirstName || intake.pcp_first_name || formData.pcp_first_name;
+                                        const pcpLast = intake.pcpLastName || intake.pcp_last_name || formData.pcp_last_name;
+                                        const pcpNpi = intake.pcpNpi || intake.pcp_npi || formData.pcp_npi;
+                                        const pcpState = intake.pcpState || intake.pcp_state || formData.pcp_state;
+                                        const noPcp = intake.noPcp || intake.no_pcp;
+                                        const pastDosage = intake.pastDosage || intake.past_dosage;
+
+                                        if (!pcpAnswer && labUrls.length === 0 && !pcpFirst && !pcpNpi && !noPcp) return null;
+
+                                        return (
+                                            <div className="flex flex-col gap-4 border-b border-white/10 pb-6">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                                                    {formData.selected_drug === 'weight-loss'
+                                                        ? "Have you seen your primary care provider and/or did lab testing in the past 12 months?"
+                                                        : "Primary Care & Diagnostics Verification"}
                                                 </p>
-                                            )}
-                                        </div>
-                                    )}
+
+                                                {/* Yes/No Answer */}
+                                                {pcpAnswer && (
+                                                    isEditing ? (
+                                                        <select
+                                                            value={formData.seen_pcp || ''}
+                                                            onChange={(e) => handleChange('seen_pcp', e.target.value)}
+                                                            className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
+                                                        >
+                                                            <option value="Yes">Yes</option>
+                                                            <option value="No">No</option>
+                                                        </select>
+                                                    ) : (
+                                                        <p className="text-sm font-bold text-white/90">{pcpAnswer}</p>
+                                                    )
+                                                )}
+
+                                                {/* No PCP flag */}
+                                                {noPcp && (
+                                                    <div className="px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-400">No Primary Care Provider on file</p>
+                                                    </div>
+                                                )}
+
+                                                {/* PCP Provider Info */}
+                                                {(pcpFirst || pcpNpi) && (
+                                                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">PCP Provider Info</p>
+                                                        {(pcpFirst || pcpLast) && (
+                                                            <p className="text-sm font-bold text-white/80">
+                                                                <span className="text-[9px] text-white/40 uppercase tracking-widest mr-2">Name:</span>
+                                                                {pcpFirst} {pcpLast}
+                                                            </p>
+                                                        )}
+                                                        {pcpNpi && (
+                                                            <p className="text-sm font-bold text-white/80">
+                                                                <span className="text-[9px] text-white/40 uppercase tracking-widest mr-2">NPI:</span>
+                                                                {pcpNpi}
+                                                            </p>
+                                                        )}
+                                                        {pcpState && (
+                                                            <p className="text-sm font-bold text-white/80">
+                                                                <span className="text-[9px] text-white/40 uppercase tracking-widest mr-2">State:</span>
+                                                                {pcpState}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+
+
+                                                {/* Lab Result Uploads */}
+                                                {labUrls.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Lab Result Uploads ({labUrls.length})</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {labUrls.map((url, i) => (
+                                                                <a
+                                                                    key={i}
+                                                                    href={url}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all"
+                                                                >
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                                                    Lab Result {labUrls.length > 1 ? (i + 1) : ''}
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
 
 
 
@@ -2686,7 +3191,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                             : (formData.intake_data || {});
 
                                         return questions
-                                            .filter(q => q.id !== 'other_health_goals' && q.id !== 'selected_medication' && q.id !== 'medication_preference' && q.id !== 'dosage_preference')
+                                            .filter(q => q.id !== 'other_health_goals' && q.id !== 'selected_medication' && q.id !== 'medication_preference' && q.id !== 'dosage_preference' && q.id !== 'pcp_labs')
                                             .map((q) => {
                                                 if (q.type === 'info') return null;
 
@@ -2754,15 +3259,12 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                             </div>
                                                         )}
 
-                                                        {/* Files (e.g. current_meds upload, lab results, ID) */}
-                                                        {q.upload && (() => {
-                                                            // Collect all possible file URLs for this question
-                                                            const fileUrls = [
+                                                        {/* Files (e.g. current_meds upload, lab results, ID, Step 19) */}
+                                                        {(q.upload || q.isStep19) && (() => {
+                                                            const fileUrls = [...new Set([
                                                                 answers[`${q.id}_file`],
-                                                                q.id === 'current_medications' && formData.glp1_prescription_url,
-                                                                q.id === 'lab_results' && formData.lab_results_url,
-                                                                q.id === 'identification' && formData.identification_url,
-                                                            ].filter(Boolean).flat();
+                                                                (q.id === 'current_medications' || q.id === 'current_meds') && formData.glp1_prescription_url,
+                                                            ].filter(Boolean).flat())];
 
                                                             if (fileUrls.length === 0) return null;
 
@@ -2777,17 +3279,158 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                                             className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/30 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all"
                                                                         >
                                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
-                                                                            {fileUrls.length > 1 ? `View Document ${fi + 1}` : 'View Document'}
+                                                                            {fileUrls.length > 1 ? `View Document ${fi + 1}` : (q.isStep19 ? 'View Prescription Photo' : 'View Document')}
                                                                         </a>
                                                                     ))}
                                                                 </div>
                                                             );
                                                         })()}
+
+                                                        {/* Past Dosage for Step 19 */}
+                                                        {q.isStep19 && (answers.past_dosage || answers.pastDosage) && (
+                                                            <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl">
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Past Dosage Amount</p>
+                                                                <p className="text-sm font-bold text-white/80">{answers.past_dosage || answers.pastDosage}</p>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Dosage Preference for Step 19 */}
+                                                        {q.isStep19 && (answers.dosagePreference || answers.dosage_preference) && (
+                                                            <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
+                                                                <div>
+                                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Dosage Preference</p>
+                                                                    <p className="text-sm font-bold text-white/80">{answers.dosagePreference || answers.dosage_preference}</p>
+                                                                </div>
+                                                                {(answers.desiredDose || answers.desired_dose) && (
+                                                                    <div className="pt-2 border-t border-white/5">
+                                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Desired Dose</p>
+                                                                        <p className="text-sm font-bold text-accent-black bg-accent-black/10 px-2 py-0.5 rounded inline-block">{answers.desiredDose || answers.desired_dose}</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 );
                                             });
                                     })()}
                                 </div>
+
+                                {/* Supplementary Raw Data Catch-all */}
+                                {(() => {
+                                    const categoryId = getMedicationCategoryId(formData.selected_drug);
+                                    const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
+                                    const shownKeys = questions.map(q => q.id);
+                                    const allIntakeKeys = Object.keys(intake || {});
+
+                                    // Fields already shown in dedicated PCP/Dosage/Biometrics sections
+                                    const explicitFields = [
+                                        'category', 'goals', 'date_of_birth', 'eligibility',
+                                        'shipping', 'identification', 'lab_fulfillment',
+                                        'past_dosage', 'no_pcp', 'personal_cancer_list',
+                                        'family_cancer_list', 'sex', 'dob', 'state', 'email',
+                                        'height_feet', 'height_inches', 'weight', 'selected_medication',
+                                        'subscription_plan', 'pcp_labs', 'has_pcp_long', 'assigned_sex_intake',
+                                        'pcpFirstName', 'pcpLastName', 'pcpState', 'pcpNpi', 'dosagePreference', 'desiredDose',
+                                        'pastDosage'
+                                    ];
+
+                                    const hiddenKeys = allIntakeKeys.filter(key =>
+                                        !shownKeys.includes(key) &&
+                                        !key.includes('_details') &&
+                                        !key.includes('_file') &&
+                                        !explicitFields.includes(key) &&
+                                        intake[key] !== null &&
+                                        intake[key] !== undefined &&
+                                        intake[key] !== ''
+                                    );
+
+                                    // Group high-value clinical data if not shown elsewhere
+                                    const clinicalPii = {
+                                        "PCP Name": `${intake.pcpFirstName || ''} ${intake.pcpLastName || ''}`.trim(),
+                                        "PCP State": intake.pcpState,
+                                        "PCP NPI": intake.pcpNpi,
+                                        "No PCP Identified": intake.no_pcp || intake.noPcp ? 'Yes' : null,
+                                        "Dosage Preference": intake.dosagePreference || intake.dosage_preference,
+                                        "Desired Dose": intake.desiredDose || intake.desired_dose,
+                                        "Past Dosage": intake.pastDosage || intake.past_dosage
+                                    };
+
+                                    const hasClinicalData = Object.values(clinicalPii).some(v => v && v !== '');
+
+                                    return (
+                                        <>
+                                            {hasClinicalData && (
+                                                <>
+                                                    <SectionHeader title="Clinical Metadata & History" />
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                                                        {Object.entries(clinicalPii).map(([label, value]) => value && (
+                                                            <InfoRow
+                                                                key={label}
+                                                                label={label.toUpperCase()}
+                                                                value={value.toString()}
+                                                                isEditing={false}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
+                                    );
+                                })()}
+
+                                {/* Cancer History Details */}
+                                {(formData.personal_cancer_list || formData.family_cancer_list || intake.personal_cancer_list || intake.family_cancer_list) && (() => {
+                                    // Try reading from top-level first (old columns), then from intake helper (flattened JSON)
+                                    const parseList = (val) => {
+                                        if (!val) return null;
+                                        if (Array.isArray(val)) return val;
+                                        try { return typeof val === 'string' ? JSON.parse(val) : val; } catch { return null; }
+                                    };
+
+                                    const personalList = parseList(formData.personal_cancer_list || intake.personal_cancer_list);
+                                    const familyList = parseList(formData.family_cancer_list || intake.family_cancer_list);
+
+                                    if (!personalList?.length && !familyList?.length) return null;
+                                    return (
+                                        <>
+                                            <SectionHeader title="Cancer History Details" />
+                                            <div className="space-y-6">
+                                                {personalList?.length > 0 && (
+                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[24px]">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Personal Cancer History</p>
+                                                        <div className="space-y-2">
+                                                            {personalList.map((entry, i) => (
+                                                                <div key={i} className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-xl">
+                                                                    <span className="w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-[8px] font-black shrink-0">{i + 1}</span>
+                                                                    <span className="text-sm font-bold text-white/80">{entry.type || '—'}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {familyList?.length > 0 && (
+                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[24px]">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Family Cancer History</p>
+                                                        <div className="space-y-2">
+                                                            {familyList.map((entry, i) => (
+                                                                <div key={i} className="flex items-center justify-between px-4 py-3 bg-white/5 rounded-xl">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="w-5 h-5 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-[8px] font-black shrink-0">{i + 1}</span>
+                                                                        <span className="text-sm font-bold text-white/80">{entry.type || '—'}</span>
+                                                                    </div>
+                                                                    {entry.relative && (
+                                                                        <span className="text-[9px] font-black uppercase tracking-widest text-white/40 bg-white/5 px-3 py-1 rounded-full">{entry.relative}</span>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+
 
                                 {/* Identification */}
                                 <SectionHeader title="Security & Verification" />
@@ -2838,7 +3481,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 <div className="h-20"></div>
 
                             </div>
-                        </div>
+                        </div >
                     </form>
 
                     {/* Actions */}
@@ -2985,7 +3628,7 @@ const AssignmentModal = ({ submission, staff, onClose, onAssign }) => {
 
 
 // --- Clinical Queue ---
-const ClinicalQueue = () => {
+const ClinicalQueue = ({ user, role }) => {
     const [queue, setQueue] = useState([]);
     const [filteredQueue, setFilteredQueue] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -2994,6 +3637,8 @@ const ClinicalQueue = () => {
     const [reviewingSubmission, setReviewingSubmission] = useState(null);
     const [assigningSubmission, setAssigningSubmission] = useState(null);
     const [staff, setStaff] = useState([]);
+
+    const [pendingCounts, setPendingCounts] = useState({});
 
     const categories = [
         { id: 'all', name: 'All Submissions', color: 'white' },
@@ -3005,39 +3650,55 @@ const ClinicalQueue = () => {
         { id: 'repair-healing', name: 'Repair & Healing', color: '#32CD32' }
     ];
 
-    const [pendingCounts, setPendingCounts] = useState({});
-
     const fetchPendingCounts = async () => {
-        const { data, error } = await supabase
-            .from('form_submissions')
-            .select('selected_drug')
-            .eq('approval_status', 'pending');
+        if (!user || !role) return;
 
-        if (!error && data) {
+        try {
+            let queryBuilder = supabase
+                .from('form_submissions')
+                .select('selected_drug, assigned_provider_id')
+                .eq('approval_status', 'pending');
+
+            // Apply same assignment filter for counts if not admin
+            if (role !== 'admin') {
+                queryBuilder = queryBuilder.eq('assigned_provider_id', user.id);
+            }
+
+            const { data, error } = await queryBuilder;
+
+            if (error) {
+                console.error('[fetchPendingCounts] Error:', error);
+                return;
+            }
+
             const counts = {};
-            data.forEach(item => {
-                const drug = (item.selected_drug || '').toLowerCase();
-                let category = 'unknown';
+            if (data) {
+                data.forEach(item => {
+                    const drug = (item.selected_drug || '').toLowerCase();
+                    let category = 'unknown';
 
-                if (drug.includes('weight') || drug.includes('semaglutide') || drug.includes('tirzepatide')) {
-                    category = 'weight-loss';
-                } else if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) {
-                    category = 'hair-restoration';
-                } else if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin')) {
-                    category = 'sexual-health';
-                } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
-                    category = 'longevity';
-                } else if (drug.includes('testosterone')) {
-                    category = 'testosterone';
-                } else if (drug.includes('repair') || drug.includes('bpc')) {
-                    category = 'repair-healing';
-                } else {
-                    category = item.selected_drug || 'all';
-                }
+                    if (drug.includes('weight') || drug.includes('semaglutide') || drug.includes('tirzepatide')) {
+                        category = 'weight-loss';
+                    } else if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) {
+                        category = 'hair-restoration';
+                    } else if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin')) {
+                        category = 'sexual-health';
+                    } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
+                        category = 'longevity';
+                    } else if (drug.includes('testosterone')) {
+                        category = 'testosterone';
+                    } else if (drug.includes('repair') || drug.includes('bpc')) {
+                        category = 'repair-healing';
+                    } else {
+                        category = item.selected_drug || 'all';
+                    }
 
-                counts[category] = (counts[category] || 0) + 1;
-            });
+                    counts[category] = (counts[category] || 0) + 1;
+                });
+            }
             setPendingCounts(counts);
+        } catch (err) {
+            console.error('[fetchPendingCounts] Exception:', err);
         }
     };
 
@@ -3077,46 +3738,65 @@ const ClinicalQueue = () => {
     };
 
     const fetchQueue = async () => {
-        console.log('=== FETCHING QUEUE ===');
+        if (!user?.id || !role) {
+            console.warn('[fetchQueue] Aborting: Missing user or role', { userId: user?.id, role });
+            return;
+        }
+
+        console.log('=== FETCHING QUEUE ===', { role, statusFilter, userId: user?.id });
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            // Base query for all pending submissions of this status
+            let queryBuilder = supabase
                 .from('form_submissions')
                 .select('*, assigned_provider:assigned_provider_id(id, first_name, last_name)')
                 .eq('approval_status', statusFilter)
                 .order('submitted_at', { ascending: true });
 
-            if (!error && data) {
-                console.log('Queue fetched, items:', data.length);
-                // Log first item's key fields for debugging
-                if (data.length > 0) {
-                    console.log('First item sample:', {
-                        id: data[0].id,
-                        firstName: data[0].shipping_first_name,
-                        lastName: data[0].shipping_last_name,
-                        phone: data[0].shipping_phone
-                    });
-                }
-                setQueue(data);
-                setFilteredQueue(data);
-            } else if (error) {
-                console.error('Queue fetch error:', error);
+            // If not admin, the database must enforce visibility via assigned_provider_id
+            // Even if RLS exists, explicitly adding the filter makes the query intention clear and helps avoid edge cases
+            if (role !== 'admin') {
+                console.log('[fetchQueue] Applying sub-admin assignment filter:', user?.id);
+                queryBuilder = queryBuilder.eq('assigned_provider_id', user.id);
             }
+
+            const { data, error } = await queryBuilder;
+
+            if (!error) {
+                console.log(`[fetchQueue] Success: ${data?.length || 0} items found for ${role}`);
+                setQueue(data || []);
+                setFilteredQueue(data || []);
+            } else {
+                console.error('[fetchQueue] Database error:', error);
+                setQueue([]);
+                setFilteredQueue([]);
+                toast.error('Data connectivity issue detected');
+            }
+
+            // Sync counts for categories
             fetchPendingCounts();
         } catch (err) {
-            console.error('Error fetching queue:', err);
+            console.error('[fetchQueue] Unexpected exception:', err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchQueue();
-    }, [statusFilter]);
+        // Only fetch when user and role are both available to avoid unfiltered requests
+        if (user?.id && role) {
+            console.log('[ClinicalQueue] Triggering fetchQueue because requirements met.');
+            fetchQueue();
+        } else {
+            console.log('[ClinicalQueue] Waiting for user/role before fetching queue...', { userId: user?.id, role });
+        }
+    }, [statusFilter, user?.id, role]); // Add user.id and role to dependencies
 
     useEffect(() => {
-        fetchStaff();
-    }, []);
+        if (user?.id && role) {
+            fetchStaff();
+        }
+    }, [user?.id, role]);
 
     // Update reviewingSubmission when queue updates (to reflect changes in the modal)
     useEffect(() => {
@@ -3134,12 +3814,37 @@ const ClinicalQueue = () => {
     }, [queue]);
 
     useEffect(() => {
+        if (!queue) return;
+
         if (filter === 'all') {
             setFilteredQueue(queue);
         } else {
-            setFilteredQueue(queue.filter(q => q.selected_drug === filter));
+            // Fix: Category filtering was matching 'weight-loss' ID against 'Semaglutide' drug name.
+            // We need to use the same logic that fetchPendingCounts uses to determine the category.
+            setFilteredQueue(queue.filter(q => {
+                const drug = (q.selected_drug || '').toLowerCase();
+                let category = 'unknown';
+
+                if (drug.includes('weight') || drug.includes('semaglutide') || drug.includes('tirzepatide')) {
+                    category = 'weight-loss';
+                } else if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) {
+                    category = 'hair-restoration';
+                } else if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin')) {
+                    category = 'sexual-health';
+                } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
+                    category = 'longevity';
+                } else if (drug.includes('testosterone')) {
+                    category = 'testosterone';
+                } else if (drug.includes('repair') || drug.includes('bpc')) {
+                    category = 'repair-healing';
+                } else {
+                    category = q.selected_drug || 'unknown';
+                }
+
+                return category === filter;
+            }));
         }
-    }, [filter, queue]);
+    }, [filter, queue, user]);
 
     if (loading) return (
         <div className="py-20 flex flex-col items-center justify-center gap-4">
@@ -4608,12 +5313,14 @@ const SurveyManagement = () => {
 };
 
 // --- Staff Management ---
-const StaffManagement = () => {
+const StaffManagement = ({ user, role: currentUserRole }) => {
     const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showProviderModal, setShowProviderModal] = useState(false);
     const [showBackOfficeModal, setShowBackOfficeModal] = useState(false);
+    const [showMarketingRepModal, setShowMarketingRepModal] = useState(false);
     const [creating, setCreating] = useState(false);
+    const [ownerFilter, setOwnerFilter] = useState('all');
 
     const [providerForm, setProviderForm] = useState({
         firstName: '',
@@ -4641,57 +5348,88 @@ const StaffManagement = () => {
         role: 'back_office'
     });
 
+    const [marketingRepForm, setMarketingRepForm] = useState({
+        firstName: '',
+        lastName: '',
+        dob: '',
+        address: '',
+        phone: '',
+        email: '',
+        password: '',
+        role: 'marketing_rep'
+    });
+
     const fetchStaff = async () => {
         setLoading(true);
         try {
-            // 1. Fetch authorized staff roles first
-            const { data: roles, error: rolesError } = await supabase
-                .from('user_roles')
-                .select('user_id, role')
-                .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant']);
+            const { data, error } = await supabase.functions.invoke('get-staff-list');
 
-            if (rolesError) throw rolesError;
-            if (!roles || roles.length === 0) {
-                setStaff([]);
-                return;
+            if (error) {
+                console.error('[StaffManagement] Edge function error:', error);
+                throw error;
             }
 
-            // 2. Extract unique user IDs
-            const userIds = roles.map(r => r.user_id);
+            const staffList = data?.staff || [];
+            console.log('[StaffManagement] Staff from edge function:', staffList.length, staffList);
 
-            // 3. Fetch profiles for these users
-            const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .in('id', userIds);
+            if (staffList.length === 0 && !error) {
+                // Edge function returned no error but also no data — possible auth/role issue
+                // Fall back to direct query
+                console.warn('[StaffManagement] Edge function returned empty, trying direct query...');
+                let query = supabase
+                    .from('user_roles')
+                    .select('user_id, role, added_by')
+                    .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
 
-            if (profileError) throw profileError;
+                if (currentUserRole === 'marketing_rep') {
+                    query = query.eq('added_by', user?.id);
+                }
 
-            // 4. Fetch provider specific data
-            const { data: providerData, error: providerError } = await supabase
-                .from('provider_profiles')
-                .select('*')
-                .in('user_id', userIds);
+                const { data: roles } = await query;
+                if (roles && roles.length > 0) {
+                    const userIds = roles.map((r) => r.user_id);
+                    const { data: profileData } = await supabase.from('profiles').select('*').in('id', userIds);
+                    const { data: providerData } = await supabase.from('provider_profiles').select('*').in('user_id', userIds);
+                    const members = roles.map(roleEntry => {
+                        const profile = (profileData || []).find(p => p.id === roleEntry.user_id);
+                        const providerEntry = (providerData || []).find(p => p.user_id === roleEntry.user_id);
+                        return { ...profile, ...providerEntry, id: roleEntry.user_id, role: roleEntry.role, added_by: roleEntry.added_by };
+                    }).filter(m => m.id).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                    setStaff(members);
+                    return;
+                }
+            }
 
-            if (providerError) throw providerError;
-
-            // 5. Merge all data
-            const staffMembers = roles.map(roleEntry => {
-                const profile = (profileData || []).find(p => p.id === roleEntry.user_id);
-                const providerEntry = (providerData || []).find(p => p.user_id === roleEntry.user_id);
-
-                return {
-                    ...profile,
-                    ...providerEntry,
-                    id: roleEntry.user_id, // IMPORTANT: Ensure the UUID id is not overwritten by provider_profiles.id
-                    role: roleEntry.role
-                };
-            }).filter(member => member.email || member.first_name) // Ensure we have something to display
-                .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
-            setStaff(staffMembers);
+            setStaff(staffList);
         } catch (err) {
-            console.error('Error fetching staff:', err);
+            console.error('[StaffManagement] fetchStaff error, trying direct query fallback:', err);
+            // Direct query fallback
+            try {
+                let query = supabase
+                    .from('user_roles')
+                    .select('user_id, role, added_by')
+                    .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
+                if (currentUserRole === 'marketing_rep') {
+                    query = query.eq('added_by', user?.id);
+                }
+                const { data: roles } = await query;
+                if (roles && roles.length > 0) {
+                    const userIds = roles.map(r => r.user_id);
+                    const { data: profileData } = await supabase.from('profiles').select('*').in('id', userIds);
+                    const { data: providerData } = await supabase.from('provider_profiles').select('*').in('user_id', userIds);
+                    const members = roles.map(roleEntry => {
+                        const profile = (profileData || []).find(p => p.id === roleEntry.user_id);
+                        const providerEntry = (providerData || []).find(p => p.user_id === roleEntry.user_id);
+                        return { ...profile, ...providerEntry, id: roleEntry.user_id, role: roleEntry.role, added_by: roleEntry.added_by };
+                    }).filter(m => m.id).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                    setStaff(members);
+                } else {
+                    setStaff([]);
+                }
+            } catch (fallbackErr) {
+                console.error('[StaffManagement] Fallback query also failed:', fallbackErr);
+                setStaff([]);
+            }
         } finally {
             setLoading(false);
         }
@@ -4721,7 +5459,7 @@ const StaffManagement = () => {
             roleSubscription.unsubscribe();
             providerSubscription.unsubscribe();
         };
-    }, []);
+    }, [currentUserRole, user?.id]);
 
     const handleProviderSubmit = async (e) => {
         e.preventDefault();
@@ -4837,6 +5575,48 @@ const StaffManagement = () => {
         }
     };
 
+    const handleMarketingRepSubmit = async (e) => {
+        e.preventDefault();
+        setCreating(true);
+
+        try {
+            const { data, error } = await supabase.functions.invoke('create-staff-user', {
+                body: {
+                    email: marketingRepForm.email,
+                    password: marketingRepForm.password,
+                    firstName: marketingRepForm.firstName,
+                    lastName: marketingRepForm.lastName,
+                    phone: marketingRepForm.phone,
+                    dob: marketingRepForm.dob,
+                    address: marketingRepForm.address,
+                    role: 'marketing_rep',
+                    providerData: null
+                }
+            });
+
+            if (error) throw error;
+
+            toast.success('Marketing Rep created successfully!');
+            setShowMarketingRepModal(false);
+            setMarketingRepForm({
+                firstName: '',
+                lastName: '',
+                dob: '',
+                address: '',
+                phone: '',
+                email: '',
+                password: '',
+                role: 'marketing_rep'
+            });
+            fetchStaff();
+        } catch (err) {
+            console.error('Error creating marketing rep:', err);
+            toast.error('Failed to create rep: ' + (err.message || 'Unknown error'));
+        } finally {
+            setCreating(false);
+        }
+    };
+
     const handleDeleteStaff = async (userId, name) => {
         if (!window.confirm(`Are you sure you want to remove ${name}? This action cannot be undone.`)) return;
 
@@ -4858,6 +5638,7 @@ const StaffManagement = () => {
     const getRoleBadge = (role) => {
         switch (role) {
             case 'physician':
+            case 'doctor':
                 return 'bg-accent-black/20 text-white border-accent-black/30';
             case 'nurse_practitioner':
                 return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
@@ -4866,19 +5647,29 @@ const StaffManagement = () => {
             case 'back_office':
             case 'sub_admin':
                 return 'bg-white/5 text-white/60 border-white/20';
+            case 'marketing_rep':
+                return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
             default:
                 return 'bg-white/5 text-white/60 border-white/20';
         }
     };
 
-    const getRoleLabel = (role) => {
+    // Accepts an optional member object to read licenseType for more accurate labels
+    const getRoleLabel = (role, member = null) => {
+        const licenseType = member?.licenseType || member?.license_type || null;
         switch (role) {
-            case 'physician': return 'Physician';
+            case 'physician':
+            case 'doctor':
+                if (licenseType === 'MD') return 'Doctor (MD)';
+                if (licenseType === 'DO') return 'Doctor (DO)';
+                return 'Physician';
             case 'nurse_practitioner': return 'Nurse Practitioner';
             case 'physician_assistant': return 'Physician Assistant';
             case 'back_office': return 'Back Office';
             case 'sub_admin': return 'Sub Admin';
-            default: return role;
+            case 'marketing_rep': return 'Marketing Rep';
+            case 'admin': return 'Admin';
+            default: return role || 'Unknown';
         }
     };
 
@@ -4893,19 +5684,50 @@ const StaffManagement = () => {
     return (
         <div className="space-y-8">
             {/* Header Actions */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
                 <button
                     onClick={() => setShowProviderModal(true)}
                     className="px-8 py-4 bg-accent-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(191,255,0,0.2)]"
                 >
-                    + Add Provider
+                    + Add Doctor / Provider
                 </button>
-                <button
-                    onClick={() => setShowBackOfficeModal(true)}
-                    className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
-                >
-                    + Add Staff User
-                </button>
+                {currentUserRole === 'admin' && (
+                    <>
+                        <button
+                            onClick={() => setShowMarketingRepModal(true)}
+                            className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                        >
+                            + Add Marketing Rep
+                        </button>
+                        <button
+                            onClick={() => setShowBackOfficeModal(true)}
+                            className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                        >
+                            + Add Staff User
+                        </button>
+                    </>
+                )}
+
+                {currentUserRole === 'admin' && (
+                    <div className="ml-auto flex items-center gap-3">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Filter by Owner:</span>
+                        <select
+                            value={ownerFilter}
+                            onChange={(e) => setOwnerFilter(e.target.value)}
+                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase text-white focus:outline-none focus:border-accent-black"
+                        >
+                            <option value="all" className="bg-[#111111]">All Owners</option>
+                            {Array.from(new Set(staff.map(s => s.added_by).filter(Boolean))).map(ownerId => {
+                                const owner = staff.find(s => s.id === ownerId);
+                                return (
+                                    <option key={ownerId} value={ownerId} className="bg-[#111111]">
+                                        {owner ? `${owner.first_name} ${owner.last_name}` : 'Unknown Owner'}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    </div>
+                )}
             </div>
 
             {/* Stats */}
@@ -4942,8 +5764,8 @@ const StaffManagement = () => {
                             <tr className="border-b border-white/10">
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Name</th>
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Email</th>
-                                <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Phone</th>
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Role</th>
+                                <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Owner</th>
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">OTP Status</th>
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Created</th>
                                 <th className="text-left p-6 text-[10px] font-black uppercase tracking-widest text-white/50">Actions</th>
@@ -4957,51 +5779,61 @@ const StaffManagement = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                staff.map(member => (
-                                    <tr key={member.id} className="border-b border-white/10 hover:bg-[#111111]/[0.02] transition-colors">
-                                        <td className="p-6">
-                                            <p className="font-bold text-white">{member.first_name} {member.last_name}</p>
-                                        </td>
-                                        <td className="p-6">
-                                            <p className="text-sm text-white/60">{member.email || 'N/A'}</p>
-                                        </td>
-                                        <td className="p-6">
-                                            <p className="text-sm text-white/60">{member.phone_number || member.phone || 'N/A'}</p>
-                                        </td>
-                                        <td className="p-6">
-                                            <span className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-wide ${getRoleBadge(member.role)}`}>
-                                                {getRoleLabel(member.role)}
-                                            </span>
-                                        </td>
-                                        <td className="p-6">
-                                            <span className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-wide ${member.otp_verified ? 'bg-accent-black/20 text-white border-accent-black/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
-                                                }`}>
-                                                {member.otp_verified ? 'Verified' : 'Pending'}
-                                            </span>
-                                        </td>
-                                        <td className="p-6">
-                                            <p className="text-sm text-white/60">
-                                                {new Date(member.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </p>
-                                        </td>
-                                        <td className="p-6">
-                                            <div className="flex items-center gap-2">
-                                                <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">
-                                                    View
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
-                                                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
-                                                    title="Delete Staff"
-                                                >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
+                                staff
+                                    .filter(member => ownerFilter === 'all' || member.added_by === ownerFilter || member.id === ownerFilter)
+                                    .map(member => {
+                                        const owner = staff.find(s => s.id === member.added_by);
+                                        return (
+                                            <tr key={member.id} className="border-b border-white/10 hover:bg-[#111111]/[0.02] transition-colors">
+                                                <td className="p-6">
+                                                    <p className="font-bold text-white uppercase tracking-tighter">
+                                                        {member.first_name || member.last_name
+                                                            ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
+                                                            : member.email || member.id?.substring(0, 8) + '...'}
+                                                    </p>
+                                                </td>
+                                                <td className="p-6">
+                                                    <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{member.email || 'N/A'}</p>
+                                                </td>
+                                                <td className="p-6 whitespace-nowrap">
+                                                    <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getRoleBadge(member.role)}`}>
+                                                        {getRoleLabel(member.role, member)}
+                                                    </span>
+                                                </td>
+                                                <td className="p-6">
+                                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">
+                                                        {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
+                                                    </p>
+                                                </td>
+                                                <td className="p-6">
+                                                    <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest ${member.otp_verified ? 'bg-accent-black/20 text-white border-accent-black/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                                        {member.otp_verified ? 'Verified' : 'Pending'}
+                                                    </span>
+                                                </td>
+                                                <td className="p-6">
+                                                    <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+                                                        {new Date(member.created_at).toLocaleDateString()}
+                                                    </p>
+                                                </td>
+                                                <td className="p-6">
+                                                    <div className="flex items-center gap-2">
+                                                        {/* Admin can delete anyone; marketing rep can only delete their own doctors */}
+                                                        {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
+                                                            <button
+                                                                onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
+                                                                className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
+                                                                title="Delete Staff"
+                                                            >
+                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                             )}
                         </tbody>
                     </table>
@@ -5289,6 +6121,115 @@ const StaffManagement = () => {
                                     className="flex-1 py-4 bg-accent-black text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#111111] transition-all disabled:opacity-50"
                                 >
                                     {creating ? 'Creating...' : 'Create Staff Member'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Marketing Rep Modal */}
+            {showMarketingRepModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-6" onClick={() => setShowMarketingRepModal(false)}>
+                    <div className="bg-[#111111] border border-white/10 rounded-[40px] p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="text-3xl font-black uppercase  tracking-tighter mb-8">
+                            Add Marketing <span className="text-white">Rep</span>
+                        </h3>
+
+                        <form onSubmit={handleMarketingRepSubmit} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">First Name *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={marketingRepForm.firstName}
+                                        onChange={(e) => setMarketingRepForm({ ...marketingRepForm, firstName: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Last Name *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={marketingRepForm.lastName}
+                                        onChange={(e) => setMarketingRepForm({ ...marketingRepForm, lastName: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Date of Birth *</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        value={marketingRepForm.dob}
+                                        onChange={(e) => setMarketingRepForm({ ...marketingRepForm, dob: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black [color-scheme:dark]"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Legal Address *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={marketingRepForm.address}
+                                        onChange={(e) => setMarketingRepForm({ ...marketingRepForm, address: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Phone Number *</label>
+                                <input
+                                    type="tel"
+                                    required
+                                    value={marketingRepForm.phone}
+                                    onChange={(e) => setMarketingRepForm({ ...marketingRepForm, phone: e.target.value })}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Email *</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={marketingRepForm.email}
+                                    onChange={(e) => setMarketingRepForm({ ...marketingRepForm, email: e.target.value })}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Password *</label>
+                                <input
+                                    type="password"
+                                    required
+                                    value={marketingRepForm.password}
+                                    onChange={(e) => setMarketingRepForm({ ...marketingRepForm, password: e.target.value })}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black"
+                                />
+                            </div>
+
+                            <div className="flex flex-col md:flex-row gap-4 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowMarketingRepModal(false)}
+                                    className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={creating}
+                                    className="flex-1 py-4 bg-accent-black text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#111111] transition-all disabled:opacity-50"
+                                >
+                                    {creating ? 'Creating...' : 'Create Marketing Rep'}
                                 </button>
                             </div>
                         </form>
@@ -6116,81 +7057,7 @@ const OrderManagement = () => {
 };
 
 // --- Profit Tracker ---
-const DRUGS_CATALOG = [
-    // --- Weight Loss -----------------------------------------------------------
-    { name: 'Semaglutide Injection', dosage: '0.25 mg', price: '$99.99/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Injection', dosage: '0.5 mg', price: '$134.99/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Injection', dosage: '1 mg', price: '$179.99/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Injection', dosage: '1.5 mg', price: '$219.99/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Injection', dosage: '2 mg', price: '$249.99/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Injection', dosage: '2.4 mg', price: '$249.99/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '2.5 mg', price: '$190/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '5 mg', price: '$299.99/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '7.5 mg', price: '$320/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '10 mg', price: '$460/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '12.5 mg', price: '$500/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Injection', dosage: '15 mg', price: '$500/mo', category: 'Weight Loss' },
-    { name: 'Semaglutide Sublingual Drops', dosage: '', price: '$249/mo', category: 'Weight Loss' },
-    { name: 'Tirzepatide Sublingual Drops', dosage: '', price: '$349/mo', category: 'Weight Loss' },
-    { name: 'Retatrutide', dosage: 'Research', price: '$499/mo', category: 'Weight Loss' },
-
-    // --- Better Sex ------------------------------------------------------------
-    { name: 'Dual Performance Formula (Sildenafil/Tadalafil Troche)', dosage: '', price: '$89/mo', category: 'Better Sex' },
-    { name: 'Synergy Performance Formula (Sildenafil/Yohimbe Troche)', dosage: '', price: '$79/mo', category: 'Better Sex' },
-    { name: 'Dual Action Tablets (Sildenafil/Tadalafil)', dosage: '', price: '$69/mo', category: 'Better Sex' },
-    { name: 'Oxytocin Sublingual Troche', dosage: '', price: '$129/mo', category: 'Better Sex' },
-    { name: 'Oxytocin Nasal Spray', dosage: '', price: '$119/mo', category: 'Better Sex' },
-    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '40/14/2 mg', price: '$39 / 6-Pack', category: 'Better Sex' },
-    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '65/22/2 mg', price: '$42 / 6-Pack', category: 'Better Sex' },
-    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '80/22/3 mg', price: '$45 / 6-Pack', category: 'Better Sex' },
-    { name: 'ReadySetGo (Men 3-in-1 RDT)', dosage: '110/22/3 mg', price: '$50 / 6-Pack', category: 'Better Sex' },
-    { name: 'GrowTabs Sildenafil (Oral Men)', dosage: '30 mg', price: '$29.99 / 6-Pack', category: 'Better Sex' },
-    { name: 'GrowTabs Sildenafil (Oral Men)', dosage: '45 mg', price: '$35 / 6-Pack', category: 'Better Sex' },
-    { name: 'GrowTabs Tadalafil (Oral Men)', dosage: '6 mg', price: '$29.99 / 6-Pack', category: 'Better Sex' },
-    { name: 'GrowTabs Tadalafil (Oral Men)', dosage: '9 mg', price: '$35 / 6-Pack', category: 'Better Sex' },
-    { name: 'QuickLover (Women Oxytocin RDT)', dosage: '50 IU', price: '$43.99 / 6-Pack', category: 'Better Sex' },
-    { name: 'QuickLover (Women Oxytocin RDT)', dosage: '100 IU', price: '$49.99 / 6-Pack', category: 'Better Sex' },
-
-    // --- Hair Loss -------------------------------------------------------------
-    { name: 'Finasteride', dosage: 'Oral Tablets', price: '$49/mo', category: 'Hair Loss' },
-    { name: 'Dual Growth Formula (Finasteride + Minoxidil Topical)', dosage: '', price: '$79/mo', category: 'Hair Loss' },
-    { name: 'Triple Growth Liquid (Finasteride + Minoxidil + Tretinoin)', dosage: '', price: '$99/mo', category: 'Hair Loss' },
-    { name: 'Max Growth Compound (5-in-1 Topical)', dosage: '', price: '$129/mo', category: 'Hair Loss' },
-    { name: '3-in-1 Hair Growth Tabs', dosage: '30 Day Supply', price: '$99.99', category: 'Hair Loss' },
-    { name: '3-in-1 Hair Growth Tabs', dosage: '60 Day Supply', price: '$179.99', category: 'Hair Loss' },
-    { name: '3-in-1 Hair Growth Tabs', dosage: '90 Day Supply', price: '$249.99', category: 'Hair Loss' },
-    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '30 Day Supply', price: '$89.99', category: 'Hair Loss' },
-    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '60 Day Supply', price: '$159.99', category: 'Hair Loss' },
-    { name: '2-in-1 Hair Growth Tabs (Finasteride 1mg/Minoxidil 2.5mg)', dosage: '90 Day Supply', price: '$224.99', category: 'Hair Loss' },
-
-    // --- Longevity -------------------------------------------------------------
-    { name: 'NAD+ Nasal Spray', dosage: '100 mg/mL (15 mL)', price: '$124.99/mo', category: 'Longevity' },
-    { name: 'NAD+ Nasal Spray', dosage: '100 IU (15 mL)', price: '$149.99/mo', category: 'Longevity' },
-    { name: 'NAD+ Subcutaneous Injection', dosage: '200 mg/mL (5 mL)', price: '$119.99/mo', category: 'Longevity' },
-    { name: 'Glutathione Injection', dosage: '200 mg/mL (10 mL)', price: '$64.99/mo', category: 'Longevity' },
-
-    // --- Testosterone -----------------------------------------------------------
-    { name: 'Testosterone Cypionate Injection', dosage: 'TBA', price: '$99.99/mo', category: 'Testosterone' },
-    { name: 'Testosterone RDT', dosage: 'TBA', price: '$125/mo', category: 'Testosterone' },
-    { name: 'Estradiol Tabs', dosage: 'TBA', price: '$30/mo', category: 'Testosterone' },
-
-    // --- Skin Care -------------------------------------------------------------
-    { name: 'Anti-Aging Cream', dosage: 'Monthly', price: '$35/mo', category: 'Skin Care' },
-    { name: 'Anti-Aging Cream', dosage: 'Every 2 Months', price: '$69.99', category: 'Skin Care' },
-    { name: 'Face Spot Peel', dosage: 'Monthly', price: '$36/mo', category: 'Skin Care' },
-    { name: 'Face Spot Peel', dosage: 'Every 2 Months', price: '$72', category: 'Skin Care' },
-    { name: 'Acne Cleanser', dosage: 'Monthly', price: '$29.99/mo', category: 'Skin Care' },
-    { name: 'Acne Cleanser', dosage: 'Every 2 Months', price: '$59.99', category: 'Skin Care' },
-    { name: 'Rosacea Relief Cream', dosage: 'Monthly', price: '$39.99/mo', category: 'Skin Care' },
-    { name: 'Rosacea Relief Cream', dosage: 'Every 2 Months', price: '$79.99', category: 'Skin Care' },
-    { name: 'Eye Serum', dosage: 'Monthly', price: '$79.99/mo', category: 'Skin Care' },
-    { name: 'Body Acne Cream', dosage: 'Monthly', price: '$139.99/mo', category: 'Skin Care' },
-    { name: 'Body Acne Cream', dosage: 'Every 2 Months', price: '$99.99', category: 'Skin Care' },
-
-    // --- Repair & Healing ------------------------------------------------------
-    { name: 'BPC-157', dosage: 'Subq Injection', price: '$149/mo', category: 'Repair & Healing' },
-    { name: 'BPC-157 / TB-500', dosage: 'Subq Injection', price: '$199/mo', category: 'Repair & Healing' },
-];
+const DRUGS_CATALOG = MASTER_DRUGS_CATALOG;
 
 const ProfitTrackerView = () => {
     const [purchases, setPurchases] = useState([]);
@@ -6579,57 +7446,6 @@ const ProfitTrackerView = () => {
                 </div>
             )}
 
-            {/* Purchase History */}
-            {loading ? (
-                <div className="py-20 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin" />
-                </div>
-            ) : purchases.length > 0 && (
-                <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-white/50 mb-4">Purchase History</h3>
-                    <div className="space-y-3">
-                        {purchases.map(p => (
-                            <div key={p.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-[#FFDE59]/10 flex items-center justify-center shrink-0">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5">
-                                            <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM8 7h8M8 11h8M8 15h4" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-black text-white">{p.drug_name}</p>
-                                        <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.pharmacy_name} ? {new Date(p.purchase_date).toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-6 text-right">
-                                    <div>
-                                        <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">Qty</p>
-                                        <p className="text-sm font-black text-white">{p.quantity}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">Per Unit</p>
-                                        <p className="text-sm font-black text-white">{fmtMoney(p.cost_per_unit)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">Total Cost</p>
-                                        <p className="text-sm font-black text-red-400">{fmtMoney(p.total_cost)}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {!loading && purchases.length === 0 && (
-                <div className="text-center py-20 border-2 border-dashed border-white/10 rounded-3xl">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" className="mx-auto mb-4">
-                        <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM12 8v8M8 12h8" />
-                    </svg>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30">No purchases logged yet</p>
-                    <p className="text-[9px] text-white/20 mt-2">Click "Log Purchase" to record your first pharmacy purchase</p>
-                </div>
-            )}
         </div>
     );
 };
@@ -6674,9 +7490,9 @@ const StatementDocument = ({ stmt, rates }) => {
                     {/* uGlowMD Logo ? top right, large */}
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                            <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '16px', fontWeight: '700' }}>MD</sup>
+                            <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', display: 'inline-block' }} />
                         </div>
-                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD ? Provider Portal</div>
+                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Portal</div>
                     </div>
                 </div>
 
@@ -6744,7 +7560,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD ? Provider Compensation ? Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
                 </div>
             </div>
@@ -6759,7 +7575,7 @@ const StatementDocument = ({ stmt, rates }) => {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                            <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '14px', fontWeight: '700' }}>MD</sup>
+                            <img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} />
                         </div>
                     </div>
                 </div>
@@ -6847,7 +7663,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD ? Provider Compensation ? Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
                 </div>
             </div>
@@ -7306,7 +8122,6 @@ const BlogManagement = () => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h3 className="text-xl font-black uppercase tracking-tighter">Peer reviewed blog Content</h3>
                 <div className="flex gap-4">
                     <button
                         onClick={() => handleEdit(null)}
@@ -7398,16 +8213,72 @@ const BlogManagement = () => {
                             </select>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-2">Post Content (HTML/Markdown support)</label>
-                            <textarea
-                                value={currentPost.content}
-                                onChange={e => setCurrentPost({ ...currentPost, content: e.target.value })}
-                                required
-                                rows="12"
-                                className="w-full bg-[#111111] border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#FFDE59] transition-all resize-none"
-                                placeholder="Write your post content here..."
-                            />
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-2">Post Content (HTML)</label>
+                            <div className="quill-editor-container bg-[#111111] border border-white/10 rounded-2xl overflow-hidden">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={currentPost.content}
+                                    onChange={content => setCurrentPost({ ...currentPost, content })}
+                                    placeholder="Write your sophisticated post content here..."
+                                    modules={{
+                                        toolbar: [
+                                            [{ 'header': [1, 2, 3, false] }],
+                                            ['bold', 'italic', 'underline', 'strike'],
+                                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                            ['link', 'image', 'video'],
+                                            ['clean'],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            [{ 'align': [] }]
+                                        ]
+                                    }}
+                                    className="text-white h-[400px] mb-12"
+                                />
+                            </div>
+                            <style dangerouslySetInnerHTML={{
+                                __html: `
+                                .ql-toolbar.ql-snow {
+                                    border: none;
+                                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                    background: rgba(255, 255, 255, 0.05);
+                                }
+                                .ql-container.ql-snow {
+                                    border: none;
+                                }
+                                .ql-editor {
+                                    font-family: 'Inter', sans-serif;
+                                    font-size: 14px;
+                                    line-height: 1.6;
+                                    color: #fff;
+                                }
+                                .ql-editor a {
+                                    color: #3b82f6;
+                                    text-decoration: underline;
+                                }
+                                .ql-editor blockquote {
+                                    border-left: 4px solid #FFDE59;
+                                    background: rgba(255, 222, 89, 0.05);
+                                    padding: 20px;
+                                    font-style: italic;
+                                }
+                                .ql-editor.ql-blank::before {
+                                    color: rgba(255, 255, 255, 0.2);
+                                    font-style: normal;
+                                }
+                                .ql-snow .ql-stroke {
+                                    stroke: rgba(255, 255, 255, 0.6);
+                                }
+                                .ql-snow .ql-fill {
+                                    fill: rgba(255, 255, 255, 0.6);
+                                }
+                                .ql-snow .ql-picker {
+                                    color: rgba(255, 255, 255, 0.6);
+                                }
+                                .ql-snow .ql-picker-options {
+                                    background-color: #1a1a1a;
+                                    border-color: rgba(255, 255, 255, 0.1);
+                                }
+                            `}} />
                         </div>
 
                         <div className="flex justify-end gap-4 pt-4">
@@ -7654,15 +8525,43 @@ const AdminDashboard = () => {
         };
 
         const fetchPendingCount = async () => {
-            const { count } = await supabase
+            let query = supabase
                 .from('form_submissions')
                 .select('*', { count: 'exact', head: true })
                 .eq('approval_status', 'pending');
+
+            // If not admin, only count what's assigned to them
+            if (role && role !== 'admin') {
+                query = query.eq('assigned_provider_id', user?.id);
+            }
+
+            const { count } = await query;
             setPendingCount(count || 0);
         };
 
         if (user) {
             checkRole();
+        }
+    }, [user]);
+
+    useEffect(() => {
+        const fetchPendingCount = async () => {
+            if (!user) return;
+            let query = supabase
+                .from('form_submissions')
+                .select('*', { count: 'exact', head: true })
+                .eq('approval_status', 'pending');
+
+            // If not admin, only count what's assigned to them
+            if (role && role !== 'admin') {
+                query = query.eq('assigned_provider_id', user?.id);
+            }
+
+            const { count } = await query;
+            setPendingCount(count || 0);
+        };
+
+        if (user && role) {
             fetchPendingCount();
 
             // Set up realtime subscription for badge updates
@@ -7675,12 +8574,12 @@ const AdminDashboard = () => {
                 subscription.unsubscribe();
             };
         }
-    }, [user]);
+    }, [user, role]);
 
     const currentTab = location.pathname.split('/').pop() || 'overview';
 
     if (loading) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-accent-black">LOADING OS...</div>;
-    const isSubAdmin = ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'provider'].includes(role);
+    const isSubAdmin = ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'provider', 'marketing_rep'].includes(role);
     if (role !== 'admin' && !isSubAdmin) return <Navigate to="/dashboard" replace />;
 
     const navItems = role === 'admin' ? [
@@ -7697,6 +8596,18 @@ const AdminDashboard = () => {
         { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
         { id: 'waitlist', label: 'Waitlist', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'blog', label: 'Peer reviewed blog', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' }
+    ] : role === 'marketing_rep' ? [
+        { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+        { id: 'patients', label: 'Patients', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+        { id: 'clinical', label: 'Submissions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+        { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+        { id: 'users', label: 'My Doctors', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+        { id: 'profit-tracker', label: 'Profit Tracker', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+        { id: 'surveys', label: 'Surveys', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+        { id: 'waitlist', label: 'Waitlist', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
+        { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
     ] : [
         { id: 'clinical', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: pendingCount },
         { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
@@ -7711,7 +8622,7 @@ const AdminDashboard = () => {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase tracking-tighter" onClick={() => navigate('/')}>
-                    <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
+                    <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block brightness-0 invert" />
                 </h1>
                 <button
                     onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -7727,7 +8638,7 @@ const AdminDashboard = () => {
             <aside className={`w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 md:p-8 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
                 <div className="mb-8 md:mb-12 pt-16 lg:pt-0">
                     <h1 className="text-2xl font-black uppercase tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
-                        <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
+                        <img src={logo} alt="uGlowMD" className="h-[112px] w-auto inline-block brightness-0 invert" />
                     </h1>
                 </div>
                 <nav className="space-y-1">
@@ -7811,19 +8722,19 @@ const AdminDashboard = () => {
                     </header>
 
                     <Routes>
-                        <Route path="/" element={<Navigate to={role === 'admin' ? 'overview' : 'orders'} replace />} />
-                        {role === 'admin' && <Route path="overview" element={<AdminOverview />} />}
-                        {role === 'admin' && <Route path="patients" element={<PatientPortalManager />} />}
-                        {(role === 'admin' || isSubAdmin) && <Route path="clinical" element={<ClinicalQueue />} />}
+                        <Route path="/" element={<Navigate to={(role === 'admin' || role === 'marketing_rep') ? 'overview' : 'clinical'} replace />} />
+                        <Route path="overview" element={role === 'marketing_rep' ? <MarketingOverview /> : <AdminOverview />} />
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="patients" element={<PatientPortalManager />} />}
+                        {(role === 'admin' || isSubAdmin) && <Route path="clinical" element={<ClinicalQueue user={user} role={role} />} />}
                         <Route path="orders" element={<OrderManagement />} />
                         <Route path="discounts" element={<DiscountManager />} />
-                        {role === 'admin' && <Route path="users" element={<StaffManagement />} />}
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="users" element={<StaffManagement user={user} role={role} />} />}
                         <Route path="subscribers" element={<SubscriberAnalytics />} />
-                        {role === 'admin' && <Route path="profit-tracker" element={<ProfitTrackerView />} />}
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="profit-tracker" element={<ProfitTrackerView />} />}
                         <Route path="patient-express" element={<PatientExpressEntry />} />
-                        {role === 'admin' && <Route path="surveys" element={<SurveyManagement />} />}
-                        {role === 'admin' && <Route path="statements" element={<StatementsAdminView />} />}
-                        {role === 'admin' && <Route path="waitlist" element={<WaitlistView />} />}
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="surveys" element={<SurveyManagement />} />}
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="statements" element={<StatementsAdminView />} />}
+                        {(role === 'admin' || role === 'marketing_rep') && <Route path="waitlist" element={<WaitlistView />} />}
                         {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
                         <Route path="settings" element={<SettingsView user={user} role={role} />} />
                     </Routes>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const ProgressQuestionnaire = () => {
     const navigate = useNavigate();
@@ -164,7 +165,7 @@ const ProgressQuestionnaire = () => {
             <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-8 py-6">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto flex justify-between items-center">
                     <Link to="/" className="text-2xl font-black uppercase tracking-tighter italic hover:text-accent-green transition-colors">
-                        uGlowMD
+                        <img src={logo} alt="uGlowMD" className="h-24 w-auto brightness-0 invert" />
                     </Link>
                     <Link to="/dashboard" className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors">
                         Exit

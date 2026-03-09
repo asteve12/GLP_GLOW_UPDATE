@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { gsap } from 'gsap';
 import { supabase } from '../lib/supabaseClient';
 
 const SUB_ADMIN_ROLES = ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'];
+const OVERVIEW_ROLES = ['admin', 'marketing_rep']; // roles that land on /admin/overview
 
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
@@ -36,9 +38,9 @@ const AdminLogin = () => {
                     .eq('user_id', user.id)
                     .single();
 
-                const isAuthorized = data && (data.role === 'admin' || SUB_ADMIN_ROLES.includes(data.role));
+                const isAuthorized = data && (data.role === 'admin' || data.role === 'marketing_rep' || SUB_ADMIN_ROLES.includes(data.role));
                 if (isAuthorized) {
-                    navigate('/admin/overview');
+                    navigate(OVERVIEW_ROLES.includes(data.role) ? '/admin/overview' : '/admin/clinical');
                 } else {
                     navigate('/dashboard');
                 }
@@ -111,18 +113,21 @@ const AdminLogin = () => {
                 .single();
 
             const isAdmin = roleData?.role === 'admin';
+            const isMarketingRep = roleData?.role === 'marketing_rep';
             const isSubAdmin = SUB_ADMIN_ROLES.includes(roleData?.role);
 
-            if (roleError || (!isAdmin && !isSubAdmin)) {
+            if (roleError || (!isAdmin && !isMarketingRep && !isSubAdmin)) {
                 throw new Error('Unauthorized: Administrative / Staff privileges required.');
             }
 
             setPendingRole(roleData.role);
 
             if (isSubAdmin) {
+                // Providers/back-office require email OTP
                 await sendOtp(email);
                 setStep('otp');
             } else {
+                // Admins and Marketing Reps go directly to overview
                 navigate('/admin/overview');
             }
         } catch (err) {
@@ -143,7 +148,7 @@ const AdminLogin = () => {
                 type: 'email'
             });
             if (error) throw error;
-            navigate('/admin/overview');
+            navigate(OVERVIEW_ROLES.includes(pendingRole) ? '/admin/overview' : '/admin/clinical');
         } catch (err) {
             setError('Invalid or expired OTP code. Please try again.');
         } finally {
@@ -168,7 +173,7 @@ const AdminLogin = () => {
             });
             if (verifyError) throw verifyError;
 
-            navigate('/admin/overview');
+            navigate(OVERVIEW_ROLES.includes(pendingRole) ? '/admin/overview' : '/admin/clinical');
         } catch (err) {
             setError('Invalid Google Authenticator code. Please try again.');
         } finally {
@@ -233,8 +238,8 @@ const AdminLogin = () => {
                     <h1 style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.6em', color: '#bfff00', marginBottom: '16px', opacity: 0.8 }}>
                         Console Management
                     </h1>
-                    <h2 style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '-0.04em', lineHeight: '1', marginBottom: '12px' }}>
-                        uGlow<span style={{ color: '#bfff00' }}>Admin</span>
+                    <h2 style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '-0.04em', lineHeight: '1', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', filter: 'brightness(0) invert(1)' }} /> <span style={{ color: '#bfff00' }}>Admin</span>
                     </h2>
                     <p style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         {step === 'otp' ? 'OTP Verification Required' : 'Restricted Personnel Only'}

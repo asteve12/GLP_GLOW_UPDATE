@@ -31,6 +31,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Text selection – restore browser default highlight */
+::selection {
+  background-color: Highlight;
+  color: HighlightText;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

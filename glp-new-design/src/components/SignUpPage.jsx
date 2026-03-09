@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { gsap } from 'gsap';
@@ -26,16 +27,11 @@ const SignUpPage = () => {
 
     useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            const queryParams = new URLSearchParams(window.location.search);
+            const returnTo = queryParams.get('returnTo');
+            navigate(returnTo || '/dashboard');
         }
         window.scrollTo(0, 0);
-
-        // Animations
-        const tl = gsap.timeline();
-        tl.fromTo(".signup-content",
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" }
-        );
     }, [user, navigate]);
 
     const handleSubmit = async (e) => {
@@ -105,8 +101,7 @@ const SignUpPage = () => {
                         last_name: lastName,
                         email: email,
                         phone_number: formattedPhone // Store for later verification
-                    },
-                    emailRedirectTo: redirectTo
+                    }
                 }
             });
 
@@ -150,8 +145,8 @@ const SignUpPage = () => {
             }
 
             // Notify user to check email
-            toast.success('Account created! Please verify your email to continue.');
-            setShowVerificationMessage(true);
+            toast.success('Account created! We have sent a 6-digit code to your email.');
+            setShowOtpInput(true);
             return;
         } catch (error) {
             toast.error(error.message);
@@ -166,14 +161,11 @@ const SignUpPage = () => {
         setVerifying(true);
         setError(null);
 
-        let formattedPhone = `${countryCode.trim()}${phone.replace(/\D/g, '')}`;
-        if (!formattedPhone.startsWith('+')) formattedPhone = `+${formattedPhone}`;
-
         try {
             const { data, error } = await verifyOtp({
-                phone: formattedPhone,
+                email: email,
                 token: otp,
-                type: 'sms'
+                type: 'signup'
             });
 
             if (error) throw error;
@@ -187,9 +179,9 @@ const SignUpPage = () => {
             if (returnTo) {
                 navigate(returnTo);
             } else {
-                setShowVerificationMessage(true);
+                navigate('/dashboard');
             }
-            toast.success('Phone number verified successfully!');
+            toast.success('Email verified successfully!');
         } catch (error) {
             toast.error(error.message);
         } finally {
@@ -198,7 +190,7 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="min-h-screen font-sans flex flex-col pt-20" style={{ backgroundColor: showOtpInput || showVerificationMessage ? '#ffffff' : '#050505', color: showOtpInput || showVerificationMessage ? '#1a1a1a' : '#ffffff' }}>
+        <div className="min-h-screen font-sans flex flex-col pt-20" style={{ backgroundColor: '#E3F2FD', color: '#1a1a1a' }}>
             <Navbar />
 
             <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
@@ -222,12 +214,12 @@ const SignUpPage = () => {
                             </div>
                             <h1 className="text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
                                 Verify Your{' '}
-                                <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Phone</span>
+                                <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Email</span>
                             </h1>
                             <p className="text-sm leading-relaxed mb-8 max-w-sm mx-auto" style={{ color: '#1a1a1a80' }}>
                                 We've sent a 6-digit code to{' '}
-                                <span className="font-bold" style={{ color: '#1a1a1a' }}>{phone}</span>.
-                                Enter it below to verify your identity.
+                                <span className="font-bold" style={{ color: '#1a1a1a' }}>{email}</span>.
+                                Enter it below to verify your account.
                             </p>
 
                             <form onSubmit={handleVerifyOtp} className="space-y-6">
@@ -235,9 +227,10 @@ const SignUpPage = () => {
                                     <input
                                         type="text"
                                         value={otp}
-                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                        placeholder="0 0 0 0 0 0"
-                                        className="w-full rounded-2xl py-5 text-center text-3xl font-black tracking-[0.5em] outline-none transition-all"
+                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                                        placeholder="– – – – – – – –"
+                                        maxLength={8}
+                                        className="w-full rounded-2xl py-5 text-center text-3xl font-black tracking-[0.3em] outline-none transition-all"
                                         style={{ backgroundColor: '#f9f9f7', border: '2px solid #1a1a1a15', color: '#1a1a1a' }}
                                         onFocus={e => e.target.style.borderColor = '#FFDE59'}
                                         onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
@@ -253,7 +246,7 @@ const SignUpPage = () => {
 
                                 <button
                                     type="submit"
-                                    disabled={verifying || otp.length < 6}
+                                    disabled={verifying || otp.length < 8}
                                     className="w-full py-5 rounded-full font-black text-sm uppercase tracking-[0.2em] transition-all disabled:opacity-50"
                                     style={{ backgroundColor: '#000', color: '#fff' }}
                                     onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
@@ -334,20 +327,20 @@ const SignUpPage = () => {
                         <>
                             {/* Header */}
                             <div className="text-center mb-12">
-                                <div className="inline-block py-1.5 px-4 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white/60 mb-6">
+                                <div className="inline-block py-1.5 px-4 bg-black/10 border border-black/10 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-black/60 mb-6">
                                     Start Your Journey
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4">
                                     Create <span className="text-white font-black">Account</span>
                                 </h1>
-                                <p className="text-white/40 font-medium">
-                                    Join <sub className="font-brand font-bold italic-u">u</sub><span className="font-brand font-bold">Glow<sup>MD</sup></span> to manage your transformative health journey.
+                                <p className="text-black/40 font-medium">
+                                    Join <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" /> Health to manage your transformative health journey.
                                 </p>
                             </div>
 
                             {/* Form Container */}
-                            <div className="bg-[#0A0A0A] border border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl backdrop-blur-xl relative group">
-                                <div className="absolute inset-0 bg-gradient-to-br from-accent-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[40px]"></div>
+                            <div className="bg-white/60 border border-black/5 rounded-[40px] p-8 md:p-12 shadow-2xl backdrop-blur-xl relative group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[40px]"></div>
 
                                 {error && (
                                     <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-medium text-center">
@@ -358,7 +351,7 @@ const SignUpPage = () => {
                                 <form onSubmit={handleSubmit} className="relative z-10 space-y-8">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
                                                 First Name
                                             </label>
                                             <input
@@ -366,12 +359,12 @@ const SignUpPage = () => {
                                                 value={firstName}
                                                 onChange={(e) => setFirstName(e.target.value)}
                                                 placeholder="John"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
+                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
                                                 required
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
                                                 Last Name
                                             </label>
                                             <input
@@ -379,7 +372,7 @@ const SignUpPage = () => {
                                                 value={lastName}
                                                 onChange={(e) => setLastName(e.target.value)}
                                                 placeholder="Doe"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
+                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
                                                 required
                                             />
                                         </div>
@@ -387,7 +380,7 @@ const SignUpPage = () => {
 
                                     {/* Email Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
                                             Email Address
                                         </label>
                                         <input
@@ -395,14 +388,14 @@ const SignUpPage = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter your email"
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
+                                            className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
                                             required
                                         />
                                     </div>
 
                                     {/* Phone Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
                                             Phone Number
                                         </label>
                                         <div className="flex gap-2">
@@ -415,7 +408,7 @@ const SignUpPage = () => {
                                                     setCountryCode(val.replace(/[^\d+]/g, '').slice(0, 5));
                                                 }}
                                                 placeholder="+1"
-                                                className="w-24 bg-white/5 border border-white/10 rounded-2xl py-4 text-center text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none font-bold"
+                                                className="w-24 bg-white border border-black/10 rounded-2xl py-4 text-center text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none font-bold"
                                                 required
                                             />
                                             <input
@@ -426,7 +419,7 @@ const SignUpPage = () => {
                                                     setPhone(val.replace(/\D/g, '').slice(0, 15));
                                                 }}
                                                 placeholder="555 000 0000"
-                                                className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none"
+                                                className="flex-1 bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
                                                 required
                                             />
                                         </div>
@@ -434,7 +427,7 @@ const SignUpPage = () => {
 
                                     {/* Password Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
                                             Password
                                         </label>
                                         <div className="relative">
@@ -443,7 +436,7 @@ const SignUpPage = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="Create a strong password"
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/10 focus:border-accent-black focus:bg-white/10 transition-all outline-none pr-12"
+                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none pr-12"
                                                 required
                                             />
                                             <button
@@ -464,7 +457,7 @@ const SignUpPage = () => {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-5 bg-accent-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-white hover:text-black hover:shadow-[0_0_40px_rgba(19,91,236,0.3)] mt-4 disabled:opacity-50"
+                                        className="w-full py-5 bg-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-black/80 hover:shadow-[0_0_40px_rgba(0,0,0,0.1)] mt-4 disabled:opacity-50"
                                     >
                                         {loading ? 'Creating Account...' : 'Create Account'}
                                     </button>
@@ -472,7 +465,7 @@ const SignUpPage = () => {
                                     {/* Divider */}
                                     <div className="flex items-center gap-4 py-6">
                                         <div className="h-px flex-1 bg-white/5"></div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20">OR</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-black/20">OR</span>
                                         <div className="h-px flex-1 bg-white/5"></div>
                                     </div>
 
@@ -481,7 +474,13 @@ const SignUpPage = () => {
                                         type="button"
                                         onClick={async () => {
                                             try {
-                                                const { error } = await signUp({ provider: 'google' });
+                                                const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+                                                const { error } = await supabase.auth.signInWithOAuth({
+                                                    provider: 'google',
+                                                    options: {
+                                                        redirectTo: window.location.origin + (returnTo || '/dashboard')
+                                                    }
+                                                });
                                                 if (error) throw error;
                                             } catch (err) {
                                                 setError(err.message);
@@ -502,7 +501,7 @@ const SignUpPage = () => {
 
                             {/* Footer Links */}
                             <div className="mt-12 text-center">
-                                <p className="text-white/40 text-sm font-medium mb-4 italic">
+                                <p className="text-black/40 text-sm font-medium mb-4 italic">
                                     Already have an account?
                                 </p>
                                 <Link
@@ -520,11 +519,11 @@ const SignUpPage = () => {
             {/* Footer */}
             <div className="pb-12 opacity-40">
                 <div className="max-w-[480px] mx-auto text-center border-t border-white/5 pt-8">
-                    <p className="text-[9px] font-bold text-white uppercase tracking-[0.4em] mb-2 leading-relaxed">
+                    <p className="text-[9px] font-bold text-black uppercase tracking-[0.4em] mb-2 leading-relaxed">
                         End-to-End Encryption • HIPAA Secure Environment
                     </p>
-                    <p className="text-[8px] font-medium text-white/40 uppercase tracking-widest">
-                        © 2026 uGlowMD Health. All rights reserved.
+                    <p className="text-[8px] font-medium text-black/40 uppercase tracking-widest">
+                        © 2026 <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0 opacity-40" /> Health. All rights reserved.
                     </p>
                 </div>
             </div>

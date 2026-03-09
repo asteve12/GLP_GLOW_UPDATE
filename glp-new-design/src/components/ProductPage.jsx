@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 import Navbar from './Navbar';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -710,7 +711,7 @@ const ProductPage = () => {
                             <div className="mb-12 text-center max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4">
                                 <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white drop-shadow-md mb-6">The results speak for themselves.</h2>
                                 <p className="text-lg md:text-xl text-white/90 font-medium leading-relaxed mb-8">
-                                    Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName === 'uGlowMD' ? <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> : (data.richDetails?.brandName || <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>)} patients.
+                                    Sometimes you have to see it to believe it. Our medical-grade treatments are life-changing and improve confidence, well-being, and longevity. Photos, testimonials and results are from {data.richDetails?.brandName === 'uGlowMD' ? <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0 invert" /> : (data.richDetails?.brandName || <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0 invert" />)} patients.
                                 </p>
                                 <button className="bg-accent-black text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl transform hover:scale-105">
                                     I'm ready, Let's Go
@@ -821,7 +822,7 @@ const ProductPage = () => {
                                     One size does not fit all in biology. Our doctors tailor your dosage based on your specific health profile, ensuring maximum efficacy with minimum side effects.
                                 </p>
                                 <p className="mt-4 text-[#1A1A1A]/80 font-medium text-lg leading-relaxed">
-                                    {data.richDetails?.brandName === 'uGlowMD' ? <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> : (data.richDetails?.brandName || <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span>)} provides a <span className="font-bold text-[#1A1A1A] uppercase italic">true clinical advantage</span> — precision medicine that adapts to your body's unique response to therapy.
+                                    {data.richDetails?.brandName === 'uGlowMD' ? <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" /> : (data.richDetails?.brandName || <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" />)} provides a <span className="font-bold text-[#1A1A1A] uppercase italic">true clinical advantage</span> — precision medicine that adapts to your body's unique response to therapy.
                                 </p>
                             </div>
                             <div className="w-full md:w-1/2">
@@ -1026,7 +1027,7 @@ const ProductPage = () => {
                                 The change we've all been waiting for.
                             </h2>
                             <p className="text-lg md:text-xl text-gray-600">
-                                Join the over <span className="font-bold text-gray-900">100,000 <span className="font-serif italic-u"><span className="italic">u</span>Glow<sup>MD</sup></span> patients</span> and we'll help you finally get real, lasting results.
+                                Join the over <span className="font-bold text-gray-900">100,000 <img src={logo} alt="uGlowMD" className="h-20 w-auto inline-block align-baseline brightness-0" /> patients</span> and we'll help you finally get real, lasting results.
                             </p>
                         </div>
 
@@ -1116,8 +1117,8 @@ const ProductPage = () => {
                         </div>
 
                         {/* Disclaimer */}
-                        <p className="text-center text-sm text-gray-500 italic">
-                            * Data based on uGlowMD patients over their first 6 months of treatment
+                        <p className="text-center text-sm text-gray-500 italic pb-12">
+                            * Data based on <img src={logo} alt="uGlowMD" className="h-[56px] w-auto inline-block align-baseline brightness-0 opacity-60" /> patients over their first 6 months of treatment
                         </p>
 
                     </div>
@@ -1476,7 +1477,7 @@ const ProductPage = () => {
 
                         {/* SECTION FOOTER */}
                         <div className="mt-24 pt-10 border-t border-white/5 flex justify-between items-center opacity-30">
-                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">uGlowMD TREATMENT SUITE • v4.0</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic"><img src={logo} alt="uGlowMD" className="h-[40px] w-auto inline-block align-baseline brightness-0 invert opacity-60 mr-2" /> TREATMENT SUITE • v4.0</span>
                             <div className="flex gap-2">
                                 <span className="w-1 h-1 rounded-full bg-accent-green"></span>
                                 <span className="w-1 h-1 rounded-full bg-accent-green"></span>

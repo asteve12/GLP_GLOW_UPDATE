@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import logo from '../assets/logo.png';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -68,9 +69,11 @@ const ResetPassword = () => {
         <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
             <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 <div className="text-center mb-12">
-                    <Link to="/" className="inline-block mb-10">
-                        <span className="text-2xl font-black uppercase tracking-tighter text-[#1a1a1a]">uGlow<span className="text-accent-black">MD</span></span>
-                    </Link>
+                    <div className="flex justify-center mb-10">
+                        <Link to="/">
+                            <img src={logo} alt="uGlowMD Logo" className="h-96 w-auto object-contain" />
+                        </Link>
+                    </div>
                     <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                         Identity Sync
                     </div>
