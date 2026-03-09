@@ -9,7 +9,11 @@ import { gsap } from 'gsap';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+if (!stripePublishableKey) {
+    console.error('VITE_STRIPE_PUBLISHABLE_KEY is missing! Check your .env file.');
+}
+const stripePromise = loadStripe(stripePublishableKey || '');
 
 // Assets
 import weightLossImg from '../assets/weight-loss.png';
@@ -45,6 +49,7 @@ const categoryQuestions = {
     'longevity': { ...baseCategoryQuestions['longevity'], stat: { ...baseCategoryQuestions['longevity'].stat, image: smilingImg } },
     'testosterone': { ...baseCategoryQuestions['testosterone'], stat: { ...baseCategoryQuestions['testosterone'].stat, image: smilingImg } },
     'repair-healing': { ...baseCategoryQuestions['repair-healing'], stat: { ...baseCategoryQuestions['repair-healing'].stat, image: smilingImg } },
+    'skin-care': { ...baseCategoryQuestions['skin-care'], stat: { ...baseCategoryQuestions['skin-care'].stat, image: smilingImg } },
 };
 
 const stateFullNames = {
@@ -72,7 +77,6 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
         event.preventDefault();
         if (!stripe || !elements) return;
 
-        // Ensure we at least have a temporary user ID or active session to fulfill the checkout
         if (!session && !tempUserId) {
             setError("Identity missing. Please start over to authenticate your checkout.");
             return;
@@ -82,7 +86,6 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
         setError(null);
 
         try {
-            // 1. Submit the form
             const { error: submitError } = await elements.submit();
             if (submitError) {
                 setError(submitError.message);
@@ -90,85 +93,97 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                 return;
             }
 
-            // 2. Get a fresh session token — avoids Invalid JWT if session was
-            //    restored after email confirmation in a different browser
             let accessToken = session?.access_token || null;
             if (!accessToken) {
                 const { data: sessionData } = await supabase.auth.getSession();
                 accessToken = sessionData?.session?.access_token || null;
             }
-            if (!accessToken) {
-                // Last resort: try refreshing the session
-                const { data: refreshData } = await supabase.auth.refreshSession();
-                accessToken = refreshData?.session?.access_token || null;
-            }
 
-            // 3. Create the PaymentIntent on the server
             const invokeHeaders = {
                 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
             };
-            if (accessToken) {
-                invokeHeaders['Authorization'] = `Bearer ${accessToken}`;
-            }
+            if (accessToken) invokeHeaders['Authorization'] = `Bearer ${accessToken}`;
 
-            const { data, error: intentError } = await supabase.functions.invoke('create-payment-intent', {
-                method: 'POST',
-                body: {
-                    couponCode: couponCode || null,
-                    amount: amount,
-                    type: 'eligibility_verification',
-                    categoryId: categoryId,
-                    userId: session?.user?.id || tempUserId,
-                    email: session?.user?.email || email
-                },
-                headers: invokeHeaders
-            });
+            if (amount > 0) {
+                // Payment Intent for > $0
+                const { data, error: intentError } = await supabase.functions.invoke('create-payment-intent', {
+                    method: 'POST',
+                    body: {
+                        couponCode: couponCode || null,
+                        amount: amount,
+                        type: 'eligibility_verification',
+                        categoryId: categoryId,
+                        userId: session?.user?.id || tempUserId,
+                        email: session?.user?.email || email
+                    },
+                    headers: invokeHeaders
+                });
 
-            if (intentError || !data?.clientSecret) {
-                throw new Error(data?.error || intentError?.message || 'Failed to initialize payment.');
-            }
-
-            // 3. Confirm the payment
-            const { paymentIntent, error: confirmError } = await stripe.confirmPayment({
-                elements,
-                clientSecret: data.clientSecret,
-                confirmParams: {
-                    return_url: `${window.location.origin}/dashboard?payment=success`,
-                },
-                redirect: 'if_required'
-            });
-
-            if (confirmError) {
-                setError(confirmError.message);
-            } else {
-                // If we get here and there's a paymentIntent, it means the payment succeeded without a redirect
-                // Capture the payment method ID and update profile
-                const pmId = typeof paymentIntent.payment_method === 'string'
-                    ? paymentIntent.payment_method
-                    : paymentIntent.payment_method?.id;
-
-                if (paymentIntent && pmId) {
-                    console.log('Captured payment method:', pmId);
-
-                    const userIdToUpdate = session?.user?.id || tempUserId;
-
-                    if (userIdToUpdate) {
-                        const { error: profileError } = await supabase
-                            .from('profiles')
-                            .update({
-                                stripe_payment_method_id: pmId,
-                                date_of_birth: dob || null
-                            })
-                            .eq('id', userIdToUpdate);
-
-                        if (profileError) {
-                            console.error('Profile update failed during checkout:', profileError.message);
-                        } else {
-                            console.log('Profile updated with payment method.');
-                        }
-                    }
+                if (intentError || !data?.clientSecret) {
+                    throw new Error(data?.error || intentError?.message || 'Failed to initialize payment.');
                 }
-                onComplete();
+
+                const { paymentIntent, error: confirmError } = await stripe.confirmPayment({
+                    elements,
+                    clientSecret: data.clientSecret,
+                    confirmParams: {
+                        return_url: `${window.location.origin}/dashboard?payment=success`,
+                    },
+                    redirect: 'if_required'
+                });
+
+                if (confirmError) {
+                    setError(confirmError.message);
+                } else if (paymentIntent) {
+                    const pmId = typeof paymentIntent.payment_method === 'string'
+                        ? paymentIntent.payment_method
+                        : paymentIntent.payment_method?.id;
+
+                    if (pmId) {
+                        const userId = session?.user?.id || tempUserId;
+                        await supabase.from('profiles').update({
+                            stripe_payment_method_id: pmId,
+                            date_of_birth: dob || null
+                        }).eq('id', userId);
+                    }
+                    onComplete();
+                }
+            } else {
+                // Setup Intent for $0 (Skincare)
+                const { data, error: setupError } = await supabase.functions.invoke('create-setup-intent', {
+                    method: 'POST',
+                    headers: invokeHeaders
+                });
+
+                if (setupError || !data?.clientSecret) {
+                    throw new Error(data?.error || setupError?.message || 'Failed to initialize security vault.');
+                }
+
+                const { setupIntent, error: confirmError } = await stripe.confirmSetup({
+                    elements,
+                    clientSecret: data.clientSecret,
+                    confirmParams: {
+                        return_url: `${window.location.origin}/dashboard?payment=success`,
+                    },
+                    redirect: 'if_required'
+                });
+
+                if (confirmError) {
+                    setError(confirmError.message);
+                } else if (setupIntent) {
+                    const pmId = typeof setupIntent.payment_method === 'string'
+                        ? setupIntent.payment_method
+                        : setupIntent.payment_method?.id;
+
+                    if (pmId) {
+                        const userId = session?.user?.id || tempUserId;
+                        await supabase.from('profiles').update({
+                            stripe_payment_method_id: pmId,
+                            date_of_birth: dob || null
+                        }).eq('id', userId);
+                    }
+                    onComplete();
+                }
             }
         } catch (err) {
             console.error('Payment error:', err);
@@ -226,7 +241,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                     }`}
             >
                 <span className="relative z-10">
-                    {processing ? 'Processing Securely...' : `Process Submission • $${(amount / 100).toFixed(2)}`}
+                    {processing ? 'Processing Securely...' : (amount > 0 ? `Process Submission • $${(amount / 100).toFixed(2)}` : 'Save Payment Method')}
                 </span>
             </button>
         </form>
@@ -241,8 +256,8 @@ const Assessment = () => {
     const { signUp, signIn, signOut, user, verifyOtp, updateUser } = useAuth();
     const [step, setStep] = useState(0);
 
-    const baseFee = categoryId === 'retatrutide' ? 100.00 : (categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : 25.00));
-    const baseFeeCents = categoryId === 'retatrutide' ? 10000 : (categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : 2500));
+    const baseFee = categoryId === 'retatrutide' ? 100.00 : (categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : (categoryId === 'skin-care' ? 0.00 : 25.00)));
+    const baseFeeCents = categoryId === 'retatrutide' ? 10000 : (categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : (categoryId === 'skin-care' ? 0 : 2500)));
     const [showQuote, setShowQuote] = useState(true);
     const [showBMI, setShowBMI] = useState(false);
     const [showQuote2, setShowQuote2] = useState(false);
@@ -265,6 +280,7 @@ const Assessment = () => {
     const [showRepairGoals, setShowRepairGoals] = useState(false);
     const [showRepairQuote2, setShowRepairQuote2] = useState(false);
     const [selectedRepairGoals, setSelectedRepairGoals] = useState([]);
+    const [selectedSkinCareGoals, setSelectedSkinCareGoals] = useState([]);
     const [bmiHeightFeet, setBmiHeightFeet] = useState('');
     const [bmiHeightInches, setBmiHeightInches] = useState('0');
     const [bmiWeight, setBmiWeight] = useState('');
@@ -319,7 +335,7 @@ const Assessment = () => {
     const [hasExistingSubmission, setHasExistingSubmission] = useState(false);
     const [showVerificationSent, setShowVerificationSent] = useState(false);
     const [tempUserId, setTempUserId] = useState(null);
-    const [piiData, setPiiData] = useState({ pcpFirstName: '', pcpLastName: '', pcpState: '', pcpNpi: '', pastDosage: '', noPcp: false });
+    const [piiData, setPiiData] = useState({ pcpFirstName: '', pcpLastName: '', pcpState: '', pcpNpi: '', pastDosage: '', noPcp: false, dosagePreference: '', desiredDose: '' });
     const [labFulfillment, setLabFulfillment] = useState(null); // 'order' or 'optout'
     const [aiReviewing, setAiReviewing] = useState(false);
     const [aiApproved, setAiApproved] = useState(null);
@@ -828,6 +844,7 @@ const Assessment = () => {
             else if (categoryId === 'longevity') resolvedGoals = selectedLongevityGoals;
             else if (categoryId === 'testosterone') resolvedGoals = selectedTestosteroneGoals;
             else if (categoryId === 'repair-healing') resolvedGoals = selectedRepairGoals;
+            else if (categoryId === 'skin-care') resolvedGoals = selectedSkinCareGoals;
 
             // Prepare submission data mapping
             const resolvedUserId = user?.id || tempUserId;
@@ -837,6 +854,14 @@ const Assessment = () => {
                 setSubmitLoading(false);
                 return;
             }
+
+            // Helper to ensure values are arrays (for Postgres TEXT[] columns)
+            const ensureArray = (val) => {
+                if (!val) return [];
+                if (Array.isArray(val)) return val;
+                // If it's a string from a single-choice question, wrap it in an array
+                return [val];
+            };
 
             const submissionData = {
                 user_id: resolvedUserId,
@@ -855,34 +880,34 @@ const Assessment = () => {
                 seen_pcp: intakeData.pcp_labs || eligibilityData.pcpVisitLast6Months || intakeData.has_pcp_long,
                 email: user?.email || authData.email || shippingData.email,
 
-                // Medical Conditions
-                heart_conditions: intakeData.heart_conditions || intakeData.heart || intakeData.heart_condition_dx_sh,
+                // Medical Conditions (ensure these are arrays for TEXT[] columns)
+                heart_conditions: ensureArray(intakeData.heart_conditions || intakeData.heart || intakeData.heart_condition_dx_sh),
                 atrial_fib_change: intakeData.afib_follow,
-                hormone_conditions: intakeData.hormone_conditions || intakeData.hormone,
-                cancer_history: intakeData.cancer_history || intakeData.cancer || intakeData.personal_cancer_hx,
+                hormone_conditions: ensureArray(intakeData.hormone_conditions || intakeData.hormone),
+                cancer_history: ensureArray(intakeData.cancer_history || intakeData.cancer || intakeData.personal_cancer_hx),
                 cancer_details: intakeData.cancer_details || intakeData.personal_cancer_hx_details,
                 diabetes_status: intakeData.diabetes || (intakeData.med_diagnostics_sh?.includes('BP/Diabetes/Cholesterol') ? 'Diabetes (from SH)' : null),
-                gi_conditions: intakeData.gi_conditions || intakeData.gi,
-                mental_health_conditions: intakeData.mental_health || intakeData.mental || intakeData.mental_health_list_sh,
+                gi_conditions: ensureArray(intakeData.gi_conditions || intakeData.gi),
+                mental_health_conditions: ensureArray(intakeData.mental_health || intakeData.mental || intakeData.mental_health_list_sh),
                 anxiety_severity: intakeData.anxiety_sev,
-                additional_conditions: intakeData.additional_conditions || intakeData.additional,
+                additional_conditions: ensureArray(intakeData.additional_conditions || intakeData.additional),
 
                 // Lifestyle & Impact
                 weight_impact_qol: intakeData.weight_impact || intakeData.qol_rate,
                 weight_impact_details: intakeData.qol_details || intakeData.weight_impact,
 
                 // Medications & Allergies
-                allergies: intakeData.allergies || intakeData.allergies_repair || intakeData.allergies_sh_sh || intakeData.allergies_list_long,
-                current_medications: intakeData.current_meds || intakeData.current_meds_repair || intakeData.cardio_meds_list_sh,
-                other_medications: intakeData.other_meds || intakeData.supplements || intakeData.meds_list_long,
-                past_weight_loss_methods: intakeData.past_weightloss_methods || intakeData.past_methods,
-                past_prescription_meds: intakeData.past_rx_weightloss || intakeData.past_rx,
+                allergies: ensureArray(intakeData.allergies || intakeData.allergies_repair || intakeData.allergies_sh_sh || intakeData.allergies_list_long),
+                current_medications: ensureArray(intakeData.current_meds || intakeData.current_meds_repair || intakeData.cardio_meds_list_sh),
+                other_medications: ensureArray(intakeData.other_meds || intakeData.supplements || intakeData.meds_list_long),
+                past_weight_loss_methods: ensureArray(intakeData.past_weightloss_methods || intakeData.past_methods),
+                past_prescription_meds: ensureArray(intakeData.past_rx_weightloss || intakeData.past_rx),
 
                 // Identity & Diversity
                 race_ethnicity: intakeData.ethnicity,
-                other_health_goals: intakeData.other_health_goals || intakeData.other_goals,
+                other_health_goals: ensureArray(intakeData.other_health_goals || intakeData.other_goals),
                 has_additional_info: intakeData.additional_health_info || 'No',
-                additional_health_info: intakeData.additional_health_info_details || intakeData.symptom_detail_sh || intakeData.anything_else_long,
+                additional_health_info: intakeData.additional_health_info_details || intakeData.symptom_detail_sh || intakeData.anything_else_long || intakeData.photo_details,
 
                 // Identification
                 identification_type: idData.type,
@@ -903,7 +928,7 @@ const Assessment = () => {
                 approval_status: 'pending',
                 submitted_at: new Date().toISOString(),
                 selected_drug: categoryId,
-                category: categoryId,
+                category: categoryId === 'skin-care' ? 'weight-loss' : categoryId,
                 intake_data: {
                     ...intakeData,
                     ...piiData,
@@ -917,15 +942,9 @@ const Assessment = () => {
                     past_dosage: piiData.pastDosage,
                     no_pcp: piiData.noPcp,
                 },
-                lab_results_url: [
-                    ...((Array.isArray(eligibilityData.labResults) ? eligibilityData.labResults : (eligibilityData.labResults ? [eligibilityData.labResults] : []))),
-                    ...((Array.isArray(intakeData.lab_results_url) ? intakeData.lab_results_url : (intakeData.lab_results_url ? [intakeData.lab_results_url] : [])))
-                ],
-                glp1_prescription_url: intakeData.current_meds_file ? [intakeData.current_meds_file] : [],
-                coupon_code: paymentData.coupon,
 
-                // Dosage Preferences
-                dosage_preference: intakeData.medication_interest === 'Other / Not Sure' ? `Other: ${intakeData.other_medication_details || ''}` : intakeData.medication_interest,
+                glp1_prescription_url: intakeData.current_meds_file ? [intakeData.current_meds_file] : [],
+                coupon_code: paymentData.coupon
             };
 
 
@@ -973,14 +992,14 @@ const Assessment = () => {
                 }
             })();
 
-            if (isFree) {
+            if (isFree || categoryId === 'skin-care') {
                 await supabase.functions.invoke('send-email', {
                     body: {
                         userId: user?.id,
                         email: user?.email || authData.email,
                         first_name: firstName,
                         last_name: lastName,
-                        type: 'eligibility'
+                        type: categoryId === 'skin-care' ? 'skincare_eligibility' : 'eligibility'
                     }
                 });
             }
@@ -1136,8 +1155,8 @@ const Assessment = () => {
                 }));
 
                 // Show the email verification gate — do NOT advance yet.
-                toast.success('Account created! Please check your email to continue.');
-                setShowVerificationSent(true);
+                toast.success('Account created! We have sent a 6-digit code to your email.');
+                setShowOtpInput(true);
                 return;
             } catch (err) {
                 toast.error(err.message);
@@ -1179,23 +1198,25 @@ const Assessment = () => {
         setVerifying(true);
         setAuthError(null);
 
-        let formattedPhone = `${authData.countryCode.trim()}${authData.phoneNumber.replace(/\D/g, '')}`;
-        if (!formattedPhone.startsWith('+')) {
-            formattedPhone = `+${formattedPhone}`;
-        }
-
         try {
             const { error } = await verifyOtp({
-                phone: formattedPhone,
+                email: authData.email,
                 token: otp,
-                type: 'sms'
+                type: 'signup'
             });
 
             if (error) throw error;
 
             setShowOtpInput(false);
-            setShowVerificationSent(true);
-            toast.success('Phone number verified successfully!');
+
+            if (categoryId === 'weight-loss') {
+                setMedicalStep(0);
+                setStep(8);
+            } else {
+                setMedicalStep(0);
+                setStep(8);
+            }
+            toast.success('Email verified successfully!');
         } catch (err) {
             toast.error(err.message);
         } finally {
@@ -1347,6 +1368,14 @@ const Assessment = () => {
 
     const toggleRepairGoal = (id) => {
         setSelectedRepairGoals(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const toggleSkinCareGoal = (id) => {
+        setSelectedSkinCareGoals(prev =>
             prev.includes(id)
                 ? prev.filter(item => item !== id)
                 : [...prev, id]
@@ -2518,6 +2547,70 @@ const Assessment = () => {
             </div>
         </div>
     );
+    const renderSkinCareGoalsStep = () => (
+        <div className="min-h-screen bg-white flex items-center">
+            <div className="max-w-4xl mx-auto px-6 py-20 w-full">
+                <div className="text-center mb-16">
+                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
+                        Skin Care Goals
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-[#1a1a1a] leading-[1.05]">
+                        What are your primary<br />skin care goals?
+                    </h2>
+                    <p className="text-black/40 text-xs uppercase tracking-[0.3em] mt-4">Select all that apply</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 mb-12">
+                    {[
+                        { id: 'anti-aging', label: 'Anti-Aging & Wrinkles', desc: 'Reduce fine lines and restore youthful elasticity.' },
+                        { id: 'pigmentation', label: 'Pigmentation & Dark Spots', desc: 'Even out skin tone and fade stubborn sun damage.' },
+                        { id: 'acne', label: 'Acne & Breakouts', desc: 'Clear active acne and prevent future congestion.' },
+                        { id: 'redness', label: 'Redness & Rosacea', desc: 'Calm sensitive skin and reduce visible flushing.' }
+                    ].map(goal => (
+                        <div
+                            key={goal.id}
+                            onClick={() => toggleSkinCareGoal(goal.id)}
+                            className={`flex items-center gap-6 p-6 rounded-[20px] border-2 cursor-pointer transition-all duration-300 ${selectedSkinCareGoals.includes(goal.id)
+                                ? 'border-black bg-black/5'
+                                : 'border-black/10 hover:border-black/30'
+                                }`}
+                        >
+                            <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all ${selectedSkinCareGoals.includes(goal.id) ? 'border-black bg-black' : 'border-black/30'
+                                }`}>
+                                {selectedSkinCareGoals.includes(goal.id) && (
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="w-full h-full p-1">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                )}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="font-black text-sm uppercase tracking-wide text-[#1a1a1a]">{goal.label}</span>
+                                <span className="text-[10px] font-medium text-black/40 uppercase tracking-widest mt-1">{goal.desc}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex flex-col md:flex-row gap-4 justify-center">
+                    <button
+                        onClick={() => {
+                            if (selectedSkinCareGoals.length === 0) { return; }
+                            setSelectedImprovements(selectedSkinCareGoals);
+                            handleContinue();
+                        }}
+                        className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:scale-105 flex items-center justify-center gap-3"
+                        style={{ color: '#ffffff' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
+                    >
+                        Continue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     const renderRepairQuote2Step = () => (
         <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
@@ -2796,7 +2889,7 @@ const Assessment = () => {
         if (user) {
             const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'there';
             return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
+                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#E3F2FD' }}>
                     <div className="text-center mb-12">
                         <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
@@ -2884,7 +2977,7 @@ const Assessment = () => {
 
         if (showOtpInput) {
             return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
+                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#E3F2FD' }}>
                     <div className="text-center mb-12">
                         <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
@@ -2895,11 +2988,11 @@ const Assessment = () => {
                             Identity Verification
                         </div>
                         <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
-                            Verify Your <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Phone.</span>
+                            Verify Your <span style={{ color: '#93C5FD', display: 'inline-block' }}>Email.</span>
                         </h2>
                         <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#1a1a1a99' }}>
                             A security code has been transmitted to{' '}
-                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.phoneNumber}</span>
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.email}</span>
                         </p>
                     </div>
 
@@ -2908,11 +3001,12 @@ const Assessment = () => {
                             <input
                                 type="text"
                                 value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                placeholder="0 0 0 0 0 0"
-                                className="w-full rounded-2xl py-6 text-center text-4xl font-black tracking-[0.5em] outline-none transition-all"
+                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                                placeholder="– – – – – – – –"
+                                maxLength={8}
+                                className="w-full rounded-2xl py-6 text-center text-4xl font-black tracking-[0.3em] outline-none transition-all"
                                 style={{ backgroundColor: '#fff', border: '2px solid #1a1a1a20', color: '#1a1a1a' }}
-                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onFocus={e => e.target.style.borderColor = '#93C5FD'}
                                 onBlur={e => e.target.style.borderColor = '#1a1a1a20'}
                                 required
                             />
@@ -2921,7 +3015,7 @@ const Assessment = () => {
                         <div className="space-y-4">
                             <button
                                 onClick={handleVerifyOtp}
-                                disabled={verifying || otp.length < 6}
+                                disabled={verifying || otp.length < 8}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 disabled:opacity-50"
                                 style={{ backgroundColor: '#000', color: '#fff' }}
                                 onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
@@ -2958,78 +3052,17 @@ const Assessment = () => {
             );
         }
 
-        if (showVerificationSent) {
-            return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700 bg-white">
-                    <div className="text-center mb-12">
-                        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="3" className="animate-pulse">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
-                        </div>
-                        <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-6">
-                            Verification Sent
-                        </div>
-                        <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
-                            Check Your <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Email.</span>
-                        </h2>
-                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#1a1a1a99' }}>
-                            Clinical verification link transmitted to:{' '}
-                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.email}</span>
-                        </p>
-                    </div>
 
-                    <div className="rounded-[40px] p-8 md:p-12" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a10' }}>
-                        <div className="space-y-4 mb-10 text-left">
-                            <div className="flex gap-4 p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
-                                <span className="font-black" style={{ color: '#1a1a1a' }}>01.</span>
-                                <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a80' }}>Open the email from uGlowMD and click the verification link.</p>
-                            </div>
-                            <div className="flex gap-4 p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
-                                <span className="font-black" style={{ color: '#1a1a1a' }}>02.</span>
-                                <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a80' }}>Verify your ownership to unlock the medical intake portal.</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <button
-                                onClick={() => window.open(`https://${authData.email.split('@')[1]}`, '_blank')}
-                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
-                                style={{ backgroundColor: '#000', color: '#fff' }}
-                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
-                            >
-                                Open Mailbox
-                            </button>
-                            <button
-                                onClick={() => setShowVerificationSent(false)}
-                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
-                                style={{ backgroundColor: 'transparent', border: '1px solid #1a1a1a20', color: '#1a1a1a99' }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a20'}
-                            >
-                                Back to Sign Up
-                            </button>
-                        </div>
-
-                        <p className="mt-8 text-[9px] font-black uppercase tracking-[0.4em]" style={{ color: '#1a1a1a40', textAlign: 'center' }}>
-                            Waiting for secure confirmation...
-                        </p>
-                    </div>
-                </div>
-            );
-        }
 
         return (
-            <div className="assessment-step max-w-2xl mx-auto py-20 px-6 bg-white">
+            <div className="assessment-step max-w-2xl mx-auto py-20 px-6" style={{ backgroundColor: '#E3F2FD' }}>
                 <div className="text-center mb-12">
                     <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                         Secure Clinical Portal
                     </div>
                     <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
                         {authMode === 'signup' ? 'Create' : 'Access'}<br />
-                        <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Your Account.</span>
+                        <span style={{ color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Your Account.</span>
                     </h2>
                     <p className="font-medium uppercase tracking-[0.2em] text-[10px]" style={{ color: '#1a1a1a80' }}>
                         Join the telemedicine platform to proceed with your protocol.
@@ -3276,7 +3309,7 @@ const Assessment = () => {
                         </div>
 
                         {/* Social Logins */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-4">
                             <button
                                 onClick={async () => {
                                     try {
@@ -3291,48 +3324,26 @@ const Assessment = () => {
                                         setAuthError(err.message);
                                     }
                                 }}
-                                className="flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all"
                                 style={{ backgroundColor: '#fff', border: '1px solid #1a1a1a15', color: '#1a1a1a' }}
                                 onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
                                 onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a15'}
                             >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                 </svg>
-                                Google
-                            </button>
-                            <button
-                                className="flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed opacity-30"
-                                style={{ backgroundColor: '#fff', border: '1px solid #1a1a1a15', color: '#1a1a1a' }}
-                                disabled
-                            >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M17 2H7c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4H7V6h10v10z" />
-                                </svg>
-                                Phone
+                                Continue with Google
                             </button>
                         </div>
 
-                        <div className="pt-8 text-center" style={{ borderTop: '1px solid #1a1a1a08' }}>
-                            <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed" style={{ color: '#1a1a1a60' }}>
-                                {authMode === 'signup' ? 'Already a member?' : 'New to uGlowMD?'}{' '}
-                                <button
-                                    onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
-                                    className="font-black underline hover:opacity-70 transition-opacity"
-                                    style={{ color: '#1a1a1a' }}
-                                >
-                                    {authMode === 'signup' ? 'Sign In Here' : 'Create Clinical Account'}
-                                </button>
-                            </p>
-                        </div>
                     </div>
                 </div>
 
                 <div className="mt-12 text-center">
-                    <button onClick={() => setStep(0)} className="text-[9px] font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity" style={{ color: '#1a1a1a50' }}>
+                    <button onClick={() => setStep(0)} className="font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity" style={{ color: '#000', fontSize: '20px' }}>
                         ← Back to goals
                     </button>
                 </div>
@@ -3528,106 +3539,6 @@ const Assessment = () => {
                             </div>
                         </div>
 
-                        {/* PCP Visit – not shown for longevity */}
-                        {categoryId !== 'longevity' && (
-                            <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-4">Have you seen your primary care provider in the past 12 months?</label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    {['Yes', 'No'].map(v => (
-                                        <button
-                                            key={v}
-                                            onClick={() => setEligibilityData({ ...eligibilityData, pcpVisitLast6Months: v })}
-                                            className={`py-4 px-6 rounded-2xl text-[10px] font-medium tracking-widest transition-all assessment-option-arial ${eligibilityData.pcpVisitLast6Months === v
-                                                ? 'border-black text-black bg-white shadow-md scale-[1.02]'
-                                                : (triedToContinue && !eligibilityData.pcpVisitLast6Months ? 'bg-black/5 text-gray-400 border-red-500/50' : 'bg-black/5 text-gray-400 border-black/5 hover:border-black/20')
-                                                } border`}
-                                        >
-                                            {v}
-                                        </button>
-                                    ))}
-                                </div>
-                                {triedToContinue && !eligibilityData.pcpVisitLast6Months && (
-                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Please select an option</p>
-                                )}
-
-                                {eligibilityData.pcpVisitLast6Months && (
-                                    <div className="mt-6 p-6 bg-white/[0.02] border border-black/5 rounded-3xl">
-                                        <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 leading-relaxed">
-                                            {eligibilityData.pcpVisitLast6Months === 'Yes'
-                                                ? 'Since you have selected "Yes", please upload the lab results that include your "Lipid" and "A1c" values:'
-                                                : 'Since you have selected "No", you could possibly be ordered/recommended to do a Lab Test (Lipid, A1c).'}
-                                        </p>
-                                        {eligibilityData.pcpVisitLast6Months === 'Yes' && (
-                                            <div className="mt-6">
-                                                {/* Multi-file list */}
-                                                {Array.isArray(eligibilityData.labResults) && eligibilityData.labResults.length > 0 && (
-                                                    <div className="space-y-3 mb-6">
-                                                        {eligibilityData.labResults.map((url, idx) => (
-                                                            <div key={idx} className="flex items-center justify-between p-4 bg-black/5 border border-black/5 rounded-2xl group/file">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-8 h-8 bg-accent-black/10 rounded-lg flex items-center justify-center text-accent-black">
-                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                                                    </div>
-                                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Lab Document {idx + 1}</span>
-                                                                </div>
-                                                                <div className="flex items-center gap-3">
-                                                                    <a href={url} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-accent-black hover:underline">View</a>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            const newResults = [...eligibilityData.labResults];
-                                                                            newResults.splice(idx, 1);
-                                                                            setEligibilityData({ ...eligibilityData, labResults: newResults });
-                                                                        }}
-                                                                        className="text-[10px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
-                                                                    >
-                                                                        Remove
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-
-                                                <input
-                                                    type="file"
-                                                    id="lab-upload"
-                                                    className="hidden"
-                                                    accept="image/*,.pdf"
-                                                    onChange={(e) => handleFileUpload(e.target.files[0], 'lab-results', (url) => {
-                                                        const current = Array.isArray(eligibilityData.labResults) ? eligibilityData.labResults : (eligibilityData.labResults ? [eligibilityData.labResults] : []);
-                                                        setEligibilityData({ ...eligibilityData, labResults: [...current, url] });
-                                                    })}
-                                                />
-                                                <button
-                                                    onClick={() => document.getElementById('lab-upload').click()}
-                                                    disabled={uploading === 'lab-results'}
-                                                    className={`w-full flex items-center justify-center gap-4 px-8 py-6 bg-black/5 border-2 border-dashed ${triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) ? 'border-red-500/50' : 'border-black/5'} rounded-2xl hover:border-accent-black transition-all group`}
-                                                >
-                                                    {uploading === 'lab-results' ? (
-                                                        <div className="w-5 h-5 border-2 border-accent-black border-t-transparent animate-spin rounded-full"></div>
-                                                    ) : (
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-black">
-                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                                        </svg>
-                                                    )}
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 group-hover:text-white">
-                                                        {eligibilityData.labResults?.length > 0 ? 'Upload Another Lab Result' : 'Upload Lab Results'}
-                                                    </span>
-                                                </button>
-                                                {triedToContinue && (!eligibilityData.labResults || eligibilityData.labResults.length === 0) && (
-                                                    <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">At least one lab result is REQUIRED</p>
-                                                )}
-                                                {eligibilityData.labResults?.length > 0 && (
-                                                    <p className="mt-4 text-[8px] font-black uppercase tracking-widest text-accent-black opacity-60 ml-4 text-center">✓ {eligibilityData.labResults.length} Files verified and encrypted</p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
                         {/* Consent Text */}
                         <div className={`p-6 bg-white/[0.02] border ${triedToContinue && !eligibilityData.consent ? 'border-red-500/50' : 'border-black/5'} rounded-3xl`}>
@@ -3664,18 +3575,10 @@ const Assessment = () => {
                             <button
                                 onClick={async () => {
                                     // Validate all required fields
-                                    const requiredFields = categoryId === 'longevity'
-                                        ? ['state', 'phone', 'consent', 'dobMonth', 'dobDay', 'dobYear']
-                                        : ['state', 'phone', 'pcpVisitLast6Months', 'consent', 'dobMonth', 'dobDay', 'dobYear'];
+                                    const requiredFields = ['state', 'phone', 'consent', 'dobMonth', 'dobDay', 'dobYear'];
                                     const missingFields = requiredFields.filter(field => !eligibilityData[field]);
 
                                     if (missingFields.length > 0) {
-                                        setTriedToContinue(true);
-                                        return;
-                                    }
-
-                                    // Validate lab results if PCP visit was "Yes" (weight-loss only)
-                                    if (categoryId !== 'longevity' && eligibilityData.pcpVisitLast6Months === 'Yes' && (!eligibilityData.labResults || eligibilityData.labResults.length === 0)) {
                                         setTriedToContinue(true);
                                         return;
                                     }
@@ -3893,84 +3796,137 @@ const Assessment = () => {
                                         <div className="mt-8 p-8 bg-black/5 rounded-[32px] border border-black/10">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 text-black">Prescription Verification</h4>
 
-                                            {intakeData[`${question.id}_file`] ? (
-                                                <div className="p-6 bg-white rounded-2xl border border-black/5 flex items-center justify-between">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-accent-black">File Uploaded ✓</span>
-                                                    <button onClick={() => { const d = { ...intakeData }; delete d[`${question.id}_file`]; setIntakeData(d); }} className="text-[10px] font-bold text-red-500">Remove</button>
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-6">
-                                                    <input
-                                                        type="file"
-                                                        id="step19-upload"
-                                                        className="hidden"
-                                                        onChange={(e) => handleFileSelection(e.target.files[0], 'past_rx')}
-                                                    />
-                                                    <button
-                                                        onClick={() => document.getElementById('step19-upload').click()}
-                                                        className="w-full py-4 border-2 border-dashed border-black/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black/40 hover:border-black transition-all"
-                                                    >
-                                                        Upload Prescription Photo {intakeData[question.id]?.includes('Retatruide') && '(Required)'}
-                                                    </button>
-
-                                                    {pendingFile && pendingFile.type === 'past_rx' && (
-                                                        <div className="p-4 bg-accent-black/5 border border-accent-black/20 rounded-2xl space-y-4 animate-in slide-in-from-top-2">
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex items-center gap-3 min-w-0">
-                                                                    {pendingFile.previewUrl ? (
-                                                                        <div className="w-10 h-10 rounded-xl overflow-hidden border border-black/5 bg-white flex items-center justify-center shadow-sm shrink-0">
-                                                                            <img src={pendingFile.previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-accent-black border border-black/5 shrink-0">
-                                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                                                        </div>
-                                                                    )}
-                                                                    <div className="flex flex-col min-w-0">
-                                                                        <span className="text-[8px] font-black uppercase tracking-widest text-black/30">Ready</span>
-                                                                        <span className="text-[10px] font-bold text-black truncate">{pendingFile.file.name}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => setPendingFile(null)}
-                                                                    className="text-[8px] font-black uppercase text-red-500 hover:underline"
-                                                                >
-                                                                    Remove
-                                                                </button>
+                                            {intakeData[`${question.id}_file`] && (Array.isArray(intakeData[`${question.id}_file`]) ? intakeData[`${question.id}_file`].length > 0 : !!intakeData[`${question.id}_file`]) && (
+                                                <div className="space-y-2 mb-6">
+                                                    {(Array.isArray(intakeData[`${question.id}_file`]) ? intakeData[`${question.id}_file`] : [intakeData[`${question.id}_file`]]).map((url, idx) => (
+                                                        <div key={idx} className="p-4 bg-white rounded-2xl border border-black/5 flex items-center justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[9px] font-black uppercase tracking-widest text-accent-black">Photo {idx + 1} ✓</span>
+                                                                <a href={url} target="_blank" rel="noreferrer" className="text-[8px] font-bold text-black/40 hover:underline">View</a>
                                                             </div>
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleFileUpload(pendingFile.file, 'past_rx', (url) => {
-                                                                        setIntakeData({ ...intakeData, [`${question.id}_file`]: url });
-                                                                        setPendingFile(null);
-                                                                    });
-                                                                }}
-                                                                disabled={uploading === 'past_rx'}
-                                                                className="w-full py-3 bg-black text-white rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-accent-black transition-all flex items-center justify-center gap-2"
-                                                            >
-                                                                {uploading === 'past_rx' ? (
-                                                                    <div className="w-3 h-3 border-2 border-white/20 border-t-white animate-spin rounded-full"></div>
-                                                                ) : (
-                                                                    'Process to Upload'
-                                                                )}
-                                                            </button>
+                                                            <button onClick={() => {
+                                                                const files = Array.isArray(intakeData[`${question.id}_file`]) ? intakeData[`${question.id}_file`] : [intakeData[`${question.id}_file`]];
+                                                                const newFiles = files.filter((_, i) => i !== idx);
+                                                                setIntakeData({ ...intakeData, [`${question.id}_file`]: newFiles.length > 0 ? newFiles : null });
+                                                            }} className="text-[10px] font-bold text-red-500">Remove</button>
                                                         </div>
-                                                    )}
-
-                                                    {!intakeData[question.id]?.includes('Retatruide') && (
-                                                        <div className="space-y-3">
-                                                            <p className="text-[9px] font-black uppercase tracking-widest text-black/40 text-center">— OR —</p>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Enter your past dosage amount"
-                                                                className="w-full py-4 px-6 rounded-2xl bg-white border border-black/10 text-sm font-bold outline-none focus:border-black"
-                                                                value={piiData.pastDosage}
-                                                                onChange={(e) => setPiiData({ ...piiData, pastDosage: e.target.value })}
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    ))}
                                                 </div>
                                             )}
+
+                                            <div className="space-y-6">
+                                                <input
+                                                    type="file"
+                                                    id="step19-upload"
+                                                    className="hidden"
+                                                    multiple
+                                                    onChange={(e) => handleFileSelection(e.target.files[0], 'past_rx')}
+                                                />
+                                                <button
+                                                    onClick={() => document.getElementById('step19-upload').click()}
+                                                    className="w-full py-4 border-2 border-dashed border-black/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black/40 hover:border-black transition-all"
+                                                >
+                                                    {intakeData[`${question.id}_file`]?.length > 0 ? 'Upload Another Prescription Photo' : `Upload Prescription Photo ${intakeData[question.id]?.includes('Retatruide') ? '(Required)' : ''}`}
+                                                </button>
+
+                                                {pendingFile && pendingFile.type === 'past_rx' && (
+                                                    <div className="p-4 bg-accent-black/5 border border-accent-black/20 rounded-2xl space-y-4 animate-in slide-in-from-top-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-3 min-w-0">
+                                                                {pendingFile.previewUrl ? (
+                                                                    <div className="w-10 h-10 rounded-xl overflow-hidden border border-black/5 bg-white flex items-center justify-center shadow-sm shrink-0">
+                                                                        <img src={pendingFile.previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-accent-black border border-black/5 shrink-0">
+                                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                                                    </div>
+                                                                )}
+                                                                <div className="flex flex-col min-w-0">
+                                                                    <span className="text-[8px] font-black uppercase tracking-widest text-black/30">Ready</span>
+                                                                    <span className="text-[10px] font-bold text-black truncate">{pendingFile.file.name}</span>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => setPendingFile(null)}
+                                                                className="text-[8px] font-black uppercase text-red-500 hover:underline"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                handleFileUpload(pendingFile.file, 'past_rx', (url) => {
+                                                                    const currentFiles = Array.isArray(intakeData[`${question.id}_file`]) ? intakeData[`${question.id}_file`] : (intakeData[`${question.id}_file`] ? [intakeData[`${question.id}_file`]] : []);
+                                                                    setIntakeData({ ...intakeData, [`${question.id}_file`]: [...currentFiles, url] });
+                                                                    setPendingFile(null);
+                                                                });
+                                                            }}
+                                                            disabled={uploading === 'past_rx'}
+                                                            className="w-full py-3 bg-black text-white rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-accent-black transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            {uploading === 'past_rx' ? (
+                                                                <div className="w-3 h-3 border-2 border-white/20 border-t-white animate-spin rounded-full"></div>
+                                                            ) : (
+                                                                'Process to Upload'
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {!intakeData[question.id]?.includes('Retatruide') && (
+                                                    <div className="space-y-3">
+                                                        <p className="text-[9px] font-black uppercase tracking-widest text-black/40 text-center">— OR —</p>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Enter your past dosage amount"
+                                                            className="w-full py-4 px-6 rounded-2xl bg-white border border-black/10 text-sm font-bold outline-none focus:border-black"
+                                                            value={piiData.pastDosage}
+                                                            onChange={(e) => setPiiData({ ...piiData, pastDosage: e.target.value })}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* Dosage Preference */}
+                                                <div className="mt-8 pt-8 border-t border-black/5 space-y-6">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-black/40">Select your dosage preference</h4>
+                                                    <div className="grid grid-cols-1 gap-3">
+                                                        {['Higher dose', 'Lower dose', 'Continue with current dosage'].map(pref => (
+                                                            <button
+                                                                key={pref}
+                                                                onClick={() => setPiiData({ ...piiData, dosagePreference: pref, desiredDose: pref === 'Continue with current dosage' ? '' : piiData.desiredDose })}
+                                                                className={`w-full py-4 px-6 rounded-2xl border text-xs font-bold transition-all text-left ${piiData.dosagePreference === pref
+                                                                    ? 'border-black bg-black text-white'
+                                                                    : 'bg-white border-black/10 text-black hover:border-black/30'
+                                                                    }`}
+                                                            >
+                                                                {pref}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {(piiData.dosagePreference === 'Higher dose' || piiData.dosagePreference === 'Lower dose') && (
+                                                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                                                            <label className="text-[9px] font-black uppercase tracking-widest text-black/40 ml-2">Choose your desired dose</label>
+                                                            <div className="relative">
+                                                                <select
+                                                                    className="w-full py-4 px-6 rounded-2xl bg-white border border-black/10 text-sm font-bold outline-none focus:border-black appearance-none cursor-pointer"
+                                                                    value={piiData.desiredDose}
+                                                                    onChange={(e) => setPiiData({ ...piiData, desiredDose: e.target.value })}
+                                                                >
+                                                                    <option value="">Select dose...</option>
+                                                                    {['0.25 mg', '0.5 mg', '1 mg', '1.5 mg', '2 mg', '2.4 mg'].map(dose => (
+                                                                        <option key={dose} value={dose}>{dose}</option>
+                                                                    ))}
+                                                                </select>
+                                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-black/30">
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                             </div>
@@ -4054,8 +4010,17 @@ const Assessment = () => {
                                                                 <button
                                                                     onClick={() => {
                                                                         handleFileUpload(pendingFile.file, 'labs', (url) => {
-                                                                            setIntakeData({ ...intakeData, lab_results_url: [...(intakeData.lab_results_url || []), url] });
-                                                                            setPendingFile(null);
+                                                                            if (url) {
+                                                                                setIntakeData(prev => {
+                                                                                    const current = Array.isArray(prev.lab_results_url) ? prev.lab_results_url : (prev.lab_results_url ? [prev.lab_results_url] : []);
+                                                                                    if (current.includes(url)) return prev;
+                                                                                    return {
+                                                                                        ...prev,
+                                                                                        lab_results_url: [...current, url]
+                                                                                    };
+                                                                                });
+                                                                                setPendingFile(null);
+                                                                            }
                                                                         });
                                                                     }}
                                                                     disabled={uploading === 'labs'}
@@ -4073,9 +4038,9 @@ const Assessment = () => {
                                                             </div>
                                                         )}
 
-                                                        {intakeData.lab_results_url?.length > 0 ? (
+                                                        {Array.isArray(intakeData.lab_results_url) && intakeData.lab_results_url.filter(Boolean).length > 0 ? (
                                                             <div className="space-y-3">
-                                                                {intakeData.lab_results_url.map((url, idx) => (
+                                                                {Array.from(new Set(intakeData.lab_results_url.filter(Boolean))).map((url, idx) => (
                                                                     <div key={idx} className="flex items-center justify-between p-4 bg-black/5 rounded-2xl border border-black/5 group">
                                                                         <div className="flex items-center gap-3">
                                                                             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
@@ -4086,7 +4051,10 @@ const Assessment = () => {
                                                                         <div className="flex items-center gap-2">
                                                                             <a href={url} target="_blank" rel="noreferrer" className="text-[8px] font-black uppercase tracking-widest text-accent-black hover:underline">View</a>
                                                                             <button
-                                                                                onClick={() => setIntakeData({ ...intakeData, lab_results_url: intakeData.lab_results_url.filter((_, i) => i !== idx) })}
+                                                                                onClick={() => setIntakeData(prev => ({
+                                                                                    ...prev,
+                                                                                    lab_results_url: (prev.lab_results_url || []).filter((_, i) => i !== idx)
+                                                                                }))}
                                                                                 className="p-2 hover:text-red-500 transition-colors"
                                                                             >
                                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -4446,25 +4414,144 @@ const Assessment = () => {
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-3">
                                     {question.options.map(opt => (
-                                        <button
-                                            key={opt}
-                                            onClick={() => {
-                                                const current = intakeData[question.id] || [];
-                                                if (question.type === 'choice') {
-                                                    // Toggle: clicking selected answer deselects it
-                                                    setIntakeData({ ...intakeData, [question.id]: intakeData[question.id] === opt ? '' : opt });
-                                                } else {
-                                                    setIntakeData({ ...intakeData, [question.id]: current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt] });
-                                                }
-                                                setIntakeError('');
-                                            }}
-                                            className={`w-full py-5 px-8 pr-12 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
-                                                ? 'border-black text-black bg-white shadow-md scale-[1.01]'
-                                                : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'
-                                                }`}
-                                        >
-                                            {opt}
-                                        </button>
+                                        <React.Fragment key={opt}>
+                                            <button
+                                                onClick={() => {
+                                                    const current = intakeData[question.id] || [];
+                                                    if (question.type === 'choice') {
+                                                        // Toggle: clicking selected answer deselects it
+                                                        setIntakeData({ ...intakeData, [question.id]: intakeData[question.id] === opt ? '' : opt });
+                                                    } else {
+                                                        setIntakeData({ ...intakeData, [question.id]: current.includes(opt) ? current.filter(o => o !== opt) : [...current, opt] });
+                                                    }
+                                                    setIntakeError('');
+                                                }}
+                                                className={`w-full py-5 px-8 pr-12 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${(question.type === 'choice' ? intakeData[question.id] === opt : intakeData[question.id]?.includes(opt))
+                                                    ? 'border-black text-black bg-white shadow-md scale-[1.01]'
+                                                    : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'
+                                                    }`}
+                                            >
+                                                {opt}
+                                            </button>
+
+                                            {/* Cancer History Sub-Forms - Integrated directly under choice */}
+                                            {question.id === 'cancer_history' && opt === 'Yes, I have or have had cancer' && intakeData.cancer_history === opt && (
+                                                <div className="mt-2 p-6 bg-white border border-black/10 rounded-[28px] shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-black mb-5 border-b border-black/5 pb-3">Your Cancer History</h4>
+                                                    <div className="space-y-3">
+                                                        {(intakeData.personal_cancer_list || [{ type: '' }]).map((entry, idx) => (
+                                                            <div key={idx} className="flex gap-3 items-center">
+                                                                <div className="flex-1 flex flex-col gap-1 bg-black/[0.02] p-4 rounded-2xl border border-black/5 focus-within:border-black transition-all">
+                                                                    <label className="text-[8px] font-black uppercase tracking-widest text-black/40">Type of Cancer</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="e.g., Breast cancer, Lung cancer"
+                                                                        className="bg-transparent border-none text-sm font-bold outline-none placeholder:text-black/25"
+                                                                        value={entry.type}
+                                                                        onChange={(e) => {
+                                                                            const updated = [...(intakeData.personal_cancer_list || [{ type: '' }])];
+                                                                            updated[idx] = { ...updated[idx], type: e.target.value };
+                                                                            setIntakeData({ ...intakeData, personal_cancer_list: updated });
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                {idx > 0 && (
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            const updated = (intakeData.personal_cancer_list || []).filter((_, i) => i !== idx);
+                                                                            setIntakeData({ ...intakeData, personal_cancer_list: updated });
+                                                                        }}
+                                                                        className="w-8 h-8 rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"
+                                                                    >
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const updated = [...(intakeData.personal_cancer_list || [{ type: '' }]), { type: '' }];
+                                                            setIntakeData({ ...intakeData, personal_cancer_list: updated });
+                                                        }}
+                                                        className="mt-4 w-full py-3 border-2 border-dashed border-black/15 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black/40 hover:border-black hover:text-black transition-all"
+                                                    >
+                                                        + Add Cancer Type
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {question.id === 'cancer_history' && opt === 'Yes, I have a family member who has had cancer' && intakeData.cancer_history === opt && (
+                                                <div className="mt-2 p-6 bg-white border border-black/10 rounded-[28px] shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-black mb-5 border-b border-black/5 pb-3">Family Member's Cancer History</h4>
+                                                    <div className="space-y-4">
+                                                        {(intakeData.family_cancer_list || [{ type: '', relative: '' }]).map((entry, idx) => (
+                                                            <div key={idx} className="space-y-2">
+                                                                <div className="flex gap-3 items-start">
+                                                                    <div className="flex-1 space-y-2">
+                                                                        <div className="flex flex-col gap-1 bg-black/[0.02] p-4 rounded-2xl border border-black/5 focus-within:border-black transition-all">
+                                                                            <label className="text-[8px] font-black uppercase tracking-widest text-black/40">Type of Cancer</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="e.g., Breast cancer, Lung cancer"
+                                                                                className="bg-transparent border-none text-sm font-bold outline-none placeholder:text-black/25"
+                                                                                value={entry.type}
+                                                                                onChange={(e) => {
+                                                                                    const updated = [...(intakeData.family_cancer_list || [{ type: '', relative: '' }])];
+                                                                                    updated[idx] = { ...updated[idx], type: e.target.value };
+                                                                                    setIntakeData({ ...intakeData, family_cancer_list: updated });
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="flex flex-col gap-1 bg-black/[0.02] p-4 rounded-2xl border border-black/5 focus-within:border-black transition-all">
+                                                                            <label className="text-[8px] font-black uppercase tracking-widest text-black/40">Which Relative</label>
+                                                                            <select
+                                                                                className="bg-transparent border-none text-sm font-bold outline-none text-black appearance-none cursor-pointer"
+                                                                                value={entry.relative}
+                                                                                onChange={(e) => {
+                                                                                    const updated = [...(intakeData.family_cancer_list || [{ type: '', relative: '' }])];
+                                                                                    updated[idx] = { ...updated[idx], relative: e.target.value };
+                                                                                    setIntakeData({ ...intakeData, family_cancer_list: updated });
+                                                                                }}
+                                                                            >
+                                                                                <option value="">Select relative</option>
+                                                                                {['Mother', 'Father', 'Sister', 'Brother', 'Grandmother (Maternal)', 'Grandfather (Maternal)', 'Grandmother (Paternal)', 'Grandfather (Paternal)', 'Aunt', 'Uncle', 'Other'].map(r => (
+                                                                                    <option key={r} value={r}>{r}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    {idx > 0 && (
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                const updated = (intakeData.family_cancer_list || []).filter((_, i) => i !== idx);
+                                                                                setIntakeData({ ...intakeData, family_cancer_list: updated });
+                                                                            }}
+                                                                            className="w-8 h-8 mt-1 rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"
+                                                                        >
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const updated = [...(intakeData.family_cancer_list || [{ type: '', relative: '' }]), { type: '', relative: '' }];
+                                                            setIntakeData({ ...intakeData, family_cancer_list: updated });
+                                                        }}
+                                                        className="mt-4 w-full py-3 border-2 border-dashed border-black/15 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black/40 hover:border-black hover:text-black transition-all"
+                                                    >
+                                                        + Add Family Cancer History
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </div>
 
@@ -5002,7 +5089,7 @@ const Assessment = () => {
 
                 <div className="flex flex-col md:flex-row gap-4">
                     <button
-                        onClick={() => categoryId === 'weight-loss' ? setStep(25) : setStep(8)}
+                        onClick={() => setStep(25)}
                         className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
                     >
                         Back
@@ -5189,10 +5276,10 @@ const Assessment = () => {
                     </button>
                     <button
                         onClick={() => {
-                            if (categoryId === 'sexual-health') {
-                                setStep(12); // Sexual health: go to Coupon step after Shipping
+                            if (categoryId === 'skin-care') {
+                                setStep(14); // Skip coupon (12) and billing (13) for skincare
                             } else {
-                                setStep(12); // Normal flow: go to Coupon step
+                                setStep(12); // Normal flow
                             }
                         }}
                         disabled={!shippingData.firstName || !shippingData.lastName || !shippingData.address || !shippingData.city || !shippingData.zip || !shippingData.state || !shippingData.phone}
@@ -5205,208 +5292,228 @@ const Assessment = () => {
         </div>
     );
 
-    const renderCouponStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
-            <div className="text-center mb-10">
-                <div className="inline-block py-2 px-6 bg-black/5 border border-black/10 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-6">
-                    {categoryId === 'sexual-health' ? 'Step 36: Coupons' : 'Step 28: Coupons'}
+    const renderCouponStep = () => {
+        if (categoryId === 'skin-care') {
+            setStep(14);
+            return null;
+        }
+        return (
+            <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+                <div className="text-center mb-10">
+                    <div className="inline-block py-2 px-6 bg-black/5 border border-black/10 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-6">
+                        {categoryId === 'sexual-health' ? 'Step 36: Coupons' : 'Step 28: Coupons'}
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
+                        Have a <span className="text-black/60">Coupon Code?</span>
+                    </h2>
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[9px]">
+                        Enter an online coupon or one given by an affiliated uGlowMD licensed provider.
+                    </p>
                 </div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
-                    Have a <span className="text-black/60">Coupon Code?</span>
-                </h2>
-                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[9px]">
-                    Enter an online coupon or one given by an affiliated uGlowMD licensed provider.
-                </p>
-            </div>
 
-            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 backdrop-blur-xl mb-8">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <input
-                        type="text"
-                        placeholder="Enter coupon code"
-                        className="w-full md:flex-1 bg-white border border-black/10 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-black transition-all font-bold"
-                        value={paymentData.coupon || ''}
-                        onChange={(e) => setPaymentData({ ...paymentData, coupon: e.target.value })}
-                    />
-                    <button
-                        onClick={async () => {
-                            if (!paymentData.coupon) return;
-                            try {
-                                const { data, error } = await supabase.functions.invoke('validate-discount-code', {
-                                    body: { couponCode: paymentData.coupon }
-                                });
-                                if (error || !data.valid) {
-                                    toast.error(data?.error || data?.message || 'Invalid coupon code.');
-                                } else {
-                                    toast.success(`Discount applied: ${data.discountType === 'percentage' ? data.discountValue + '%' : '$' + data.discountValue} off!`);
-                                    setPaymentData(prev => ({ ...prev, appliedDiscount: data }));
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 backdrop-blur-xl mb-8">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <input
+                            type="text"
+                            placeholder="Enter coupon code"
+                            className="w-full md:flex-1 bg-white border border-black/10 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-black transition-all font-bold"
+                            value={paymentData.coupon || ''}
+                            onChange={(e) => setPaymentData({ ...paymentData, coupon: e.target.value })}
+                        />
+                        <button
+                            onClick={async () => {
+                                if (!paymentData.coupon) return;
+                                try {
+                                    const { data, error } = await supabase.functions.invoke('validate-discount-code', {
+                                        body: { couponCode: paymentData.coupon }
+                                    });
+                                    if (error || !data.valid) {
+                                        toast.error(data?.error || data?.message || 'Invalid coupon code.');
+                                    } else {
+                                        toast.success(`Discount applied: ${data.discountType === 'percentage' ? data.discountValue + '%' : '$' + data.discountValue} off!`);
+                                        setPaymentData(prev => ({ ...prev, appliedDiscount: data }));
+                                    }
+                                } catch (err) {
+                                    console.error('Discount validation error:', err);
+                                    toast.error('Could not validate coupon at this time.');
                                 }
-                            } catch (err) {
-                                console.error('Discount validation error:', err);
-                                toast.error('Could not validate coupon at this time.');
-                            }
-                        }}
-                        className="w-full md:w-auto py-5 px-8 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#1a1a1a] transition-all"
+                            }}
+                            className="w-full md:w-auto py-5 px-8 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#1a1a1a] transition-all"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                    {paymentData.appliedDiscount && (
+                        <div className="mt-4 p-4 bg-black/5 border border-black/10 rounded-2xl flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-black">✓ Coupon Applied</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-black/60">
+                                -{paymentData.appliedDiscount.discountType === 'percentage'
+                                    ? `${paymentData.appliedDiscount.discountValue}%`
+                                    : `$${paymentData.appliedDiscount.discountValue}`}
+                            </span>
+                        </div>
+                    )}
+                    {!paymentData.coupon && (
+                        <p className="text-center text-[9px] font-black uppercase tracking-widest text-gray-300 mt-4">
+                            Skip if you don't have a coupon
+                        </p>
+                    )}
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4 pt-4">
+                    <button
+                        onClick={() => setStep(11)}
+                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/10"
                     >
-                        Apply
+                        Back
+                    </button>
+                    <button
+                        onClick={() => setStep(13)}
+                        className="w-full md:flex-[2] py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
+                    >
+                        Continue to Billing
                     </button>
                 </div>
-                {paymentData.appliedDiscount && (
-                    <div className="mt-4 p-4 bg-black/5 border border-black/10 rounded-2xl flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black">✓ Coupon Applied</span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black/60">
-                            -{paymentData.appliedDiscount.discountType === 'percentage'
-                                ? `${paymentData.appliedDiscount.discountValue}%`
-                                : `$${paymentData.appliedDiscount.discountValue}`}
-                        </span>
+            </div>
+        );
+    };
+
+    const renderBillingStep = () => {
+        if (categoryId === 'skin-care') {
+            setStep(14);
+            return null;
+        }
+        return (
+            <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+                <div className="text-center mb-10">
+                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">
+                        {categoryId === 'sexual-health' ? 'Step 37: Payment' : 'Step 29: Billing'}
                     </div>
-                )}
-                {!paymentData.coupon && (
-                    <p className="text-center text-[9px] font-black uppercase tracking-widest text-gray-300 mt-4">
-                        Skip if you don't have a coupon
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
+                        Complete Your <span className="text-accent-black">Payment.</span>
+                    </h2>
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
+                        Clinical assessment fee for professional provider review.
                     </p>
-                )}
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4 pt-4">
-                <button
-                    onClick={() => setStep(11)}
-                    className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/10"
-                >
-                    Back
-                </button>
-                <button
-                    onClick={() => setStep(13)}
-                    className="w-full md:flex-[2] py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
-                >
-                    Continue to Billing
-                </button>
-            </div>
-        </div>
-    );
-
-    const renderBillingStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
-            <div className="text-center mb-10">
-                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">
-                    {categoryId === 'sexual-health' ? 'Step 37: Payment' : 'Step 29: Billing'}
-                </div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
-                    Complete Your <span className="text-accent-black">Payment.</span>
-                </h2>
-                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                    Clinical assessment fee for professional provider review.
-                </p>
-            </div>
-
-            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-10 mb-8">
-                <div className="flex justify-between items-start pb-8 border-b border-black/5">
-                    <div>
-                        <h3 className="text-black text-xl font-black uppercase tracking-tighter mb-2">Eligibility Verification Fee</h3>
-                        <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest leading-relaxed max-w-xs">
-                            A healthcare provider will review and verify your eligibility for the program.
-                        </p>
-                    </div>
-                    <span className="text-accent-black text-3xl font-black">
-                        {paymentData.appliedDiscount ? (
-                            <>
-                                <span className="line-through text-gray-300 text-xl mr-2">
-                                    ${baseFee.toFixed(2)}
-                                </span>
-                                ${(() => {
-                                    const base = baseFee;
-                                    const disc = paymentData.appliedDiscount;
-                                    let final = base;
-                                    if (disc.discountType === 'percentage') {
-                                        final = base * (1 - disc.discountValue / 100);
-                                    } else {
-                                        final = Math.max(0, base - disc.discountValue);
-                                    }
-                                    return final.toFixed(2);
-                                })()}
-                            </>
-                        ) : `$${baseFee.toFixed(2)}`}
-                    </span>
                 </div>
 
-                {labFulfillment === 'order' && (
-                    <div className="flex justify-between items-start pb-8 border-b border-black/5">
-                        <div className="flex-1">
-                            <h3 className="text-black text-[10px] font-black uppercase tracking-widest mb-1">Quest Diagnostics Lab Order</h3>
-                            <p className="text-gray-400 text-[8px] font-medium uppercase tracking-widest leading-relaxed">
-                                Universal clinical lab requisition for any Quest location.
-                            </p>
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-12 backdrop-blur-xl space-y-10 mb-8">
+                    {categoryId !== 'skin-care' && (
+                        <div className="flex justify-between items-start pb-8 border-b border-black/5">
+                            <div>
+                                <h3 className="text-black text-xl font-black uppercase tracking-tighter mb-2">Eligibility Verification Fee</h3>
+                                <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest leading-relaxed max-w-xs">
+                                    A healthcare provider will review and verify your eligibility for the program.
+                                </p>
+                            </div>
+                            <span className="text-accent-black text-3xl font-black">
+                                {paymentData.appliedDiscount ? (
+                                    <>
+                                        <span className="line-through text-gray-300 text-xl mr-2">
+                                            ${baseFee.toFixed(2)}
+                                        </span>
+                                        ${(() => {
+                                            const base = baseFee;
+                                            const disc = paymentData.appliedDiscount;
+                                            let final = base;
+                                            if (disc.discountType === 'percentage') {
+                                                final = base * (1 - disc.discountValue / 100);
+                                            } else {
+                                                final = Math.max(0, base - disc.discountValue);
+                                            }
+                                            return final.toFixed(2);
+                                        })()}
+                                    </>
+                                ) : `$${baseFee.toFixed(2)}`}
+                            </span>
                         </div>
-                        <span className="text-black/40 text-sm font-black">$29.99</span>
-                    </div>
-                )}
-            </div>
+                    )}
 
-            <div className="flex flex-col md:flex-row gap-4 pt-4 mt-8">
-                <button
-                    onClick={() => setStep(12)}
-                    className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/10"
-                >
-                    Back
-                </button>
-                <button
-                    onClick={() => setStep(14)}
-                    className="w-full md:flex-[2] py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
-                >
-                    Continue to Payment
-                </button>
-            </div>
-        </div>
-    );
-
-    const renderPaymentStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
-            <div className="text-center mb-10">
-                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">
-                    {categoryId === 'sexual-health' ? 'Step 37: Secure Checkout' : 'Step 30: Secure Checkout'}
+                    {labFulfillment === 'order' && (
+                        <div className="flex justify-between items-start pb-8 border-b border-black/5">
+                            <div className="flex-1">
+                                <h3 className="text-black text-[10px] font-black uppercase tracking-widest mb-1">Quest Diagnostics Lab Order</h3>
+                                <p className="text-gray-400 text-[8px] font-medium uppercase tracking-widest leading-relaxed">
+                                    Universal clinical lab requisition for any Quest location.
+                                </p>
+                            </div>
+                            <span className="text-black/40 text-sm font-black">$29.99</span>
+                        </div>
+                    )}
                 </div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
-                    Add <span className="text-accent-black">Payment Details.</span>
-                </h2>
-                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                    Enter your card information below to complete activation.
-                </p>
+
+                <div className="flex flex-col md:flex-row gap-4 pt-4 mt-8">
+                    <button
+                        onClick={() => setStep(categoryId === 'skin-care' ? 11 : 12)}
+                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/10"
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={() => setStep(14)}
+                        className="w-full md:flex-[2] py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
+                    >
+                        Continue to Payment
+                    </button>
+                </div>
             </div>
+        );
+    };
 
-            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
-                <div className="space-y-6">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-8">Secure 256-bit SSL encrypted payment</label>
-                    {(() => {
-                        const eligibilityCents = baseFeeCents;
-                        const labCents = (labFulfillment === 'order' ? 2999 : 0);
-                        const disc = paymentData.appliedDiscount;
-                        let finalEligibilityCents = eligibilityCents;
-                        if (disc) {
-                            if (disc.discountType === 'percentage') {
-                                finalEligibilityCents = Math.round(eligibilityCents * (1 - disc.discountValue / 100));
-                            } else {
-                                finalEligibilityCents = Math.max(0, eligibilityCents - (disc.discountValue * 100));
-                            }
-                        }
-                        const finalAmountInCents = finalEligibilityCents + labCents;
+    const renderPaymentStep = () => {
+        const eligibilityCents = baseFeeCents;
+        const labCents = (labFulfillment === 'order' ? 2999 : 0);
+        const disc = paymentData.appliedDiscount;
+        let finalEligibilityCents = eligibilityCents;
+        if (disc) {
+            if (disc.discountType === 'percentage') {
+                finalEligibilityCents = Math.round(eligibilityCents * (1 - disc.discountValue / 100));
+            } else {
+                finalEligibilityCents = Math.max(0, eligibilityCents - (disc.discountValue * 100));
+            }
+        }
+        const finalAmountInCents = finalEligibilityCents + labCents;
 
-                        if (finalAmountInCents === 0) {
-                            return (
-                                <button
-                                    onClick={() => handleSubmitAssessment()}
-                                    className="w-full py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
-                                >
-                                    Complete Activation →
-                                </button>
-                            );
-                        }
+        const dobString = (authData.dobYear && authData.dobMonth && authData.dobDay
+            ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}`
+            : (eligibilityData.dob || user?.user_metadata?.date_of_birth || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null)));
 
-                        return (
+        return (
+            <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+                <div className="text-center mb-10">
+                    <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">
+                        {categoryId === 'sexual-health' ? 'Step 37: Secure Checkout' : 'Step 30: Secure Checkout'}
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 leading-tight">
+                        Add <span className="text-accent-black">Payment Details.</span>
+                    </h2>
+                    <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
+                        Enter your card information below to complete activation.
+                    </p>
+                    <p className="mt-4 text-black font-black uppercase tracking-[0.1em] text-[11px] bg-black/5 py-3 px-6 rounded-full inline-block">
+                        Once approved you will be charged your package type
+                    </p>
+                </div>
+
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
+                    <div className="space-y-6">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-8">Secure 256-bit SSL encrypted payment</label>
+
+                        {(finalAmountInCents === 0 && categoryId !== 'skin-care') ? (
+                            <button
+                                onClick={() => handleSubmitAssessment()}
+                                className="w-full py-6 bg-white border border-black/10 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] hover:bg-black hover:text-white transition-all shadow-sm"
+                            >
+                                Complete Activation →
+                            </button>
+                        ) : (
                             <Elements stripe={stripePromise} options={{
-                                mode: 'payment',
-                                amount: finalAmountInCents,
+                                mode: finalAmountInCents > 0 ? 'payment' : 'setup',
                                 currency: 'usd',
-                                setup_future_usage: 'off_session'
+                                ...(finalAmountInCents > 0 ? {
+                                    amount: finalAmountInCents,
+                                    setup_future_usage: 'off_session'
+                                } : {})
                             }}>
                                 <CheckoutForm
                                     onComplete={() => handleSubmitAssessment()}
@@ -5415,76 +5522,30 @@ const Assessment = () => {
                                     categoryId={categoryId}
                                     tempUserId={tempUserId}
                                     email={authData.email || shippingData.email}
-                                    dob={(authData.dobYear && authData.dobMonth && authData.dobDay
-                                        ? `${authData.dobYear}-${authData.dobMonth.padStart(2, '0')}-${authData.dobDay.padStart(2, '0')}`
-                                        : (eligibilityData.dob || user?.user_metadata?.date_of_birth || (eligibilityData.dobYear && eligibilityData.dobMonth && eligibilityData.dobDay ? `${eligibilityData.dobYear}-${eligibilityData.dobMonth.padStart(2, '0')}-${eligibilityData.dobDay.padStart(2, '0')}` : null)))}
+                                    dob={dobString}
                                 />
                             </Elements>
-                        );
-                    })()}
-                </div>
+                        )}
+                    </div>
 
-                <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-8 mt-10">
-                    By clicking "Process Submission", you agree to our clinical terms of service.
-                </p>
+                    <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-8 mt-10">
+                        By clicking "Process Submission", you agree to our clinical terms of service.
+                    </p>
 
-                <div className="pt-8 mt-8 text-center border-t border-black/5">
-                    <button
-                        onClick={() => setStep(13)}
-                        className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-[#1a1a1a] transition-colors"
-                    >
-                        ← Back to Billing
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderSubscriptionPlanStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
-            <div className="text-center mb-12">
-                <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
-                    {categoryId === 'sexual-health' ? 'Step 33: Subscription' : 'Step 25: Subscription'}
-                </div>
-                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-4 leading-tight">
-                    Choose your <span className="text-accent-black">Subscription Plan.</span>
-                </h2>
-                <p className="text-gray-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                    Select the plan that best fits your goals.
-                </p>
-            </div>
-
-            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl space-y-6">
-                <div className="space-y-4">
-                    {['Monthly Subscription', '3-Month Subscription', '6-Month Subscription'].map(plan => (
+                    <div className="pt-8 mt-8 text-center border-t border-black/5">
                         <button
-                            key={plan}
-                            onClick={() => setIntakeData({ ...intakeData, subscription_plan: plan })}
-                            className={`w-full py-6 px-8 rounded-2xl border text-sm font-semibold tracking-wide transition-all text-left ${intakeData.subscription_plan === plan ? 'border-black text-black bg-white shadow-md scale-[1.01]' : 'bg-white text-black border-black/15 hover:border-black/50 hover:shadow-sm'}`}
+                            onClick={() => setStep(categoryId === 'skin-care' ? 11 : 13)}
+                            className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-[#1a1a1a] transition-colors"
                         >
-                            {plan}
+                            ← Back to {categoryId === 'skin-care' ? 'Shipping' : 'Billing'}
                         </button>
-                    ))}
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 pt-8">
-                    <button
-                        onClick={() => setStep(25)}
-                        className="w-full md:flex-1 py-6 bg-black/5 border border-black/5 text-black rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-white/30"
-                    >
-                        Back
-                    </button>
-                    <button
-                        onClick={() => setStep(10)} // Go to ID verification
-                        disabled={!intakeData.subscription_plan}
-                        className={`w-full md:flex-[2] py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all ${intakeData.subscription_plan ? 'bg-white border border-black/10 text-black hover:bg-black hover:text-white shadow-sm' : 'bg-black/5 text-gray-300 cursor-not-allowed'}`}
-                    >
-                        Continue to ID Verification
-                    </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
+
+
 
     const renderAIResultStep = () => (
         <div className="assessment-step max-w-4xl mx-auto py-20 px-6 text-center">
@@ -5551,10 +5612,10 @@ const Assessment = () => {
 
                     <div className="flex flex-col items-center gap-4">
                         <button
-                            onClick={() => aiApproved ? setStep(9) : setStep(10)}
+                            onClick={() => setStep(10)}
                             className="group relative inline-flex items-center justify-center px-16 py-8 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all hover:bg-[#FFDE59] hover:text-black overflow-hidden"
                         >
-                            <span className="relative z-10">{aiApproved ? 'Choose Subscription Plan' : 'Continue to ID Verification'}</span>
+                            <span className="relative z-10">Continue to ID Verification</span>
                             <div className="absolute inset-x-0 bottom-0 h-1 bg-[#FFDE59] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                         </button>
 
@@ -5685,7 +5746,7 @@ const Assessment = () => {
                         <img
                             src={logo}
                             alt="uGlowMD Logo"
-                            className="h-20 md:h-30 w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
+                            className="h-[120px] md:h-[180px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
                             style={{
                                 filter: 'brightness(0.1)',
                                 maxWidth: 'none'
@@ -5775,6 +5836,9 @@ const Assessment = () => {
                                 showRepairQuote2 ? renderRepairQuote2Step() :
                                     renderRepairQuoteStep() // Safety Fallback
                     )}
+                    {categoryId === 'skin-care' && step === 0 && (
+                        renderSkinCareGoalsStep()
+                    )}
                     {categoryId === 'weight-loss' && step === 1 && renderStep0()}
                     {categoryId !== 'weight-loss' &&
                         categoryId !== 'sexual-health' &&
@@ -5782,6 +5846,7 @@ const Assessment = () => {
                         categoryId !== 'longevity' &&
                         categoryId !== 'testosterone' &&
                         categoryId !== 'repair-healing' &&
+                        categoryId !== 'skin-care' &&
                         (step === 0 || step === 1) && renderStep0()}
                     {step === 2 && renderReviewStep()}
                     {step === 3 && renderAuthStep()}
@@ -5789,7 +5854,7 @@ const Assessment = () => {
                     {(step === 5 || step === 6 || step === 7) && renderEligibilityStep()}
 
                     {step === 8 && renderDynamicIntakeStep()}
-                    {step === 9 && renderSubscriptionPlanStep()}
+
 
                     {step === 10 && renderIdentificationStep()}
                     {step === 11 && renderShippingStep()}

@@ -1,4 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
+import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -17,7 +18,7 @@ import longevityImg from '../assets/longetivity_first_quote_img.png';
 import testosteroneImg from '../assets/testosterone-image-v2.png';
 import skinCareImg from '../assets/skincare.png';
 import retatrutideImg from '../assets/clinical_breakthrough.png';
-import repairImg from '../assets/sec_quote_strenght_img.png';
+import repairImg from '../assets/STRENTHENING_FIRST_QUOTE_IMG.png';
 import antiAgingImg from '../assets/ant-aging.png';
 import faceSpotImg from '../assets/face-spot.png';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
@@ -1328,7 +1329,7 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                                 <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">01</div>
                                 <div>
                                     <p className="text-xs font-black uppercase tracking-tight mb-1 ">Share Your Link</p>
-                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with uGlowMD.</p>
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with <img src={logo} alt="uGlowMD" className="h-[48px] w-auto inline-block align-baseline invert opacity-80" />.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -2256,7 +2257,7 @@ const Dashboard = () => {
                         onClick={() => navigate('/')}
                         className="text-2xl font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
                     >
-                        <sub className="font-brand lowercase italic opacity-80">u</sub>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
+                        <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block brightness-0 invert" />
                     </button>
                     <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mt-2">Patient Portal</p>
                 </div>
@@ -2328,7 +2329,7 @@ const Dashboard = () => {
                                 onClick={() => navigate('/')}
                                 className="text-xl font-black uppercase tracking-tighter "
                             >
-                                <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
+                                <img src={logo} alt="uGlowMD" className="h-[80px] w-auto inline-block brightness-0 invert" />
                             </button>
                         </div>
                         <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
@@ -2350,7 +2351,7 @@ const Dashboard = () => {
                                     onClick={() => navigate('/')}
                                     className="text-2xl font-black uppercase tracking-tighter text-white"
                                 >
-                                    <span className="font-brand lowercase italic opacity-80">u</span>Glow<sup className="text-[0.6em] font-bold ml-0.5">MD</sup>
+                                    <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block invert" />
                                 </button>
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
@@ -2743,10 +2744,7 @@ const Dashboard = () => {
                                             </h2>
                                             <p className="text-sm text-white/50 mb-10 font-bold uppercase tracking-widest">The Next Generation of Weight Loss Biology</p>
 
-                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-10">
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Eligibility Verification Cost</p>
-                                                <p className="text-2xl font-black text-white">$100.00</p>
-                                            </div>
+
 
                                             <div className="flex flex-wrap gap-4">
                                                 <button
@@ -2755,9 +2753,7 @@ const Dashboard = () => {
                                                 >
                                                     Wait List for Retatrutide (Subq Inj)
                                                 </button>
-                                                <button className="px-8 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
-                                                    Special Access Program (Today)
-                                                </button>
+
                                             </div>
                                         </div>
                                         <div className="w-full lg:w-1/2 flex items-center justify-center p-12 bg-white/5 rounded-[40px] border border-white/10">
@@ -3861,9 +3857,9 @@ const ProviderStatementsView = () => {
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
                                                     <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                                                        <span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '16px', fontWeight: '700' }}>MD</sup>
+                                                        <img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} />
                                                     </div>
-                                                    <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}>uGlowMD · Provider Portal</div>
+                                                    <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Portal</div>
                                                 </div>
                                             </div>
                                             <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '40px' }} />
@@ -3905,7 +3901,7 @@ const ProviderStatementsView = () => {
                                                 </div>
                                             </div>
                                             <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                                                 <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
                                             </div>
                                         </div>
@@ -3914,7 +3910,7 @@ const ProviderStatementsView = () => {
                                         <div style={{ ...pageStyle, marginBottom: 0 }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
                                                 <div><div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL — {periodLabel}</div><div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div></div>
-                                                <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}><span style={{ fontStyle: 'italic', fontWeight: '400', opacity: 0.7 }}>u</span>Glow<sup style={{ fontSize: '14px', fontWeight: '700' }}>MD</sup></div>
+                                                <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}><img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} /></div>
                                             </div>
                                             <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '32px' }} />
 
@@ -3955,7 +3951,7 @@ const ProviderStatementsView = () => {
                                                 </div>
                                             </div>
                                             <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}>uGlowMD · Provider Compensation · Confidential</div>
+                                                <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                                                 <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
                                             </div>
                                         </div>

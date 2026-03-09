@@ -54,7 +54,7 @@ const AdminRoute = ({ children }) => {
         return <Navigate to="/admin-sign-in" replace />;
     }
 
-    const isAuthorized = role === 'admin' || ['physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(role);
+    const isAuthorized = ['admin', 'marketing_rep', 'physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(role);
     if (!isAuthorized) {
         return (
             <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-6 text-center">

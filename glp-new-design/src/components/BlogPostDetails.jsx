@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const BlogPostDetails = () => {
     const { id } = useParams();
@@ -105,18 +108,18 @@ const BlogPostDetails = () => {
 
                 {/* Content */}
                 <div className="max-w-[800px] mx-auto px-6 pb-32">
-                    <div className="prose prose-lg prose-black max-w-none prose-headings:font-serif prose-headings:italic prose-headings:tracking-tight prose-p:leading-relaxed prose-p:text-gray-700">
+                    <div className="prose prose-lg prose-black max-w-none prose-headings:font-serif prose-headings:italic prose-headings:tracking-tight prose-p:leading-relaxed prose-p:text-gray-700 prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800">
                         {/* 
                             Simple content rendering. 
                             In a real app, you might use a Markdown renderer like react-markdown.
                         */}
-                        {post.content.split('\n').map((paragraph, idx) => (
-                            paragraph.trim() ? <p key={idx} className="mb-6">{paragraph}</p> : <br key={idx} />
-                        ))}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                            {post.content}
+                        </ReactMarkdown>
                     </div>
 
                     <div className="mt-20 pt-10 border-t border-gray-100 flex flex-wrap gap-4 items-center justify-between">
-                        <Link to="/blog" className="flex items-center gap-3 text-sm font-bold tracking-tight hover:text-gray-500 transition-colors">
+                        <Link to="/blog" className="flex items-center gap-3 text-sm font-bold tracking-tight text-blue-600 underline hover:text-blue-800 transition-colors">
                             <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-7 7m7-7H3" />
                             </svg>
@@ -124,16 +127,6 @@ const BlogPostDetails = () => {
                         </Link>
 
                         <div className="flex gap-4">
-                            {/* Share placeholders */}
-                            <button className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all">
-                                <span className="text-[10px] font-black uppercase tracking-tight">FB</span>
-                            </button>
-                            <button className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all">
-                                <span className="text-[10px] font-black uppercase tracking-tight">TW</span>
-                            </button>
-                            <button className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all">
-                                <span className="text-[10px] font-black uppercase tracking-tight">LN</span>
-                            </button>
                         </div>
                     </div>
                 </div>

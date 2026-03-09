@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logo from '../assets/logo.png';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Loader from './Loader';
@@ -21,7 +22,6 @@ import medicationDelivery from '../assets/medication_delivery.png';
 import labAnalysis from '../assets/lab_analysis.png';
 import ongoingSupport from '../assets/ongoing_support.png';
 import finasterideBottleImg from '../assets/finastride_tablet_bottle.png';
-import sildenafilTadalafilPrdImg from '../assets/sildenafil_tadalafi_prd_img.png';
 import sildenafilTadalafilTabletsPrdImg from '../assets/Sildenafil _Tadalafil_Tablets_prd.png';
 import growthTabsSildenafilImg from '../assets/growth-tab-sidnafil.png';
 
@@ -32,17 +32,17 @@ import threeInOneImg from '../assets/3_in_1img.png';
 import fiveInOneImg from '../assets/5_in-1_hairloss.png';
 import fiveInOneBg from '../assets/5_IN_1_HAIRLOSS_BG.png';
 import dualGrowthPrdImg from '../assets/Finasteride_  Minoxidil_prd.png';
-import hairGrowth2in1Img from '../assets/2-in-1-hairgrowthtab.png';
+import hairGrowth2in1Img from '../assets/2-in-1 Hair Growth Tabs___vial.png';
 
 import hairLossImg from '../assets/hair-loss.png';
 import mensHealthImg from '../assets/mens-health.png';
 import sildenafilTadalafilBg from '../assets/Sildenafil_Tadalafil_bg.png';
-import sildenafilTadalafilTabletsBg from '../assets/Sildenafil _Tadalafil_Tablets.png';
+import sildenafilTadalafilTabletsBg from '../assets/Sildenafil_Tadalafil_bg.png';
 import sildenafilYohimbeBg from '../assets/Sildenafil_ Yohimbe_bg.png';
 import sildenafilYohimbePrdImg from '../assets/Sildenafil_ Yohimbe_prd.png';
 import oxytocinPrdImg from '../assets/Oxytocin (Fast Absorb Tab)_jk.png';
 import oxytocinTabletsPrd from '../assets/Oxytocin_Tablets_prd__3.png';
-import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.png.png';
+import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.png';
 import oxytocinNasalBg from '../assets/oxytocin_nasal.png';
 import prdDetailBg from '../assets/prd_detial_bg_image.png';
 import longevityImg from '../assets/longevity.png';
@@ -70,8 +70,34 @@ import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
 import rosaceaCareImg from '../assets/rosacea_care_set.png';
 import eyeSerumImg from '../assets/Eye-Serum-prd-image.png';
 import bodyAcneCreamImg from '../assets/Body-Acne-Spots-Cream.png';
-import bpc157Img from '../assets/BPC-157-(Subq Inj).png';
-import bpc157Tb500Img from '../assets/BPC-157-TB-500 -(Subq Inj).png';
+import bpc157VialImg from '../assets/BPC-157-vial.png';
+import bpc157Tb500VialImg from '../assets/BPC-157-TB-500--vial.png';
+import semaglutideVialImg from '../assets/semaglutide_vial.png';
+import tirzepatideVialImg from '../assets/tirzepatide_vial.png';
+import threeInOneHairVialImg from '../assets/3-in-1 Hair Growth Tabs---vial.png';
+import estradiolTabsVialImg from '../assets/Estradiol Tabs---vial.png';
+import glutathioneVialImg from '../assets/Glutathione--vial.png';
+import growTabsTadalafilVialImg from '../assets/GrowTabs-Tadalafil-vial.png';
+import growTabsSildenafilVialImg from '../assets/GrowTabs-sildenafil-vial.png';
+import loverSprayVialImg from '../assets/LoverSpray-vial.png';
+import nadSprayVialImg from '../assets/NAD+spray--vial.png';
+import nadSubjVialImg from '../assets/NAD+subjinj---vial.png';
+import quickLoverVialImg from '../assets/QuickLover-vial.png';
+import readySetGoVialImg from '../assets/ReadySetGo_vial.png';
+import testosteroneRdtVialImg from '../assets/Testosterone (RDT)--vial.png';
+import bpc157Carton from '../assets/BPC-157-(Subq Inj).png';
+import bpc157Tb500Carton from '../assets/BPC-157-TB-500 -(Subq Inj).png';
+import hairGrowth2in1Carton from '../assets/2-in-1-hairgrowthtab.png';
+import hairGrowth2in1Series from '../assets/2-in-1-tab-series.png';
+import hairGrowth3in1Carton from '../assets/3_in_1img.png';
+import hairGrowth3in1Series from '../assets/3-in-1-series.png';
+import sildenafilTadalafilCarton from '../assets/sildenafil_tadalafil_tablets_verified.png';
+import antiAgingSeries from '../assets/Anti-Aging Cream---series.png';
+import faceSpotSeries from '../assets/Face Spot Peel----series.png';
+import acneCleanserSeries from '../assets/Acne Cleanser--series.png';
+import rosaceaSeries from '../assets/Rosacea Relief Cream--series.png';
+import eyeSerumSeries from '../assets/Eye Serum---series.png';
+import bodyAcneSeries from '../assets/Body Acne Cream---series.png';
 import Footer from './Footer';
 
 // Mock data
@@ -80,7 +106,8 @@ const productSpecificData = {
         name: 'Semaglutide',
         type: 'Subcutaneous Injection',
         price: '$299/mo',
-        image: semaglutideInjection,
+        image: semaglutideVialImg,
+        signatureImage: semaglutideInjection,
         heroBg: semaglutidePrdBg,
         description: 'The gold standard for medical weight loss. Semaglutide Subcutaneous Injection mimics the GLP-1 hormone to regulate appetite and food intake, helping you feel full faster and longer.',
         highlights: ["Appetite-suppressing formula", "Works in 24 hours on average*", "Active for up to 7 days", "Starts as low as $299/mo*"],
@@ -169,7 +196,8 @@ const productSpecificData = {
         name: 'Tirzepatide',
         type: 'Subcutaneous Injection',
         price: '$399/mo',
-        image: tirzepetideInjection,
+        image: tirzepatideVialImg,
+        signatureImage: tirzepetideInjection,
         heroBg: tirzepatidePrdBg,
         description: 'Dual-action power. Tirzepatide mimics both GLP-1 and GIP hormones for potentially greater weight loss efficacy.',
         highlights: ["Dual-hormone action (GLP-1 + GIP)", "Potentially higher weight loss*", "Once weekly dosing", "Starts as low as $399/mo*"],
@@ -247,10 +275,11 @@ const productSpecificData = {
         ]
     },
     'semaglutide-drops': {
-        name: 'Semaglutide',
-        type: 'Fast Absorb Sublingual Drops',
-        price: '$249/mo',
+        name: 'Semaglutide (Drops)',
+        type: 'Sublingual Drops',
+        price: '$259/mo',
         image: semaglutideDrops,
+        signatureImage: semaglutideDropBg,
         heroBg: semaglutideDropBg,
         description: 'Needle-free weight loss. A convenient daily dissolve tablet for those who prefer to avoid injections.',
         highlights: ["No needles required", "Daily routine", "Great for maintenance", "Starts as low as $249/mo*"],
@@ -287,6 +316,7 @@ const productSpecificData = {
         type: 'Fast Absorb Sublingual Drops',
         price: '$349/mo',
         image: tirzepatideDrops,
+        signatureImage: tirzepatideDropBg,
         heroBg: tirzepatideDropBg,
         description: 'The most advanced needle-free option. Dual-action power in a convenient daily drop.',
         highlights: ["Dual-hormone power", "Needle-free application", "Premium formulation", "Starts as low as $349/mo*"],
@@ -322,6 +352,7 @@ const productSpecificData = {
         type: 'Oral Tablets',
         price: '$49/mo',
         image: finasterideBottleImg,
+        signatureImage: finasterideBottleImg,
         heroBg: finasterideHeroImg,
         description: 'The clinically proven oral treatment that targets hair loss at the source by blocking DHT production.',
         highlights: ["Stops hair loss at the root", "Once-daily tablet", "FDA-approved active ingredient", "Starts at $49/mo"],
@@ -358,6 +389,7 @@ const productSpecificData = {
         type: 'Topical Liquid Solution',
         price: '$79/mo',
         image: dualGrowthPrdImg,
+        signatureImage: dualGrowthPrdImg,
         heroBg: finasterideMinoxidilBg,
         description: 'A powerful dual-action topical solution combining a DHT blocker with a growth stimulant.',
         highlights: ["Dual-action formula", "Direct scalp application", "Reduced systemic side effects", "Starts at $79/mo"],
@@ -399,6 +431,7 @@ const productSpecificData = {
         type: 'Topical Liquid - 3-in-1',
         price: '$99/mo',
         image: threeInOneImg,
+        signatureImage: threeInOneImg,
         heroBg: finasterideTripleBg,
         description: 'The "Golden Triple" of hair restoration. Tretinoin enhances the scalp penetration of Minoxidil and Finasteride.',
         highlights: ["Enhanced absorption", "clinical strength", "3 active ingredients", "Starts at $99/mo"],
@@ -438,6 +471,7 @@ const productSpecificData = {
         type: 'Topical Liquid - 5-in-1',
         price: '$129/mo',
         image: fiveInOneImg,
+        signatureImage: fiveInOneImg,
         heroBg: fiveInOneBg,
         description: 'Our most comprehensive formula. 5 powerful ingredients to tackle hair loss from every angle.',
         highlights: ["Most comprehensive", "Anti-inflammatory", "Nutrient rich", "Starts at $129/mo"],
@@ -478,7 +512,8 @@ const productSpecificData = {
         name: 'Dual Performance Formula',
         type: 'Fast Absorb Troche (2-in-1)',
         price: '$89/mo',
-        image: sildenafilTadalafilPrdImg,
+        image: sildenafilTadalafilTabletsPrdImg,
+        signatureImage: sildenafilTadalafilTabletsPrdImg,
         heroBg: sildenafilTadalafilTabletsBg,
         description: 'The ultimate dual-action formula. Combines the rapid onset of Sildenafil with the sustained duration of Tadalafil in a fast-dissolving troche.',
         highlights: ["Rapid Onset (15-30m)", "Up to 36-hour window", "Custom compounded", "Starts at $89/mo"],
@@ -514,6 +549,7 @@ const productSpecificData = {
         type: 'Fast Absorb Troche (2-in-1)',
         price: '$79/mo',
         image: sildenafilYohimbePrdImg,
+        signatureImage: sildenafilYohimbePrdImg,
         heroBg: sildenafilYohimbeBg,
         description: 'The clinically proven combination of blood flow enhancement and libido stimulation. Sildenafil provides the physical support while Yohimbe enhances desire and drive.',
         highlights: ["Enhanced libido", "Rapid onset (15-20m)", "Natural stimulant", "Starts at $79/mo"],
@@ -552,6 +588,7 @@ const productSpecificData = {
         type: 'Oral Tablets',
         price: '$69/mo',
         image: sildenafilTadalafilTabletsPrdImg,
+        signatureImage: sildenafilTadalafilTabletsPrdImg,
         heroBg: sildenafilTadalafilBg,
         description: 'The clinically proven dual-action oral treatment combining the rapid onset of Sildenafil with the extended duration of Tadalafil for complete confidence.',
         highlights: ["Dual-action formula", "Up to 36-hour window", "FDA-approved ingredients", "Starts at $69/mo"],
@@ -590,6 +627,7 @@ const productSpecificData = {
         type: 'Sublingual Troche',
         price: '$129/mo',
         image: oxytocinTabletsPrd,
+        signatureImage: oxytocinTabletsPrd,
         heroBg: oxytocinPrdImg,
         description: 'The "Love Hormone" designed to enhance emotional connection, intimacy, and climax intensity. Oxytocin promotes bonding, trust, and heightened physical sensation.',
         highlights: ["Enhanced intimacy", "Emotional bonding", "Increased sensitivity", "Starts at $129/mo"],
@@ -627,6 +665,7 @@ const productSpecificData = {
         type: 'Nasal Spray',
         price: '$119/mo',
         image: oxytocinNasalPrd,
+        signatureImage: oxytocinNasalPrd,
         heroBg: oxytocinNasalBg,
         description: 'Direct-to-brain delivery. The fastest way to boost oxytocin levels for immediate intimacy support and emotional connection.',
         highlights: ["Fastest onset (5-10m)", "Direct brain delivery", "Precise dosing", "Starts at $119/mo"],
@@ -662,11 +701,12 @@ const productSpecificData = {
     'nad-nasal-spray': {
         name: 'NAD+',
         type: 'Nasal Spray',
-        price: '$99/mo',
-        image: nadSprayPrd,
+        price: '$124.99/mo',
+        image: nadSprayVialImg,
+        signatureImage: nadSprayPrd,
         heroBg: nadNasalSprayBg,
         description: 'Brain fuel. Replenish your cellular energy levels directly through the blood-brain barrier for enhanced mental clarity and focus.',
-        highlights: ["Boosts brain energy", "Direct CNS delivery", "Non-invasive", "Starts at $99/mo"],
+        highlights: ["Boosts brain energy", "Direct CNS delivery", "Non-invasive", "Starts at $124.99/mo"],
         benefits: [
             { id: "01", title: "Mental Clarity", desc: "Restores NAD+ levels in the brain to reduce brain fog and improve focus.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "DNA Repair", desc: "Supports sirtuin activity, which helps repair damaged DNA and regulate cellular aging.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -708,8 +748,9 @@ const productSpecificData = {
     'nad-injection': {
         name: 'NAD+',
         type: 'Subcutaneous Injection',
-        price: '$119.99/mo',
-        image: nadInjectionPrd,
+        price: '$124.99/mo',
+        image: nadSubjVialImg,
+        signatureImage: nadInjectionPrd,
         heroBg: nadInjectionImg,
         description: 'Pharmaceutical-grade NAD+ delivered directly into circulation for maximum cellular repair and energy production.',
         highlights: ['200 mg/mL (5 mL)', 'Bypasses digestion', 'Cellular repair', 'Physician-prescribed'],
@@ -731,7 +772,7 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: '200 mg/mL (5 mL)', plans: [
-                    { name: 'Monthly', price: '$119.99', badge: '' },
+                    { name: 'Monthly', price: '$124.99', badge: '' },
                 ]
             }
         ]
@@ -740,7 +781,8 @@ const productSpecificData = {
         name: 'Glutathione',
         type: 'Subcutaneous Injection',
         price: '$64.99/mo',
-        image: glutathionePrd,
+        image: glutathioneVialImg,
+        signatureImage: glutathionePrd,
         heroBg: glutathioneBg,
         description: 'The "Master Antioxidant" for detoxification, skin brightness, and immune support.',
         highlights: ['200 mg/mL (10 mL)', 'Detoxification support', 'Immune health', 'Physician-prescribed'],
@@ -775,6 +817,7 @@ const productSpecificData = {
         type: 'Subcutaneous Injection',
         price: '$149/mo',
         image: boostedTestosteroneImg,
+        signatureImage: testosteroneInjectionImg,
         heroBg: boostedTestosteroneImg,
         description: 'Restore your hormonal edge. Clinically compounded testosterone therapy to optimise energy, muscle, libido and mental clarity.',
         highlights: ["Physician-prescribed", "Boosts energy & libido", "Increase lean muscle", "Starts at $149/mo"],
@@ -814,7 +857,8 @@ const productSpecificData = {
         name: 'Testosterone (RDT)',
         type: 'Rapid Dissolve Tablet',
         price: '$125/mo',
-        image: testosteroneRdtImg,
+        image: testosteroneRdtVialImg,
+        signatureImage: testosteroneRdtImg,
         heroBg: testosteroneRdtImg,
         description: 'Needle-free testosterone replacement. Rapid-dissolve tablets deliver physician-prescribed hormones efficiently through the sublingual pathway.',
         highlights: ['TBA', 'Needle-free technology', 'Optimises energy & mood', 'Physician-prescribed'],
@@ -853,7 +897,8 @@ const productSpecificData = {
         name: 'Estradiol Tabs',
         type: 'Oral Tablets',
         price: '$30.00/mo',
-        image: estPrdImg,
+        image: estradiolTabsVialImg,
+        signatureImage: estPrdImg,
         heroBg: estPrdImg,
         description: 'Targeted estrogen replacement therapy to manage symptoms of hormonal decline and support long-term metabolic health.',
         highlights: ['TBA', 'Relieves symptoms', 'Supports bone health', 'Physician-prescribed'],
@@ -893,11 +938,12 @@ const productSpecificData = {
     'anti-aging-cream': {
         name: 'Anti-Aging Cream',
         type: 'Topical Cream',
-        price: '$79/mo',
+        price: '$69/mo',
         image: antiAgingImg,
+        signatureImage: antiAgingSeries,
         heroBg: antiAgingImg,
         description: 'Turn back the clock. Our prescription-grade anti-aging cream combines retinoids, peptides and growth factors to visibly rejuvenate skin.',
-        highlights: ["Prescription retinoid formula", "Reduces fine lines", "Boosts collagen", "Starts at $79/mo"],
+        highlights: ["Prescription retinoid formula", "Reduces fine lines", "Boosts collagen", "Starts at $69/mo"],
         benefits: [
             { id: "01", title: "Wrinkle Reduction", desc: "Retinoids increase cell turnover to visibly smooth fine lines and wrinkles.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "Collagen Boost", desc: "Peptides stimulate collagen production for firmer, plumper skin.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -925,9 +971,8 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$79.99', badge: '' },
-                    { name: 'Every 2 Months', price: '$69.99', badge: '' },
-                    { name: 'Monthly', price: '$35.00', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$79.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$69.99', badge: 'Best Value' },
                 ]
             }
         ]
@@ -935,11 +980,12 @@ const productSpecificData = {
     'face-spot-peel': {
         name: 'Face Spot Peel',
         type: 'Topical Peel',
-        price: '$69/mo',
+        price: '$72/mo',
         image: faceSpotImg,
+        signatureImage: faceSpotSeries,
         heroBg: faceSpotImg,
         description: 'Target stubborn dark spots and uneven pigmentation with our medical-grade chemical peel. Reveal brighter, more uniform skin in weeks.',
-        highlights: ["Fades dark spots", "Evens skin tone", "Prescription-grade AHAs", "Starts at $69/mo"],
+        highlights: ["Fades dark spots", "Evens skin tone", "Prescription-grade AHAs", "Starts at $72/mo"],
         benefits: [
             { id: "01", title: "Pigment Correction", desc: "Alpha hydroxy acids dissolve the bonds holding pigmented cells together.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "Smoother Texture", desc: "Chemical exfoliation reveals softer, refined skin underneath.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -967,9 +1013,8 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$99.99', badge: '' },
-                    { name: 'Every 2 Months', price: '$72.00', badge: '' },
-                    { name: 'Monthly', price: '$36.00', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$99.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$72.00', badge: 'Best Value' },
                 ]
             }
         ]
@@ -977,11 +1022,12 @@ const productSpecificData = {
     'acne-cleanser': {
         name: 'Acne Cleanser',
         type: 'Topical Cleanser',
-        price: '$49/mo',
+        price: '$59.99/mo',
         image: acneCleanserImg,
+        signatureImage: acneCleanserSeries,
         heroBg: acneCleanserImg,
         description: 'A prescription-strength daily cleanser that combines salicylic acid and benzoyl peroxide to clear active breakouts while preventing future ones.',
-        highlights: ["Prescription-strength formula", "Clears & prevents acne", "Gentle daily use", "Starts at $49/mo"],
+        highlights: ["Prescription-strength formula", "Clears & prevents acne", "Gentle daily use", "Starts at $59.99/mo"],
         benefits: [
             { id: "01", title: "Deep Pore Cleansing", desc: "Salicylic acid penetrates pores to dissolve excess oil and dead skin cells.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "Bacteria Elimination", desc: "Benzoyl peroxide kills acne-causing bacteria on contact.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -1009,21 +1055,21 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$84.99', badge: '' },
-                    { name: 'Every 2 Months', price: '$59.99', badge: '' },
-                    { name: 'Monthly', price: '$29.99', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$84.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$59.99', badge: 'Best Value' },
                 ]
             }
         ]
     },
     'rosacea-red-cream': {
-        name: 'Rosacea Relief Cream',
+        name: 'Rosacea Red Cream',
         type: 'Topical Cream',
-        price: '$79/mo',
+        price: '$79.99/mo',
         image: rosaceaCareImg,
+        signatureImage: rosaceaSeries,
         heroBg: rosaceaCareImg,
         description: 'Calm redness and visible blood vessels with our compounded rosacea cream. Combines metronidazole and azelaic acid for lasting relief.',
-        highlights: ["Reduces redness & flushing", "Prescription metronidazole", "Anti-inflammatory formula", "Starts at $79/mo"],
+        highlights: ["Reduces redness & flushing", "Prescription metronidazole", "Anti-inflammatory formula", "Starts at $79.99/mo"],
         benefits: [
             { id: "01", title: "Redness Reduction", desc: "Metronidazole reduces visible redness, papules and pustules.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "Anti-Inflammatory", desc: "Azelaic acid calms inflamed skin and reduces pore congestion.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -1051,9 +1097,8 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$114.99', badge: '' },
-                    { name: 'Every 2 Months', price: '$79.99', badge: '' },
-                    { name: 'Monthly', price: '$39.99', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$114.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$79.99', badge: 'Best Value' },
                 ]
             }
         ]
@@ -1061,11 +1106,12 @@ const productSpecificData = {
     'eye-serum': {
         name: 'Eye Serum',
         type: 'Topical Serum',
-        price: '$59/mo',
+        price: '$79.99/mo',
         image: eyeSerumImg,
+        signatureImage: eyeSerumSeries,
         heroBg: eyeSerumImg,
         description: `Brighten dark circles, lift puffiness and smooth crow's feet. Our targeted eye serum delivers prescription peptides and caffeine directly where you need them.`,
-        highlights: ["Brightens dark circles", "Reduces puffiness", "Smooths crow's feet", "Starts at $59/mo"],
+        highlights: ["Brightens dark circles", "Reduces puffiness", "Smooths crow's feet", "Starts at $79.99/mo"],
         benefits: [
             { id: "01", title: "Dark Circle Fading", desc: "Vitamin K and peptides reduce pooled blood and pigmentation around eyes.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "De-Puffing", desc: "Caffeine constricts blood vessels and drains lymphatic fluid to reduce swelling.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -1093,8 +1139,8 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: 'TBA', plans: [
-                    { name: 'Once', price: '$114.99', badge: '' },
-                    { name: 'Monthly', price: '$79.99', badge: 'Best Value' },
+                    { name: 'Monthly', price: '$114.99', badge: '' },
+                    { name: 'Every 2 Months', price: '$79.99', badge: 'Best Value' },
                 ]
             }
         ]
@@ -1102,11 +1148,12 @@ const productSpecificData = {
     'body-acne-cream': {
         name: 'Body Acne Cream',
         type: 'Topical Cream',
-        price: '$59/mo',
+        price: '$99.99/mo',
         image: bodyAcneCreamImg,
+        signatureImage: bodyAcneSeries,
         heroBg: bodyAcneCreamImg,
         description: 'Tackle chest, back and shoulder breakouts with prescription-strength body acne treatment. Clears existing acne and prevents new ones from forming.',
-        highlights: ["Clears body acne fast", "Prescription-level strength", "Safe for large areas", "Starts at $59/mo"],
+        highlights: ["Clears body acne fast", "Prescription-level strength", "Safe for large areas", "Starts at $99.99/mo"],
         benefits: [
             { id: "01", title: "Rapid Clearing", desc: "High-concentration salicylic acid clears clogged pores across large skin areas.", color: "#FFDE59", image: hormonalMasteryImg },
             { id: "02", title: "Anti-Bacterial", desc: "Benzoyl peroxide eliminates body acne bacteria on contact.", color: "#5CE1E6", image: metabolicPrecisionImg },
@@ -1144,7 +1191,7 @@ const productSpecificData = {
     // ─── Hair Loss Tabs ────────────────────────────────────────────────────────
     'hair-growth-tabs-3in1': {
         name: '3-in-1 Hair Growth Tabs', type: 'Oral Tablet', price: '$99.99',
-        image: finasterideBottleImg, heroBg: finasterideHeroImg,
+        image: threeInOneHairVialImg, signatureImage: hairGrowth3in1Series, heroBg: finasterideHeroImg,
         description: 'The all-in-one oral solution for hair loss. Three clinically active ingredients in a single daily tablet.',
         highlights: ['3 active ingredients', 'Once-daily tablet', 'Clinician-prescribed', 'No topical required'],
         benefits: [
@@ -1177,7 +1224,7 @@ const productSpecificData = {
     },
     'hair-growth-tabs-2in1': {
         name: '2-in-1 Hair Growth Tabs', type: 'Oral Tablet (1mg / 2.5mg)', price: '$89.99',
-        image: hairGrowth2in1Img, heroBg: finasterideHeroImg,
+        image: hairGrowth2in1Img, signatureImage: hairGrowth2in1Series, heroBg: finasterideHeroImg,
         description: 'Dual-action hair restoration. Finasteride 1mg + oral Minoxidil 2.5mg in one convenient daily tablet.',
         highlights: ['Finasteride 1mg / Minoxidil 2.5mg', 'Once-daily dosing', 'No topical application', 'Clinician-prescribed'],
         benefits: [
@@ -1215,7 +1262,7 @@ const productSpecificData = {
     // ─── Better Sex ────────────────────────────────────────────────────────────
     'readysetgo-men': {
         name: 'ReadySetGo', type: '2-in-1 RDT (Men)', price: '$39',
-        image: sildenafilTadalafilPrdImg, heroBg: sildenafilTadalafilTabletsBg,
+        image: readySetGoVialImg, signatureImage: sildenafilTadalafilCarton, heroBg: sildenafilTadalafilTabletsBg,
         description: 'Triple-action rapid-dissolve tablet. Sildenafil + Tadalafil + Oxytocin for peak performance and deeper connection.',
         highlights: ['Triple active formula', 'Fast onset 15-30 min', 'Up to 36-hr window', 'Custom compounded'],
         benefits: [
@@ -1262,7 +1309,7 @@ const productSpecificData = {
     },
     'growtabs-sildenafil': {
         name: 'GrowTabs (Sildenafil)', type: 'Oral Tablet (Men)', price: '$29.99',
-        image: growthTabsSildenafilImg, heroBg: sildenafilTadalafilBg,
+        image: growTabsSildenafilVialImg, signatureImage: growthTabsSildenafilImg, heroBg: sildenafilTadalafilBg,
         description: 'Pure Sildenafil oral tablets. Fast, reliable erectile support with clinically proven efficacy.',
         highlights: ['Sildenafil PDE5 inhibitor', 'Onset 30-60 min', 'Flexible pack sizes', 'Physician-prescribed'],
         benefits: [
@@ -1292,7 +1339,7 @@ const productSpecificData = {
     },
     'growtabs-tadalafil': {
         name: 'GrowTabs (Tadalafil)', type: 'Oral Tablet (Men)', price: '$29.99',
-        image: sildenafilTadalafilTabletsPrdImg, heroBg: sildenafilTadalafilBg,
+        image: growTabsTadalafilVialImg, signatureImage: sildenafilTadalafilCarton, heroBg: sildenafilTadalafilBg,
         description: 'Long-acting Tadalafil. Stay ready for up to 36 hours with a single dose.',
         highlights: ['36-hr duration', 'Daily-dose option', 'Flexible pack sizes', 'Physician-prescribed'],
         benefits: [
@@ -1322,7 +1369,7 @@ const productSpecificData = {
     },
     'quicklover-women': {
         name: 'QuickLover', type: 'RDT Oxytocin (Women)', price: '$43.99',
-        image: oxytocinTabletsPrd, heroBg: oxytocinPrdImg,
+        image: quickLoverVialImg, signatureImage: oxytocinTabletsPrd, heroBg: oxytocinPrdImg,
         description: 'Oxytocin rapid-dissolve tablets for women. Heighten sensation, deepen connection, enhance every intimate moment.',
         highlights: ['Oxytocin love hormone', 'Fast sublingual onset', 'Enhances intimacy', 'Physician-prescribed'],
         benefits: [
@@ -1352,7 +1399,7 @@ const productSpecificData = {
     },
     'loverspray-women': {
         name: 'LoverSpray', type: 'Nasal Spray Oxytocin (Women)', price: '$99.99/mo',
-        image: oxytocinNasalPrd, heroBg: oxytocinNasalBg,
+        image: loverSprayVialImg, signatureImage: oxytocinNasalPrd, heroBg: oxytocinNasalBg,
         description: 'Direct-to-brain oxytocin for women. The fastest way to enhance bonding, sensitivity and intimate connection.',
         highlights: ['Fastest onset 5-10 min', 'Direct brain delivery', '150 IU/mL (5 mL)', 'Physician-prescribed'],
         benefits: [
@@ -1371,7 +1418,7 @@ const productSpecificData = {
     // ─── Repair & Healing ──────────────────────────────────────────────────────
     'bpc-157-injection': {
         name: 'BPC-157', type: 'Subcutaneous Injection', price: '$249.99/mo',
-        image: bpc157Img, heroBg: bpc157Img,
+        image: bpc157VialImg, signatureImage: bpc157Carton, heroBg: bpc157VialImg,
         description: 'Body Protection Compound 157. A powerful regenerative peptide that accelerates healing of muscles, tendons, ligaments and joints.',
         highlights: ['TBA', 'Accelerates repair', 'Reduces inflammation', 'Physician-prescribed'],
         benefits: [
@@ -1388,7 +1435,7 @@ const productSpecificData = {
     },
     'bpc-157-tb500-injection': {
         name: 'BPC-157 / TB 500', type: 'Subcutaneous Injection', price: '$299.99/mo',
-        image: bpc157Tb500Img, heroBg: bpc157Tb500Img,
+        image: bpc157Tb500VialImg, signatureImage: bpc157Tb500Carton, heroBg: bpc157Tb500VialImg,
         description: 'The ultimate healing stack. BPC-157 and TB-500 combined for synergistic tissue repair and accelerated recovery.',
         highlights: ['TBA', 'Maximum repair', 'Systemic recovery', 'Physician-prescribed'],
         benefits: [
@@ -1406,25 +1453,25 @@ const productSpecificData = {
         strengths: [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '$299.99', badge: '' }] }]
     },
 
-    // ─── Retatruide ────────────────────────────────────────────────────────────
-    'retatruide-injection': {
-        name: 'Retatruide', type: 'Subcutaneous Injection', price: '$499.99/mo',
-        image: tirzepetideInjection, heroBg: tirzepatidePrdBg,
-        description: 'The next generation of weight loss. Retatruide is a triple-hormone agonist — the successor to Tirzepatide.',
+    // ─── Retatrutide ────────────────────────────────────────────────────────────
+    'retatrutide-injection': {
+        name: 'Retatrutide', type: 'Subcutaneous Injection', price: '$499.99/mo',
+        image: tirzepetideInjection, signatureImage: tirzepetideInjection, heroBg: tirzepatidePrdBg,
+        description: 'The next generation of weight loss. Retatrutide is a triple-hormone agonist — the successor to Tirzepatide.',
         highlights: ['TBA', 'Triple-hormone action', 'Successor to Tirzepatide', 'Physician-prescribed'],
         benefits: [
             { id: '01', title: 'Triple Action', desc: 'Targets GLP-1, GIP, and Glucagon simultaneously.', color: '#FFDE59', image: hormonalMasteryImg },
             { id: '02', title: 'Max Weight Loss', desc: 'Early data suggests greater weight loss potential than any existing GLP-1.', color: '#5CE1E6', image: metabolicPrecisionImg },
-            { id: '03', title: 'Early Access', desc: 'Get verified now to be among the first to receive Retatruide.', color: '#7ED957', image: clinicalBreakthroughImg },
+            { id: '03', title: 'Early Access', desc: 'Get verified now to be among the first to receive Retatrutide.', color: '#7ED957', image: clinicalBreakthroughImg },
         ],
-        ingredients: [{ name: 'Retatruide', desc: 'Triple agonist of GLP-1, GIP, and Glucagon receptors.' }],
+        ingredients: [{ name: 'Retatrutide', desc: 'Triple agonist of GLP-1, GIP, and Glucagon receptors.' }],
         howItWorks: [{ id: '01', title: 'Three Pathways.', desc: 'Reduces appetite, improves insulin, and increases energy expenditure.' }],
         timeline: [{ time: 'Now', step: 'Waitlist/Early Access' }, { time: 'Late 2026', step: 'Market launch' }],
         faqs: [
             { q: 'When available?', a: 'Targeted for late 2026. Access programs available now for verified patients.' },
             { q: 'Special access?', a: 'A $100 fee grants qualified patients early eligibility verification.' },
         ],
-        readyAccordion: [{ q: 'What is Retatruide?', a: 'The most powerful triple-hormone weight loss medication coming to market.' }],
+        readyAccordion: [{ q: 'What is Retatrutide?', a: 'The most powerful triple-hormone weight loss medication coming to market.' }],
         strengths: [{
             dosage: 'TBA', plans: [
                 { name: 'Waitlist', price: 'Free', badge: '' },
@@ -1468,7 +1515,7 @@ const ProductDetails = () => {
 
     const getCategory = (id) => {
         if (!id) return 'weight-loss';
-        if (id.includes('semaglutide') || id.includes('tirzepatide') || id.includes('retatruide')) return 'weight-loss';
+        if (id.includes('semaglutide') || id.includes('tirzepatide') || id.includes('retatrutide')) return 'weight-loss';
         if (id.includes('finasteride') || id.includes('minoxidil') || id.includes('hair-growth-tabs')) return 'hair-loss';
         if (id.includes('sildenafil') || id.includes('tadalafil') || id.includes('oxytocin') || id.includes('yohimbe') || id === 'readysetgo-men' || id.includes('growtabs') || id.includes('quicklover') || id.includes('loverspray')) return 'sexual-health';
         if (id.includes('nad') || id.includes('glutathione')) return 'longevity';
@@ -1563,8 +1610,9 @@ const ProductDetails = () => {
 
     const hairLossIds = ['finasteride-tablets', 'finasteride-minoxidil-liquid', 'finasteride-minoxidil-tretinoin-liquid', 'minoxidil-max-compound-liquid', 'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1'];
     const sexualHealthIds = ['sildenafil-tadalafil-troche', 'sildenafil-yohimbe-troche', 'sildenafil-tadalafil-tablets', 'oxytocin-troche', 'oxytocin-nasal-spray', 'readysetgo-men', 'growtabs-sildenafil', 'growtabs-tadalafil', 'quicklover-women', 'loverspray-women'];
-    const longevityIds = ['nad-nasal-spray', 'nad-injection', 'glutathione-injection', 'bpc-157-injection', 'bpc-157-tb500-injection'];
-    const weightLossIds = ['semaglutide-injection', 'tirzepatide-injection', 'semaglutide-drops', 'tirzepatide-drops', 'retatruide-injection'];
+    const longevityIds = ['nad-nasal-spray', 'nad-injection', 'glutathione-injection'];
+    const repairHealingIds = ['bpc-157-injection', 'bpc-157-tb500-injection'];
+    const weightLossIds = ['semaglutide-injection', 'tirzepatide-injection', 'semaglutide-drops', 'tirzepatide-drops', 'retatrutide-injection'];
     const hormoneTherapyIds = ['testosterone-injection', 'testosterone-rdt', 'estradiol-tabs'];
     const skinCareIds = ['anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream'];
 
@@ -1604,6 +1652,29 @@ const ProductDetails = () => {
         'eye-serum': { code: 'EYE', shortDesc: 'Advanced firming and dark circle repair.', active: 'Peptides', brand: 'Serum' },
         'body-acne-cream': { code: 'BODY', shortDesc: 'Clears breakouts and smooths skin texture.', active: 'Salicylic Acid', brand: 'Skin' },
     };
+
+    const getMinPrice = (p) => {
+        let prices = [];
+        if (p.strengths) {
+            p.strengths.forEach(s => {
+                s.plans.forEach(plan => {
+                    const val = parseFloat(plan.price.replace(/[^0-9.]/g, ''));
+                    if (!isNaN(val)) prices.push(val);
+                });
+            });
+        }
+        if (p.plans) {
+            p.plans.forEach(plan => {
+                const val = parseFloat(plan.price.replace(/[^0-9.]/g, ''));
+                if (!isNaN(val)) prices.push(val);
+            });
+        }
+        if (p.price) {
+            const val = parseFloat(p.price.replace(/[^0-9.]/g, ''));
+            if (!isNaN(val)) prices.push(val);
+        }
+        return prices.length > 0 ? Math.min(...prices) : 0;
+    };
     const simplifiedHeroIds = [...weightLossIds, ...hairLossIds, ...sexualHealthIds, ...longevityIds, ...hormoneTherapyIds, ...skinCareIds];
     const allPremiumIds = [...weightLossIds, ...hairLossIds, ...sexualHealthIds, ...longevityIds, ...hormoneTherapyIds, ...skinCareIds];
 
@@ -1635,13 +1706,11 @@ const ProductDetails = () => {
     useEffect(() => {
         if (product.strengths) {
             setSelectedStrength(product.strengths[0].dosage);
-            setSelectedPlan(product.strengths[0].plans[1]?.name || product.strengths[0].plans[0].name);
+            setSelectedPlan(product.strengths[0].plans[0].name);
         } else if (product.plans) {
-            // Default to middle plan if it exists, otherwise first
-            setSelectedPlan(product.plans[1]?.name || product.plans[0].name);
+            setSelectedPlan(product.plans[0].name);
         } else {
-            // Default to middle plan (3 Months) for auto-generated plans
-            setSelectedPlan('3 Months');
+            setSelectedPlan('Monthly');
         }
     }, [productId, product]);
 
@@ -1684,7 +1753,10 @@ const ProductDetails = () => {
                                     *Results vary by individual. Based on clinical data and internal patient surveys. Customer results have not been independently verified. Price shown with 3 month shipping option.
                                 </p>
                                 <p className="text-[9px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
-                                    Prescription products require an online consultation with a healthcare provider. The featured products are compounded using FDA-approved active ingredients. These compounded treatments are not FDA approved. Prescription required.
+                                    Prescription products require an online consultation with a healthcare provider. The featured products are NON-FDA approved, and not reviewed by FDA for safety, effectiveness, or quality before being dispensed. The prescription are manufactured by FDA registered facilities. Prescription required.
+                                </p>
+                                <p className="text-[9px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight pt-2 border-t border-black/5">
+                                    uGlowMD does not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
                                 </p>
                             </div>
                         </div>
@@ -1901,7 +1973,9 @@ const ProductDetails = () => {
                                             ? "Restore peak hormonal balance with physician-prescribed, compounded therapy."
                                             : skinCareIds.includes(productId)
                                                 ? "Reveal your best skin with prescription-grade dermatology formulas."
-                                                : "Experience medical-grade weight loss powered by precise compounding and hormonal mastery."}
+                                                : repairHealingIds.includes(productId)
+                                                    ? "Accelerate your recovery with medical-grade regenerative peptides."
+                                                    : "Experience medical-grade weight loss powered by precise compounding and hormonal mastery."}
                         </p>
                     </div>
 
@@ -1969,12 +2043,15 @@ const ProductDetails = () => {
                             Get started
                         </Link>
                     </div>
-                    <div className="w-full lg:w-5/12 flex justify-center items-center">
+                    <div className="w-full lg:w-5/12 flex justify-center items-center relative">
                         <img
-                            src={product.image}
+                            src={product.signatureImage || product.image}
                             className="w-full max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 hover:rotate-0 transition-transform duration-1000"
                             alt="Signature Medication"
                         />
+                        <span className="absolute -bottom-8 right-0 text-[8px] md:text-[10px] text-white font-bold uppercase tracking-[0.15em] whitespace-nowrap">
+                            * Not Compounded or package by us
+                        </span>
                     </div>
                 </div>
 
@@ -2046,7 +2123,7 @@ const ProductDetails = () => {
                             </h2>
                             <div className="space-y-6">
                                 <p className="text-gray-500 text-lg md:text-xl font-medium leading-relaxed">
-                                    All medical assessments and prescriptions from uGlowMD are administered by physicians and pharmacists licensed in the United States.
+                                    All medical assessments and prescriptions from <img src={logo} alt="uGlowMD" className="h-[72px] md:h-[88px] w-auto inline-block align-baseline brightness-0 opacity-80" /> are administered by physicians and pharmacists licensed in the United States.
                                 </p>
                                 <p className="text-gray-500 text-lg font-medium leading-relaxed">
                                     Prescription products require an online consultation with a healthcare provider.
@@ -2140,14 +2217,16 @@ const ProductDetails = () => {
                                         'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1',
                                         'nad-nasal-spray', 'nad-injection', 'glutathione-injection',
                                         'testosterone-injection', 'testosterone-rdt', 'estradiol-tabs',
-                                        'anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream',
-                                        'bpc-157-injection', 'bpc-157-tb500-injection'
+                                        'anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream'
                                     ];
 
                                     if (!dropdownProductIds.includes(id)) return false;
 
                                     const currentCat = getCategory(id);
                                     return currentCat === category;
+                                })
+                                .sort((a, b) => {
+                                    return getMinPrice(productSpecificData[a]) - getMinPrice(productSpecificData[b]);
                                 })
                                 .map(id => {
                                     const p = productSpecificData[id];
@@ -2173,9 +2252,14 @@ const ProductDetails = () => {
                                                 {/* Right: Info */}
                                                 <div className="flex-1 space-y-2 py-1">
                                                     <div className="flex items-start justify-between">
-                                                        <h4 className="text-2xl font-black uppercase tracking-tighter text-[#1a1a1a] leading-none mb-1">
-                                                            {info.code}
-                                                        </h4>
+                                                        <div>
+                                                            <h4 className="text-xl font-black uppercase tracking-tighter text-[#1a1a1a] leading-tight mb-1">
+                                                                {p.name}
+                                                            </h4>
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                                                {info.code}
+                                                            </p>
+                                                        </div>
                                                         {isCurrent && <span className="text-[10px] font-black uppercase tracking-widest text-accent-black bg-black/5 px-2 py-1 rounded-md">Viewing</span>}
                                                     </div>
 
@@ -2183,12 +2267,15 @@ const ProductDetails = () => {
                                                         <span className="text-accent-black/80">{info.shortDesc.split(' ')[0]}</span> {info.shortDesc.split(' ').slice(1).join(' ')}
                                                     </p>
 
-                                                    <p className="text-[11px] font-medium italic text-gray-400 leading-snug">
-                                                        Includes {info.active} (the active ingredient in <span className="font-black text-gray-500">{info.brand}</span>)
-                                                    </p>
+
 
                                                     <div className="pt-2">
-                                                        <p className="text-sm font-black text-[#1a1a1a]">From: <span className="text-lg">{p.price.split('/')[0]}</span></p>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-0.5">Starting at</span>
+                                                            <p className="text-xl font-black text-[#1a1a1a] leading-none">
+                                                                ${getMinPrice(p).toFixed(2)}
+                                                            </p>
+                                                        </div>
                                                     </div>
 
                                                     {!isCurrent && (
@@ -2210,13 +2297,7 @@ const ProductDetails = () => {
                                 })}
                         </div>
 
-                        <div className="p-8 pt-0">
-                            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">
-                                    Compare clinical efficacy, delivery methods, and pricing across our complete {category} protocol.
-                                </p>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             )}

@@ -2,101 +2,101 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-    // Handle CORS preflight
-    if (req.method === "OPTIONS") {
-        return new Response(null, { headers: CORS_HEADERS });
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: CORS_HEADERS });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
+      status: 405,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  let payload: any;
+  try {
+    payload = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ success: false, error: "Invalid JSON" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  const { userId, email: inputEmail, first_name: inputFirstName, last_name, type, tracking_id, setup_link } = payload;
+  console.log("Payload:", payload)
+
+  if (!type) {
+    return new Response(JSON.stringify({ success: false, error: "Missing 'type' field" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // === Config ===
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY")!;
+  const MAILER_FROM = "ahs@americahealthsolutions.com";
+  const YEAR = new Date().getFullYear();
+
+  if (!SENDGRID_API_KEY) {
+    return new Response(JSON.stringify({ success: false, error: "SendGrid API key missing" }), {
+      status: 500,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // === Resolve email & name ===
+  let email = inputEmail;
+  let first_name = inputFirstName || "there";
+
+  if (userId && (!email || !first_name)) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(JSON.stringify({ success: false, error: "Supabase not configured" }), {
+        status: 500,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      });
     }
 
-    if (req.method !== "POST") {
-        return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
-            status: 405,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=email,first_name,last_name`,
+      {
+        headers: {
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+      }
+    );
+
+    if (res.ok) {
+      const profileArray = await res.json();
+      const profile = profileArray[0];
+      if (profile) {
+        email = email ?? profile.email;
+        first_name = inputFirstName ?? profile.first_name ?? "there";
+      }
     }
+  }
 
-    let payload: any;
-    try {
-        payload = await req.json();
-    } catch {
-        return new Response(JSON.stringify({ success: false, error: "Invalid JSON" }), {
-            status: 400,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
-    }
+  if (!email) {
+    return new Response(JSON.stringify({ success: false, error: "No email provided or found" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
 
-    const { userId, email: inputEmail, first_name: inputFirstName, last_name, type, tracking_id, setup_link } = payload;
-    console.log("Payload:", payload)
-
-    if (!type) {
-        return new Response(JSON.stringify({ success: false, error: "Missing 'type' field" }), {
-            status: 400,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
-    }
-
-    // === Config ===
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY")!;
-    const MAILER_FROM = "ahs@americahealthsolutions.com";
-    const YEAR = new Date().getFullYear();
-
-    if (!SENDGRID_API_KEY) {
-        return new Response(JSON.stringify({ success: false, error: "SendGrid API key missing" }), {
-            status: 500,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
-    }
-
-    // === Resolve email & name ===
-    let email = inputEmail;
-    let first_name = inputFirstName || "there";
-
-    if (userId && (!email || !first_name)) {
-        if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-            return new Response(JSON.stringify({ success: false, error: "Supabase not configured" }), {
-                status: 500,
-                headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-            });
-        }
-
-        const res = await fetch(
-            `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=email,first_name,last_name`,
-            {
-                headers: {
-                    apikey: SUPABASE_SERVICE_ROLE_KEY,
-                    Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-                },
-            }
-        );
-
-        if (res.ok) {
-            const profileArray = await res.json();
-            const profile = profileArray[0];
-            if (profile) {
-                email = email ?? profile.email;
-                first_name = inputFirstName ?? profile.first_name ?? "there";
-            }
-        }
-    }
-
-    if (!email) {
-        return new Response(JSON.stringify({ success: false, error: "No email provided or found" }), {
-            status: 400,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
-    }
-
-    // ==================================================================
-    // 1. ELIGIBILITY ASSESSMENT SUBMITTED
-    // ==================================================================
-    if (type === "eligibility") {
-        const html = `<!DOCTYPE html>
+  // ==================================================================
+  // 1. ELIGIBILITY ASSESSMENT SUBMITTED
+  // ==================================================================
+  if (type === "eligibility") {
+    const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>Assessment Received!</title></head>
 <body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
@@ -131,7 +131,7 @@ serve(async (req) => {
 </body>
 </html>`;
 
-        const text = `Hi ${first_name},
+    const text = `Hi ${first_name},
 
 Thank you! Your Eligibility Assessment has been successfully submitted.
 
@@ -142,39 +142,116 @@ Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
 Thank you,
 The GLP-GLOW Team`;
 
-        const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${SENDGRID_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                personalizations: [{ to: [{ email }], subject: "We Received Your Eligibility Assessment" }],
-                from: { email: MAILER_FROM, name: "GLP-GLOW" },
-                content: [
-                    { type: "text/plain", value: text },
-                    { type: "text/html", value: html },
-                ],
-            }),
-        });
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email }], subject: "We Received Your Eligibility Assessment" }],
+        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+        content: [
+          { type: "text/plain", value: text },
+          { type: "text/html", value: html },
+        ],
+      }),
+    });
 
-        if (!sgRes.ok) {
-            const err = await sgRes.text();
-            console.error("SendGrid error:", err);
-            return new Response(JSON.stringify({ success: false, error: "SendGrid failed" }), { status: 502 });
-        }
-
-        return new Response(JSON.stringify({ success: true, sent_to: email, type: "eligibility_email_sent" }), {
-            status: 200,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid error:", err);
+      return new Response(JSON.stringify({ success: false, error: "SendGrid failed" }), { status: 502 });
     }
 
-    // ==================================================================
-    // 2. TRACKING ID EMAIL
-    // ==================================================================
-    if (type === "TRACKING_ID" && tracking_id) {
-        const trackingHtml = `<!DOCTYPE html>
+    return new Response(JSON.stringify({ success: true, sent_to: email, type: "eligibility_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // ==================================================================
+  // 1b. SKINCARE ASSESSMENT SUBMITTED (FREE)
+  // ==================================================================
+  if (type === "skincare_eligibility") {
+    const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Skincare Assessment Received!</title></head>
+<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
+  <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
+    <div style="background:linear-gradient(135deg,#5CE1E6,#38b6ff);color:#fff;padding:40px 20px;text-align:center">
+      <h1 style="margin:0;font-size:28px">Skin Health Review Started!</h1>
+    </div>
+    <div style="padding:40px 30px;line-height:1.7;color:#333;text-align:center">
+      <p style="font-size:18px">Hi ${first_name},</p>
+      <p style="font-size:16px">
+        Thank you for choosing GLP-GLOW! We've received your <strong>Skincare Assessment</strong>.
+      </p>
+      <div style="background:#e3f2fd;padding:25px;border-radius:10px;margin:30px 0;border-left:6px solid #38b6ff;font-size:16px">
+        <strong>Good news:</strong> Your initial skincare consultation is 100% free of charge.<br><br>
+        Our medical team is now reviewing your skin history and photos. You'll receive a personalized treatment plan via email within the next 24–48 hours.
+      </div>
+      <p style="margin:40px 0">
+        <a href="https://quiz.americahealthsolutions.com/dashboard"
+           style="background:#38b6ff;color:#fff;padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">
+          View My Progress
+        </a>
+      </p>
+      <p style="color:#666;margin-top:40px">
+        Thank you,<br><strong>The uGlowMD Skincare Team</strong>
+      </p>
+    </div>
+    <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
+      © ${YEAR} America Health Solutions • All rights reserved
+    </div>
+  </div>
+</body>
+</html>`;
+
+    const text = `Hi ${first_name},
+
+Thank you! Your Skincare Assessment has been successfully submitted.
+
+Your initial consultation is free. Our medical team is reviewing your information now and will email you within the next 24–48 hours.
+
+Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
+
+Thank you,
+The uGlowMD Skincare Team`;
+
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email }], subject: "We Received Your Skincare Assessment" }],
+        from: { email: MAILER_FROM, name: "uGlowMD Skincare" },
+        content: [
+          { type: "text/plain", value: text },
+          { type: "text/html", value: html },
+        ],
+      }),
+    });
+
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid skincare error:", err);
+      return new Response(JSON.stringify({ success: false, error: "SendGrid failed" }), { status: 502 });
+    }
+
+    return new Response(JSON.stringify({ success: true, sent_to: email, type: "skincare_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // ==================================================================
+  // 2. TRACKING ID EMAIL
+  // ==================================================================
+  if (type === "TRACKING_ID" && tracking_id) {
+    const trackingHtml = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>Your Order is On Its Way!</title></head>
 <body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
@@ -209,38 +286,38 @@ The GLP-GLOW Team`;
 </body>
 </html>`;
 
-        const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${SENDGRID_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                personalizations: [{ to: [{ email }], subject: "Your GLP-GLOW Order Has Shipped!" }],
-                from: { email: MAILER_FROM, name: "GLP-GLOW" },
-                content: [
-                    { type: "text/plain", value: `Your order has shipped! Tracking: ${tracking_id}` },
-                    { type: "text/html", value: trackingHtml },
-                ],
-            }),
-        });
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email }], subject: "Your GLP-GLOW Order Has Shipped!" }],
+        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+        content: [
+          { type: "text/plain", value: `Your order has shipped! Tracking: ${tracking_id}` },
+          { type: "text/html", value: trackingHtml },
+        ],
+      }),
+    });
 
-        if (!sgRes.ok) {
-            const err = await sgRes.text();
-            console.error("SendGrid tracking error:", err);
-            return new Response(JSON.stringify({ success: false, error: "Failed to send tracking email" }), { status: 502 });
-        }
-
-        return new Response(JSON.stringify({ success: true, sent_to: email, tracking_id, type: "tracking_email_sent" }), {
-            status: 200,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid tracking error:", err);
+      return new Response(JSON.stringify({ success: false, error: "Failed to send tracking email" }), { status: 502 });
     }
 
-    // ==================================================================
-    // REJECTION / NOT ELIGIBLE
-    if (type === "REJECTION") {
-        const rejectHtml = `<!DOCTYPE html>
+    return new Response(JSON.stringify({ success: true, sent_to: email, tracking_id, type: "tracking_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // ==================================================================
+  // REJECTION / NOT ELIGIBLE
+  if (type === "REJECTION") {
+    const rejectHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -285,7 +362,7 @@ The GLP-GLOW Team`;
 </body>
 </html>`;
 
-        const rejectText = `Dear ${first_name},
+    const rejectText = `Dear ${first_name},
 
 Thank you for completing the GLP-GLOW eligibility assessment.
 
@@ -300,47 +377,47 @@ We truly wish you the best in your continued health journey.
 Warm regards,
 The GLP-GLOW Medical Review Team`;
 
-        const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${SENDGRID_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                personalizations: [{
-                    to: [{ email }],
-                    subject: "Update Regarding Your GLP-GLOW Eligibility Assessment",
-                }],
-                from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
-                content: [
-                    { type: "text/plain", value: rejectText },
-                    { type: "text/html", value: rejectHtml },
-                ],
-            }),
-        });
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{
+          to: [{ email }],
+          subject: "Update Regarding Your GLP-GLOW Eligibility Assessment",
+        }],
+        from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
+        content: [
+          { type: "text/plain", value: rejectText },
+          { type: "text/html", value: rejectHtml },
+        ],
+      }),
+    });
 
-        if (!sgRes.ok) {
-            const err = await sgRes.text();
-            console.error("SendGrid REJECTION error:", err);
-            return new Response(JSON.stringify({ success: false, error: "Failed to send rejection email" }), {
-                status: 502,
-                headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-            });
-        }
-
-        return new Response(JSON.stringify({
-            success: true,
-            sent_to: email,
-            type: "rejection_email_sent"
-        }), {
-            status: 200,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid REJECTION error:", err);
+      return new Response(JSON.stringify({ success: false, error: "Failed to send rejection email" }), {
+        status: 502,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      });
     }
-    // 3. NEW: NEW — USER_SETUP (Approval + Account Setup Link)
-    // ==================================================================
-    if (type === "USER_SETUP") {
-        const setupHtml = `<!DOCTYPE html>
+
+    return new Response(JSON.stringify({
+      success: true,
+      sent_to: email,
+      type: "rejection_email_sent"
+    }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+  // 3. NEW: NEW — USER_SETUP (Approval + Account Setup Link)
+  // ==================================================================
+  if (type === "USER_SETUP") {
+    const setupHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -399,7 +476,7 @@ The GLP-GLOW Medical Review Team`;
 </body>
 </html>`;
 
-        const setupText = `Hi ${first_name},
+    const setupText = `Hi ${first_name},
 
 CONGRATULATIONS! You have been APPROVED for the GLP-GLOW weight loss program.
 
@@ -415,42 +492,42 @@ Welcome to the program!
 
 — The GLP-GLOW Medical Team`;
 
-        const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${SENDGRID_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                personalizations: [{
-                    to: [{ email }],
-                    subject: "You're Approved! Complete Your GLP-GLOW Account Now",
-                }],
-                from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
-                content: [
-                    { type: "text/plain", value: setupText },
-                    { type: "text/html", value: setupHtml },
-                ],
-            }),
-        });
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{
+          to: [{ email }],
+          subject: "You're Approved! Complete Your GLP-GLOW Account Now",
+        }],
+        from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
+        content: [
+          { type: "text/plain", value: setupText },
+          { type: "text/html", value: setupHtml },
+        ],
+      }),
+    });
 
-        if (!sgRes.ok) {
-            const err = await sgRes.text();
-            console.error("SendGrid USER_SETUP error:", err);
-            return new Response(JSON.stringify({ success: false, error: "Failed to send setup email" }), { status: 502 });
-        }
-
-        return new Response(JSON.stringify({ success: true, sent_to: email, type: "user_setup_email_sent" }), {
-            status: 200,
-            headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        });
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid USER_SETUP error:", err);
+      return new Response(JSON.stringify({ success: false, error: "Failed to send setup email" }), { status: 502 });
     }
 
-    // ==================================================================
-    // UNKNOWN TYPE
-    // ==================================================================
-    return new Response(JSON.stringify({ success: false, error: `Unknown type: ${type}` }), {
-        status: 400,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ success: true, sent_to: email, type: "user_setup_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });
+  }
+
+  // ==================================================================
+  // UNKNOWN TYPE
+  // ==================================================================
+  return new Response(JSON.stringify({ success: false, error: `Unknown type: ${type}` }), {
+    status: 400,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
 });

@@ -35,19 +35,33 @@ serve(async (req) => {
             throw new Error("Unauthorized");
         }
 
-        const { data: roles } = await supabaseAdmin
+        const { data: userRoleData } = await supabaseAdmin
             .from("user_roles")
             .select("role")
             .eq("user_id", user.id)
-            .eq("role", "admin")
             .single();
 
-        if (!roles) {
-            throw new Error("Unauthorized: Admin access required");
+        const currentUserRole = userRoleData?.role;
+        const isAdmin = currentUserRole === "admin";
+        const isMarketingRep = currentUserRole === "marketing_rep";
+
+        if (!isAdmin && !isMarketingRep) {
+            throw new Error("Unauthorized: Admin or Marketing Rep access required");
         }
 
-        const { email, password, firstName, lastName, phone, dob, address, role: rawRole, providerData, deaFile } = await req.json();
-        // Sanitize role: sub_admin is not a valid enum — map it to back_office
+        const { email, password, firstName, lastName, phone, dob, address, role: rawRole, providerData, deaFile, addedByOverride } = await req.json();
+
+        // Marketing Reps can ONLY create doctors/providers. Admins can create anything.
+        // If not admin and trying to create non-provider, block it.
+        const isCreatingProvider = rawRole === 'physician' || rawRole === 'nurse_practitioner' || rawRole === 'physician_assistant' || rawRole === 'provider';
+        if (!isAdmin && !isCreatingProvider) {
+            throw new Error("Unauthorized: Marketing Reps can only create medical providers.");
+        }
+
+        // Determine who owns this new user. Only admins can override the ownership.
+        const creatorId = isAdmin && addedByOverride ? addedByOverride : user.id;
+
+        // Sanitize role. Treat sub_admin as back_office as requested.
         const role = rawRole === 'sub_admin' ? 'back_office' : (rawRole || 'back_office');
 
         // Check if email already exists in the profiles table (covers all users)
@@ -112,8 +126,9 @@ serve(async (req) => {
                 first_name: firstName,
                 last_name: lastName,
                 phone_number: phone,
-                date_of_birth: dob,
-                legal_address: address,
+                date_of_birth: dob || null,
+                legal_address: address || null,
+                added_by: creatorId
             });
 
         if (profileError) {
@@ -134,6 +149,7 @@ serve(async (req) => {
             const { error: roleError } = await supabaseAdmin.from("user_roles").insert({
                 user_id: userId,
                 role: role,
+                added_by: creatorId
             });
 
             if (roleError) {

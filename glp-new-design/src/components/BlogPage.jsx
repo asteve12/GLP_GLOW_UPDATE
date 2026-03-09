@@ -98,10 +98,10 @@ const BlogPage = () => {
                                         </h2>
 
                                         <p className="text-gray-500 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
-                                            {post.content.replace(/[#*`]/g, '').substring(0, 160)}...
+                                            {post.content.replace(/<[^>]*>?/gm, '').replace(/[#*`]/g, '').substring(0, 160)}...
                                         </p>
 
-                                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest group/btn">
+                                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 underline group-hover:text-blue-800 group/btn">
                                             Read the full study
                                             <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" />

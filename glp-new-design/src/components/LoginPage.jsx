@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { gsap } from 'gsap';
 import Navbar from './Navbar';
+import { supabase } from '../lib/supabaseClient';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -43,8 +45,8 @@ const LoginPage = () => {
     return (
         <div style={{
             minHeight: '100vh',
-            backgroundColor: '#0A0A0A',
-            color: '#ffffff',
+            backgroundColor: '#E3F2FD',
+            color: '#1a1a1a',
             fontFamily: 'Inter, system-ui, sans-serif',
             display: 'flex',
             flexDirection: 'column'
@@ -86,11 +88,11 @@ const LoginPage = () => {
                         <h1 style={{
                             fontSize: 'clamp(36px, 6vw, 58px)', fontWeight: '900',
                             textTransform: 'uppercase', letterSpacing: '-0.04em',
-                            lineHeight: '0.92', color: '#ffffff', marginBottom: '16px'
+                            lineHeight: '0.92', color: '#1a1a1a', marginBottom: '16px'
                         }}>
                             Patient<br />
                             <span style={{
-                                backgroundColor: '#FFDE59', color: '#000',
+                                color: '#000',
                                 padding: '2px 14px', display: 'inline-block', marginTop: '8px'
                             }}>
                                 Portal
@@ -98,7 +100,7 @@ const LoginPage = () => {
                         </h1>
 
                         <p style={{
-                            color: 'rgba(255,255,255,0.4)', fontSize: '13px',
+                            color: 'rgba(0,0,0,0.5)', fontSize: '13px',
                             lineHeight: '1.7', fontWeight: '500'
                         }}>
                             Access your personalized treatment protocols<br />
@@ -108,8 +110,8 @@ const LoginPage = () => {
 
                     {/* Form Card */}
                     <div style={{
-                        backgroundColor: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        backgroundColor: 'rgba(255,255,255,0.6)',
+                        border: '1px solid rgba(0,0,0,0.08)',
                         borderRadius: '32px',
                         padding: '40px',
                         backdropFilter: 'blur(20px)'
@@ -134,7 +136,7 @@ const LoginPage = () => {
                                 <label style={{
                                     display: 'block', fontSize: '9px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.35em',
-                                    color: 'rgba(255,255,255,0.3)', marginBottom: '10px'
+                                    color: 'rgba(0,0,0,0.4)', marginBottom: '10px'
                                 }}>Email Address</label>
                                 <input
                                     type="email"
@@ -144,10 +146,10 @@ const LoginPage = () => {
                                     required
                                     style={{
                                         width: '100%', boxSizing: 'border-box',
-                                        backgroundColor: 'rgba(255,255,255,0.05)',
-                                        border: '1.5px solid rgba(255,255,255,0.1)',
+                                        backgroundColor: '#ffffff',
+                                        border: '1.5px solid rgba(0,0,0,0.1)',
                                         borderRadius: '14px', padding: '16px 20px',
-                                        fontSize: '14px', color: '#ffffff',
+                                        fontSize: '14px', color: '#1a1a1a',
                                         outline: 'none', transition: 'border-color 0.2s',
                                         fontFamily: 'inherit'
                                     }}
@@ -165,7 +167,7 @@ const LoginPage = () => {
                                     <label style={{
                                         fontSize: '9px', fontWeight: '900',
                                         textTransform: 'uppercase', letterSpacing: '0.35em',
-                                        color: 'rgba(255,255,255,0.3)'
+                                        color: 'rgba(0,0,0,0.4)'
                                     }}>Password</label>
                                     <Link to="/forgot-password" style={{
                                         fontSize: '9px', fontWeight: '800',
@@ -202,7 +204,7 @@ const LoginPage = () => {
                                             position: 'absolute', right: '16px', top: '50%',
                                             transform: 'translateY(-50%)',
                                             background: 'none', border: 'none', cursor: 'pointer',
-                                            color: 'rgba(255,255,255,0.25)', padding: '4px'
+                                            color: 'rgba(0,0,0,0.25)', padding: '4px'
                                         }}
                                     >
                                         {showPassword ? (
@@ -227,7 +229,7 @@ const LoginPage = () => {
                                 onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#000'; }}
                                 style={{
                                     width: '100%', padding: '18px', borderRadius: '999px',
-                                    backgroundColor: '#ffffff', color: '#000',
+                                    backgroundColor: '#000000', color: '#ffffff',
                                     border: 'none', fontSize: '11px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.32em',
                                     cursor: loading ? 'not-allowed' : 'pointer',
@@ -241,41 +243,53 @@ const LoginPage = () => {
 
                             {/* Divider */}
                             <div style={{
-                                paddingTop: '24px', textAlign: 'center',
-                                borderTop: '1px solid rgba(255,255,255,0.07)'
+                                display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0'
                             }}>
-                                <p style={{
-                                    fontSize: '10px', fontWeight: '800',
-                                    textTransform: 'uppercase', letterSpacing: '0.3em',
-                                    color: 'rgba(255,255,255,0.25)', marginBottom: '16px'
-                                }}>New to <sub>u</sub>Glow<sup>MD</sup>?</p>
-                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                    <Link to="/signup"
-                                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#000'; }}
-                                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#FFDE59'; }}
-                                        style={{
-                                            flex: 1, padding: '14px 20px', borderRadius: '999px',
-                                            textAlign: 'center', border: '1.5px solid rgba(255,222,89,0.4)',
-                                            color: '#FFDE59', textDecoration: 'none',
-                                            fontSize: '10px', fontWeight: '900',
-                                            textTransform: 'uppercase', letterSpacing: '0.22em',
-                                            transition: 'background-color 0.25s, color 0.25s'
-                                        }}
-                                    >Create Account</Link>
-                                    <Link to="/qualify"
-                                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)'; }}
-                                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                                        style={{
-                                            flex: 1, padding: '14px 20px', borderRadius: '999px',
-                                            textAlign: 'center', border: '1.5px solid rgba(255,255,255,0.12)',
-                                            color: 'rgba(255,255,255,0.6)', textDecoration: 'none',
-                                            fontSize: '10px', fontWeight: '900',
-                                            textTransform: 'uppercase', letterSpacing: '0.22em',
-                                            transition: 'background-color 0.25s'
-                                        }}
-                                    >Start Assessment</Link>
-                                </div>
+                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(0,0,0,0.08)' }}></div>
+                                <span style={{ fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(0,0,0,0.2)' }}>OR</span>
+                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(0,0,0,0.08)' }}></div>
                             </div>
+
+                            {/* Google Sign In */}
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+                                        const { error } = await supabase.auth.signInWithOAuth({
+                                            provider: 'google',
+                                            options: {
+                                                redirectTo: window.location.origin + (returnTo || '/dashboard')
+                                            }
+                                        });
+                                        if (error) throw error;
+                                    } catch (err) {
+                                        setError(err.message);
+                                    }
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                                style={{
+                                    width: '100%', padding: '16px', borderRadius: '999px',
+                                    backgroundColor: 'transparent', color: '#1a1a1a',
+                                    border: '1.5px solid rgba(0,0,0,0.1)',
+                                    fontSize: '10px', fontWeight: '900',
+                                    textTransform: 'uppercase', letterSpacing: '0.22em',
+                                    cursor: 'pointer', transition: 'all 0.25s',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px'
+                                }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                </svg>
+                                Sign in with Google
+                            </button>
+
+                            {/* Removed: New to uGlowMD? Create Account section */}
+
 
                             {/* Admin Access Link */}
                             <div style={{
@@ -290,7 +304,7 @@ const LoginPage = () => {
                                     style={{
                                         fontSize: '9px', fontWeight: '900',
                                         textTransform: 'uppercase', letterSpacing: '0.4em',
-                                        color: 'rgba(255,255,255,0.4)', textDecoration: 'none',
+                                        color: 'rgba(0,0,0,0.5)', textDecoration: 'none',
                                         opacity: 0.6, transition: 'all 0.3s',
                                         display: 'inline-flex', alignItems: 'center', gap: '8px',
                                         cursor: 'pointer'
@@ -309,10 +323,10 @@ const LoginPage = () => {
                     <p style={{
                         textAlign: 'center', marginTop: '32px', fontSize: '9px',
                         fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em',
-                        color: 'rgba(255,255,255,0.18)', lineHeight: '1.9'
+                        color: 'rgba(0,0,0,0.3)', lineHeight: '1.9'
                     }}>
                         End-to-End Encryption · HIPAA Secure Environment<br />
-                        © 2026 <sub>u</sub>Glow<sup>MD</sup> Health. All rights reserved.
+                        © 2026 <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" /> Health. All rights reserved.
                     </p>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -29,11 +30,11 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ backgroundColor: '#E3F2FD' }}>
             <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 <div className="text-center mb-12">
-                    <Link to="/" className="inline-block mb-10">
-                        <span className="text-2xl font-black uppercase tracking-tighter">uGlow<span className="text-accent-black">MD</span></span>
+                    <Link to="/" className="inline-block mb-10 flex justify-center">
+                        <img src={logo} alt="uGlowMD Logo" className="h-96 w-auto object-contain" />
                     </Link>
                     <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                         Security Protocol

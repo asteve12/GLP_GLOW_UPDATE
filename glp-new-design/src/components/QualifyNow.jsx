@@ -11,6 +11,7 @@ import weightLossImg from '../assets/weight-loss.png';
 import hairLossImg from '../assets/hair-loss.png';
 import mensHealthImg from '../assets/mens-health.png';
 import longevityImg from '../assets/longevity.png';
+import skincareImg from '../assets/skincare.png';
 
 const categories = [
     {
@@ -44,6 +45,14 @@ const categories = [
         image: longevityImg,
         color: '#FF7E5F',
         bg: 'from-orange-500/20'
+    },
+    {
+        id: 'skin-care',
+        name: 'Skin Care',
+        desc: 'Medical-grade compounded formulas targeting aging, acne, and pigmentation for visible clinical results.',
+        image: skincareImg,
+        color: '#FFDE59',
+        bg: 'from-yellow-400/20'
     }
 ];
 

@@ -86,7 +86,6 @@ const DRAWER_ITEMS = [
     description: 'The Successor to Tirzepatide (Expected Late 2026)\nResearch Based: Non-FDA Approved',
     products: [
       { name: 'Wait List for Retatrutide (Subq Inj)', path: 'retatrutide-waitlist', type: 'waitlist' },
-      { name: 'Special Access Program (Today)', path: 'retatrutide-special', subtext: 'Eligibility verification cost: $100', type: 'special' },
     ]
   }
 ];
@@ -334,7 +333,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
                 </Link>
 
                 <p className="text-[9px] text-white/40 leading-relaxed uppercase tracking-[0.2em] font-bold">
-                  <span className="font-brand"><sub>u</sub>Glow<sup>MD</sup></span> Specialized Medical Programs. All treatments require physician consultation and medical eligibility verification.
+                  <img src={logo} alt="uGlowMD" className="h-[48px] w-auto inline-block align-baseline brightness-0 invert opacity-60 mr-1" /> Specialized Medical Programs. All treatments require physician consultation and medical eligibility verification.
                 </p>
               </div>
             </div>

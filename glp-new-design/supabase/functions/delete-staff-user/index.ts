@@ -38,16 +38,19 @@ serve(async (req) => {
             });
         }
 
-        // Check if requesting user is admin
-        const { data: adminRole } = await supabaseAdmin
+        // Check if requesting user is admin or marketing_rep
+        const { data: callerRoleData } = await supabaseAdmin
             .from("user_roles")
             .select("role")
             .eq("user_id", requestingUser.id)
-            .eq("role", "admin")
-            .single();
+            .maybeSingle();
 
-        if (!adminRole) {
-            return new Response(JSON.stringify({ error: "Unauthorized - admin access required" }), {
+        const callerRole = callerRoleData?.role;
+        const isAdmin = callerRole === "admin";
+        const isMarketingRep = callerRole === "marketing_rep";
+
+        if (!isAdmin && !isMarketingRep) {
+            return new Response(JSON.stringify({ error: "Unauthorized - admin or marketing rep access required" }), {
                 status: 403,
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
@@ -60,6 +63,22 @@ serve(async (req) => {
                 status: 400,
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
+        }
+
+        // If marketing rep, verify they added this user (ownership check)
+        if (isMarketingRep) {
+            const { data: targetRole } = await supabaseAdmin
+                .from("user_roles")
+                .select("role, added_by")
+                .eq("user_id", user_id)
+                .maybeSingle();
+
+            if (targetRole?.added_by !== requestingUser.id) {
+                return new Response(JSON.stringify({ error: "Unauthorized - you can only delete doctors you added" }), {
+                    status: 403,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                });
+            }
         }
 
         console.log("Deleting staff user:", user_id);
