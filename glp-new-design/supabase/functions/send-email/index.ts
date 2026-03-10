@@ -102,6 +102,7 @@ serve(async (req) => {
 <body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
   <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
     <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
+      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:28px">Assessment Received!</h1>
     </div>
     <div style="padding:40px 30px;line-height:1.7;color:#333;text-align:center">
@@ -120,7 +121,7 @@ serve(async (req) => {
         </a>
       </p>
       <p style="color:#666;margin-top:40px">
-        Thank you,<br><strong>The GLP-GLOW Team</strong>
+        Thank you,<br><strong>The Medical Team</strong>
       </p>
     </div>
     <a href="https://quiz.americahealthsolutions.com" style="color: #0066cc; text-decoration: underline;text-align:center;display:block;margin-bottom:20px;">unsubscribe here</a>
@@ -140,7 +141,7 @@ We’re reviewing your information now and will email you within the next 24–4
 Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
 
 Thank you,
-The GLP-GLOW Team`;
+The Medical Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -150,7 +151,7 @@ The GLP-GLOW Team`;
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email }], subject: "We Received Your Eligibility Assessment" }],
-        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+        from: { email: MAILER_FROM, name: "Medical Team" },
         content: [
           { type: "text/plain", value: text },
           { type: "text/html", value: html },
@@ -180,12 +181,13 @@ The GLP-GLOW Team`;
 <body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
   <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
     <div style="background:linear-gradient(135deg,#5CE1E6,#38b6ff);color:#fff;padding:40px 20px;text-align:center">
+      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:28px">Skin Health Review Started!</h1>
     </div>
     <div style="padding:40px 30px;line-height:1.7;color:#333;text-align:center">
       <p style="font-size:18px">Hi ${first_name},</p>
       <p style="font-size:16px">
-        Thank you for choosing GLP-GLOW! We've received your <strong>Skincare Assessment</strong>.
+        Thank you for choosing us! We've received your <strong>Skincare Assessment</strong>.
       </p>
       <div style="background:#e3f2fd;padding:25px;border-radius:10px;margin:30px 0;border-left:6px solid #38b6ff;font-size:16px">
         <strong>Good news:</strong> Your initial skincare consultation is 100% free of charge.<br><br>
@@ -198,7 +200,7 @@ The GLP-GLOW Team`;
         </a>
       </p>
       <p style="color:#666;margin-top:40px">
-        Thank you,<br><strong>The uGlowMD Skincare Team</strong>
+        Thank you,<br><strong>The Skincare Team</strong>
       </p>
     </div>
     <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
@@ -217,7 +219,7 @@ Your initial consultation is free. Our medical team is reviewing your informatio
 Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
 
 Thank you,
-The uGlowMD Skincare Team`;
+The Skincare Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -227,7 +229,7 @@ The uGlowMD Skincare Team`;
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email }], subject: "We Received Your Skincare Assessment" }],
-        from: { email: MAILER_FROM, name: "uGlowMD Skincare" },
+        from: { email: MAILER_FROM, name: "Skincare Team" },
         content: [
           { type: "text/plain", value: text },
           { type: "text/html", value: html },
@@ -257,6 +259,7 @@ The uGlowMD Skincare Team`;
 <body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
   <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
     <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:50px 20px;text-align:center">
+      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:28px">Great News, ${first_name}!</h1>
       <p style="font-size:18px;margin:10px 0 0">Your medication is on its way!</p>
     </div>
@@ -276,7 +279,7 @@ The uGlowMD Skincare Team`;
       </a>
       <p style="color:#666;margin-top:40px">
         Questions? Just reply to this email.<br>
-        <strong>The GLP-GLOW Team</strong>
+        <strong>The Team</strong>
       </p>
     </div>
     <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
@@ -293,8 +296,8 @@ The uGlowMD Skincare Team`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email }], subject: "Your GLP-GLOW Order Has Shipped!" }],
-        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+        personalizations: [{ to: [{ email }], subject: "Your Order Has Shipped!" }],
+        from: { email: MAILER_FROM, name: "Medical Team" },
         content: [
           { type: "text/plain", value: `Your order has shipped! Tracking: ${tracking_id}` },
           { type: "text/html", value: trackingHtml },
@@ -321,23 +324,24 @@ The uGlowMD Skincare Team`;
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Update Regarding Your GLP-GLOW Assessment</title>
+  <title>Update Regarding Your Assessment</title>
 </head>
 <body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
   <div style="max-width:600px;margin:30px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08)">
     <div style="background:linear-gradient(135deg,#d32f2f,#b71c1c);color:#fff;padding:45px 25px;text-align:center">
+      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:28px">Update on Your Application</h1>
     </div>
     <div style="padding:40px 35px;color:#333;line-height:1.65;text-align:center">
       <p style="font-size:18px;margin-bottom:24px">Dear ${first_name},</p>
       <p style="font-size:16px">
-        Thank you for taking the time to complete the GLP-GLOW eligibility assessment 
+        Thank you for taking the time to complete the eligibility assessment 
         and for sharing your health information with us.
       </p>
       <div style="background:#ffebee;padding:28px;border-radius:10px;margin:32px 0;border-left:6px solid #d32f2f;font-size:16px">
         After careful review by our medical team, we regret to inform you that 
         <strong>you do not currently meet the eligibility criteria</strong> 
-        for our GLP-GLOW weight loss program at this time.
+        for our weight loss program at this time.
       </div>
       <p style="font-size:16px">
         We understand this may be disappointing news.<br>
@@ -346,12 +350,12 @@ The uGlowMD Skincare Team`;
       </p>
     
       <p style="color:#555;font-size:15px;margin:40px 0 20px">
-        Thank you again for considering GLP-GLOW.<br>
+        Thank you again for considering us.<br>
         We truly wish you the very best on your health journey.
       </p>
       <p style="color:#666">
         Warm regards,<br>
-        <strong>The GLP-GLOW Medical Review Team</strong>
+        <strong>The Medical Review Team</strong>
       </p>
     </div>
     <div style="background:#f8f9fa;padding:25px;text-align:center;color:#777;font-size:13px">
@@ -364,7 +368,7 @@ The uGlowMD Skincare Team`;
 
     const rejectText = `Dear ${first_name},
 
-Thank you for completing the GLP-GLOW eligibility assessment.
+Thank you for completing the eligibility assessment.
 
 After thorough review by our medical team, we regret to inform you that you do not currently meet the eligibility criteria for our program.
 
@@ -375,7 +379,7 @@ We recommend discussing this result with your primary care physician or speciali
 We truly wish you the best in your continued health journey.
 
 Warm regards,
-The GLP-GLOW Medical Review Team`;
+The Medical Review Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -386,9 +390,9 @@ The GLP-GLOW Medical Review Team`;
       body: JSON.stringify({
         personalizations: [{
           to: [{ email }],
-          subject: "Update Regarding Your GLP-GLOW Eligibility Assessment",
+          subject: "Update Regarding Your Eligibility Assessment",
         }],
-        from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
+        from: { email: MAILER_FROM, name: "Medical Team" },
         content: [
           { type: "text/plain", value: rejectText },
           { type: "text/html", value: rejectHtml },
@@ -421,14 +425,15 @@ The GLP-GLOW Medical Review Team`;
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Congratulations! You're Approved for GLP-GLOW</title>
+  <title>Congratulations! You're Approved</title>
 </head>
 <body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#f4f7fa;margin:0;padding:20px">
   <div style="max-width:620px;margin:40px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1)">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#00c853,#00a844);color:#fff;padding:50px 30px;text-align:center">
+      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:32px;font-weight:900">You're Approved!</h1>
-      <p style="font-size:20px;margin:12px 0 0;opacity:0.95">Welcome to GLP-GLOW Weight Loss Program</p>
+      <p style="font-size:20px;margin:12px 0 0;opacity:0.95">Welcome to our Weight Loss Program</p>
     </div>
 
     <!-- Body -->
@@ -438,7 +443,7 @@ The GLP-GLOW Medical Review Team`;
         Great news — our medical team has <strong>reviewed and approved</strong> your assessment, labs, and documents!
       </p>
       <p style="font-size:17px;line-height:1.7">
-        You're now officially cleared to begin your GLP-GLOW weight loss journey.
+        You're now officially cleared to begin your weight loss journey.
       </p>
 
       <div style="background:#e8f5e8;padding:30px;border-radius:12px;margin:35px 0;border-left:8px solid #00c853">
@@ -462,13 +467,13 @@ The GLP-GLOW Medical Review Team`;
 
       <p style="color:#666;font-size:16px">
         We’re so excited to support you on your transformation!<br>
-        <strong>The GLP-GLOW Medical Team</strong>
+        <strong>The Medical Team</strong>
       </p>
     </div>
 
     <!-- Footer -->
     <div style="background:#f8f9fa;padding:30px;text-align:center;color:#777;font-size:13px">
-      © ${YEAR} GLP-GLOW by America Health Solutions • Confidential & Secure<br>
+      © ${YEAR} America Health Solutions • Confidential & Secure<br>
       Need help? Reply to this email or call us at (+1214)-699-7654
     </div>
      <a href="https://quiz.americahealthsolutions.com" style="color: #0066cc; text-decoration: underline;text-align:center;display:block;margin-top:10px;">unsubscribe here</a>
@@ -478,7 +483,7 @@ The GLP-GLOW Medical Review Team`;
 
     const setupText = `Hi ${first_name},
 
-CONGRATULATIONS! You have been APPROVED for the GLP-GLOW weight loss program.
+CONGRATULATIONS! You have been APPROVED for the weight loss program.
 
 To complete your account setup (password + payment), please click this link:
 
@@ -490,7 +495,7 @@ Once completed, your medication will be shipped within 1–3 business days.
 
 Welcome to the program!
 
-— The GLP-GLOW Medical Team`;
+— The Medical Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -501,9 +506,9 @@ Welcome to the program!
       body: JSON.stringify({
         personalizations: [{
           to: [{ email }],
-          subject: "You're Approved! Complete Your GLP-GLOW Account Now",
+          subject: "You're Approved! Complete Your Account Now",
         }],
-        from: { email: MAILER_FROM, name: "GLP-GLOW Medical Team" },
+        from: { email: MAILER_FROM, name: "Medical Team" },
         content: [
           { type: "text/plain", value: setupText },
           { type: "text/html", value: setupHtml },
