@@ -22,6 +22,8 @@ const SignUpPage = () => {
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otp, setOtp] = useState('');
     const [verifying, setVerifying] = useState(false);
+    const [resendTimer, setResendTimer] = useState(0);
+    const [canResend, setCanResend] = useState(false);
     const { signUp, verifyOtp, updateUser, user } = useAuth();
     const navigate = useNavigate();
 
@@ -33,6 +35,28 @@ const SignUpPage = () => {
         }
         window.scrollTo(0, 0);
     }, [user, navigate]);
+
+    useEffect(() => {
+        let interval;
+        if (showOtpInput && resendTimer > 0) {
+            interval = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (resendTimer === 0) {
+            setCanResend(true);
+            if (interval) clearInterval(interval);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [showOtpInput, resendTimer]);
+
+    useEffect(() => {
+        if (showOtpInput) {
+            setResendTimer(30);
+            setCanResend(false);
+        }
+    }, [showOtpInput]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -147,16 +171,37 @@ const SignUpPage = () => {
             // Notify user to check email
             toast.success('Account created! We have sent a 6-digit code to your email.');
             setShowOtpInput(true);
+            setResendTimer(30);
+            setCanResend(false);
             return;
-        } catch (error) {
-            toast.error(error.message);
-            console.error('Signup error:', error);
+        } catch (err) {
+            setError(err.message);
+            toast.error(err.message || 'Signup failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleVerifyOtp = async (e) => {
+    const handleResend = async () => {
+        if (!canResend) return;
+        setLoading(true);
+        try {
+            const { error: resendError } = await supabase.auth.resend({
+                type: 'signup',
+                email: email.trim().toLowerCase(),
+            });
+            if (resendError) throw resendError;
+            toast.success('Verification code resent!');
+            setResendTimer(30);
+            setCanResend(false);
+        } catch (err) {
+            toast.error(err.message || 'Failed to resend code');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyCode = async (e) => {
         e.preventDefault();
         setVerifying(true);
         setError(null);
@@ -190,39 +235,38 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="min-h-screen font-sans flex flex-col pt-20" style={{ backgroundColor: '#E3F2FD', color: '#1a1a1a' }}>
+        <div className="min-h-screen font-sans flex flex-col pt-14" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
             <Navbar />
 
             <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
                 {/* Background Atmosphere */}
                 <div
                     className="signup-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none"
-                    style={{ backgroundColor: showOtpInput || showVerificationMessage ? '#FFDE5920' : 'transparent' }}
+                    style={{ backgroundColor: 'transparent' }}
                 ></div>
 
                 <div className="signup-content w-full max-w-[480px] relative z-10">
                     {showOtpInput ? (
                         /* OTP Verification */
-                        <div className="text-center animate-in fade-in duration-500 bg-white rounded-[40px] p-10 shadow-sm" style={{ border: '1px solid #1a1a1a08' }}>
-                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
+                        <div className="text-center animate-in fade-in duration-500 bg-black rounded-[40px] p-10 shadow-sm" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.1)' }}>
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                                 </svg>
                             </div>
                             <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
                                 Identity Verification
                             </div>
-                            <h1 className="text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
-                                Verify Your{' '}
-                                <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Email</span>
+                            <h1 className="text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#ffffff' }}>
+                                Verify Your <span style={{ color: '#ffffff', display: 'inline-block' }}>Email</span>
                             </h1>
-                            <p className="text-sm leading-relaxed mb-8 max-w-sm mx-auto" style={{ color: '#1a1a1a80' }}>
+                            <p className="text-sm leading-relaxed mb-8 max-w-sm mx-auto" style={{ color: '#ffffff' }}>
                                 We've sent a 6-digit code to{' '}
-                                <span className="font-bold" style={{ color: '#1a1a1a' }}>{email}</span>.
+                                <span className="font-bold" style={{ color: '#ffffff' }}>{email}</span>.
                                 Enter it below to verify your account.
                             </p>
 
-                            <form onSubmit={handleVerifyOtp} className="space-y-6">
+                            <form onSubmit={handleVerifyCode} className="space-y-6">
                                 <div className="space-y-2">
                                     <input
                                         type="text"
@@ -231,7 +275,7 @@ const SignUpPage = () => {
                                         placeholder="– – – – – – – –"
                                         maxLength={8}
                                         className="w-full rounded-2xl py-5 text-center text-3xl font-black tracking-[0.3em] outline-none transition-all"
-                                        style={{ backgroundColor: '#f9f9f7', border: '2px solid #1a1a1a15', color: '#1a1a1a' }}
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.15)', color: '#ffffff' }}
                                         onFocus={e => e.target.style.borderColor = '#FFDE59'}
                                         onBlur={e => e.target.style.borderColor = '#1a1a1a15'}
                                         required
@@ -247,28 +291,45 @@ const SignUpPage = () => {
                                 <button
                                     type="submit"
                                     disabled={verifying || otp.length < 8}
-                                    className="w-full py-5 rounded-full font-black text-sm uppercase tracking-[0.2em] transition-all disabled:opacity-50"
-                                    style={{ backgroundColor: '#000', color: '#fff' }}
-                                    onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
-                                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
+                                    className="w-full py-5 rounded-full font-black text-sm uppercase tracking-[0.2em] transition-all"
+                                    style={{ backgroundColor: '#000000', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
+                                    onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#ffffff'; } }}
+                                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
                                 >
                                     {verifying ? 'Verifying...' : 'Verify & Continue'}
                                 </button>
+
+                                <div className="mt-6">
+                                    {canResend ? (
+                                        <button
+                                            type="button"
+                                            onClick={handleResend}
+                                            disabled={loading}
+                                            className="text-[10px] font-black uppercase tracking-widest text-white hover:underline transition-all"
+                                        >
+                                            Resend Verification Email
+                                        </button>
+                                    ) : (
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                                            Resend available in {resendTimer}s
+                                        </p>
+                                    )}
+                                </div>
                             </form>
 
                             <button
                                 onClick={() => setShowOtpInput(false)}
-                                className="mt-8 text-xs uppercase font-black tracking-widest transition-opacity hover:opacity-60"
-                                style={{ color: '#1a1a1a60' }}
+                                className="mt-8 text-xs uppercase font-black tracking-widest transition-all"
+                                style={{ color: '#ffffff' }}
                             >
                                 ← Back to signup
                             </button>
                         </div>
                     ) : showVerificationMessage ? (
                         /* Verification Success Message */
-                        <div className="text-center bg-white rounded-[40px] p-10 shadow-sm" style={{ border: '1px solid #1a1a1a08' }}>
-                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="3">
+                        <div className="text-center bg-black rounded-[40px] p-10 shadow-sm" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.1)' }}>
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                 </svg>
@@ -276,38 +337,37 @@ const SignUpPage = () => {
                             <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
                                 Verification Sent
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
-                                Check Your{' '}
-                                <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 8px', display: 'inline-block' }}>Email</span>
+                            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4" style={{ color: '#ffffff' }}>
+                                Check Your Email
                             </h1>
-                            <p className="text-sm leading-relaxed mb-8 max-w-md mx-auto" style={{ color: '#1a1a1a80' }}>
+                            <p className="text-sm leading-relaxed mb-8 max-w-md mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
                                 We've sent a verification link to{' '}
-                                <span className="font-bold" style={{ color: '#1a1a1a' }}>{email}</span>.
+                                <span className="font-bold" style={{ color: '#ffffff' }}>{email}</span>.
                                 Click the link in the email to verify your account and access your dashboard.
                             </p>
-                            <div className="rounded-[24px] p-6 mb-8 text-left" style={{ backgroundColor: '#f9f9f7', border: '1px solid #1a1a1a08' }}>
-                                <p className="text-[10px] font-black uppercase tracking-widest mb-4" style={{ color: '#1a1a1a60' }}>Next Steps:</p>
-                                <ol className="text-sm space-y-3" style={{ color: '#1a1a1a80' }}>
+                            <div className="rounded-[24px] p-6 mb-8 text-left" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                <p className="text-[10px] font-black uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>Next Steps:</p>
+                                <ol className="text-sm space-y-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
                                     <li className="flex gap-3">
-                                        <span className="font-black" style={{ color: '#1a1a1a' }}>1.</span>
+                                        <span className="font-black" style={{ color: '#ffffff' }}>1.</span>
                                         <span>Open the email from uGlowMD</span>
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="font-black" style={{ color: '#1a1a1a' }}>2.</span>
+                                        <span className="font-black" style={{ color: '#ffffff' }}>2.</span>
                                         <span>Click the verification link</span>
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="font-black" style={{ color: '#1a1a1a' }}>3.</span>
+                                        <span className="font-black" style={{ color: '#ffffff' }}>3.</span>
                                         <span>You'll be redirected to your dashboard</span>
                                     </li>
                                 </ol>
                             </div>
-                            <p className="text-xs mb-6" style={{ color: '#1a1a1a60' }}>
+                            <p className="text-xs mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                 Didn't receive the email? Check your spam folder or{' '}
                                 <button
                                     onClick={() => setShowVerificationMessage(false)}
                                     className="font-bold hover:underline"
-                                    style={{ color: '#1a1a1a' }}
+                                    style={{ color: '#ffffff' }}
                                 >
                                     try again
                                 </button>
@@ -315,7 +375,7 @@ const SignUpPage = () => {
                             <Link
                                 to="/login"
                                 className="inline-block px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
-                                style={{ backgroundColor: 'transparent', border: '1px solid #1a1a1a20', color: '#1a1a1a' }}
+                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
                                 onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
                                 onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a20'}
                             >
@@ -327,19 +387,19 @@ const SignUpPage = () => {
                         <>
                             {/* Header */}
                             <div className="text-center mb-12">
-                                <div className="inline-block py-1.5 px-4 bg-black/10 border border-black/10 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-black/60 mb-6">
+                                <div className="inline-block py-1.5 px-4 bg-white/10 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
                                     Start Your Journey
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic mb-4">
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">
                                     Create <span className="text-white font-black">Account</span>
                                 </h1>
-                                <p className="text-black/40 font-medium">
-                                    Join <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" /> Health to manage your transformative health journey.
+                                <p className="text-white font-medium">
+                                    Signup to manage your transformative health journey.
                                 </p>
                             </div>
 
                             {/* Form Container */}
-                            <div className="bg-white/60 border border-black/5 rounded-[40px] p-8 md:p-12 shadow-2xl backdrop-blur-xl relative group">
+                            <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 shadow-2xl backdrop-blur-xl relative group">
                                 <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-[40px]"></div>
 
                                 {error && (
@@ -351,7 +411,7 @@ const SignUpPage = () => {
                                 <form onSubmit={handleSubmit} className="relative z-10 space-y-8">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-white ml-4">
                                                 First Name
                                             </label>
                                             <input
@@ -359,12 +419,12 @@ const SignUpPage = () => {
                                                 value={firstName}
                                                 onChange={(e) => setFirstName(e.target.value)}
                                                 placeholder="John"
-                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                                 required
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-white ml-4">
                                                 Last Name
                                             </label>
                                             <input
@@ -372,7 +432,7 @@ const SignUpPage = () => {
                                                 value={lastName}
                                                 onChange={(e) => setLastName(e.target.value)}
                                                 placeholder="Doe"
-                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                                 required
                                             />
                                         </div>
@@ -380,7 +440,7 @@ const SignUpPage = () => {
 
                                     {/* Email Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-white ml-4">
                                             Email Address
                                         </label>
                                         <input
@@ -388,14 +448,14 @@ const SignUpPage = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter your email"
-                                            className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white focus:border-accent-black focus:bg-white/10 transition-all outline-none"
                                             required
                                         />
                                     </div>
 
                                     {/* Phone Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-white ml-4">
                                             Phone Number
                                         </label>
                                         <div className="flex gap-2">
@@ -408,18 +468,19 @@ const SignUpPage = () => {
                                                     setCountryCode(val.replace(/[^\d+]/g, '').slice(0, 5));
                                                 }}
                                                 placeholder="+1"
-                                                className="w-24 bg-white border border-black/10 rounded-2xl py-4 text-center text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none font-bold"
+                                                className="w-24 bg-white/5 border border-white/10 rounded-2xl py-4 text-center text-white placeholder:text-white focus:border-accent-black focus:bg-white/10 transition-all outline-none font-bold"
                                                 required
                                             />
                                             <input
                                                 type="tel"
                                                 value={phone}
                                                 onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    setPhone(val.replace(/\D/g, '').slice(0, 15));
+                                                    const x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                                                    const formatted = !x[2] ? x[1] : `(${x[1]}) ${x[2]}${x[3] ? `-${x[3]}` : ''}`;
+                                                    setPhone(formatted);
                                                 }}
-                                                placeholder="555 000 0000"
-                                                className="flex-1 bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none"
+                                                placeholder="(555) 000-0000"
+                                                className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white/40 focus:border-accent-black focus:bg-white/10 transition-all outline-none font-bold"
                                                 required
                                             />
                                         </div>
@@ -427,7 +488,7 @@ const SignUpPage = () => {
 
                                     {/* Password Field */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-black/40 ml-4">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-white ml-4">
                                             Password
                                         </label>
                                         <div className="relative">
@@ -436,13 +497,13 @@ const SignUpPage = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="Create a strong password"
-                                                className="w-full bg-white border border-black/10 rounded-2xl py-4 px-6 text-black placeholder:text-black/10 focus:border-accent-black focus:bg-white transition-all outline-none pr-12"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-white focus:border-accent-black focus:bg-white/10 transition-all outline-none pr-12"
                                                 required
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-white/80 transition-colors"
                                             >
                                                 {showPassword ? (
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -457,7 +518,7 @@ const SignUpPage = () => {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-5 bg-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-black/80 hover:shadow-[0_0_40px_rgba(0,0,0,0.1)] mt-4 disabled:opacity-50"
+                                        className="w-full py-5 bg-white text-black rounded-full font-black text-sm uppercase tracking-[0.2em] transform transition-all active:scale-95 hover:bg-white/90 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)] mt-4 disabled:opacity-50"
                                     >
                                         {loading ? 'Creating Account...' : 'Create Account'}
                                     </button>
@@ -465,7 +526,7 @@ const SignUpPage = () => {
                                     {/* Divider */}
                                     <div className="flex items-center gap-4 py-6">
                                         <div className="h-px flex-1 bg-white/5"></div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-black/20">OR</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">OR</span>
                                         <div className="h-px flex-1 bg-white/5"></div>
                                     </div>
 
@@ -486,7 +547,7 @@ const SignUpPage = () => {
                                                 setError(err.message);
                                             }
                                         }}
-                                        className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all"
+                                        className="w-full flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-white py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -501,7 +562,7 @@ const SignUpPage = () => {
 
                             {/* Footer Links */}
                             <div className="mt-12 text-center">
-                                <p className="text-black/40 text-sm font-medium mb-4 italic">
+                                <p className="text-white text-sm font-medium mb-4">
                                     Already have an account?
                                 </p>
                                 <Link
@@ -517,13 +578,13 @@ const SignUpPage = () => {
             </div>
 
             {/* Footer */}
-            <div className="pb-12 opacity-40">
+            <div className="pb-12">
                 <div className="max-w-[480px] mx-auto text-center border-t border-white/5 pt-8">
-                    <p className="text-[9px] font-bold text-black uppercase tracking-[0.4em] mb-2 leading-relaxed">
+                    <p className="text-[9px] font-bold text-white uppercase tracking-[0.4em] mb-2 leading-relaxed">
                         End-to-End Encryption • HIPAA Secure Environment
                     </p>
-                    <p className="text-[8px] font-medium text-black/40 uppercase tracking-widest">
-                        © 2026 <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0 opacity-40" /> Health. All rights reserved.
+                    <p className="text-[8px] font-medium text-white uppercase tracking-tight">
+                        © 2026 <img src={logo} alt="uGlowMD" className="h-3 w-auto inline-block align-middle invert" /> Health. All rights reserved.
                     </p>
                 </div>
             </div>

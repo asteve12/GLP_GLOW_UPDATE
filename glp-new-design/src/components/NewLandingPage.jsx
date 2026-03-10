@@ -25,6 +25,7 @@ import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
 import { useNavigate } from 'react-router-dom';
 import WaitlistModal from './WaitlistModal';
 import { FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
+import Footer from './Footer';
 
 const categories = [
     { text: 'Weight loss', color: 'text-[#93C5FD]' },
@@ -87,20 +88,20 @@ const NewLandingPage = () => {
 
             <main>
                 {/* Hero & Treatment Grid */}
-                <section className="pt-8 pb-20">
-                    <div className="w-[80%] mx-auto px-6">
+                <section className="pt-2 pb-12 md:pb-20">
+                    <div className="w-[92%] md:w-[85%] lg:w-[80%] mx-auto px-4 md:px-6">
                         <div className="text-left mb-12">
-                            <div className="h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
+                            <div className="h-[2.5rem] sm:h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
                                 <span
-                                    className={`absolute left-0 text-4xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
+                                    className={`absolute left-0 text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
                                 >
                                     {categories[index].text}
                                 </span>
                             </div>
-                            <h1 className="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-gray-900">
+                            <h1 className="text-3xl sm:text-4xl md:text-7xl font-extrabold mb-4 md:mb-6 tracking-tight leading-tight text-gray-900">
                                 personalized to you
                             </h1>
-                            <p className="text-gray-500 text-xl">Customized care starts here</p>
+                            <p className="text-gray-500 text-base md:text-xl">Customized care starts here</p>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16 mx-auto">
@@ -134,10 +135,10 @@ const NewLandingPage = () => {
                                             <div key={i} onClick={() => navigate(`/assessment/skin-care?product=anti-aging-cream`)} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
-                                                    <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300">
+                                                    <span className="text-[9px] md:text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300">
                                                         {item.label}
                                                     </span>
-                                                    <span className="text-lg font-bold text-center transition-colors duration-300">
+                                                    <span className="text-sm md:text-lg font-bold text-center transition-colors duration-300">
                                                         {item.title}
                                                     </span>
                                                 </div>
@@ -164,10 +165,10 @@ const NewLandingPage = () => {
                                             )}
 
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
-                                                <span className={`text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-600' : ''}`}>
+                                                <span className={`text-[9px] md:text-[11px] font-serif tracking-widest uppercase mb-0.5 md:mb-1 transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-600' : ''}`}>
                                                     {item.label}
                                                 </span>
-                                                <span className={`text-lg font-bold text-center transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-500' : ''}`}>
+                                                <span className={`text-sm md:text-lg font-bold text-center transition-colors duration-300 ${item.label === 'LAB TESTING' ? 'group-hover:text-red-500' : ''}`}>
                                                     {item.title}
                                                 </span>
                                                 {item.label === 'LAB TESTING' && (
@@ -203,7 +204,7 @@ const NewLandingPage = () => {
                                         <span className="mt-3 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
                                             Join the Waitlist
                                         </span>
-                                        <span className="mt-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-white/80 transition-colors">Eligibility Verification: $100</span>
+                                        <span className="mt-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-white/80 transition-colors">Eligibility Verification: $25</span>
                                     </div>
                                 </div>
                             </div>
@@ -214,10 +215,10 @@ const NewLandingPage = () => {
                 {/* Glow Smarter Banner */}
                 <section className="py-0">
                     <div className="w-full relative overflow-hidden bg-[#0a0a0a]">
-                        <img alt="Promotional banner" className="w-full h-auto block" src={glpPromoImg} />
+                        <img alt="Promotional banner" className="w-full h-auto max-h-[600px] object-cover block" src={glpPromoImg} />
                         <div className="absolute inset-0 bg-black/5"></div>
-                        <div className="absolute right-8 bottom-8 md:right-12 md:bottom-12 z-10">
-                            <Link to="/qualify?category=weight-loss" className="bg-white text-black px-10 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-110">Get started</Link>
+                        <div className="absolute left-4 bottom-4 right-4 md:right-12 md:bottom-12 z-10 flex md:block justify-center">
+                            <Link to="/qualify?category=weight-loss" className="bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-full text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-100 md:scale-110 text-center w-full md:w-auto">Get started</Link>
                         </div>
                     </div>
                 </section>
@@ -236,7 +237,7 @@ const NewLandingPage = () => {
                             {/* Step 1 */}
                             <div className="flex flex-col md:flex-row items-center gap-24 mb-48 relative">
                                 <div className="w-full md:w-1/2 flex justify-center md:justify-end z-10">
-                                    <div className="w-full max-w-[500px] h-[600px] rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
+                                    <div className="w-full max-w-[500px] h-[350px] md:h-[600px] rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
                                         <img alt="Account Registration" className="w-full h-full object-cover" src={registrationImg} />
                                     </div>
                                 </div>
@@ -290,12 +291,12 @@ const NewLandingPage = () => {
                                 alt="uGlow MD Medical Team"
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-12 md:p-20">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-20">
                                 <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                    <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                    <h2 className="text-2xl md:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
                                         The best care <br />by the best in medicine
                                     </h2>
-                                    <p className="text-white/80 text-lg md:text-xl font-light max-w-xl">
+                                    <p className="text-white/80 text-sm md:text-xl font-light max-w-xl">
                                         Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
                                     </p>
                                 </div>
@@ -310,8 +311,8 @@ const NewLandingPage = () => {
                         {/* Trusted Treatments */}
                         <div className="flex flex-col md:flex-row items-center gap-16 mb-32">
                             <div className="w-full md:w-1/2">
-                                <h2 className="text-4xl md:text-5xl font-bold mb-6 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Trusted treatments,<br />FDA-regulated pharmacies</h2>
-                                <p className="text-gray-600 mb-8 max-w-md">Rigorous testing and quality controls for product integrity. Expert teams of licensed pharmacists and technicians. Committed to quality, safety, and transparency.</p>
+                                <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Trusted treatments,<br />FDA-regulated pharmacies</h2>
+                                <p className="text-gray-600 text-sm md:text-base mb-6 md:mb-8 max-w-md">Rigorous testing and quality controls for product integrity. Expert teams of licensed pharmacists and technicians. Committed to quality, safety, and transparency.</p>
                                 <a className="text-sm font-bold border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors" href="#">Learn more</a>
                             </div>
                             <div className="w-full md:w-1/2">
@@ -340,9 +341,9 @@ const NewLandingPage = () => {
                         <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-500 transition-colors">LABS BY</p>
 
                         <div className="flex justify-center mb-4">
-                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-8 py-4 transition-all hover:scale-105 duration-500">
+                            <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-center px-4 md:px-8 py-2 md:py-4 transition-all hover:scale-105 duration-500">
                                 <div className="flex items-center">
-                                    <img src={logo} alt="uGlowMD" className="h-32 w-auto brightness-0" />
+                                    <img src={logo} alt="uGlowMD" className="h-20 md:h-32 w-auto brightness-0" />
                                 </div>
                             </div>
                         </div>
@@ -406,8 +407,8 @@ const NewLandingPage = () => {
 
                         {/* Cancer Screening Callout */}
                         <div className="mt-16">
-                            <div className="bg-[#fdf2f2] py-20 px-10 rounded-[60px] text-center mb-8">
-                                <h3 className="text-2xl md:text-3xl mb-10" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Screen for 50+ types of cancer</h3>
+                            <div className="bg-[#fdf2f2] py-12 md:py-20 px-6 md:px-10 rounded-[40px] md:rounded-[60px] text-center mb-8">
+                                <h3 className="text-xl md:text-3xl mb-8 md:mb-10" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Screen for 50+ types of cancer</h3>
                                 <div className="flex justify-center">
                                     <button className="bg-white px-12 py-4 rounded-full text-sm font-bold shadow-sm hover:shadow-md transition-all hover:scale-105">
                                         Learn more
@@ -532,77 +533,7 @@ const NewLandingPage = () => {
                 </section>
             </main>
 
-            {/* Footer Section */}
-            <footer className="bg-[#121212] text-white py-24">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
-                    <div className="mb-32">
-                        <h2 className="text-3xl mb-4" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Unlock the free Guide to Protein for Weight Loss</h2>
-                        <p className="text-gray-400 text-lg mb-10 font-light">Written by board-certified doctors to support your journey.</p>
-                        <form className="flex flex-wrap max-w-xl gap-4" onSubmit={(e) => e.preventDefault()}>
-                            <input
-                                className="flex-1 bg-[#1e1e1e] border-none rounded-full text-white text-base px-8 py-4 focus:ring-1 focus:ring-white/20 outline-none min-w-[300px]"
-                                placeholder="Email"
-                                type="email"
-                            />
-                            <button className="bg-white text-black px-10 py-4 rounded-full font-bold text-sm whitespace-nowrap hover:bg-gray-200 transition-all hover:scale-105" type="submit">
-                                Get the guide
-                            </button>
-                        </form>
-                    </div>
-
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32">
-                        <div>
-                            <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Treatments</h4>
-                            <ul className="space-y-4 text-sm text-gray-400">
-                                <li><Link className="hover:text-white transition-colors" to="/product/semaglutide-injection">Weight loss</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/product/sildenafil-tadalafil-troche">Sexual health</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/product/finasteride-tablets">Hair loss</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/product/sildenafil-yohimbe-troche">Testosterone</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/product/nad-injection">Longevity</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/product/glutathione-injection">Skin care</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Resources</h4>
-                            <ul className="space-y-4 text-sm text-gray-400">
-                                <li><Link className="hover:text-white transition-colors" to="/blog">Peer reviewed blog</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">Reviews</Link></li>
-                                <li><a className="hover:text-white transition-colors" href="#faq">FAQ</a></li>
-                                <li><a className="hover:text-white transition-colors" href="#how-it-works">How it works</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Company</h4>
-                            <ul className="space-y-4 text-sm text-gray-400">
-                                <li><Link className="hover:text-white transition-colors" to="#">About us</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="#">Contact us</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-xl mb-8" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>Legal</h4>
-                            <ul className="space-y-4 text-sm text-gray-400">
-                                <li><Link className="hover:text-white transition-colors" to="/terms-conditions">Terms & conditions</Link></li>
-                                <li><Link className="hover:text-white transition-colors" to="/privacy-policy">Privacy policy</Link></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-600 pt-12 border-t border-white/5">
-                        <div className="flex items-center gap-6 mb-4 md:mb-0">
-                            <img src={logo} alt="uGlowMD" className="h-24 w-auto brightness-0 invert opacity-60 ml-1" />
-                            <a className="hover:text-white transition-colors text-lg" href="https://www.instagram.com/uglowmd?igsh=MXc0bjB5aHR0MGR5Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram /></a>
-                            <a className="hover:text-white transition-colors text-lg" href="https://www.facebook.com/share/1CXFW9dXa9/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebook /></a>
-                            <a className="hover:text-white transition-colors text-lg" href="https://x.com/uglowmd?s=21&t=AWKB5Ql2CQkOFAgP0xqEJg" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X"><FaXTwitter /></a>
-                        </div>
-                        <p className="font-medium tracking-tight">© 2024 <img src={logo} alt="uGlowMD" className="h-[56px] w-auto inline-block align-baseline brightness-0 invert opacity-60" />. All rights reserved.</p>
-                    </div>
-                </div>
-
-                {/* Massive Styled Footer Logo (uGlow MD Style) */}
-                <div className="w-full mt-10 md:mt-0 overflow-hidden select-none pointer-events-none flex justify-center items-end opacity-[0.05] translate-y-20">
-                    <img src={logo} alt="uGlowMD" className="w-[80%] h-auto brightness-0 invert" />
-                </div>
-            </footer>
+            <Footer />
 
             {/* Skincare Category Products Modal */}
             {isSkincareModalOpen && (

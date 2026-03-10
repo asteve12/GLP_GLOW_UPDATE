@@ -221,13 +221,16 @@ const productSpecificData = {
             { time: "Ongoing", step: "365 support" }
         ],
         faqs: [
+            { q: "What is Tirzepatide?", a: "Tirzepatide is a dual-acting GLP-1 and GIP receptor agonist that provides powerful metabolic support for weight loss." },
+            { q: "Are there side effects?", a: "Common side effects include mild nausea, vomiting, or digestive changes as your body adjusts. These typically subside within weeks." },
+            { q: "How long until I see results?", a: "Many patients see weight loss within the first 4-8 weeks, with more significant results after 3-4 months of consistent use." },
             { q: 'Is it stronger than Semaglutide?', a: 'Clinical trials suggest it may lead to greater weight loss.' },
             { q: 'How often do I take it?', a: 'Once weekly via subcutaneous injection.' }
         ],
         readyAccordion: [
-            { q: "What is Tirzepatide?", a: "Tirzepatide is a dual GIP and GLP-1 receptor agonist, targeting two hunger-regulating hormones for superior weight loss results." },
-            { q: "How is it different?", a: "Unlike Semaglutide which only targets GLP-1, Tirzepatide adds GIP agonism, providing better glycemic control and appetite suppression." },
-            { q: "Common side effects", a: "Similar to other GLP-1s, including nausea and digestive changes. Most users find these manageable as they titration up." }
+            { q: "What is Tirzepatide?", a: "Tirzepatide is a dual-acting GLP-1 and GIP receptor agonist that provides powerful metabolic support for weight loss." },
+            { q: "Are there side effects?", a: "Common side effects include mild nausea, vomiting, or digestive changes as your body adjusts. These typically subside within weeks." },
+            { q: "How long until I see results?", a: "Many patients see weight loss within the first 4-8 weeks, with more significant results after 3-4 months of consistent use." }
         ],
         strengths: [
             {
@@ -259,7 +262,7 @@ const productSpecificData = {
                 ]
             },
             {
-                dosage: '12.5 mg', plans: [
+                dosage: '12 mg', plans: [
                     { name: 'Monthly', price: '$500', badge: 'Try First' },
                     { name: '3 Months', price: '$1,349.99', badge: '' },
                     { name: '6 Months', price: '$2,499.99', badge: 'Best Value' },
@@ -699,7 +702,7 @@ const productSpecificData = {
         ]
     },
     'nad-nasal-spray': {
-        name: 'NAD+',
+        name: 'Nicotinamide Adenine Dinucleotide (NAD+)',
         type: 'Nasal Spray',
         price: '$124.99/mo',
         image: nadSprayVialImg,
@@ -746,9 +749,9 @@ const productSpecificData = {
         ]
     },
     'nad-injection': {
-        name: 'NAD+',
+        name: 'Nicotinamide Adenine Dinucleotide (NAD+)',
         type: 'Subcutaneous Injection',
-        price: '$124.99/mo',
+        price: '$119.99/mo',
         image: nadSubjVialImg,
         signatureImage: nadInjectionPrd,
         heroBg: nadInjectionImg,
@@ -772,7 +775,7 @@ const productSpecificData = {
         strengths: [
             {
                 dosage: '200 mg/mL (5 mL)', plans: [
-                    { name: 'Monthly', price: '$124.99', badge: '' },
+                    { name: 'Monthly', price: '$119.99', badge: '' },
                 ]
             }
         ]
@@ -1250,7 +1253,7 @@ const productSpecificData = {
         ],
         strengths: [
             {
-                dosage: 'TBA', plans: [
+                dosage: '1mg / 2.5mg', plans: [
                     { name: '30 Day Supply', price: '$89.99', badge: 'Try First' },
                     { name: '60 Day Supply', price: '$159.99', badge: '' },
                     { name: '90 Day Supply', price: '$224.99', badge: 'Best Value' },
@@ -1417,40 +1420,40 @@ const productSpecificData = {
 
     // ─── Repair & Healing ──────────────────────────────────────────────────────
     'bpc-157-injection': {
-        name: 'BPC-157', type: 'Subcutaneous Injection', price: '$249.99/mo',
+        name: 'BPC 157 (Subq Inj)', type: 'Subcutaneous Injection', price: '$249.99/mo',
         image: bpc157VialImg, signatureImage: bpc157Carton, heroBg: bpc157VialImg,
         description: 'Body Protection Compound 157. A powerful regenerative peptide that accelerates healing of muscles, tendons, ligaments and joints.',
-        highlights: ['TBA', 'Accelerates repair', 'Reduces inflammation', 'Physician-prescribed'],
+        highlights: ['Body Protection Compound', 'Accelerates repair', 'Reduces inflammation', 'Physician-prescribed'],
         benefits: [
             { id: '01', title: 'Tissue Regeneration', desc: 'Stimulates growth factors to accelerate healing of damaged tissue.', color: '#FFDE59', image: hormonalMasteryImg },
             { id: '02', title: 'Anti-Inflammatory', desc: 'Powerfully reduces local and systemic inflammation.', color: '#5CE1E6', image: metabolicPrecisionImg },
             { id: '03', title: 'Gut Health', desc: 'Shown to support healing of the gastrointestinal tract lining.', color: '#7ED957', image: clinicalBreakthroughImg },
         ],
-        ingredients: [{ name: 'BPC-157', desc: 'A 15-amino acid peptide fragment derived from a protective gastric protein.' }],
+        ingredients: [{ name: 'BPC 157', desc: 'A 15-amino acid peptide fragment derived from a protective gastric protein.' }],
         howItWorks: [{ id: '01', title: 'Growth Factor Activation.', desc: 'Stimulates VEGF for blood vessel formation and tissue repair.' }],
         timeline: [{ time: 'Week 1-2', step: 'Reduced pain' }, { time: 'Month 1', step: 'Improved mobility' }],
         faqs: [{ q: 'What injuries can it help?', a: 'Tendon, ligament, muscle, joint, and gut injuries.' }],
-        readyAccordion: [{ q: 'Is BPC-157 safe?', a: 'BPC-157 has a strong safety profile in research.' }],
-        strengths: [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '$249.99', badge: '' }] }]
+        readyAccordion: [{ q: 'Is BPC 157 safe?', a: 'BPC 157 has a strong safety profile in research.' }],
+        strengths: [{ dosage: '5mg (Multi-dose)', plans: [{ name: 'Monthly', price: '$249.99', badge: '' }] }]
     },
     'bpc-157-tb500-injection': {
-        name: 'BPC-157 / TB 500', type: 'Subcutaneous Injection', price: '$299.99/mo',
+        name: 'BPC 157 / TB 500 (Subq Inj)', type: 'Subcutaneous Injection', price: '$299.99/mo',
         image: bpc157Tb500VialImg, signatureImage: bpc157Tb500Carton, heroBg: bpc157Tb500VialImg,
         description: 'The ultimate healing stack. BPC-157 and TB-500 combined for synergistic tissue repair and accelerated recovery.',
-        highlights: ['TBA', 'Maximum repair', 'Systemic recovery', 'Physician-prescribed'],
+        highlights: ['BPC-157 + TB-500', 'Maximum repair', 'Systemic recovery', 'Physician-prescribed'],
         benefits: [
             { id: '01', title: 'Synergistic Repair', desc: 'Combined local and systemic action for superior healing.', color: '#FFDE59', image: hormonalMasteryImg },
             { id: '02', title: 'Inflammation Control', desc: 'Both peptides powerfully downregulate inflammatory pathways.', color: '#5CE1E6', image: metabolicPrecisionImg },
-            { id: '03', title: 'Full-Body Recovery', desc: 'TB-500 circulates for comprehensive systemic support.', color: '#7ED957', image: clinicalBreakthroughImg },
+            { id: '03', title: 'Full-Body Recovery', desc: 'TB 500 circulates for comprehensive systemic support.', color: '#7ED957', image: clinicalBreakthroughImg },
         ],
         ingredients: [
-            { name: 'BPC-157', desc: 'Site-specific healing peptide.' }, { name: 'TB-500', desc: 'Systemic regenerative peptide.' },
+            { name: 'BPC 157', desc: 'Site-specific healing peptide.' }, { name: 'TB 500', desc: 'Systemic regenerative peptide.' },
         ],
-        howItWorks: [{ id: '01', title: 'Dual Pathway.', desc: 'BPC-157 acts locally while TB-500 circulates for whole-body effect.' }],
+        howItWorks: [{ id: '01', title: 'Dual Pathway.', desc: 'BPC 157 acts locally while TB 500 circulates for whole-body effect.' }],
         timeline: [{ time: 'Week 1', step: 'Pain reduction' }, { time: 'Month 1', step: 'Restored mobility' }],
         faqs: [{ q: 'Why combine them?', a: 'Complementary local and systemic mechanisms for best outcomes.' }],
         readyAccordion: [{ q: 'Who is this for?', a: 'Athletes and individuals recovering from injury.' }],
-        strengths: [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '$299.99', badge: '' }] }]
+        strengths: [{ dosage: '5mg/5mg (Multi-dose)', plans: [{ name: 'Monthly', price: '$299.99', badge: '' }] }]
     },
 
     // ─── Retatrutide ────────────────────────────────────────────────────────────
@@ -1521,7 +1524,7 @@ const ProductDetails = () => {
         if (id.includes('nad') || id.includes('glutathione')) return 'longevity';
         if (id.includes('testosterone') || id.includes('estradiol')) return 'hormone-therapy';
         if (id.includes('cream') || id.includes('peel') || id.includes('cleanser') || id.includes('rosacea') || id.includes('serum') || id === 'body-acne-cream' || id === 'anti-aging-cream') return 'skin-care';
-        if (id.includes('bpc-157')) return 'longevity';
+        if (id.includes('bpc-157')) return 'repair-healing';
         return 'weight-loss';
     };
 
@@ -1637,11 +1640,11 @@ const ProductDetails = () => {
         'growtabs-tadalafil': { code: 'GROW-T', shortDesc: 'Long-lasting support with nutrient focus.', active: 'Tadalafil', brand: 'Cialis®' },
         'quicklover-women': { code: 'QL', shortDesc: 'Enhanced sensation and drive for women.', active: 'Sildenafil', brand: 'Viagra®' },
         'loverspray-women': { code: 'LS', shortDesc: 'Intimate sensitivity spray for women.', active: 'Lidocaine', brand: 'Prilocaine®' },
-        'nad-nasal-spray': { code: 'NAD-N', shortDesc: 'Direct energetic support for brain and cells.', active: 'NAD+', brand: 'Nicotinamide' },
-        'nad-injection': { code: 'NAD-I', shortDesc: 'Max bioavailability for total cellular repair.', active: 'NAD+', brand: 'Nicotinamide' },
+        'nad-nasal-spray': { code: 'NAD-N', shortDesc: 'Direct energetic support for brain and cells.', active: 'Nicotinamide Adenine Dinucleotide (NAD+)', brand: 'Nicotinamide' },
+        'nad-injection': { code: 'NAD-I', shortDesc: 'Max bioavailability for total cellular repair.', active: 'Nicotinamide Adenine Dinucleotide (NAD+)', brand: 'Nicotinamide' },
         'glutathione-injection': { code: 'GLU', shortDesc: 'The master antioxidant for detox and skin.', active: 'Glutathione', brand: 'Antioxidant' },
-        'bpc-157-injection': { code: 'BPC', shortDesc: 'Regenerative peptide for rapid tissue repair.', active: 'BPC-157', brand: 'Peptide' },
-        'bpc-157-tb500-injection': { code: 'BPC/TB', shortDesc: 'Ultimate recovery stack for joints and muscle.', active: 'BPC-157', brand: 'Peptide' },
+        'bpc-157-injection': { code: 'BPC 157', shortDesc: 'Regenerative peptide for rapid tissue repair.', active: 'BPC 157 (Subq Inj)', brand: 'Regenerative' },
+        'bpc-157-tb500-injection': { code: 'BPC/TB', shortDesc: 'Ultimate recovery stack for joints and muscle.', active: 'BPC 157 / TB 500 (Subq Inj)', brand: 'Recovery' },
         'testosterone-injection': { code: 'TEST-I', shortDesc: 'Clinical grade testosterone replacement.', active: 'Testosterone', brand: 'Depo-Testosterone®' },
         'testosterone-rdt': { code: 'TEST-R', shortDesc: 'Fast-dissolving hormone replacement.', active: 'Testosterone', brand: 'AndroGel®' },
         'estradiol-tabs': { code: 'EST', shortDesc: 'Hormone balance for women.', active: 'Estradiol', brand: 'Estrace®' },
@@ -1732,14 +1735,14 @@ const ProductDetails = () => {
             <Navbar isProductDetails={true} />
 
             {/* Hero Section */}
-            <section className="relative min-h-screen bg-white overflow-hidden">
-                <div className="relative z-10 max-w-[1400px] mx-auto px-10 h-full">
+            <section className="relative lg:min-h-screen bg-white overflow-hidden pb-12 lg:pb-0">
+                <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-10 h-full">
                     <div className="flex flex-col lg:flex-row h-full">
 
                         {/* Left Side: Product Display */}
-                        <div className="w-full lg:w-1/2 flex flex-col items-center justify-start pt-12 lg:pt-20 pb-12 relative overflow-visible">
+                        <div className="w-full lg:w-1/2 flex flex-col items-center justify-start pt-8 lg:pt-20 pb-8 lg:pb-12 relative overflow-visible">
                             {/* Main Product Image in a Card-like Container */}
-                            <div className="relative z-10 w-full min-h-[520px] max-w-[520px] flex items-center justify-center bg-[#F9F9F9] rounded-[48px] border border-black/5 shadow-sm p-8 lg:p-12 transform scale-100 lg:scale-105">
+                            <div className="relative z-10 w-full min-h-[320px] sm:min-h-[400px] lg:min-h-[520px] max-w-[520px] flex items-center justify-center bg-[#F9F9F9] rounded-[32px] lg:rounded-[48px] border border-black/5 shadow-sm p-6 lg:p-12 transform scale-100 lg:scale-105">
                                 <img
                                     src={product.image}
                                     alt={product.name}
@@ -1756,19 +1759,19 @@ const ProductDetails = () => {
                                     Prescription products require an online consultation with a healthcare provider. The featured products are NON-FDA approved, and not reviewed by FDA for safety, effectiveness, or quality before being dispensed. The prescription are manufactured by FDA registered facilities. Prescription required.
                                 </p>
                                 <p className="text-[9px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight pt-2 border-t border-black/5">
-                                    uGlowMD does not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
+                                    We do not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
                                 </p>
                             </div>
                         </div>
 
                         {/* Right Side: Configuration */}
-                        <div className="w-full lg:w-1/2 flex flex-col justify-start pt-12 lg:pt-12 lg:pb-24 lg:pl-12 xl:pl-20">
-                            <div className="w-full max-w-xl space-y-8">
+                        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-center justify-start pt-12 lg:pt-12 lg:pb-24 lg:px-8 xl:px-12">
+                            <div className="w-full max-w-xl space-y-12 md:space-y-8 flex flex-col items-center">
 
                                 {/* Title Section */}
                                 <div className="space-y-2">
-                                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#1a1a1a] tracking-tight leading-none uppercase" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-[#1a1a1a] tracking-tight leading-[1.1] uppercase text-center" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
                                             {product.name}
                                         </h1>
                                         <button
@@ -1779,7 +1782,7 @@ const ProductDetails = () => {
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="opacity-40 group-hover:opacity-100 transition-opacity"><path d="m9 18 6-6-6-6" /></svg>
                                         </button>
                                     </div>
-                                    <p className="text-gray-400 text-sm font-light">
+                                    <p className="text-gray-400 text-sm font-light text-center">
                                         {hairLossIds.includes(productId)
                                             ? 'Clinical-grade hair restoration treatment'
                                             : sexualHealthIds.includes(productId)
@@ -1790,14 +1793,16 @@ const ProductDetails = () => {
                                                         ? 'Physician-prescribed hormonal optimisation'
                                                         : skinCareIds.includes(productId)
                                                             ? 'Prescription-grade dermatology & skin science'
-                                                            : 'Prescription GLP-1 for weight management'}
+                                                            : repairHealingIds.includes(productId)
+                                                                ? 'Advanced regenerative & tissue repair therapy'
+                                                                : 'Prescription GLP-1 for weight management'}
                                     </p>
                                 </div>
 
                                 {/* Method / Route */}
                                 {product.type && product.type !== 'TBA' && category !== 'skin-care' && (
-                                    <div className="space-y-3">
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a]">Method / Route:</h3>
+                                    <div className="space-y-3 w-full flex flex-col items-center">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a] text-center">Method / Route:</h3>
                                         <button className="w-full bg-[#0a0a0a] text-white py-4 rounded-[14px] text-sm font-semibold tracking-wide shadow-lg active:scale-[0.98] transition-all">
                                             {product.type}
                                         </button>
@@ -1806,14 +1811,14 @@ const ProductDetails = () => {
 
                                 {/* Select Strength — only for products with multiple dosage options */}
                                 {product.strengths && product.strengths.some(s => s.dosage !== 'TBA') && (
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 w-full flex flex-col items-center">
                                         {product.strengths.filter(s => s.dosage !== 'TBA').length > 1 ? (
                                             <>
-                                                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a]">
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a] text-center">
                                                     Select Strength:&nbsp;
                                                     <span className="text-gray-400 font-normal normal-case tracking-normal">{selectedStrength}</span>
                                                 </h3>
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="flex flex-wrap gap-2 justify-center">
                                                     {product.strengths.filter(s => s.dosage !== 'TBA').map((s) => (
                                                         <button
                                                             key={s.dosage}
@@ -1836,7 +1841,7 @@ const ProductDetails = () => {
                                                 </div>
                                             </>
                                         ) : (
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-center gap-2">
                                                 <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a]">Strength:</h3>
                                                 <span className="text-[11px] font-bold text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">{product.strengths.find(s => s.dosage !== 'TBA').dosage}</span>
                                             </div>
@@ -1845,15 +1850,15 @@ const ProductDetails = () => {
                                 )}
 
                                 {/* Select Plan — shown for all products */}
-                                <div className="space-y-3">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a]">Select Plan</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="space-y-3 w-full flex flex-col items-center">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#0a0a0a] text-center">Select Plan</h3>
+                                    <div className={`grid gap-3 w-full ${displayPlans.length === 1 ? 'grid-cols-1 max-w-[280px] mx-auto' : 'grid-cols-1 sm:grid-cols-3'}`}>
                                         {displayPlans.map((plan) => (
                                             <button
                                                 key={plan.name}
                                                 onClick={() => setSelectedPlan(plan.name)}
-                                                className={`relative min-h-[150px] rounded-[18px] border-2 p-4 flex flex-col items-center justify-center gap-2 transition-all ${selectedPlan === plan.name
-                                                    ? 'border-[#1a1a1a] bg-white ring-4 ring-[#1a1a1a]/5 shadow-2xl'
+                                                className={`relative min-h-[120px] md:min-h-[150px] rounded-[18px] border-2 p-4 flex flex-col items-center justify-center gap-2 transition-all ${selectedPlan === plan.name
+                                                    ? 'border-[#1a1a1a] bg-white ring-4 ring-[#1a1a1a]/5 shadow-xl'
                                                     : 'border-gray-100 bg-white hover:border-gray-300 shadow-sm'
                                                     }`}
                                             >
@@ -1883,7 +1888,7 @@ const ProductDetails = () => {
                                         {[
                                             {
                                                 q: `What is ${product.name.split(' ')[0]}?`,
-                                                a: productId.includes('finasteride') ? 'Finasteride is a prescription medication that blocks DHT, the primary hormone responsible for male pattern hair loss.' :
+                                                a: hairLossIds.includes(productId) ? 'Hair restoration treatments work by blocking DHT (the hormone responsible for hair loss) and stimulating follicles to stop thinning and promote regrowth.' :
                                                     productId.includes('semaglutide') ? 'Semaglutide is a GLP-1 receptor agonist that mimics naturally occurring hormones to regulate appetite and blood sugar.' :
                                                         productId.includes('tirzepatide') ? 'Tirzepatide is a dual-acting GLP-1 and GIP receptor agonist that provides powerful metabolic support for weight loss.' :
                                                             productId.includes('sildenafil') ? 'Sildenafil is a PDE5 inhibitor that increases blood flow to specific areas of the body to support reliable performance.' :
@@ -1899,18 +1904,19 @@ const ProductDetails = () => {
                                             },
                                             {
                                                 q: "Are there side effects?",
-                                                a: productId.includes('finasteride') ? 'Possible side effects include decreased libido or erectile dysfunction in a small percentage of users. Most effects resolve if use is discontinued.' :
+                                                a: hairLossIds.includes(productId) ? 'Possible side effects include decreased libido or erectile dysfunction in a small percentage of users. Most effects are mild and resolve if use is discontinued.' :
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Common side effects include mild nausea, vomiting, or digestive changes as your body adjusts. These typically subside within weeks.' :
                                                         productId.includes('sildenafil') || productId.includes('tadalafil') ? 'Potential effects include flushing, headaches, or mild congestion. These are usually temporary and dose-dependent.' :
-                                                            productId.includes('nad') || productId.includes('glutathione') || productId.includes('bpc-157') ? 'Generally well-tolerated. Some users may experience mild site irritation if injected, or a brief tingling sensation as the coenzymes enter circulation.' :
-                                                                productId.includes('testosterone') || productId.includes('estradiol') ? 'Hormone therapy can occasionally cause mood changes, fluid retention, or acne. A licensed provider monitors your labs to ensure optimal safety.' :
-                                                                    productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Oxytocin is highly safe and well-tolerated. Rare effects may include a mild temporary headache, slight nausea, or facial flushing.' :
-                                                                        skinCareIds.includes(productId) ? 'Medical-grade topicals may cause initial redness, dryness, or minor peeling as your skin adjusts to the potent active ingredients and increased cell turnover.' :
-                                                                            'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
+                                                            productId.includes('nad') || productId.includes('glutathione') ? 'Generally well-tolerated. Some users may experience mild site irritation if injected, or a brief tingling sensation as the coenzymes enter circulation.' :
+                                                                productId.includes('bpc-157') ? 'BPC-157 has an excellent safety profile. Most users experience no side effects, though mild redness at the injection site can occur during the first few days of therapy.' :
+                                                                    productId.includes('testosterone') || productId.includes('estradiol') ? 'Hormone therapy can occasionally cause mood changes, fluid retention, or acne. A licensed provider monitors your labs to ensure optimal safety.' :
+                                                                        productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Oxytocin is highly safe and well-tolerated. Rare effects may include a mild temporary headache, slight nausea, or facial flushing.' :
+                                                                            skinCareIds.includes(productId) ? 'Medical-grade topicals may cause initial redness, dryness, or minor peeling as your skin adjusts to the potent active ingredients and increased cell turnover.' :
+                                                                                'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
                                             },
                                             {
                                                 q: "How long until I see results?",
-                                                a: productId.includes('finasteride') ? 'Hair growth follow a cycle. Most men see initial stabilization in 3-6 months, with peak regrowth at 12 months.' :
+                                                a: hairLossIds.includes(productId) ? 'Hair growth follow a cycle. Most men see initial stabilization in 3-6 months, with peak regrowth at 12 months of consistent use.' :
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Many patients see weight loss within the first 4-8 weeks, with more significant results after 3-4 months of consistent use.' :
                                                         productId.includes('sildenafil') || productId.includes('tadalafil') || productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Results are typically felt within 15 to 60 minutes of the first dose. Optimal response is usually achieved within 1-2 uses.' :
                                                             productId.includes('nad') || productId.includes('glutathione') ? 'Many users report improved energy and mental clarity within the first few days, with deeper cellular benefits appearing after 4-8 weeks.' :
@@ -1925,12 +1931,12 @@ const ProductDetails = () => {
                                                     onClick={() => setOpenQuickFaqIdx(openQuickFaqIdx === idx ? null : idx)}
                                                     className="flex items-start justify-between w-full text-left gap-4"
                                                 >
-                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a1a] group-hover:text-accent-blue transition-colors">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a1a]">
                                                         {faq.q}
                                                     </h4>
-                                                    <span className={`text-gray-300 group-hover:text-black transition-all font-light text-lg leading-none transform ${openQuickFaqIdx === idx ? 'rotate-45' : ''}`}>+</span>
+                                                    <span className={`text-gray-300 transition-all font-light text-lg leading-none transform ${openQuickFaqIdx === idx ? 'rotate-45' : ''}`}>+</span>
                                                 </button>
-                                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${openQuickFaqIdx === idx ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${openQuickFaqIdx === idx ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                                                     <div className="text-[11px] leading-relaxed text-gray-500 font-medium">
                                                         {faq.a}
                                                     </div>
@@ -1989,9 +1995,9 @@ const ProductDetails = () => {
                         </div>
 
                         {product.benefits.map((b, i) => (
-                            <div key={i} className="benefit-card flex flex-col lg:flex-row items-stretch gap-0 group h-[310px]">
+                            <div key={i} className="benefit-card flex flex-col lg:flex-row items-stretch gap-0 group min-h-[300px] md:min-h-[400px] lg:h-[310px]">
                                 {/* The Image Side (Left) */}
-                                <div className="bg-[#1A1A1A] rounded-t-[30px] lg:rounded-t-none lg:rounded-l-[60px] w-full lg:w-5/12 border-b lg:border-b-0 lg:border-r border-white/5 relative overflow-hidden p-0 h-[200px] lg:h-auto">
+                                <div className="bg-[#1A1A1A] rounded-t-[30px] lg:rounded-t-none lg:rounded-l-[60px] w-full lg:w-5/12 border-b lg:border-b-0 lg:border-r border-white/5 relative overflow-hidden p-0 h-[220px] lg:h-auto">
                                     {b.image && (
                                         <>
                                             <img
@@ -2029,10 +2035,21 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Bottom Signature Banner - EXCEED EXPECTATIONS CARD */}
-                <div className="signature-banner mt-40 bg-black rounded-[32px] md:rounded-[60px] overflow-hidden p-8 md:p-20 flex flex-col lg:flex-row items-center gap-16 relative shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] mx-2 md:mx-0">
-                    <div className="w-full lg:w-7/12 relative z-10">
+                <div className="signature-banner mt-24 md:mt-40 bg-black rounded-[32px] md:rounded-[60px] overflow-hidden p-8 md:p-20 flex flex-col lg:flex-row items-center gap-12 md:gap-16 relative shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] mx-0">
+                    <div className="w-full lg:w-5/12 flex justify-center items-center relative order-first lg:order-last mb-8 lg:mb-0">
+                        <img
+                            src={product.signatureImage || product.image}
+                            className="w-full max-w-[320px] md:max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 lg:-rotate-12 hover:rotate-0 transition-transform duration-1000"
+                            alt="Signature Medication"
+                        />
+                        <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] md:text-[10px] text-white font-bold uppercase tracking-[0.15em] whitespace-nowrap">
+                            * Not Compounded or package by us
+                        </span>
+                    </div>
+
+                    <div className="w-full lg:w-7/12 relative z-10 text-center lg:text-left flex flex-col items-center lg:items-start">
                         <h3 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
-                            The <br /> Signature <br /> Series
+                            The <br className="hidden lg:block" /> Signature <br className="hidden lg:block" /> Series
                         </h3>
 
                         <p className="text-white/80 text-lg md:text-xl font-medium mb-12 leading-snug max-w-lg">
@@ -2042,16 +2059,6 @@ const ProductDetails = () => {
                         <Link to="/qualify" className="bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
                             Get started
                         </Link>
-                    </div>
-                    <div className="w-full lg:w-5/12 flex justify-center items-center relative">
-                        <img
-                            src={product.signatureImage || product.image}
-                            className="w-full max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 hover:rotate-0 transition-transform duration-1000"
-                            alt="Signature Medication"
-                        />
-                        <span className="absolute -bottom-8 right-0 text-[8px] md:text-[10px] text-white font-bold uppercase tracking-[0.15em] whitespace-nowrap">
-                            * Not Compounded or package by us
-                        </span>
                     </div>
                 </div>
 
@@ -2095,8 +2102,8 @@ const ProductDetails = () => {
             {/* HOW IT WORKS */}
             <section className="how-it-works-section py-20 md:py-32 px-6 bg-white">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
-                    <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-20 text-center">How It Works</h3>
-                    <div className={`grid grid-cols-1 ${product.howItWorks.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'} gap-16 relative`}>
+                    <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-12 md:mb-20 text-center">How It Works</h3>
+                    <div className={`grid grid-cols-1 ${product.howItWorks.length > 1 ? 'md:grid-cols-2' : 'max-w-2xl mx-auto'} gap-8 md:gap-16 relative`}>
                         {/* Connecting Line (Desktop) - only shown if multiple steps */}
                         {product.howItWorks.length > 1 && (
                             <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
@@ -2118,12 +2125,12 @@ const ProductDetails = () => {
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
                     <div className="flex flex-col lg:flex-row justify-between items-end mb-16 gap-8">
                         <div className="max-w-3xl">
-                            <h2 className="text-5xl md:text-7xl font-black text-[#1a1a1a] uppercase tracking-tighter leading-[0.85] mb-8">
+                            <h2 className="text-4xl md:text-7xl font-black text-[#1a1a1a] uppercase tracking-tighter leading-[0.85] mb-8">
                                 Getting started
                             </h2>
                             <div className="space-y-6">
                                 <p className="text-gray-500 text-lg md:text-xl font-medium leading-relaxed">
-                                    All medical assessments and prescriptions from <img src={logo} alt="uGlowMD" className="h-[72px] md:h-[88px] w-auto inline-block align-baseline brightness-0 opacity-80" /> are administered by physicians and pharmacists licensed in the United States.
+                                    All medical assessments and prescriptions from us are administered by physicians and pharmacists licensed in the United States.
                                 </p>
                                 <p className="text-gray-500 text-lg font-medium leading-relaxed">
                                     Prescription products require an online consultation with a healthcare provider.
@@ -2174,12 +2181,12 @@ const ProductDetails = () => {
                             <div key={i} className="bg-white rounded-2xl p-2 shadow-sm">
                                 <button
                                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                    className="flex justify-between w-full text-left font-bold text-lg md:text-xl p-4 hover:text-black transition-colors gap-4">
+                                    className="flex justify-between w-full text-left font-bold text-lg md:text-xl p-4 transition-colors gap-4">
                                     {faq.q}
                                     <span className="flex-shrink-0 text-black text-2xl">{openFaq === i ? '−' : '+'}</span>
                                 </button>
-                                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                    <p className="p-4 pt-0 text-gray-600 text-base md:text-lg">{faq.a}</p>
+                                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <p className="p-4 pt-0 text-gray-600 text-sm md:text-lg leading-relaxed">{faq.a}</p>
                                 </div>
                             </div>
                         ))}
@@ -2216,6 +2223,7 @@ const ProductDetails = () => {
                                         'readysetgo-men', 'growtabs-sildenafil', 'growtabs-tadalafil', 'quicklover-women', 'loverspray-women',
                                         'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1',
                                         'nad-nasal-spray', 'nad-injection', 'glutathione-injection',
+                                        'bpc-157-injection', 'bpc-157-tb500-injection',
                                         'testosterone-injection', 'testosterone-rdt', 'estradiol-tabs',
                                         'anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream'
                                     ];
@@ -2235,11 +2243,11 @@ const ProductDetails = () => {
 
                                     return (
                                         <div key={id} className={`group relative transition-all duration-300 ${isCurrent ? "scale-[1.02]" : "opacity-80 hover:opacity-100"}`}>
-                                            <div className="flex gap-6 items-start">
+                                            <div className="flex gap-4 sm:gap-6 items-start">
                                                 {/* Left: Product Image Card */}
                                                 <div
                                                     onClick={() => { if (!isCurrent) { navigate(`/product/${id}`); setIsCompareOpen(false); } }}
-                                                    className={`relative w-40 h-40 shrink-0 rounded-2xl overflow-hidden cursor-pointer transition-all border-2 ${isCurrent ? 'border-accent-black ring-4 ring-black/5' : 'border-gray-100 hover:border-gray-300'} bg-[#f8f9fb] flex items-center justify-center p-4`}
+                                                    className={`relative w-24 h-24 sm:w-40 sm:h-40 shrink-0 rounded-[20px] sm:rounded-2xl overflow-hidden cursor-pointer transition-all border-2 ${isCurrent ? 'border-accent-black ring-4 ring-black/5' : 'border-gray-100 hover:border-gray-300'} bg-[#f8f9fb] flex items-center justify-center p-3 sm:p-4`}
                                                 >
                                                     <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
                                                     {isCurrent && (
@@ -2250,10 +2258,10 @@ const ProductDetails = () => {
                                                 </div>
 
                                                 {/* Right: Info */}
-                                                <div className="flex-1 space-y-2 py-1">
-                                                    <div className="flex items-start justify-between">
+                                                <div className="flex-1 space-y-1 sm:space-y-2 py-1">
+                                                    <div className="flex items-start justify-between gap-2">
                                                         <div>
-                                                            <h4 className="text-xl font-black uppercase tracking-tighter text-[#1a1a1a] leading-tight mb-1">
+                                                            <h4 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-[#1a1a1a] leading-tight mb-1">
                                                                 {p.name}
                                                             </h4>
                                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
@@ -2263,7 +2271,7 @@ const ProductDetails = () => {
                                                         {isCurrent && <span className="text-[10px] font-black uppercase tracking-widest text-accent-black bg-black/5 px-2 py-1 rounded-md">Viewing</span>}
                                                     </div>
 
-                                                    <p className="text-sm font-black text-gray-900 leading-tight">
+                                                    <p className="text-[11px] sm:text-sm font-black text-gray-900 leading-tight line-clamp-2">
                                                         <span className="text-accent-black/80">{info.shortDesc.split(' ')[0]}</span> {info.shortDesc.split(' ').slice(1).join(' ')}
                                                     </p>
 
@@ -2271,8 +2279,8 @@ const ProductDetails = () => {
 
                                                     <div className="pt-2">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-0.5">Starting at</span>
-                                                            <p className="text-xl font-black text-[#1a1a1a] leading-none">
+                                                            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-0.5">Starting at</span>
+                                                            <p className="text-lg sm:text-xl font-black text-[#1a1a1a] leading-none">
                                                                 ${getMinPrice(p).toFixed(2)}
                                                             </p>
                                                         </div>

@@ -155,8 +155,12 @@ const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
                                 type="tel"
                                 required
                                 value={formData.phone}
-                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                placeholder="PHONE NUMBER"
+                                onChange={e => {
+                                    const x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                                    const formatted = !x[2] ? x[1] : `(${x[1]}) ${x[2]}${x[3] ? `-${x[3]}` : ''}`;
+                                    setFormData({ ...formData, phone: formatted });
+                                }}
+                                placeholder="(555) 000-0000"
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#FFC7A2]/50 transition-colors uppercase text-xs font-bold tracking-widest"
                             />
                         </div>

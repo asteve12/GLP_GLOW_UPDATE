@@ -127,14 +127,14 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/5 " >
-        <nav className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 h-16 md:h-20 relative flex items-center justify-between">
-          <div className="flex items-center h-full">
+      <header className={`sticky top-0 z-50 bg-black pt-[30px] pb-[30px] border-b border-white/5 transition-all duration-300`} >
+        <nav className={`max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 relative flex items-center justify-between transition-all duration-300`}>
+          <div className="flex items-center h-full mt-[10px]">
             <Link to="/" className="relative h-full flex items-center">
               <img
                 src={logo}
                 alt="uGlowMD Logo"
-                className=" mt-[8px] h-[168px] md:h-[192px] 2xl:h-[208px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2"
+                className={`transition-all duration-300 hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2 h-[182px] md:h-[208px]`}
                 style={{
                   filter: 'brightness(1.2)',
                   maxWidth: 'none'

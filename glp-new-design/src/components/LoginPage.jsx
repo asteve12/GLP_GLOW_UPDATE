@@ -45,8 +45,8 @@ const LoginPage = () => {
     return (
         <div style={{
             minHeight: '100vh',
-            backgroundColor: '#E3F2FD',
-            color: '#1a1a1a',
+            backgroundColor: '#000000',
+            color: '#ffffff',
             fontFamily: 'Inter, system-ui, sans-serif',
             display: 'flex',
             flexDirection: 'column'
@@ -58,17 +58,17 @@ const LoginPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '120px 24px 60px',
+                padding: '60px 24px 60px',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Background glow */}
+                {/* Background atmosphere */}
                 <div style={{
                     position: 'absolute',
                     top: '50%', left: '50%',
                     transform: 'translate(-50%, -50%)',
                     width: '600px', height: '600px',
-                    background: 'radial-gradient(circle, rgba(255,222,89,0.06) 0%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)',
                     pointerEvents: 'none'
                 }} />
 
@@ -78,21 +78,21 @@ const LoginPage = () => {
                     <div style={{ textAlign: 'center', marginBottom: '48px' }}>
                         <div style={{
                             display: 'inline-block', padding: '6px 20px',
-                            backgroundColor: 'rgba(255,222,89,0.1)',
-                            border: '1px solid rgba(255,222,89,0.25)',
+                            backgroundColor: 'rgba(255,255,255,0.1)',
+                            border: '1px solid rgba(255,255,255,0.25)',
                             borderRadius: '999px', fontSize: '9px', fontWeight: '900',
                             letterSpacing: '0.4em', textTransform: 'uppercase',
-                            color: '#FFDE59', marginBottom: '24px'
+                            color: '#ffffff', marginBottom: '24px'
                         }}>Secure Access</div>
 
                         <h1 style={{
                             fontSize: 'clamp(36px, 6vw, 58px)', fontWeight: '900',
                             textTransform: 'uppercase', letterSpacing: '-0.04em',
-                            lineHeight: '0.92', color: '#1a1a1a', marginBottom: '16px'
+                            lineHeight: '0.92', color: '#ffffff', marginBottom: '16px'
                         }}>
                             Patient<br />
                             <span style={{
-                                color: '#000',
+                                color: '#ffffff',
                                 padding: '2px 14px', display: 'inline-block', marginTop: '8px'
                             }}>
                                 Portal
@@ -100,7 +100,7 @@ const LoginPage = () => {
                         </h1>
 
                         <p style={{
-                            color: 'rgba(0,0,0,0.5)', fontSize: '13px',
+                            color: '#ffffff', fontSize: '13px',
                             lineHeight: '1.7', fontWeight: '500'
                         }}>
                             Access your personalized treatment protocols<br />
@@ -110,8 +110,8 @@ const LoginPage = () => {
 
                     {/* Form Card */}
                     <div style={{
-                        backgroundColor: 'rgba(255,255,255,0.6)',
-                        border: '1px solid rgba(0,0,0,0.08)',
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
                         borderRadius: '32px',
                         padding: '40px',
                         backdropFilter: 'blur(20px)'
@@ -136,7 +136,7 @@ const LoginPage = () => {
                                 <label style={{
                                     display: 'block', fontSize: '9px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.35em',
-                                    color: 'rgba(0,0,0,0.4)', marginBottom: '10px'
+                                    color: '#ffffff', marginBottom: '10px'
                                 }}>Email Address</label>
                                 <input
                                     type="email"
@@ -144,16 +144,17 @@ const LoginPage = () => {
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="Enter your email"
                                     required
+                                    className="placeholder-white"
                                     style={{
                                         width: '100%', boxSizing: 'border-box',
-                                        backgroundColor: '#ffffff',
-                                        border: '1.5px solid rgba(0,0,0,0.1)',
+                                        backgroundColor: 'rgba(255,255,255,0.05)',
+                                        border: '1.5px solid rgba(255,255,255,0.1)',
                                         borderRadius: '14px', padding: '16px 20px',
-                                        fontSize: '14px', color: '#1a1a1a',
+                                        fontSize: '14px', color: '#ffffff',
                                         outline: 'none', transition: 'border-color 0.2s',
                                         fontFamily: 'inherit'
                                     }}
-                                    onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                    onFocus={e => e.target.style.borderColor = '#ffffff'}
                                     onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                                 />
                             </div>
@@ -167,15 +168,15 @@ const LoginPage = () => {
                                     <label style={{
                                         fontSize: '9px', fontWeight: '900',
                                         textTransform: 'uppercase', letterSpacing: '0.35em',
-                                        color: 'rgba(0,0,0,0.4)'
+                                        color: '#ffffff'
                                     }}>Password</label>
                                     <Link to="/forgot-password" style={{
                                         fontSize: '9px', fontWeight: '800',
                                         textTransform: 'uppercase', letterSpacing: '0.2em',
-                                        color: 'rgba(255,222,89,0.6)', textDecoration: 'none'
+                                        color: '#ffffff', textDecoration: 'none'
                                     }}
-                                        onMouseEnter={e => e.currentTarget.style.color = '#FFDE59'}
-                                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,222,89,0.6)'}
+                                        onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
+                                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                                     >Forgot?</Link>
                                 </div>
                                 <div style={{ position: 'relative' }}>
@@ -185,6 +186,7 @@ const LoginPage = () => {
                                         onChange={e => setPassword(e.target.value)}
                                         placeholder="••••••••"
                                         required
+                                        className="placeholder-white"
                                         style={{
                                             width: '100%', boxSizing: 'border-box',
                                             backgroundColor: 'rgba(255,255,255,0.05)',
@@ -194,7 +196,7 @@ const LoginPage = () => {
                                             outline: 'none', transition: 'border-color 0.2s',
                                             fontFamily: 'inherit'
                                         }}
-                                        onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                        onFocus={e => e.target.style.borderColor = '#ffffff'}
                                         onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                                     />
                                     <button
@@ -204,7 +206,7 @@ const LoginPage = () => {
                                             position: 'absolute', right: '16px', top: '50%',
                                             transform: 'translateY(-50%)',
                                             background: 'none', border: 'none', cursor: 'pointer',
-                                            color: 'rgba(0,0,0,0.25)', padding: '4px'
+                                            color: '#ffffff', padding: '4px'
                                         }}
                                     >
                                         {showPassword ? (
@@ -225,16 +227,16 @@ const LoginPage = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#000'; }}
-                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#000'; }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#f0f0f0'; }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
                                 style={{
                                     width: '100%', padding: '18px', borderRadius: '999px',
-                                    backgroundColor: '#000000', color: '#ffffff',
+                                    backgroundColor: '#ffffff', color: '#000000',
                                     border: 'none', fontSize: '11px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.32em',
                                     cursor: loading ? 'not-allowed' : 'pointer',
                                     opacity: loading ? 0.7 : 1,
-                                    transition: 'background-color 0.25s, color 0.25s',
+                                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                                     marginTop: '8px', fontFamily: 'inherit'
                                 }}
                             >
@@ -245,9 +247,9 @@ const LoginPage = () => {
                             <div style={{
                                 display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0'
                             }}>
-                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(0,0,0,0.08)' }}></div>
-                                <span style={{ fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(0,0,0,0.2)' }}>OR</span>
-                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(0,0,0,0.08)' }}></div>
+                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
+                                <span style={{ fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#ffffff' }}>OR</span>
+                                <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
                             </div>
 
                             {/* Google Sign In */}
@@ -267,12 +269,12 @@ const LoginPage = () => {
                                         setError(err.message);
                                     }
                                 }}
-                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
                                 onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                                 style={{
                                     width: '100%', padding: '16px', borderRadius: '999px',
-                                    backgroundColor: 'transparent', color: '#1a1a1a',
-                                    border: '1.5px solid rgba(0,0,0,0.1)',
+                                    backgroundColor: 'transparent', color: '#ffffff',
+                                    border: '1.5px solid rgba(255,255,255,0.1)',
                                     fontSize: '10px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.22em',
                                     cursor: 'pointer', transition: 'all 0.25s',
@@ -288,45 +290,61 @@ const LoginPage = () => {
                                 Sign in with Google
                             </button>
 
-                            {/* Removed: New to uGlowMD? Create Account section */}
-
-
-                            {/* Admin Access Link */}
+                            {/* Create Account section */}
                             <div style={{
                                 marginTop: '32px',
                                 textAlign: 'center',
                                 borderTop: '1px solid rgba(255,255,255,0.07)',
                                 paddingTop: '24px'
                             }}>
-                                <Link to="/admin-sign-in"
-                                    onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.opacity = '1'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.opacity = '0.6'; }}
-                                    style={{
-                                        fontSize: '9px', fontWeight: '900',
-                                        textTransform: 'uppercase', letterSpacing: '0.4em',
-                                        color: 'rgba(0,0,0,0.5)', textDecoration: 'none',
-                                        opacity: 0.6, transition: 'all 0.3s',
-                                        display: 'inline-flex', alignItems: 'center', gap: '8px',
-                                        cursor: 'pointer'
+                                <p style={{
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.15em',
+                                    color: '#ffffff',
+                                    marginBottom: '16px'
+                                }}>New User ?</p>
+                                <Link to="/signup" style={{
+                                    fontSize: '11px',
+                                    fontWeight: '900',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.25em',
+                                    color: '#ffffff',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.3s',
+                                    padding: '12px 32px',
+                                    borderRadius: '14px',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    display: 'inline-block'
+                                }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.backgroundColor = '#ffffff';
+                                        e.currentTarget.style.color = '#000000';
+                                        e.currentTarget.style.borderColor = '#ffffff';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                        e.currentTarget.style.color = '#ffffff';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
                                     }}
                                 >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                        <path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17" />
-                                    </svg>
-                                    Administrative Access
+                                    Create Account
                                 </Link>
                             </div>
+
+
+
                         </form>
                     </div>
 
-                    {/* Footer note */}
                     <p style={{
                         textAlign: 'center', marginTop: '32px', fontSize: '9px',
-                        fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em',
-                        color: 'rgba(0,0,0,0.3)', lineHeight: '1.9'
+                        fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em',
+                        color: '#ffffff', lineHeight: '1.9'
                     }}>
                         End-to-End Encryption · HIPAA Secure Environment<br />
-                        © 2026 <img src={logo} alt="uGlowMD" className="h-16 w-auto inline-block align-baseline brightness-0" /> Health. All rights reserved.
+                        © 2026 <img src={logo} alt="uGlowMD" className="h-3 w-auto inline-block align-middle invert" /> Health. All rights reserved.
                     </p>
                 </div>
             </div>
