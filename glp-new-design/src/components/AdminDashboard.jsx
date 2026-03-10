@@ -4665,6 +4665,17 @@ const PatientExpressEntry = () => {
         c.code.includes(countrySearch)
     );
 
+    const formatPhone = (value) => {
+        if (!value) return value;
+        const phone = value.replace(/[^\d]/g, '');
+        const phoneLength = phone.length;
+        if (phoneLength < 4) return phone;
+        if (phoneLength < 7) {
+            return `(${phone.slice(0, 3)}) ${phone.slice(3)}`;
+        }
+        return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+    };
+
     const categories = [
         { id: 'weight-loss', label: 'Weight Loss', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
         { id: 'hair-restoration', label: 'Hair Restoration', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
@@ -5060,7 +5071,7 @@ const PatientExpressEntry = () => {
                                 required
                                 placeholder="Phone number"
                                 value={patientPhone}
-                                onChange={(e) => setPatientPhone(e.target.value)}
+                                onChange={(e) => setPatientPhone(formatPhone(e.target.value))}
                                 className="flex-1 bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-white font-bold focus:outline-none focus:border-accent-black transition-all"
                             />
                         </div>
@@ -5213,7 +5224,7 @@ const PatientExpressEntry = () => {
                                 <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
-                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', formatPhone(e.target.value))} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black h-24" />
                             </div>
