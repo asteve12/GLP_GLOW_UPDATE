@@ -4783,19 +4783,25 @@ const PatientExpressEntry = () => {
             // Send Approval SMS for Express Entry
             try {
                 const rawPhone = prescription.patientPhone;
-                if (rawPhone && rawPhone !== '-' && rawPhone !== 'N/A') {
-                    const digits = rawPhone.replace(/\D/g, '');
-                    const finalPhone = digits.length === 10 ? `+1${digits}` : (digits.length === 11 && digits.startsWith('1') ? `+${digits}` : (digits.length > 0 ? `+1${digits}` : null));
+                const normalizePhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = normalizePhone(rawPhone);
 
-                    if (finalPhone) {
-                        await supabase.functions.invoke('send-sms', {
-                            method: 'POST',
-                            body: {
-                                phone: finalPhone,
-                                message: `Congratulations! Your GLP-GLOW assessment has been APPROVED via our back office. Log in to your account (${patientEmail}) to complete your setup and start treatment.`
-                            }
-                        });
-                    }
+                if (finalPhone) {
+                    const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || 'Treatment';
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Congratulations! Your ${categoryLabel} assessment has been APPROVED. Log in to your account (${patientEmail}) to complete your setup and start treatment.`
+                        }
+                    });
                 }
             } catch (smsErr) {
                 console.warn('Express Entry SMS failed:', smsErr);
