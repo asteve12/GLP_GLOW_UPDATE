@@ -29,7 +29,7 @@ serve(async (req) => {
     });
   }
 
-  const { userId, email: inputEmail, first_name: inputFirstName, last_name, type, tracking_id, setup_link } = payload;
+  const { userId, email: inputEmail, first_name: inputFirstName, last_name, type, tracking_id, setup_link, category } = payload;
   console.log("Payload:", payload)
 
   if (!type) {
@@ -433,7 +433,7 @@ The Medical Review Team`;
     <div style="background:linear-gradient(135deg,#00c853,#00a844);color:#fff;padding:50px 30px;text-align:center">
       <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
       <h1 style="margin:0;font-size:32px;font-weight:900">You're Approved!</h1>
-      <p style="font-size:20px;margin:12px 0 0;opacity:0.95">Welcome to our Weight Loss Program</p>
+      <p style="font-size:20px;margin:12px 0 0;opacity:0.95">Welcome to our ${category || 'Weight Loss'} Program</p>
     </div>
 
     <!-- Body -->
@@ -483,7 +483,7 @@ The Medical Review Team`;
 
     const setupText = `Hi ${first_name},
 
-CONGRATULATIONS! You have been APPROVED for the weight loss program.
+CONGRATULATIONS! You have been APPROVED for the ${category || 'weight loss'} program.
 
 To complete your account setup (password + payment), please click this link:
 

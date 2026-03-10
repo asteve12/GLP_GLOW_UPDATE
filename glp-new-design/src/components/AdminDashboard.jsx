@@ -4767,10 +4767,12 @@ const PatientExpressEntry = () => {
 
             // Send User Setup Email
             try {
+                const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || 'Treatment';
                 const { error: emailError } = await supabase.functions.invoke('send-email', {
                     body: {
                         type: 'USER_SETUP',
-                        email: patientEmail
+                        email: patientEmail,
+                        category: categoryLabel
                     }
                 });
                 if (emailError) console.error('Error sending setup email:', emailError);
