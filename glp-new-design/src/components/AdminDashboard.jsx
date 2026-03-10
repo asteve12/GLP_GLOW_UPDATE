@@ -6921,6 +6921,40 @@ const OrderManagement = () => {
                 .eq('id', orderId);
 
             if (error) throw error;
+
+            // Send SMS notification if status changed to 'in transit' or 'delivered'
+            if (updates.delivery_status) {
+                const order = orders.find(o => o.id === orderId);
+                if (order) {
+                    const rawPhone = order.profiles?.phone_number;
+                    const normalizePhone = (p) => {
+                        if (!p || p === '-') return null;
+                        const digits = p.replace(/\D/g, '');
+                        if (digits.length === 10) return `+1${digits}`;
+                        if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                        if (digits.length > 10) return `+${digits}`;
+                        return digits.length > 0 ? `+1${digits}` : null;
+                    };
+                    const finalPhone = normalizePhone(rawPhone);
+
+                    if (finalPhone) {
+                        let message = '';
+                        if (updates.delivery_status === 'in transit') {
+                            message = `Your GLP-GLOW order has been shipped! You can track the progress in your patient dashboard.`;
+                        } else if (updates.delivery_status === 'delivered') {
+                            message = `Your GLP-GLOW order was delivered! Check your package for treatment instructions and start your journey.`;
+                        }
+
+                        if (message) {
+                            await supabase.functions.invoke('send-sms', {
+                                method: 'POST',
+                                body: { phone: finalPhone, message }
+                            }).catch(err => console.warn('Status update SMS failed:', err));
+                        }
+                    }
+                }
+            }
+
             await fetchOrders();
         } catch (err) {
             console.error('Status update failed:', err);
