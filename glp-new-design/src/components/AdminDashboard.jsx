@@ -4613,6 +4613,7 @@ const PatientExpressEntry = () => {
     const [step, setStep] = useState('category'); // category, email, form, success
     const [selectedCategory, setSelectedCategory] = useState('');
     const [patientEmail, setPatientEmail] = useState('');
+    const [patientPhone, setPatientPhone] = useState('');
     const [checking, setChecking] = useState(false);
     const [existingInfo, setExistingInfo] = useState(null);
     const [answers, setAnswers] = useState({});
@@ -4639,6 +4640,13 @@ const PatientExpressEntry = () => {
         setExistingInfo(null);
 
         try {
+            // Update prescription state with current email and phone
+            setPrescription(prev => ({
+                ...prev,
+                patientEmail: patientEmail,
+                patientPhone: patientPhone
+            }));
+
             // Check for existing submissions with this email and category
             const { data, error } = await supabase
                 .from('form_submissions')
@@ -4678,10 +4686,10 @@ const PatientExpressEntry = () => {
     const [prescription, setPrescription] = useState({
         providerName: '',
         date: new Date().toISOString().split('T')[0],
-        patientName: 'EE E',
-        patientDob: '2026-02-02',
-        patientAddress: 'EE, E, E, E 333',
-        patientPhone: '(444) 333-3333',
+        patientName: '',
+        patientDob: '',
+        patientAddress: '',
+        patientPhone: '',
         patientEmail: '',
         allergies: 'ggg',
         medication: 'Semaglutide', // Semaglutide | Tirzepatide
@@ -4944,9 +4952,17 @@ const PatientExpressEntry = () => {
                         <input
                             type="email"
                             required
-                            placeholder="patient@example.com"
+                            placeholder="Patient Email (patient@example.com)"
                             value={patientEmail}
                             onChange={(e) => setPatientEmail(e.target.value)}
+                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
+                        />
+                        <input
+                            type="tel"
+                            required
+                            placeholder="Patient Phone (e.g. +1 123 456 7890)"
+                            value={patientPhone}
+                            onChange={(e) => setPatientPhone(e.target.value)}
                             className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
                         />
                         <div className="flex gap-4">
