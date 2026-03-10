@@ -2565,7 +2565,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
             try {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('stripe_customer_id, date_of_birth')
+                    .select('stripe_customer_id, date_of_birth, phone_number')
                     .eq('id', submission.user_id)
                     .single();
 
@@ -2767,13 +2767,28 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
                 // 2.1 Send Approval SMS
                 console.log('Submission approved. Sending status SMS...');
-                await supabase.functions.invoke('send-sms', {
-                    method: 'POST',
-                    body: {
-                        phone: formData.shipping_phone || submission.shipping_phone,
-                        message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
-                    }
-                }).catch(err => console.warn('Approval SMS failed:', err));
+                const rawPhone = formData.shipping_phone || submission.shipping_phone || profileData?.phone_number;
+                const cleanPhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = cleanPhone(rawPhone);
+
+                if (finalPhone) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
+                        }
+                    }).catch(err => console.warn('Approval SMS failed:', err));
+                } else {
+                    console.warn('No valid phone number found for approval SMS');
+                }
             }
 
             // 3. If rejected, send email & SMS notification
@@ -2795,13 +2810,26 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                 }
 
                 // Send Rejection SMS
-                await supabase.functions.invoke('send-sms', {
-                    method: 'POST',
-                    body: {
-                        phone: formData.shipping_phone || submission.shipping_phone,
-                        message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
-                    }
-                }).catch(err => console.warn('Rejection SMS failed:', err));
+                const rawPhoneRej = formData.shipping_phone || submission.shipping_phone || profileData?.phone_number;
+                const cleanPhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhoneRej = cleanPhone(rawPhoneRej);
+
+                if (finalPhoneRej) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhoneRej,
+                            message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
+                        }
+                    }).catch(err => console.warn('Rejection SMS failed:', err));
+                }
             }
 
             onAction(); // Refresh data
@@ -4404,11 +4432,13 @@ const SubscriberAnalytics = () => {
     const [activeTab, setActiveTab] = useState('active');
     const [subscribers, setSubscribers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(null);
     const [page, setPage] = useState(1);
     const pageSize = 10;
 
     useEffect(() => {
         const fetchSubscribers = async () => {
+            setFetchError(null);
             try {
                 // Fetch profiles that have either active status OR a stripe id (meaning they were subscribed)
                 const { data, error } = await supabase
@@ -4417,10 +4447,16 @@ const SubscriberAnalytics = () => {
                     .or('subscribe_status.eq.true,stripe_subscription_id.neq.null')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('[SubscriberAnalytics] Supabase error:', error);
+                    setFetchError(error.message || 'Access denied. Your role may not have a SELECT policy on the profiles table.');
+                    return;
+                }
+                console.log('[SubscriberAnalytics] Subscribers loaded:', data?.length);
                 setSubscribers(data || []);
             } catch (err) {
-                console.error('Error fetching subscribers:', err);
+                console.error('[SubscriberAnalytics] Exception:', err);
+                setFetchError(err.message);
             } finally {
                 setLoading(false);
             }
@@ -4443,6 +4479,19 @@ const SubscriberAnalytics = () => {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
+
+            {/* RLS / Access Error Banner */}
+            {fetchError && (
+                <div className="p-6 rounded-3xl border border-red-500/20 bg-red-500/5 flex items-start gap-4">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" className="shrink-0 mt-0.5"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">Access Error — Subscriber Data Unavailable</p>
+                        <p className="text-xs text-red-300/70">{fetchError}</p>
+                        <p className="text-[9px] text-white/25 mt-2">An admin needs to add a SELECT policy on <code className="text-white/40">profiles</code> for your role in Supabase to view subscriber data.</p>
+                    </div>
+                </div>
+            )}
+
             {/* Stats Header */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div
@@ -4585,10 +4634,68 @@ const PatientExpressEntry = () => {
     const [step, setStep] = useState('category'); // category, email, form, success
     const [selectedCategory, setSelectedCategory] = useState('');
     const [patientEmail, setPatientEmail] = useState('');
+    const [patientPhone, setPatientPhone] = useState('');
+    const [selectedCountryCode, setSelectedCountryCode] = useState('+1');
+    const [countrySearch, setCountrySearch] = useState('');
+    const [showCountryList, setShowCountryList] = useState(false);
     const [checking, setChecking] = useState(false);
     const [existingInfo, setExistingInfo] = useState(null);
     const [answers, setAnswers] = useState({});
     const [submitting, setSubmitting] = useState(false);
+
+    const countryCodes = [
+        { code: '+1', name: 'United States', flag: '🇺🇸' },
+        { code: '+1', name: 'Canada', flag: '🇨🇦' },
+        { code: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+        { code: '+61', name: 'Australia', flag: '🇦🇺' },
+        { code: '+234', name: 'Nigeria', flag: '🇳🇬' },
+        { code: '+91', name: 'India', flag: '🇮🇳' },
+        { code: '+971', name: 'UAE', flag: '🇦🇪' },
+        { code: '+33', name: 'France', flag: '🇫🇷' },
+        { code: '+49', name: 'Germany', flag: '🇩🇪' },
+        { code: '+81', name: 'Japan', flag: '🇯🇵' },
+        { code: '+86', name: 'China', flag: '🇨🇳' },
+        { code: '+52', name: 'Mexico', flag: '🇲🇽' },
+        { code: '+55', name: 'Brazil', flag: '🇧🇷' },
+        { code: '+27', name: 'South Africa', flag: '🇿🇦' },
+        { code: '+34', name: 'Spain', flag: '🇪🇸' },
+        { code: '+39', name: 'Italy', flag: '🇮🇹' },
+        { code: '+7', name: 'Russia', flag: '🇷🇺' },
+        { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+        { code: '+31', name: 'Netherlands', flag: '🇳🇱' },
+        { code: '+41', name: 'Switzerland', flag: '🇨🇭' },
+        { code: '+46', name: 'Sweden', flag: '🇸🇪' },
+        { code: '+47', name: 'Norway', flag: '🇳🇴' },
+        { code: '+45', name: 'Denmark', flag: '🇩🇰' },
+        { code: '+353', name: 'Ireland', flag: '🇮🇪' },
+        { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
+        { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+        { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
+        { code: '+66', name: 'Thailand', flag: '🇹🇭' },
+        { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
+        { code: '+63', name: 'Philippines', flag: '🇵🇭' },
+        { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
+        { code: '+90', name: 'Turkey', flag: '🇹🇷' },
+        { code: '+966', name: 'Saudi Arabia', flag: '🇸🇦' },
+        { code: '+972', name: 'Israel', flag: '🇮🇱' },
+        { code: '+20', name: 'Egypt', flag: '🇪🇬' }
+    ];
+
+    const filteredCountries = countryCodes.filter(c =>
+        c.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
+        c.code.includes(countrySearch)
+    );
+
+    const formatPhone = (value) => {
+        if (!value) return value;
+        const phone = value.replace(/[^\d]/g, '');
+        const phoneLength = phone.length;
+        if (phoneLength < 4) return phone;
+        if (phoneLength < 7) {
+            return `(${phone.slice(0, 3)}) ${phone.slice(3)}`;
+        }
+        return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+    };
 
     const categories = [
         { id: 'weight-loss', label: 'Weight Loss', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
@@ -4611,6 +4718,14 @@ const PatientExpressEntry = () => {
         setExistingInfo(null);
 
         try {
+            const fullPhone = `${selectedCountryCode}${patientPhone.replace(/\D/g, '')}`;
+            // Update prescription state with current email and phone
+            setPrescription(prev => ({
+                ...prev,
+                patientEmail: patientEmail,
+                patientPhone: fullPhone
+            }));
+
             // Check for existing submissions with this email and category
             const { data, error } = await supabase
                 .from('form_submissions')
@@ -4650,10 +4765,10 @@ const PatientExpressEntry = () => {
     const [prescription, setPrescription] = useState({
         providerName: '',
         date: new Date().toISOString().split('T')[0],
-        patientName: 'EE E',
-        patientDob: '2026-02-02',
-        patientAddress: 'EE, E, E, E 333',
-        patientPhone: '(444) 333-3333',
+        patientName: '',
+        patientDob: '',
+        patientAddress: '',
+        patientPhone: '',
         patientEmail: '',
         allergies: 'ggg',
         medication: 'Semaglutide', // Semaglutide | Tirzepatide
@@ -4726,7 +4841,7 @@ const PatientExpressEntry = () => {
                 shipping_city: '-',
                 shipping_state: '-',
                 shipping_zip: '-',
-                shipping_phone: '-',
+                shipping_phone: prescription.patientPhone || '-',
                 // Store prescription data if available
                 ...(selectedCategory === 'weight-loss' && {
                     additional_health_info: { prescription: prescription }, // Storing in JSONB column
@@ -4739,15 +4854,44 @@ const PatientExpressEntry = () => {
 
             // Send User Setup Email
             try {
+                const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || 'Treatment';
                 const { error: emailError } = await supabase.functions.invoke('send-email', {
                     body: {
                         type: 'USER_SETUP',
-                        email: patientEmail
+                        email: patientEmail,
+                        category: categoryLabel
                     }
                 });
                 if (emailError) console.error('Error sending setup email:', emailError);
             } catch (emailErr) {
                 console.error('Failed to invoke email function:', emailErr);
+            }
+
+            // Send Approval SMS for Express Entry
+            try {
+                const rawPhone = prescription.patientPhone;
+                const normalizePhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = normalizePhone(rawPhone);
+
+                if (finalPhone) {
+                    const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || 'Treatment';
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Congratulations! Your ${categoryLabel} assessment has been APPROVED. Log in to your account (${patientEmail}) to complete your setup and start treatment.`
+                        }
+                    });
+                }
+            } catch (smsErr) {
+                console.warn('Express Entry SMS failed:', smsErr);
             }
 
             setStep('success');
@@ -4884,14 +5028,74 @@ const PatientExpressEntry = () => {
                     <p className="text-[10px] uppercase tracking-widest text-white/50 mb-8 font-bold">Enter patient email to verify records</p>
 
                     <form onSubmit={checkEmail} className="space-y-6">
-                        <input
-                            type="email"
-                            required
-                            placeholder="patient@example.com"
-                            value={patientEmail}
-                            onChange={(e) => setPatientEmail(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
-                        />
+                        <div className="relative group">
+                            <input
+                                type="email"
+                                required
+                                placeholder="Patient Email (patient@example.com)"
+                                value={patientEmail}
+                                onChange={(e) => setPatientEmail(e.target.value)}
+                                className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
+                            />
+                        </div>
+
+                        <div className="flex gap-3">
+                            <div className="relative w-32 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCountryList(!showCountryList)}
+                                    className="w-full h-full bg-black/20 border border-white/10 rounded-2xl py-4 px-2 flex items-center justify-center gap-2 text-white font-bold transition-all hover:bg-white/5"
+                                >
+                                    <span className="text-lg">{countryCodes.find(c => c.code === selectedCountryCode)?.flag || '🇺🇸'}</span>
+                                    <span className="text-xs">{selectedCountryCode}</span>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform ${showCountryList ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+                                </button>
+
+                                {showCountryList && (
+                                    <div className="absolute bottom-full left-0 w-64 mb-2 bg-[#111111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                        <div className="p-3 border-b border-white/5">
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                placeholder="Search country..."
+                                                value={countrySearch}
+                                                onChange={(e) => setCountrySearch(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-[10px] text-white focus:outline-none focus:border-white/30"
+                                            />
+                                        </div>
+                                        <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+                                            {filteredCountries.map((c, i) => (
+                                                <button
+                                                    key={`${c.code}-${i}`}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedCountryCode(c.code);
+                                                        setShowCountryList(false);
+                                                        setCountrySearch('');
+                                                    }}
+                                                    className="w-full p-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left border-b border-white/5 last:border-0"
+                                                >
+                                                    <span className="text-lg">{c.flag}</span>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] font-black uppercase text-white">{c.name}</span>
+                                                        <span className="text-[9px] text-white/40 font-bold">{c.code}</span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <input
+                                type="tel"
+                                required
+                                placeholder="Phone number"
+                                value={patientPhone}
+                                onChange={(e) => setPatientPhone(formatPhone(e.target.value))}
+                                className="flex-1 bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-white font-bold focus:outline-none focus:border-accent-black transition-all"
+                            />
+                        </div>
                         <div className="flex gap-4">
                             <button
                                 type="button"
@@ -5041,7 +5245,7 @@ const PatientExpressEntry = () => {
                                 <input placeholder="Patient Full Name" value={prescription.patientName} onChange={e => handlePrescriptionChange('patientName', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input type="date" placeholder="DOB" value={prescription.patientDob} onChange={e => handlePrescriptionChange('patientDob', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input placeholder="Address" value={prescription.patientAddress} onChange={e => handlePrescriptionChange('patientAddress', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
-                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
+                                <input placeholder="Phone" value={prescription.patientPhone} onChange={e => handlePrescriptionChange('patientPhone', formatPhone(e.target.value))} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <input placeholder="Email" value={prescription.patientEmail} onChange={e => handlePrescriptionChange('patientEmail', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black" />
                                 <textarea placeholder="Drug Allergies" value={prescription.allergies} onChange={e => handlePrescriptionChange('allergies', e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-accent-black h-24" />
                             </div>
@@ -6834,8 +7038,8 @@ const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
-    const [monthFilter, setMonthFilter] = useState('current'); // 'current', 'previous', 'all'
-    const [selectedDate, setSelectedDate] = useState(''); // New: Calendar Filter
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [page, setPage] = useState(1);
     const pageSize = 10;
     const [updatingId, setUpdatingId] = useState(null);
@@ -6847,7 +7051,7 @@ const OrderManagement = () => {
         try {
             const { data, error } = await supabase
                 .from('orders')
-                .select('*, profiles(id, first_name, last_name, email)')
+                .select('*, profiles(id, first_name, last_name, email, phone_number)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -6872,6 +7076,40 @@ const OrderManagement = () => {
                 .eq('id', orderId);
 
             if (error) throw error;
+
+            // Send SMS notification if status changed to 'in transit' or 'delivered'
+            if (updates.delivery_status) {
+                const order = orders.find(o => o.id === orderId);
+                if (order) {
+                    const rawPhone = order.profiles?.phone_number;
+                    const normalizePhone = (p) => {
+                        if (!p || p === '-') return null;
+                        const digits = p.replace(/\D/g, '');
+                        if (digits.length === 10) return `+1${digits}`;
+                        if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                        if (digits.length > 10) return `+${digits}`;
+                        return digits.length > 0 ? `+1${digits}` : null;
+                    };
+                    const finalPhone = normalizePhone(rawPhone);
+
+                    if (finalPhone) {
+                        let message = '';
+                        if (updates.delivery_status === 'in transit') {
+                            message = `Your GLP-GLOW order has been shipped! You can track the progress in your patient dashboard.`;
+                        } else if (updates.delivery_status === 'delivered') {
+                            message = `Your GLP-GLOW order was delivered! Check your package for treatment instructions and start your journey.`;
+                        }
+
+                        if (message) {
+                            await supabase.functions.invoke('send-sms', {
+                                method: 'POST',
+                                body: { phone: finalPhone, message }
+                            }).catch(err => console.warn('Status update SMS failed:', err));
+                        }
+                    }
+                }
+            }
+
             await fetchOrders();
         } catch (err) {
             console.error('Status update failed:', err);
@@ -6919,6 +7157,32 @@ const OrderManagement = () => {
                 toast.success('Tracking updated and patient has been notified.');
             }
 
+            // 3. Send SMS Notification
+            try {
+                const rawPhone = order.profiles?.phone_number;
+                const normalizePhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = normalizePhone(rawPhone);
+
+                if (finalPhone) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Your GLP-GLOW order has been shipped! Tracking Number: ${trackingId}. Details: https://www.fedex.com/fedextrack/?tracknumbers=${trackingId}`
+                        }
+                    });
+                }
+            } catch (smsErr) {
+                console.warn('Tracking SMS failed:', smsErr);
+            }
+
             await fetchOrders();
             setEditingTrackingId(null);
         } catch (err) {
@@ -6934,22 +7198,10 @@ const OrderManagement = () => {
         const orderDate = new Date(o.created_at);
 
         // Calendar Date Filter (Higher priority if selected)
-        if (selectedDate) {
+        if (startDate || endDate) {
             const orderDateStr = o.created_at.split('T')[0];
-            if (orderDateStr !== selectedDate) return false;
-        } else {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            // Month Filter Logic
-            if (monthFilter === 'current') {
-                if (orderDate.getMonth() !== currentMonth || orderDate.getFullYear() !== currentYear) return false;
-            } else if (monthFilter === 'previous') {
-                const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-                const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-                if (orderDate.getMonth() !== prevMonth || orderDate.getFullYear() !== prevYear) return false;
-            }
+            if (startDate && orderDateStr < startDate) return false;
+            if (endDate && orderDateStr > endDate) return false;
         }
 
         // Status Filter Logic
@@ -6973,16 +7225,16 @@ const OrderManagement = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Header */}
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[32px] p-6 md:p-8 overflow-hidden">
-                <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[32px] p-6 md:p-8 overflow-hidden">
+                <div className="flex flex-col md:flex-row flex-wrap xl:flex-nowrap gap-8">
                     <div className="space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-1">Fulfillment Status</p>
-                        <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white ml-1">Fulfillment Status</p>
+                        <div className="flex flex-wrap gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
                             {['all', 'processing', 'shipped', 'delivered'].map(f => (
                                 <button
                                     key={f}
                                     onClick={() => { setFilter(f); setPage(1); }}
-                                    className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-[#111111] text-white shadow-lg' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                                    className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-[#111111] text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
                                 >
                                     {f}
                                 </button>
@@ -6990,38 +7242,35 @@ const OrderManagement = () => {
                         </div>
                     </div>
 
-                    <div className="w-px h-12 bg-white/5 hidden md:block self-end mb-2"></div>
+                    <div className="w-px h-12 bg-white/5 hidden xl:block self-end mb-2"></div>
 
-                    <div className="space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-1">Time Period</p>
-                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                            <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
-                                {[
-                                    { id: 'current', label: 'Current Month' },
-                                    { id: 'previous', label: 'Previous Month' },
-                                    { id: 'all', label: 'All History' }
-                                ].map(m => (
-                                    <button
-                                        key={m.id}
-                                        onClick={() => { setMonthFilter(m.id); setSelectedDate(''); setPage(1); }}
-                                        className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${(!selectedDate && monthFilter === m.id) ? 'bg-[#bfff00] text-black shadow-lg font-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
-                                    >
-                                        {m.label}
-                                    </button>
-                                ))}
-                            </div>
-
+                    <div className="space-y-4 flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white ml-1">Time Period</p>
+                        <div className="flex flex-col lg:flex-row flex-wrap gap-4 items-start lg:items-center">
                             {/* Calendar Filter */}
-                            <div className="flex items-center gap-3 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
-                                <input
-                                    type="date"
-                                    value={selectedDate}
-                                    onChange={(e) => { setSelectedDate(e.target.value); setPage(1); }}
-                                    className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white/80 focus:outline-none px-4 py-1.5 [color-scheme:dark]"
-                                />
-                                {selectedDate && (
+                            <div className="flex flex-col sm:flex-row items-center gap-3 p-1.5 bg-black/40 border border-white/10 rounded-2xl w-full sm:w-auto">
+                                <div className="flex items-center gap-2 flex-1 w-full">
+                                    <span className="text-[8px] font-black text-white/30 uppercase ml-2">From</span>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+                                        className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white focus:outline-none px-2 py-1.5 [color-scheme:dark] flex-1 min-w-[100px]"
+                                    />
+                                </div>
+                                <div className="w-px h-4 bg-white/10 hidden sm:block"></div>
+                                <div className="flex items-center gap-2 flex-1 w-full">
+                                    <span className="text-[8px] font-black text-white/30 uppercase">To</span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+                                        className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white focus:outline-none px-2 py-1.5 [color-scheme:dark] flex-1 min-w-[100px]"
+                                    />
+                                </div>
+                                {(startDate || endDate) && (
                                     <button
-                                        onClick={() => setSelectedDate('')}
+                                        onClick={() => { setStartDate(''); setEndDate(''); }}
                                         className="pr-4 text-white/30 hover:text-white transition-all"
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -7032,10 +7281,6 @@ const OrderManagement = () => {
                     </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end gap-1">
-                    <p className="text-4xl font-black text-white tracking-tighter">{filteredOrders.length}</p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#bfff00]">Total Matches in View</p>
-                </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-6">
@@ -7636,7 +7881,6 @@ const ProfitTrackerView = () => {
 // STATEMENTS ? Admin View
 // -------------------------------------------------------------
 const StatementDocument = ({ stmt, rates }) => {
-    const LOGO_TEXT = ['u', 'Glow', 'MD'];
     const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const periodLabel = stmt.period_label || `${stmt.month_name} ${stmt.year}`;
     const newTotal = (rates?.new_patient_rate ?? stmt.new_patient_rate ?? 5) * (stmt.new_patient_count ?? 0);
@@ -7671,10 +7915,8 @@ const StatementDocument = ({ stmt, rates }) => {
                     </div>
                     {/* uGlowMD Logo ? top right, large */}
                     <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                            <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', display: 'inline-block' }} />
-                        </div>
-                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Portal</div>
+                        <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', display: 'inline-block', filter: 'brightness(0)' }} />
+                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Portal</div>
                     </div>
                 </div>
 
@@ -7742,7 +7984,7 @@ const StatementDocument = ({ stmt, rates }) => {
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
                 </div>
             </div>
@@ -7756,9 +7998,7 @@ const StatementDocument = ({ stmt, rates }) => {
                         <div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                            <img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} />
-                        </div>
+                        <img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block', filter: 'brightness(0)' }} />
                     </div>
                 </div>
 
@@ -7835,17 +8075,17 @@ const StatementDocument = ({ stmt, rates }) => {
                 </div>
 
                 {/* Grand Total ? Page 2 */}
-                <div style={{ borderTop: '2px solid #111', paddingTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '8px' }}>Total Payout to Provider</div>
-                        <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', color: '#111' }}>{fmtMoney(grandTotal)}</div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <div style={{ backgroundColor: '#111', color: '#fff', borderRadius: '16px', padding: '24px 40px', textAlign: 'right', minWidth: '280px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>Total Payout to Provider</div>
+                        <div style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.03em', color: '#FFDE59' }}>{fmtMoney(grandTotal)}</div>
                         <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{stmt.new_patient_count ?? 0} new + {stmt.recurring_patient_count ?? 0} recurring patients</div>
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div style={{ position: 'absolute', bottom: '40px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
+                    <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
                     <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
                 </div>
             </div>
@@ -7870,6 +8110,13 @@ const StatementsAdminView = () => {
     const [editForm, setEditForm] = useState({});
 
     const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    // Default to prior month
+    const now = new Date();
+    const defaultMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const defaultYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
+    const [selectedYear, setSelectedYear] = useState(defaultYear);
 
     const getPriorMonthRange = () => {
         const now = new Date();
@@ -7909,7 +8156,18 @@ const StatementsAdminView = () => {
     const handleGenerate = async () => {
         setGenerating(true); setMsg(null);
         try {
-            const { year, month, month_name, start, end } = getPriorMonthRange();
+            const year = selectedYear;
+            const month = selectedMonth;
+            const month_name = MONTHS[month];
+
+            // Build date range for the full selected calendar month (local midnight to end of day)
+            const start = new Date(year, month, 1);
+            const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+            const startISO = start.toISOString();
+            const endISO = end.toISOString();
+
+            console.log(`[Statements] Generating for ${month_name} ${year}`);
+            console.log(`[Statements] Date range: ${startISO} → ${endISO}`);
 
             // Check if already exists
             const { data: existing } = await supabase
@@ -7919,24 +8177,28 @@ const StatementsAdminView = () => {
                 .eq('month', month)
                 .maybeSingle();
             if (existing) {
-                setMsg({ type: 'error', text: `Statement for ${month_name} ${year} already exists.` });
+                setMsg({ type: 'error', text: `Statement for ${month_name} ${year} already exists. Delete it first to regenerate.` });
                 setGenerating(false);
                 return;
             }
 
-            // Count new patients (profiles created in range)
-            const { data: newPatients } = await supabase
+            // New patients: profiles created within the selected month
+            const { data: newPatients, error: newErr } = await supabase
                 .from('profiles')
                 .select('id, first_name, last_name, email, created_at')
-                .gte('created_at', start)
-                .lte('created_at', end);
+                .gte('created_at', startISO)
+                .lte('created_at', endISO);
+            if (newErr) console.error('[Statements] New patients query error:', newErr);
+            console.log(`[Statements] New patients found: ${(newPatients || []).length}`, newPatients);
 
-            // Count recurring active subscribers (subscribe_status = true, subscribed before end of prior month)
-            const { data: recurringPatients } = await supabase
+            // Recurring: active subscribers who joined BEFORE this month (not new this month)
+            const { data: recurringPatients, error: recErr } = await supabase
                 .from('profiles')
                 .select('id, first_name, last_name, email, created_at')
                 .eq('subscribe_status', true)
-                .lt('created_at', start); // active but not new this month
+                .lt('created_at', startISO);
+            if (recErr) console.error('[Statements] Recurring query error:', recErr);
+            console.log(`[Statements] Recurring patients found: ${(recurringPatients || []).length}`, recurringPatients);
 
             const newCount = (newPatients || []).length;
             const recurringCount = (recurringPatients || []).length;
@@ -7944,7 +8206,7 @@ const StatementsAdminView = () => {
             const recurringRate = rates.recurring_patient_rate;
             const totalPayout = (newCount * newRate) + (recurringCount * recurringRate);
 
-            const releaseDate = new Date(year, month + 1, 5).toISOString(); // 5th of following month
+            const releaseDate = new Date(year, month + 1, 5).toISOString();
 
             const newStmt = {
                 year, month, month_name,
@@ -7963,7 +8225,7 @@ const StatementsAdminView = () => {
 
             const { error } = await supabase.from('provider_statements').insert([newStmt]);
             if (error) throw error;
-            setMsg({ type: 'success', text: `Statement for ${month_name} ${year} generated successfully! ${newCount} new + ${recurringCount} recurring = ${fmtMoney(totalPayout)}` });
+            setMsg({ type: 'success', text: `Statement for ${month_name} ${year} generated — ${newCount} new + ${recurringCount} recurring = ${fmtMoney(totalPayout)}` });
             fetchStatements();
         } catch (err) {
             setMsg({ type: 'error', text: err.message });
@@ -8025,9 +8287,49 @@ const StatementsAdminView = () => {
         }
     };
 
-    const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const inputStyle = { width: '100%', boxSizing: 'border-box', backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', color: '#fff', outline: 'none', fontFamily: 'inherit' };
-    const labelStyle = { display: 'block', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.35)', marginBottom: '6px' };
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to permanently delete this statement? This cannot be undone.')) return;
+        setSaving(true);
+        try {
+            const { error } = await supabase.from('provider_statements').delete().eq('id', id);
+            if (error) throw error;
+            setMsg({ type: 'success', text: 'Statement deleted successfully.' });
+            if (selectedStmt?.id === id) { setSelectedStmt(null); setEditMode(false); setPreviewMode(false); }
+            fetchStatements();
+        } catch (err) {
+            setMsg({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const fmtMoney = (v) => {
+        const num = Number(v || 0);
+        return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    const inputStyle = {
+        width: '100%',
+        boxSizing: 'border-box',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        border: '1.5px solid rgba(255,255,255,0.1)',
+        borderRadius: '12px',
+        padding: '12px 16px',
+        fontSize: '14px',
+        color: '#fff',
+        outline: 'none',
+        fontFamily: 'inherit'
+    };
+
+    const labelStyle = {
+        display: 'block',
+        fontSize: '9px',
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: '0.3em',
+        color: 'rgba(255,255,255,0.35)',
+        marginBottom: '6px'
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -8063,15 +8365,53 @@ const StatementsAdminView = () => {
             </div>
 
             {/* Generate Statement */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h3 className="text-lg font-black uppercase tracking-tight">Monthly Statements</h3>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Statements auto-release on the 5th of each month for the prior full calendar month</p>
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8">
+                <div className="flex flex-col md:flex-row md:items-end gap-6 justify-between">
+                    <div className="flex-1">
+                        <h3 className="text-lg font-black uppercase tracking-tight mb-1">Monthly Statements</h3>
+                        <p className="text-[10px] text-white/40 uppercase tracking-widest">Select the month and year to generate a provider statement for</p>
+                    </div>
+                    <div className="flex flex-wrap items-end gap-4">
+                        {/* Month Selector */}
+                        <div>
+                            <label style={labelStyle}>Month</label>
+                            <select
+                                value={selectedMonth}
+                                onChange={e => setSelectedMonth(Number(e.target.value))}
+                                style={{ ...inputStyle, width: '160px', cursor: 'pointer' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            >
+                                {MONTHS.map((m, i) => (
+                                    <option key={i} value={i} style={{ backgroundColor: '#0A0A0A' }}>{m}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {/* Year Selector */}
+                        <div>
+                            <label style={labelStyle}>Year</label>
+                            <select
+                                value={selectedYear}
+                                onChange={e => setSelectedYear(Number(e.target.value))}
+                                style={{ ...inputStyle, width: '110px', cursor: 'pointer' }}
+                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            >
+                                {[2023, 2024, 2025, 2026, 2027].map(y => (
+                                    <option key={y} value={y} style={{ backgroundColor: '#0A0A0A' }}>{y}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <button
+                            onClick={handleGenerate}
+                            disabled={generating}
+                            className="flex items-center gap-2 px-6 py-3 bg-[#FFDE59] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14" /></svg>
+                            {generating ? 'Generating...' : 'Generate Statement'}
+                        </button>
+                    </div>
                 </div>
-                <button onClick={handleGenerate} disabled={generating} className="flex items-center gap-2 px-6 py-3 bg-[#FFDE59] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 5v14M5 12h14" /></svg>
-                    {generating ? 'Generating...' : 'Generate Statement'}
-                </button>
             </div>
 
             {/* Statement List */}
@@ -8106,10 +8446,54 @@ const StatementsAdminView = () => {
                                 <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${stmt.status === 'approved' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
                                     {stmt.status === 'approved' ? 'Approved' : 'Pending Review'}
                                 </span>
-                                <button onClick={() => { setSelectedStmt(stmt); setEditMode(false); setPreviewMode(false); setEditForm({ new_patient_count: stmt.new_patient_count, recurring_patient_count: stmt.recurring_patient_count, new_patient_rate: stmt.new_patient_rate, recurring_patient_rate: stmt.recurring_patient_rate, total_payout_override: '' }); }} className="px-4 py-2 bg-accent-black/10 border border-accent-black/20 text-accent-black rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-accent-black/20 transition-all">Review</button>
+                                <button
+                                    onClick={() => {
+                                        setSelectedStmt(stmt);
+                                        setEditMode(false);
+                                        setPreviewMode(true);
+                                        setEditForm({
+                                            new_patient_count: stmt.new_patient_count,
+                                            recurring_patient_count: stmt.recurring_patient_count,
+                                            new_patient_rate: stmt.new_patient_rate,
+                                            recurring_patient_rate: stmt.recurring_patient_rate,
+                                            total_payout_override: ''
+                                        });
+                                    }}
+                                    className="px-4 py-2 bg-[#FFDE59] text-black rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v4h12v-4m-12 0h12" /></svg>
+                                    View Statement
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setSelectedStmt(stmt);
+                                        setEditMode(false);
+                                        setPreviewMode(false);
+                                        setEditForm({
+                                            new_patient_count: stmt.new_patient_count,
+                                            recurring_patient_count: stmt.recurring_patient_count,
+                                            new_patient_rate: stmt.new_patient_rate,
+                                            recurring_patient_rate: stmt.recurring_patient_rate,
+                                            total_payout_override: ''
+                                        });
+                                    }}
+                                    className="px-4 py-2 bg-white/5 border border-white/10 text-white/60 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                                >
+                                    Manage
+                                </button>
                                 {stmt.status !== 'approved' && (
                                     <button onClick={() => handleApprove(stmt.id)} disabled={saving} className="px-4 py-2 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-green-500/20 transition-all disabled:opacity-50">Approve</button>
                                 )}
+                                <button
+                                    onClick={() => handleDelete(stmt.id)}
+                                    disabled={saving}
+                                    title="Delete Statement"
+                                    className="w-9 h-9 flex items-center justify-center rounded-xl border border-red-500/20 text-red-500/60 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all disabled:opacity-30"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -8195,6 +8579,114 @@ const StatementsAdminView = () => {
     );
 };
 
+
+// --- Statements Provider View (read-only, approved only) ---
+const StatementsProviderView = () => {
+    const [statements, setStatements] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(null);
+    const [selectedStmt, setSelectedStmt] = useState(null);
+    const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    useEffect(() => {
+        const fetchApproved = async () => {
+            setLoading(true);
+            setFetchError(null);
+            const { data, error } = await supabase
+                .from('provider_statements')
+                .select('*')
+                .eq('status', 'approved')
+                .order('year', { ascending: false })
+                .order('month', { ascending: false });
+            if (error) {
+                console.error('[StatementsProviderView] Supabase error:', error);
+                setFetchError(error.message || 'Could not load statements. Your account may not have read access to this table.');
+            } else {
+                console.log('[StatementsProviderView] Loaded:', data?.length, data);
+                setStatements(data || []);
+            }
+            setLoading(false);
+        };
+        fetchApproved();
+    }, []);
+
+    if (loading) return (
+        <div className="py-24 flex flex-col items-center justify-center gap-4">
+            <div className="w-10 h-10 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Loading Statements...</p>
+        </div>
+    );
+
+    if (fetchError) return (
+        <div className="py-16 px-8 text-center border-2 border-dashed border-red-500/20 rounded-3xl bg-red-500/5">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,0.5)" strokeWidth="1.5" className="mx-auto mb-4"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+            <p className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-2">Access Error</p>
+            <p className="text-xs text-red-300/70 max-w-md mx-auto">{fetchError}</p>
+            <p className="text-[9px] text-white/20 mt-4">An admin needs to add a SELECT policy on <code className="text-white/30">provider_statements</code> for your role in Supabase.</p>
+        </div>
+    );
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-700">
+            {selectedStmt ? (
+                <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-3xl flex items-start justify-center p-4 md:p-8 overflow-y-auto animate-in fade-in duration-300">
+                    <div className="w-full max-w-5xl">
+                        <div className="bg-[#111111] border border-white/10 rounded-[32px] p-6 mb-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Statement Document</p>
+                                <h3 className="text-xl font-black uppercase tracking-tight">{selectedStmt.period_label}</h3>
+                            </div>
+                            <button onClick={() => setSelectedStmt(null)} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5 transition-all">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <div style={{ backgroundColor: '#e5e7eb', padding: '28px', borderRadius: '20px' }}>
+                            <StatementDocument stmt={selectedStmt} rates={{ new_patient_rate: selectedStmt.new_patient_rate, recurring_patient_rate: selectedStmt.recurring_patient_rate }} />
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+
+            {statements.length === 0 ? (
+                <div className="text-center py-32 border-2 border-dashed border-white/10 rounded-3xl">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" className="mx-auto mb-4"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30">No approved statements available yet</p>
+                    <p className="text-[9px] text-white/20 mt-2">Statements are released on the 5th of each month after admin review</p>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {statements.map(stmt => (
+                        <div key={stmt.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-[#FFDE59]/10 flex items-center justify-center shrink-0">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} &middot; {stmt.new_patient_count ?? 0} new &middot; {stmt.recurring_patient_count ?? 0} recurring</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 flex-wrap">
+                                <div className="text-right">
+                                    <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">Your Payout</p>
+                                    <p className="text-xl font-black text-[#FFDE59]">{fmtMoney(stmt.total_payout)}</p>
+                                </div>
+                                <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest bg-green-500/10 text-green-400">Approved</span>
+                                <button
+                                    onClick={() => setSelectedStmt(stmt)}
+                                    className="px-5 py-2.5 bg-[#FFDE59] text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2m-12 0v4h12v-4m-12 0h12" /></svg>
+                                    View Statement
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 // --- Blog Management ---
 const BlogManagement = () => {
@@ -8795,11 +9287,31 @@ const AdminDashboard = () => {
         { id: 'subscribers', label: 'Subscribers', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
         { id: 'discounts', label: 'Discounts', icon: 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' },
         { id: 'patient-express', label: 'Patient Express', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
         { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
     ];
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex">
+        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex admin-dashboard-root">
+            <style>{`
+                .admin-dashboard-root input::placeholder,
+                .admin-dashboard-root textarea::placeholder {
+                    color: rgba(255, 255, 255, 1) !important;
+                }
+                .admin-dashboard-root select option {
+                    background-color: #0A0A0A;
+                    color: white;
+                }
+                .admin-dashboard-root .text-white\\/10,
+                .admin-dashboard-root .text-white\\/20,
+                .admin-dashboard-root .text-white\\/30,
+                .admin-dashboard-root .text-white\\/40,
+                .admin-dashboard-root .text-white\\/50,
+                .admin-dashboard-root .text-white\\/60,
+                .admin-dashboard-root .text-white\\/70 {
+                    color: white !important;
+                }
+            `}</style>
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase tracking-tighter" onClick={() => navigate('/')}>
@@ -8914,7 +9426,7 @@ const AdminDashboard = () => {
                         {(role === 'admin' || role === 'marketing_rep') && <Route path="profit-tracker" element={<ProfitTrackerView />} />}
                         <Route path="patient-express" element={<PatientExpressEntry />} />
                         {(role === 'admin' || role === 'marketing_rep') && <Route path="surveys" element={<SurveyManagement />} />}
-                        {(role === 'admin' || role === 'marketing_rep') && <Route path="statements" element={<StatementsAdminView />} />}
+                        {(role === 'admin' || role === 'marketing_rep' || isSubAdmin) && <Route path="statements" element={role === 'admin' ? <StatementsAdminView /> : <StatementsProviderView />} />}
                         {(role === 'admin' || role === 'marketing_rep') && <Route path="waitlist" element={<WaitlistView />} />}
                         {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
                         <Route path="settings" element={<SettingsView user={user} role={role} />} />

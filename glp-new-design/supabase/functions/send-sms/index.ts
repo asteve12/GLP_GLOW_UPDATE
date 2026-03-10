@@ -32,31 +32,47 @@ serve(async (req) => {
             });
         }
 
+        const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+        const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+        const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
+
+        if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+            console.error("Missing Twilio credentials in environment variables");
+            return new Response(JSON.stringify({ error: "SMS service misconfigured (Missing credentials)" }), {
+                status: 500,
+                headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+            });
+        }
+
         console.log(`[SMS] Sending to: ${phone} | Message: ${message}`);
 
-        // === PLACEHOLDER FOR ACTUAL SMS PROVIDER ===
-        // If you use Twilio, you would use:
-        // const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
-        // const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
-        // const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
-        // 
-        // const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
-        //   method: "POST",
-        //   headers: {
-        //     Authorization: `Basic ${btoa(TWILIO_ACCOUNT_SID + ":" + TWILIO_AUTH_TOKEN)}`,
-        //     "Content-Type": "application/x-www-form-urlencoded",
-        //   },
-        //   body: new URLSearchParams({ From: TWILIO_PHONE_NUMBER, To: phone, Body: message }),
-        // });
-        // ===========================================
+        const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
+            method: "POST",
+            headers: {
+                Authorization: `Basic ${btoa(TWILIO_ACCOUNT_SID + ":" + TWILIO_AUTH_TOKEN)}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ From: TWILIO_PHONE_NUMBER, To: phone, Body: message }),
+        });
 
-        // For now, we return success assuming the backend logs are the primary verification
-        // Since this is for a browser-called function, the key fix is the CORS header above.
+        const twilioData = await res.json();
+
+        if (!res.ok) {
+            console.error("Twilio API error:", twilioData);
+            return new Response(JSON.stringify({
+                error: "Failed to send SMS via provider",
+                details: twilioData.message
+            }), {
+                status: res.status,
+                headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+            });
+        }
 
         return new Response(JSON.stringify({
             success: true,
             sent_to: phone,
-            message: "SMS sent successfully (Endpoint logic executed successfully)"
+            sid: twilioData.sid,
+            message: "SMS sent successfully"
         }), {
             status: 200,
             headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
