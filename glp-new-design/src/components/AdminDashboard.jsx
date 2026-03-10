@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 import { supabase } from '../lib/supabaseClient';
@@ -33,7 +33,7 @@ const getMasterProductMap = () => {
     };
 
     // 1. Weight Loss Injections
-    add('semaglutide-injection', 'Semaglutide Injection', 'Weight Loss', [
+    add('semaglutide-injection', 'Semaglutide (Subq Inj)', 'Weight Loss', [
         { dosage: '0.25 mg', plans: [{ name: 'Monthly', price: '99.99' }, { name: '3 Month', price: '269.99' }, { name: '6 Month', price: '499.99' }] },
         { dosage: '0.5 mg', plans: [{ name: 'Monthly', price: '134.99' }, { name: '3 Month', price: '364.50' }, { name: '6 Month', price: '674.99' }] },
         { dosage: '1 mg', plans: [{ name: 'Monthly', price: '179.99' }, { name: '3 Month', price: '484.99' }, { name: '6 Month', price: '899.99' }] },
@@ -41,29 +41,29 @@ const getMasterProductMap = () => {
         { dosage: '2 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
         { dosage: '2.4 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
     ]);
-    add('tirzepatide-injection', 'Tirzepatide Injection', 'Weight Loss', [
+    add('tirzepatide-injection', 'Tirzepatide (Subq Inj)', 'Weight Loss', [
         { dosage: '2.5 mg', plans: [{ name: 'Monthly', price: '190.00' }, { name: '3 Month', price: '499.99' }, { name: '6 Month', price: '999.99' }] },
         { dosage: '5 mg', plans: [{ name: 'Monthly', price: '299.99' }, { name: '3 Month', price: '799.99' }, { name: '6 Month', price: '1499.99' }] },
         { dosage: '7.5 mg', plans: [{ name: 'Monthly', price: '320.00' }, { name: '3 Month', price: '864.99' }, { name: '6 Month', price: '1599.99' }] },
-        { dosage: '10 mg', plans: [{ name: 'Monthly', price: '460.00' }, { name: '1242.00', price: '1242.00' }, { name: '6 Month', price: '2299.99' }] },
-        { dosage: '12.5 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
+        { dosage: '10 mg', plans: [{ name: 'Monthly', price: '460.00' }, { name: '3 Month', price: '1242.00' }, { name: '6 Month', price: '2299.99' }] },
+        { dosage: '12 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
         { dosage: '15 mg', plans: [{ name: 'Monthly', price: '500.00' }, { name: '3 Month', price: '1349.99' }, { name: '6 Month', price: '2499.99' }] },
     ]);
 
     // 2. Hair Growth Tabs
-    add('hair-growth-tabs-3in1', 'Hair Growth Tabs (3-in-1)', 'Hair Restoration', [
-        { dosage: 'Triple Action', plans: [{ name: '30 Day Supply', price: '99.99' }, { name: '60 Day Supply', price: '179.99' }, { name: '90 Day Supply', price: '249.99' }] }
+    add('hair-growth-tabs-3in1', '3-in-1 Hair Growth Tabs', 'Hair Restoration', [
+        { dosage: 'TBA', plans: [{ name: '30 Day Supply', price: '99.99' }, { name: '60 Day Supply', price: '179.99' }, { name: '90 Day Supply', price: '249.99' }] }
     ]);
-    add('hair-growth-tabs-2in1', 'Hair Growth Tabs (2-in-1)', 'Hair Restoration', [
-        { dosage: 'Dual Action', plans: [{ name: '30 Day Supply', price: '89.99' }, { name: '60 Day Supply', price: '159.99' }, { name: '90 Day Supply', price: '224.99' }] }
+    add('hair-growth-tabs-2in1', '2-in-1 Hair Growth Tabs', 'Hair Restoration', [
+        { dosage: '1mg / 2.5mg', plans: [{ name: '30 Day Supply', price: '89.99' }, { name: '60 Day Supply', price: '159.99' }, { name: '90 Day Supply', price: '224.99' }] }
     ]);
 
     // 3. Sexual Health (Packs)
-    add('readysetgo-men', 'ReadySetGo', 'Sexual Health', [
-        { dosage: '40/14/2 mg', plans: [{ name: '6 Pack', price: '39' }, { name: '10 Pack', price: '59.99' }, { name: '17 Pack', price: '94.99' }, { name: '34 Pack', price: '189.99' }] },
-        { dosage: '65/22/2 mg', plans: [{ name: '6 Pack', price: '42' }, { name: '10 Pack', price: '62.99' }, { name: '17 Pack', price: '99.99' }, { name: '34 Pack', price: '199.99' }] },
-        { dosage: '80/22/3 mg', plans: [{ name: '6 Pack', price: '45' }, { name: '10 Pack', price: '67.50' }, { name: '17 Pack', price: '104.99' }, { name: '34 Pack', price: '209.99' }] },
-        { dosage: '110/22/3 mg', plans: [{ name: '6 Pack', price: '50' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
+    add('readysetgo-men', 'ReadySetGo (2-in-1 RDT) *Men*', 'Sexual Health', [
+        { dosage: '40 mg / 14 mg / 2 mg', plans: [{ name: '6 Pack', price: '39' }, { name: '10 Pack', price: '59.99' }, { name: '17 Pack', price: '94.99' }, { name: '34 Pack', price: '189.99' }] },
+        { dosage: '65 mg / 22 mg / 2 mg', plans: [{ name: '6 Pack', price: '42' }, { name: '10 Pack', price: '62.99' }, { name: '17 Pack', price: '99.99' }, { name: '34 Pack', price: '199.99' }] },
+        { dosage: '80 mg / 22 mg / 3 mg', plans: [{ name: '6 Pack', price: '45' }, { name: '10 Pack', price: '67.50' }, { name: '17 Pack', price: '104.99' }, { name: '34 Pack', price: '209.99' }] },
+        { dosage: '110 mg / 22 mg / 3 mg', plans: [{ name: '6 Pack', price: '50' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
     ]);
     add('growtabs-sildenafil', 'GrowTabs (Sildenafil)', 'Sexual Health', [
         { dosage: '30 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
@@ -73,61 +73,45 @@ const getMasterProductMap = () => {
         { dosage: '6 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
         { dosage: '9 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
     ]);
-    add('quicklover-women', 'QuickLover (Women)', 'Sexual Health', [
+    add('quicklover-women', 'QuickLover (RDT) - Oxytocin', 'Sexual Health', [
         { dosage: '50 IU', plans: [{ name: '6 Pack', price: '43.99' }, { name: '10 Pack', price: '64.99' }, { name: '17 Pack', price: '102.99' }, { name: '34 Pack', price: '204.99' }] },
         { dosage: '100 IU', plans: [{ name: '6 Pack', price: '49.99' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
     ]);
+    add('loverspray-nasal', 'LoverSpray (Nasal) - Oxytocin', 'Sexual Health', [
+        { dosage: '150 IU/mL (5 mL)', plans: [{ name: 'Monthly', price: '99.99' }] }
+    ]);
 
     // 4. Skincare
-    add('anti-aging-cream', 'Anti-Aging Cream', 'Skin Care', [{ dosage: 'Tretinoin', plans: [{ name: 'Once', price: '79.99' }, { name: 'Every 2 Months', price: '69.99' }, { name: 'Monthly', price: '35.00' }] }]);
-    add('face-spot-peel', 'Face Spot Peel', 'Skin Care', [{ dosage: 'AHA', plans: [{ name: 'Once', price: '99.99' }, { name: 'Every 2 Months', price: '72.00' }, { name: 'Monthly', price: '36.00' }] }]);
-    add('acne-cleanser', 'Acne Cleanser', 'Skin Care', [{ dosage: 'Salicylic', plans: [{ name: 'Once', price: '84.99' }, { name: 'Every 2 Months', price: '59.99' }, { name: 'Monthly', price: '29.99' }] }]);
-    add('rosacea-red-cream', 'Rosacea Relief Cream', 'Skin Care', [{ dosage: 'Metronidazole', plans: [{ name: 'Once', price: '114.99' }, { name: 'Every 2 Months', price: '79.99' }, { name: 'Monthly', price: '39.99' }] }]);
-    add('eye-serum', 'Eye Serum', 'Skin Care', [{ dosage: 'Peptides', plans: [{ name: 'Once', price: '114.99' }, { name: 'Monthly', price: '79.99' }] }]);
-    add('body-acne-cream', 'Body Acne Cream', 'Skin Care', [{ dosage: 'Prescription', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Months', price: '99.99' }] }]);
+    add('anti-aging-cream', 'Anti-Aging Cream - Tretinoin, Niacinamide, Hyaluronic Acid', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '79.99' }, { name: 'Every 2 Monthly', price: '69.99' }] }]);
+    add('face-spot-peel', 'Face Spot Peel - Hydroquinone, Kojic Acid, Niacinamide, Azelaic Acid, Traexamic Acid, Tretinoin', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '99.99' }, { name: 'Every 2 Monthly', price: '72.00' }] }]);
+    add('acne-cleanser', 'Acne Cleanser Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '84.99' }, { name: 'Every 2 Monthly', price: '59.99' }] }]);
+    add('rosacea-red-cream', 'Rosacea Red Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
+    add('eye-serum', 'Eye Serum', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
+    add('body-acne-cream', 'Body Acne Spots Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Monthly', price: '99.99' }] }]);
 
     // 5. Longevity
-    add('nad-nasal-spray', 'NAD+ Nasal Spray', 'Longevity', [{ dosage: '100 mg/mL', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU', plans: [{ name: 'Monthly', price: '149.99' }] }]);
-    add('nad-injection', 'NAD+ Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '119.99' }] }]);
-    add('glutathione-injection', 'Glutathione Injection', 'Longevity', [{ dosage: '200 mg/mL', plans: [{ name: 'Monthly', price: '64.99' }] }]);
+    add('nad-nasal-spray', 'NAD+ Spray (Nasal)', 'Longevity', [{ dosage: '100 mg/mL (15mL)', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU (15mL)', plans: [{ name: 'Monthly', price: '149.99' }] }]);
+    add('nad-injection', 'NAD+ (Subq Inj)', 'Longevity', [{ dosage: '200 mg/mL (5 mL)', plans: [{ name: 'Monthly', price: '119.99' }] }]);
+    add('glutathione-injection', 'Glutathione (Subq Inj)', 'Longevity', [{ dosage: '200 mg/mL (10 mL)', plans: [{ name: 'Monthly', price: '64.99' }] }]);
 
-    // 6. Generic/Other (with 1/3/6 month durations as fallback)
-    const OTHERS = [
-        { id: 'semaglutide-drops', name: 'Semaglutide sublingual drops', base: 249, cat: 'Weight Loss' },
-        { id: 'tirzepatide-drops', name: 'Tirzepatide sublingual drops', base: 349, cat: 'Weight Loss' },
-        { id: 'finasteride-tablets', name: 'Finasteride', base: 49, cat: 'Hair Restoration' },
-        { id: 'finasteride-minoxidil-liquid', name: 'Dual Growth Formula', base: 79, cat: 'Hair Restoration' },
-        { id: 'finasteride-minoxidil-tretinoin-liquid', name: 'Triple Growth Liquid', base: 99, cat: 'Hair Restoration' },
-        { id: 'minoxidil-max-compound-liquid', name: 'Max Growth Compound', base: 129, cat: 'Hair Restoration' },
-        { id: 'sildenafil-tadalafil-troche', name: 'Dual Performance Formula', base: 89, cat: 'Sexual Health' },
-        { id: 'sildenafil-yohimbe-troche', name: 'Synergy Performance Formula', base: 79, cat: 'Sexual Health' },
-        { id: 'sildenafil-tadalafil-tablets', name: 'Dual Action Tablets', base: 69, cat: 'Sexual Health' },
-        { id: 'oxytocin-troche', name: 'Oxytocin', base: 129, cat: 'Sexual Health' },
-        { id: 'oxytocin-nasal-spray', name: 'Oxytocin', base: 119, cat: 'Sexual Health' },
-        { id: 'testosterone-injection', name: 'Testosterone Cypionate', base: 149, cat: 'Testosterone' },
-        { id: 'testosterone-rdt', name: 'Testosterone RDT', base: 125, cat: 'Testosterone' },
-        { id: 'estradiol-tabs', name: 'Estradiol Tabs', base: 30, cat: 'Hormone Therapy' },
-        { id: 'bpc-157-injection', name: 'BPC-157', base: 249, cat: 'Repair & Healing' },
-        { id: 'bpc-157-tb500-injection', name: 'BPC-157 / TB 500', base: 299, cat: 'Repair & Healing' },
-        { id: 'loverspray-women', name: 'LoverSpray', base: 99.99, cat: 'Sexual Health' },
-        { id: 'retatruide-injection', name: 'Retatruide', base: 499.99, cat: 'Weight Loss' },
-    ];
-    OTHERS.forEach(o => {
-        ['Monthly', '3 Month', '6 Month'].forEach(plan => {
-            let price = o.base;
-            if (plan === '3 Month') price = Math.round(o.base * 2.7);
-            if (plan === '6 Month') price = Math.round(o.base * 5);
-            const key = `${o.id}-${plan.toLowerCase().replace(/\s+/g, '')}`;
-            map[key] = { name: o.name, dosage: 'Standard', plan, price: price.toString(), category: o.cat };
-        });
-    });
+    // 6. Hormone Therapy
+    add('testosterone-injection', 'Testosterone (Inj)', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '99.99' }] }]);
+    add('testosterone-rdt', 'Testosterone RDT Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '125' }] }]);
+    add('estradiol-tabs', 'Estradiol Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '30.00' }] }]);
+
+    // 7. Repair & Healing
+    add('bpc-157-injection', 'BPC 157 (Subq Inj)', 'Repair & Healing', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '249.99' }] }]);
+    add('bpc-157-tb500-injection', 'BPC 157 / TB 500 (Subq Inj)', 'Repair & Healing', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '299.99' }] }]);
+
+    // 8. Specialized Weight Loss
+    add('retatruide-injection', 'Retatruide', 'Weight Loss', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '499.99' }] }]);
 
     return map;
 };
 
 const MASTER_PRODUCT_MAP = getMasterProductMap();
 const MASTER_DRUGS_CATALOG = Object.entries(MASTER_PRODUCT_MAP).map(([id, data]) => ({
-    name: `${data.name} ${data.dosage} ${data.plan}`,
+    name: `${data.name} ${data.dosage === 'TBA' ? '' : data.dosage} ${data.plan}`.replace(/\s+/g, ' ').trim(),
     dosage: `$${data.price}`,
     category: data.category
 }));
@@ -261,9 +245,7 @@ const AdminOverview = () => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-            {/* Header + Period Selector */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-2xl font-black uppercase tracking-tighter">Platform Overview</h2>
                 <div className="flex gap-2">
                     {[
                         { k: 'day', l: 'Daily' },
@@ -579,9 +561,7 @@ const MarketingOverview = () => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-            {/* Header + Period Selector */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-2xl font-black uppercase tracking-tighter">Representative <span className="text-amber-400">Overview</span></h2>
                 <div className="flex gap-2 flex-wrap">
                     {[
                         { k: 'day', l: 'Daily' },
@@ -713,7 +693,48 @@ const MarketingOverview = () => {
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-widest text-amber-400/70 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">{orders.length} records</span>
                 </div>
-                <div className="overflow-x-auto">
+
+                {/* Mobile Cards for Conversions */}
+                <div className="md:hidden divide-y divide-white/5">
+                    {orders.length === 0 ? (
+                        <div className="p-12 text-center text-xs text-white/30 uppercase font-black tracking-widest">No approved orders in this period</div>
+                    ) : (
+                        orders.slice(0, 10).map(order => {
+                            const getAmt = (o) => parseFloat(o.drug_price || o.amount || 0);
+                            const amt = getAmt(order);
+                            const fee = amt > 0 ? (amt * STRIPE_RATE + STRIPE_FIXED) : 0;
+                            const net = Math.max(0, amt - fee);
+                            return (
+                                <div key={order.id} className="p-6 space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="text-sm font-bold text-white mb-0.5">{order.drug_name || order.plan_name || 'Product'}</p>
+                                            <p className="text-[9px] text-amber-400/60 uppercase tracking-widest font-black">Dr. {doctorNames[order.approving_provider_id] || 'N/A'}</p>
+                                        </div>
+                                        <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[8px] font-black uppercase tracking-widest rounded-lg">Approved</span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 py-3 border-t border-white/5">
+                                        <div>
+                                            <p className="text-[8px] font-black uppercase text-white/30 mb-1">Gross</p>
+                                            <p className="text-xs font-black text-amber-400">{fmtMoney(amt)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] font-black uppercase text-white/30 mb-1">Fee</p>
+                                            <p className="text-xs font-black text-red-400">-{fmtMoney(fee)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] font-black uppercase text-white/30 mb-1">Net</p>
+                                            <p className="text-xs font-black text-green-400">{fmtMoney(net)}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</p>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-white/5">
@@ -1083,8 +1104,77 @@ const PatientPortalManager = () => {
                 </div>
             </div>
 
-            {/* Patient Table - Responsive with horizontal scroll on mobile */}
-            <div className="bg-[#111111] border border-white/10 rounded-2xl md:rounded-[40px] p-4 md:p-6 lg:p-8 xl:p-10 overflow-x-auto max-w-full">
+            {/* Patient Table - Hidden on Mobile, Card view instead */}
+            <div className="md:hidden space-y-4">
+                {filteredPatients.length === 0 ? (
+                    <div className="py-20 text-center text-xs font-black uppercase tracking-widest text-white/30 bg-[#111111] border border-white/10 rounded-3xl">
+                        No patients found matching your filters
+                    </div>
+                ) : (
+                    filteredPatients.map((p) => {
+                        const fullName = [p.first_name, p.last_name].filter(Boolean).join(' ').trim();
+                        const planLabel = formatPlanName(p.current_plan);
+                        const hasCard = !!(p.last_four_digits_of_card || p.card_name || p.stripe_payment_method_id);
+
+                        return (
+                            <div key={p.id} className="bg-[#111111] border border-white/10 rounded-3xl p-6 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="font-black text-base text-white tracking-tighter uppercase leading-tight">
+                                            {fullName || <span className="text-white/30 italic">No Name</span>}
+                                        </p>
+                                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{p.email || 'No Email'}</p>
+                                    </div>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-wider ${p.subscribe_status
+                                        ? 'bg-[#bfff00]/10 text-[#bfff00] border border-[#bfff00]/20'
+                                        : 'bg-white/5 text-white/40 border border-white/10'
+                                        }`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${p.subscribe_status ? 'bg-[#bfff00]' : 'bg-white/30'}`} />
+                                        {p.subscribe_status ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                                    <div>
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-white/30 mb-1">Current Plan</p>
+                                        <p className="text-[10px] font-bold text-white/80 leading-snug">{planLabel || 'None'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-white/30 mb-1">Joint Date</p>
+                                        <p className="text-[10px] font-bold text-white/80">
+                                            {p.created_at ? new Date(p.created_at).toLocaleDateString() : '?'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/30">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">{p.submission_count || 0} Assessments</p>
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const id = p.user_id || p.id;
+                                            setSelectedPatientId(id);
+                                            setIsDossierOpen(true);
+                                        }}
+                                        className="text-[10px] font-black uppercase tracking-widest text-[#bfff00] bg-[#bfff00]/10 px-6 py-3 rounded-xl border border-[#bfff00]/20"
+                                    >
+                                        View Dossier
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Patient Table - Responsive with horizontal scroll on mobile, Hidden on small screens */}
+            <div className="hidden md:block bg-[#111111] border border-white/10 rounded-2xl md:rounded-[40px] p-4 md:p-6 lg:p-8 xl:p-10 overflow-x-auto max-w-full">
                 <table className="w-full text-left min-w-[900px]">
                     <thead>
                         <tr className="border-b border-white/10">
@@ -1180,7 +1270,7 @@ const PatientPortalManager = () => {
                                             }}
                                             className="text-[9px] font-black uppercase tracking-widest text-[#bfff00] hover:bg-[#bfff00] hover:text-black transition-all bg-[#bfff00]/10 px-3 py-2 rounded-lg border border-[#bfff00]/20 whitespace-nowrap"
                                         >
-                                            View
+                                            View more
                                         </button>
                                     </td>
                                 </tr>
@@ -1233,6 +1323,13 @@ const PatientDossierModal = ({ patientId, onClose }) => {
     const [questionnaires, setQuestionnaires] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('profile');
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Not Stored';
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return 'Not Stored';
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
 
     useEffect(() => {
         console.log('[PatientDossierModal] Effect triggered for ID:', patientId);
@@ -1344,8 +1441,8 @@ const PatientDossierModal = ({ patientId, onClose }) => {
     }
 
     return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 md:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
-            <div className="w-full max-w-6xl max-h-[90vh] bg-[#0A0A0A] border border-white/10 rounded-[48px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-black/20">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 md:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
+            <div className="w-full max-w-6xl h-full md:h-auto md:max-h-[90vh] bg-[#0A0A0A] border border-white/10 rounded-none md:rounded-[48px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-black/20">
                 {/* Header */}
                 <div className="p-8 md:p-12 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8 bg-[#080808]">
                     <div className="flex items-center gap-6">
@@ -1404,9 +1501,9 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white mb-8 bg-accent-black/5 py-3 px-6 rounded-xl inline-block">Personal Identity</h4>
                                     <div className="space-y-6">
                                         <DossierRow label="Gender" value={patient.sex || submissions[0]?.sex || 'Not Specified'} />
-                                        <DossierRow label="Date of Birth" value={patient.date_of_birth || submissions[0]?.birthday || 'Not Stored'} />
+                                        <DossierRow label="Date of Birth" value={formatDate(patient.date_of_birth || submissions[0]?.birthday)} />
                                         <DossierRow label="Phone" value={patient.phone_number || submissions[0]?.shipping_phone || '?'} />
-                                        <DossierRow label="Joined Data" value={new Date(patient.created_at).toLocaleDateString()} />
+                                        <DossierRow label="Joined Data" value={formatDate(patient.created_at)} />
 
                                     </div>
                                 </div>
@@ -1509,7 +1606,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                         {sub.approval_status}
                                                     </span>
                                                 </div>
-                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... ? {new Date(sub.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">ID: {String(sub.id).substring(0, 8)}... • {formatDate(sub.created_at || sub.submitted_at)}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
@@ -1543,7 +1640,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                                    <DossierStat label="Renewal Date" value={patient.current_sub_end_date ? new Date(patient.current_sub_end_date).toLocaleDateString() : '?'} />
+                                    <DossierStat label="Renewal Date" value={formatDate(patient.current_sub_end_date)} />
                                     <DossierStat label="Payment" value={patient.last_four_digits_of_card ? `Ends in ${patient.last_four_digits_of_card}` : 'No Card'} />
                                     <DossierStat label="Auto-Pay" value={patient.stripe_payment_method_id ? 'Enabled' : 'Disabled'} />
                                 </div>
@@ -1552,12 +1649,70 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                     )}
 
                     {activeTab === 'documents' && (
-                        <div className="text-center py-24 animate-in slide-in-from-bottom-4">
-                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/30"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
-                            </div>
-                            <h5 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50 mb-2">Document Archive Empty</h5>
-                            <p className="text-[9px] text-white/10 uppercase font-black tracking-widest leading-loose">No supplemental clinical records or laboratory<br />uploads found in this patient's vault.</p>
+                        <div className="space-y-4 animate-in slide-in-from-bottom-4">
+                            {(() => {
+                                const docs = [];
+                                submissions.forEach(sub => {
+                                    if (sub.identification_url) {
+                                        docs.push({ type: 'ID Card', name: 'Identity Verification', url: sub.identification_url, date: sub.created_at });
+                                    }
+                                    if (sub.lab_results_url) {
+                                        const labUrls = Array.isArray(sub.lab_results_url) ? sub.lab_results_url : [sub.lab_results_url];
+                                        labUrls.filter(Boolean).forEach((url, i) => {
+                                            docs.push({ type: 'Lab Report', name: `Clinical Lab Results ${labUrls.length > 1 ? i + 1 : ''}`, url, date: sub.created_at });
+                                        });
+                                    }
+                                    if (sub.glp1_prescription_url) {
+                                        const rxUrls = Array.isArray(sub.glp1_prescription_url) ? sub.glp1_prescription_url : [sub.glp1_prescription_url];
+                                        rxUrls.filter(Boolean).forEach((url, i) => {
+                                            docs.push({ type: 'Prescription', name: `External GLP-1 Rx ${rxUrls.length > 1 ? i + 1 : ''}`, url, date: sub.created_at });
+                                        });
+                                    }
+                                    if (sub.past_rx_weightloss_file) {
+                                        const pastUrls = Array.isArray(sub.past_rx_weightloss_file) ? sub.past_rx_weightloss_file : [sub.past_rx_weightloss_file];
+                                        pastUrls.filter(Boolean).forEach((url, i) => {
+                                            docs.push({ type: 'Medical Record', name: `Prior Auth Record ${pastUrls.length > 1 ? i + 1 : ''}`, url, date: sub.created_at });
+                                        });
+                                    }
+                                });
+
+                                if (docs.length === 0) {
+                                    return (
+                                        <div className="text-center py-24">
+                                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/30"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                            </div>
+                                            <h5 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50 mb-2">Document Archive Empty</h5>
+                                            <p className="text-[9px] text-white/10 uppercase font-black tracking-widest leading-loose">No supplemental clinical records or laboratory<br />uploads found in this patient's vault.</p>
+                                        </div>
+                                    );
+                                }
+
+                                return docs.map((doc, idx) => (
+                                    <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex items-center justify-between group hover:bg-[#111111]/[0.08] transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-12 h-12 bg-accent-black/10 rounded-xl flex items-center justify-center text-white shrink-0">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <h6 className="text-[11px] font-black uppercase text-white tracking-widest leading-none">{doc.name}</h6>
+                                                    <span className="text-[8px] px-2 py-0.5 bg-white/10 text-white/50 rounded-full font-black uppercase">{doc.type}</span>
+                                                </div>
+                                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">Uploaded on {formatDate(doc.date)}</p>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href={doc.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase text-white hover:bg-white/10 transition-all"
+                                        >
+                                            View Document
+                                        </a>
+                                    </div>
+                                ));
+                            })()}
                         </div>
                     )}
 
@@ -1598,11 +1753,16 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                             </div>
                                             <div>
                                                 <h6 className="text-[11px] font-black uppercase text-white tracking-widest leading-none mb-1.5">{item.description || 'Service Charge'}</h6>
-                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(item.created_at).toLocaleDateString()} ? {String(item.id).substring(0, 8)}</p>
+                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{formatDate(item.created_at)} • {String(item.id).substring(0, 8)}</p>
                                             </div>
                                         </div>
                                         <div className="md:text-right pt-2 md:pt-0 border-t border-white/10 md:border-t-0">
-                                            <p className="text-sm font-black text-white">${(item.amount / 100).toFixed(2)}</p>
+                                            <p className="text-sm font-black text-white">
+                                                {/* If amount is very small (like 0.25), it was likely not in cents but dollars. */}
+                                                {/* However, standard practice is cents. If it's 2500, it's $25.00. */}
+                                                {/* If it's already 25, then /100 makes it $0.25 which is likely wrong. */}
+                                                ${item.amount >= 100 ? (item.amount / 100).toFixed(2) : Number(item.amount).toFixed(2)}
+                                            </p>
                                             <p className="text-[8px] font-black uppercase text-white ">Confirmed</p>
                                         </div>
                                     </div>
@@ -1626,7 +1786,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                                 <h6 className="text-sm font-black uppercase text-white tracking-widest">Dosage Adjustment Request</h6>
                                                 <span className="text-[8px] px-2 py-0.5 bg-accent-black/10 text-white rounded-full font-black uppercase">Pending Review</span>
                                             </div>
-                                            <p className="text-[10px] text-white/50 uppercase font-black tracking-widest">Requested on {new Date(req.created_at).toLocaleDateString()}</p>
+                                            <p className="text-[10px] text-white/50 uppercase font-black tracking-widest">Requested on {formatDate(req.created_at)}</p>
                                         </div>
                                         <button className="px-6 py-2 bg-accent-black/10 border border-accent-black/20 rounded-xl text-[9px] font-black uppercase text-white hover:bg-accent-black transition-all hover:text-white">
                                             Process Request
@@ -1647,7 +1807,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
                                                 <h6 className="text-xs font-black uppercase text-white tracking-widest mb-1">{q.survey_name || 'Patient Feedback'}</h6>
-                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{new Date(q.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[9px] text-white/50 uppercase font-black tracking-widest">{formatDate(q.created_at)}</p>
                                             </div>
                                             <span className="text-[8px] px-2 py-1 bg-accent-black/10 text-white rounded-full font-black uppercase">Captured</span>
                                         </div>
@@ -2136,7 +2296,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                         <select
                             value={product}
                             onChange={(e) => handleProductChange(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black cursor-pointer"
+                            className="w-full max-w-full truncate bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent-black cursor-pointer"
                         >
                             <option value="">Select a product...</option>
 
@@ -2145,7 +2305,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     .filter(([, data]) => data.category === 'Weight Loss')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
@@ -2156,7 +2316,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     .filter(([, data]) => data.category === 'Hair Restoration')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
@@ -2167,7 +2327,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     .filter(([, data]) => data.category === 'Sexual Health')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
@@ -2178,18 +2338,29 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     .filter(([, data]) => data.category === 'Longevity')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Testosterone" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Hormone Therapy" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Testosterone')
+                                    .filter(([, data]) => data.category === 'Hormone Therapy')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
+                                        </option>
+                                    ))
+                                }
+                            </optgroup>
+
+                            <optgroup label="-- Skin Care" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                                {Object.entries(FINAL_PRODUCT_MAP)
+                                    .filter(([, data]) => data.category === 'Skin Care')
+                                    .map(([id, data]) => (
+                                        <option key={id} value={id} className="bg-[#111111] text-white">
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
@@ -2200,7 +2371,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                     .filter(([, data]) => data.category === 'Repair & Healing')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage} {data.plan} – ${data.price}
+                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
                                         </option>
                                     ))
                                 }
@@ -2321,19 +2492,19 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
 // --- Submission Review Modal ---
 const SectionHeader = ({ title }) => (
-    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-white mb-6 mt-12 bg-accent-black/5 py-3 px-6 rounded-lg inline-block whitespace-nowrap">{title}</h4>
+    <h4 className="text-[11px] 2xl:text-sm font-black uppercase tracking-[0.4em] text-white mb-6 mt-12 bg-white/5 py-3 px-6 rounded-lg inline-block whitespace-nowrap">{title}</h4>
 );
 
 const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isEditing, formData, onChange }) => (
-    <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-white/10 group hover:bg-[#111111]/[0.02] px-4 transition-all duration-300">
-        <span className="text-[10px] text-white/30 uppercase font-black tracking-widest leading-none shrink-0 md:w-1/3">{label}</span>
+    <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-white/10 group hover:bg-white/[0.02] px-4 transition-all duration-300">
+        <span className="text-[10px] 2xl:text-xs text-white uppercase font-black tracking-widest leading-none shrink-0 md:w-1/3">{label}</span>
         <div className="flex-1 md:text-right">
             {isEditing && field && !isFile ? (
                 type === 'select' ? (
                     <select
                         value={formData[field] || ''}
                         onChange={(e) => onChange(field, e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto"
+                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-accent-black w-full md:w-auto max-w-full truncate"
                     >
                         <option value="">Select...</option>
                         {options.map((opt, i) => {
@@ -2368,7 +2539,7 @@ const InfoRow = ({ label, value, isFile, field, type = 'text', options = [], isE
                     )}
                 </div>
             ) : (
-                <span className="mt-1 md:mt-0 text-sm font-bold text-white/90">
+                <span className="mt-1 md:mt-0 text-sm 2xl:text-base font-bold text-white">
                     {Array.isArray(value) ? value.join(', ') : (value || 'None')}
                 </span>
             )}
@@ -2787,70 +2958,36 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
     return (
         <>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 2xl:p-12 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
-                <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-accent-black/20">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 2xl:p-12 3xl:p-24 bg-black/95 backdrop-blur-3xl animate-in fade-in duration-500">
+                <div className="w-full max-w-5xl 2xl:max-w-7xl 3xl:max-w-screen-2xl 4xl:max-w-[90vw] max-h-[92vh] bg-[#0A0A0A] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col border-glow border-white/10">
                     {/* Header */}
                     <div className="p-8 md:p-10 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between bg-[#080808] shrink-0 gap-8">
                         <div>
                             <div className="flex items-center gap-4 mb-2">
-                                <h3 className="text-3xl font-black uppercase  tracking-tighter leading-none">Review <span className="text-white">Assessment</span></h3>
-                                <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-black text-white/50 uppercase tracking-widest">{String(submission.id).substring(0, 8)}</span>
+                                <h3 className="text-3xl 2xl:text-5xl font-black uppercase tracking-tighter leading-none text-white">Review <span className="text-white">Assessment</span></h3>
+                                <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[8px] 2xl:text-[10px] font-black text-white uppercase tracking-widest">{String(submission.id).substring(0, 8)}</span>
                             </div>
-                            <p className="text-[10px] text-white/50 uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
+                            <p className="text-[10px] 2xl:text-xs text-white uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
                         </div>
                         <div className="flex flex-wrap items-center gap-4">
 
                             {!isEditing ? (
                                 <>
-                                    <div className="flex items-center gap-3 mr-4">
-                                        {!formData.assigned_provider_id ? (
-                                            <div className="relative group/assign">
-                                                <select
-                                                    value=""
-                                                    onChange={(e) => handleQuickAssign(e.target.value)}
-                                                    className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] font-black uppercase text-white/50 hover:text-white hover:bg-white/10 transition-all cursor-pointer outline-none min-w-[150px] pr-8"
-                                                >
-                                                    <option value="" disabled>Assign Assessment</option>
-                                                    {staff.map(s => (
-                                                        <option key={s.id} value={s.id} className="bg-[#111111] text-white">{s.display_name}</option>
-                                                    ))}
-                                                </select>
-                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/20 group-hover:text-white/40 transition-colors">
-                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M6 9l6 6 6-6" /></svg>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[18px] px-4 py-2 group/assigned">
-                                                <div className="flex flex-col">
-                                                    <span className="text-[7px] font-black uppercase tracking-widest text-white/30">Assigned Reviewer</span>
-                                                    <span className="text-[10px] font-black uppercase text-accent-black">
-                                                        {staff.find(s => s.id === formData.assigned_provider_id)?.display_name || 'Staff Member'}
-                                                    </span>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleQuickAssign(null)}
-                                                    className="w-7 h-7 rounded-lg bg-white/5 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center text-white/20"
-                                                    title="Unassign Assessment"
-                                                >
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+                                    {/* Assignment Header Removed as per request */}
                                     {formData.provider_note_report ? (
                                         <div className="flex gap-2">
                                             <a
                                                 href={formData.provider_note_report}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="px-6 py-2 bg-accent-black/10 border border-accent-black/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all flex items-center gap-2"
+                                                className="px-6 py-2 bg-white/10 border border-white/20 rounded-xl text-[10px] 2xl:text-xs font-black uppercase tracking-widest text-white hover:bg-white hover:text-black transition-all flex items-center gap-2"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                                                 View Report
                                             </a>
                                             <button
                                                 onClick={() => setShowReportModal(true)}
-                                                className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2"
+                                                className="px-6 py-2 bg-white/10 border border-white/20 rounded-xl text-[10px] 2xl:text-xs font-black uppercase tracking-widest text-white hover:bg-white hover:text-black transition-all flex items-center gap-2"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
                                                 Regenerate
@@ -2860,7 +2997,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         (formData.selected_drug?.includes('weight') || formData.selected_drug?.includes('semaglutide') || formData.selected_drug?.includes('tirzepatide')) && (
                                             <button
                                                 onClick={() => setShowReportModal(true)}
-                                                className="px-6 py-2 bg-blue-500/10 border border-blue-500/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-2"
+                                                className="px-6 py-2 bg-white/10 border border-white/20 rounded-xl text-[10px] 2xl:text-xs font-black uppercase tracking-widest text-white hover:bg-white hover:text-black transition-all flex items-center gap-2"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
                                                 Generate Report
@@ -3029,7 +3166,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 <SectionHeader title="Goals & Drug Selection" />
                                 <div className="space-y-4">
                                     <div className="p-8 bg-white/5 rounded-[32px] border border-white/10">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Patient-Defined Objectives</p>
+                                        <p className="text-[9px] 2xl:text-xs font-black uppercase tracking-widest text-white mb-4">Patient-Defined Objectives</p>
                                         <div className="flex flex-wrap gap-3">
                                             {(formData.goals || []).map((goal, i) => (
                                                 <span key={i} className="px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/80">{goal.replace(/-/g, ' ')}</span>
@@ -3040,7 +3177,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         <InfoRow
                                             label="Program Category"
                                             field="selected_drug"
-                                            value={formData.selected_drug}
+                                            value={formData.selected_drug || 'General Consult'}
                                             type="select"
                                             options={[
                                                 { value: 'weight-loss', label: 'Weight Loss' },
@@ -3067,7 +3204,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                     {/* Digital Prescription */}
                                     {formData.prescription_pdf_url && (
                                         <div className="flex flex-col gap-2 border-b border-white/10 pb-6">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-1">
+                                            <p className="text-[10px] 2xl:text-xs font-black uppercase tracking-widest text-white mb-1">
                                                 Digital Prescription
                                             </p>
                                             <div>
@@ -3102,7 +3239,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
                                         return (
                                             <div className="flex flex-col gap-4 border-b border-white/10 pb-6">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                                                <p className="text-[10px] 2xl:text-xs font-black uppercase tracking-widest text-white">
                                                     {formData.selected_drug === 'weight-loss'
                                                         ? "Have you seen your primary care provider and/or did lab testing in the past 12 months?"
                                                         : "Primary Care & Diagnostics Verification"}
@@ -3120,7 +3257,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                             <option value="No">No</option>
                                                         </select>
                                                     ) : (
-                                                        <p className="text-sm font-bold text-white/90">{pcpAnswer}</p>
+                                                        <p className="text-sm 2xl:text-base font-bold text-white">{pcpAnswer}</p>
                                                     )
                                                 )}
 
@@ -3160,7 +3297,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                 {/* Lab Result Uploads */}
                                                 {labUrls.length > 0 && (
                                                     <div className="space-y-2">
-                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30">Lab Result Uploads ({labUrls.length})</p>
+                                                        <p className="text-[9px] 2xl:text-xs font-black uppercase tracking-widest text-white mb-2">Lab Result Uploads ({labUrls.length})</p>
                                                         <div className="flex flex-wrap gap-2">
                                                             {labUrls.map((url, i) => (
                                                                 <a
@@ -3204,7 +3341,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
                                                 return (
                                                     <div key={q.id} className="flex flex-col gap-2 border-b border-white/10 pb-6 last:border-0">
-                                                        <p className="text-[10px] font-black tracking-widest text-white/50 mb-1">{q.question}</p>
+                                                        <p className="text-[10px] 2xl:text-xs font-black tracking-widest text-white mb-1">{q.question}</p>
                                                         {isEditing ? (
                                                             q.type === 'select' || q.type === 'boolean' || (q.options?.length > 0) ? (
                                                                 <select
@@ -3232,7 +3369,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                                 />
                                                             )
                                                         ) : (
-                                                            <div className="text-sm font-bold text-white/90 leading-relaxed">
+                                                            <div className="text-sm 2xl:text-base font-bold text-white leading-relaxed">
                                                                 {Array.isArray(answer) ? (
                                                                     <ul className="list-disc list-inside space-y-1 marker:text-white">
                                                                         {answer.map((item, i) => <li key={i}>{item}</li>)}
@@ -3246,7 +3383,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                         {/* Edit details if applicable */}
                                                         {(q.details || answers[`${q.id}_details`]) && (
                                                             <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
-                                                                <p className="text-[9px] text-white font-bold uppercase tracking-wider mb-1">Details:</p>
+                                                                <p className="text-[9px] 2xl:text-xs text-white font-black uppercase tracking-wider mb-2">Details:</p>
                                                                 {isEditing ? (
                                                                     <textarea
                                                                         value={answers[`${q.id}_details`] || ''}
@@ -3254,7 +3391,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                                         className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                                     />
                                                                 ) : (
-                                                                    <p className="text-sm text-white/80">{answers[`${q.id}_details`]}</p>
+                                                                    <p className="text-sm 2xl:text-base text-white">{answers[`${q.id}_details`]}</p>
                                                                 )}
                                                             </div>
                                                         )}
@@ -3322,7 +3459,6 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                     const shownKeys = questions.map(q => q.id);
                                     const allIntakeKeys = Object.keys(intake || {});
 
-                                    // Fields already shown in dedicated PCP/Dosage/Biometrics sections
                                     const explicitFields = [
                                         'category', 'goals', 'date_of_birth', 'eligibility',
                                         'shipping', 'identification', 'lab_fulfillment',
@@ -3334,17 +3470,6 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         'pastDosage'
                                     ];
 
-                                    const hiddenKeys = allIntakeKeys.filter(key =>
-                                        !shownKeys.includes(key) &&
-                                        !key.includes('_details') &&
-                                        !key.includes('_file') &&
-                                        !explicitFields.includes(key) &&
-                                        intake[key] !== null &&
-                                        intake[key] !== undefined &&
-                                        intake[key] !== ''
-                                    );
-
-                                    // Group high-value clinical data if not shown elsewhere
                                     const clinicalPii = {
                                         "PCP Name": `${intake.pcpFirstName || ''} ${intake.pcpLastName || ''}`.trim(),
                                         "PCP State": intake.pcpState,
@@ -3355,32 +3480,44 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         "Past Dosage": intake.pastDosage || intake.past_dosage
                                     };
 
-                                    const hasClinicalData = Object.values(clinicalPii).some(v => v && v !== '');
+                                    const hiddenKeys = allIntakeKeys.filter(key =>
+                                        !shownKeys.includes(key) &&
+                                        !key.includes('_details') &&
+                                        !key.includes('_file') &&
+                                        !explicitFields.includes(key) &&
+                                        intake[key] !== null &&
+                                        intake[key] !== undefined &&
+                                        intake[key] !== ''
+                                    );
+
+                                    const hasClinical = Object.values(clinicalPii).some(v => v !== null && v !== undefined && v !== '' && v !== ' ');
+                                    const hasHidden = hiddenKeys.length > 0;
+
+                                    if (!hasClinical && !hasHidden) return null;
 
                                     return (
                                         <>
-                                            {hasClinicalData && (
-                                                <>
-                                                    <SectionHeader title="Clinical Metadata & History" />
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                                        {Object.entries(clinicalPii).map(([label, value]) => value && (
-                                                            <InfoRow
-                                                                key={label}
-                                                                label={label.toUpperCase()}
-                                                                value={value.toString()}
-                                                                isEditing={false}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            )}
+                                            <SectionHeader title="Supplementary Clinical Data" />
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                                                {Object.entries(clinicalPii).map(([label, val]) => (
+                                                    val && <InfoRow key={label} label={label} value={val} isEditing={false} />
+                                                ))}
+                                                {hiddenKeys.map(key => (
+                                                    <InfoRow
+                                                        key={key}
+                                                        label={key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                                                        value={intake[key]}
+                                                        isEditing={false}
+                                                    />
+                                                ))}
+                                            </div>
                                         </>
                                     );
                                 })()}
 
+
                                 {/* Cancer History Details */}
                                 {(formData.personal_cancer_list || formData.family_cancer_list || intake.personal_cancer_list || intake.family_cancer_list) && (() => {
-                                    // Try reading from top-level first (old columns), then from intake helper (flattened JSON)
                                     const parseList = (val) => {
                                         if (!val) return null;
                                         if (Array.isArray(val)) return val;
@@ -3646,7 +3783,8 @@ const ClinicalQueue = ({ user, role }) => {
         { id: 'hair-restoration', name: 'Hair Restoration', color: '#5CE1E6' },
         { id: 'sexual-health', name: 'Sexual Health', color: '#FFDE59' },
         { id: 'longevity', name: 'Longevity', color: '#FF7E5F' },
-        { id: 'testosterone', name: 'Testosterone', color: '#FFD700' },
+        { id: 'hormone-therapy', name: 'Hormone Therapy', color: '#FFD700' },
+        { id: 'skin-care', name: 'Skin Care', color: '#FF69B4' },
         { id: 'repair-healing', name: 'Repair & Healing', color: '#32CD32' }
     ];
 
@@ -3685,8 +3823,10 @@ const ClinicalQueue = ({ user, role }) => {
                         category = 'sexual-health';
                     } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
                         category = 'longevity';
-                    } else if (drug.includes('testosterone')) {
-                        category = 'testosterone';
+                    } else if (drug.includes('testosterone') || drug.includes('estradiol') || drug.includes('hormone')) {
+                        category = 'hormone-therapy';
+                    } else if (drug.includes('skin') || drug.includes('tretinoin') || drug.includes('acne')) {
+                        category = 'skin-care';
                     } else if (drug.includes('repair') || drug.includes('bpc')) {
                         category = 'repair-healing';
                     } else {
@@ -3915,7 +4055,7 @@ const ClinicalQueue = ({ user, role }) => {
                     filteredQueue.map(item => {
                         const catInfo = categories.find(c => c.id === item.selected_drug) || categories[0];
                         return (
-                            <div key={item.id} className="group p-8 bg-white/5 border border-white/10 rounded-[40px] hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div key={item.id} className="group p-6 md:p-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[40px] hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div className="flex flex-col md:flex-row md:items-center gap-6">
                                     <div
                                         className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl  border border-white/10 shrink-0"
@@ -3950,20 +4090,12 @@ const ClinicalQueue = ({ user, role }) => {
                                             <span>{item.shipping_state}</span>
                                             <span className="w-1 h-1 bg-white/5 rounded-full"></span>
                                             <div className="flex items-center gap-3">
-                                                {!item.assigned_provider_id ? (
-                                                    <button
-                                                        onClick={() => setAssigningSubmission(item)}
-                                                        className="px-5 py-2.5 bg-accent-black/10 border border-accent-black/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black hover:text-white transition-all flex items-center gap-2"
-                                                    >
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg>
-                                                        Assign Assessment
-                                                    </button>
-                                                ) : (
+                                                {item.assigned_provider_id && (
                                                     <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-4 bg-accent-black/5 border border-accent-black/10 rounded-2xl px-4 py-2 group/assigned">
+                                                        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/assigned">
                                                             <div className="flex flex-col text-left">
-                                                                <span className="text-[7px] font-black uppercase tracking-widest text-white/30">Assigned To</span>
-                                                                <span className="text-[10px] font-black uppercase text-accent-black">
+                                                                <span className="text-[7px] font-black uppercase tracking-widest text-white">Assigned To</span>
+                                                                <span className="text-[10px] font-black uppercase text-white">
                                                                     {staff.find(s => s.id === item.assigned_provider_id)?.display_name || 'Assigned Staff'}
                                                                 </span>
                                                             </div>
@@ -3986,26 +4118,22 @@ const ClinicalQueue = ({ user, role }) => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div >
                                 <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => setAssigningSubmission(item)}
-                                        className={`px-6 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 ${item.assigned_provider_id
-                                            ? 'bg-accent-black/10 border border-accent-black/20 text-accent-black hover:bg-accent-black hover:text-white'
-                                            : 'bg-white/[0.03] border border-white/10 text-white/40 hover:text-white hover:border-white/30'
-                                            }`}
-                                    >
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                            <circle cx="8.5" cy="7" r="4" />
-                                            <line x1="20" y1="8" x2="20" y2="14" />
-                                            <line x1="23" y1="11" x2="17" y2="11" />
-                                        </svg>
-                                        {item.assigned_provider_id
-                                            ? (staff.find(s => s.id === item.assigned_provider_id)?.display_name || 'Assigned')
-                                            : 'Assign Assessment'
-                                        }
-                                    </button>
+                                    {!item.assigned_provider_id && (
+                                        <button
+                                            onClick={() => setAssigningSubmission(item)}
+                                            className="px-6 py-5 bg-white/[0.03] border border-white/10 text-white/40 hover:text-white hover:border-white/30 rounded-2xl font-black text-[10px] 2xl:text-xs uppercase tracking-widest transition-all flex items-center gap-2"
+                                        >
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                <circle cx="8.5" cy="7" r="4" />
+                                                <line x1="20" y1="8" x2="20" y2="14" />
+                                                <line x1="23" y1="11" x2="17" y2="11" />
+                                            </svg>
+                                            Assign Assessment
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => setReviewingSubmission(item)}
                                         className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-black hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
@@ -4013,34 +4141,38 @@ const ClinicalQueue = ({ user, role }) => {
                                         {statusFilter === 'pending' ? 'Review Submission' : 'View Record'}
                                     </button>
                                 </div>
-                            </div>
+                            </div >
                         );
                     })
                 )}
-            </div>
+            </div >
 
             {/* Review Modal */}
-            {reviewingSubmission && (
-                <SubmissionModal
-                    submission={reviewingSubmission}
-                    onClose={() => setReviewingSubmission(null)}
-                    onAction={fetchQueue}
-                    staff={staff}
-                />
-            )}
+            {
+                reviewingSubmission && (
+                    <SubmissionModal
+                        submission={reviewingSubmission}
+                        onClose={() => setReviewingSubmission(null)}
+                        onAction={fetchQueue}
+                        staff={staff}
+                    />
+                )
+            }
 
-            {assigningSubmission && (
-                <AssignmentModal
-                    submission={assigningSubmission}
-                    staff={staff}
-                    onClose={() => setAssigningSubmission(null)}
-                    onAssign={async (id, provId) => {
-                        await handleAssign(id, provId);
-                        setAssigningSubmission(null);
-                    }}
-                />
-            )}
-        </div>
+            {
+                assigningSubmission && (
+                    <AssignmentModal
+                        submission={assigningSubmission}
+                        staff={staff}
+                        onClose={() => setAssigningSubmission(null)}
+                        onAssign={async (id, provId) => {
+                            await handleAssign(id, provId);
+                            setAssigningSubmission(null);
+                        }}
+                    />
+                )
+            }
+        </div >
     );
 };
 
@@ -4124,12 +4256,7 @@ const DiscountManager = () => {
             <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
                 <div className="flex flex-col md:block">
                     <div className="relative md:absolute top-0 right-0 p-0 md:p-12 mb-8 md:mb-0 text-white opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                        </svg>
                     </div>
-
-                    <h3 className="text-2xl font-black uppercase tracking-tighter  mb-8">Generate <span className="text-white">Discount Token</span></h3>
                 </div>
 
                 <form onSubmit={handleCreateCoupon} className="space-y-6 relative z-10">
@@ -5758,7 +5885,63 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
 
             {/* Staff Table */}
             <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] overflow-hidden">
-                <div className="overflow-x-auto">
+                {/* Mobile Card View for Staff */}
+                <div className="md:hidden divide-y divide-white/5">
+                    {staff.length === 0 ? (
+                        <div className="text-center py-20">
+                            <p className="text-white/30 font-black uppercase tracking-widest text-xs">No staff members found</p>
+                        </div>
+                    ) : (
+                        staff
+                            .filter(member => ownerFilter === 'all' || member.added_by === ownerFilter || member.id === ownerFilter)
+                            .map(member => {
+                                const owner = staff.find(s => s.id === member.added_by);
+                                return (
+                                    <div key={member.id} className="p-6 space-y-4">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <p className="font-bold text-white uppercase tracking-tighter text-base">
+                                                    {member.first_name || member.last_name
+                                                        ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
+                                                        : member.email || member.id?.substring(0, 8) + '...'}
+                                                </p>
+                                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">{member.email || 'N/A'}</p>
+                                            </div>
+                                            <span className={`px-3 py-1 rounded-xl border text-[8px] font-black uppercase tracking-widest ${getRoleBadge(member.role)}`}>
+                                                {getRoleLabel(member.role, member)}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                            <div className="space-y-1">
+                                                <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">Owner</p>
+                                                <p className="text-[9px] font-black text-white/50 uppercase tracking-widest">
+                                                    {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
+                                                </p>
+                                            </div>
+                                            <div className="text-right flex items-center gap-4">
+                                                <div className="space-y-1 mr-4">
+                                                    <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">OTP</p>
+                                                    <span className={`px-2 py-0.5 rounded-lg border text-[8px] font-black uppercase tracking-widest ${member.otp_verified ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}`}>
+                                                        {member.otp_verified ? 'Verified' : 'Pending'}
+                                                    </span>
+                                                </div>
+                                                {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
+                                                    <button
+                                                        onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
+                                                        className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                    )}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-white/10">
@@ -6790,7 +6973,7 @@ const OrderManagement = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Header */}
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[32px] p-6 md:p-8 overflow-hidden">
                 <div className="flex flex-col md:flex-row gap-8">
                     <div className="space-y-4">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-1">Fulfillment Status</p>
@@ -7208,7 +7391,6 @@ const ProfitTrackerView = () => {
 
             {/* Add Purchase Button */}
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black uppercase tracking-widest text-white/50">Pharmacy Purchase Log</h3>
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className="flex items-center gap-2 px-6 py-3 bg-[#FFDE59] text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all"
@@ -8412,7 +8594,6 @@ const WaitlistView = () => {
             <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-10">
                 <div className="flex items-center justify-between mb-10">
                     <div>
-                        <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Waitlist Management</h3>
                         <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Managing interest for Retatrutide (Subq Injection)</p>
                     </div>
                     <button
@@ -8622,21 +8803,21 @@ const AdminDashboard = () => {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase tracking-tighter" onClick={() => navigate('/')}>
-                    <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block brightness-0 invert" />
+                    <img src={logo} alt="uGlowMD" className="h-[64px] w-auto inline-block brightness-0 invert" />
                 </h1>
                 <button
                     onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
                     className="w-10 h-10 flex flex-col items-center justify-center gap-1.5"
                 >
-                    <span className={`w-6 h-0.5 bg-[#111111] transition-all duration-300 ${mobileSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                    <span className={`w-6 h-0.5 bg-[#111111] transition-all duration-300 ${mobileSidebarOpen ? 'opacity-0' : ''}`}></span>
-                    <span className={`w-6 h-0.5 bg-[#111111] transition-all duration-300 ${mobileSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                    <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                    <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileSidebarOpen ? 'opacity-0' : ''}`}></span>
+                    <span className={`w-6 h-0.5 bg-white transition-all duration-300 ${mobileSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
                 </button>
             </div>
 
             {/* Sidebar - Desktop and Mobile */}
             <aside className={`w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 md:p-8 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
-                <div className="mb-8 md:mb-12 pt-16 lg:pt-0">
+                <div className=" ">
                     <h1 className="text-2xl font-black uppercase tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
                         <img src={logo} alt="uGlowMD" className="h-[112px] w-auto inline-block brightness-0 invert" />
                     </h1>
@@ -8700,11 +8881,11 @@ const AdminDashboard = () => {
                 />
             )}
 
-            <main className="flex-1 pt-20 lg:pt-12 w-full overflow-x-hidden">
+            <main className="flex-1 pt-24 lg:pt-24 w-full overflow-x-hidden">
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 py-4 md:px-6 md:py-8 lg:px-8 lg:py-12">
                     <header className="mb-8 md:mb-16">
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase  tracking-tighter">
-                            {currentTab === 'overview' && ''}
+                            {currentTab === 'overview' && (role === 'marketing_rep' ? 'Representative Overview' : 'Platform Overview')}
                             {currentTab === 'patients' && 'Patient Directory'}
                             {currentTab === 'clinical' && 'Submissions'}
                             {currentTab === 'orders' && 'Order Management'}

@@ -2249,17 +2249,16 @@ const Dashboard = () => {
         (profile?.current_plan && profile.current_plan !== 'None' && profile.current_plan !== '{ }');
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans">
+        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex flex-col lg:flex-row">
             {/* Sidebar Navigation */}
-            <aside className="fixed left-0 top-0 h-screen w-72 bg-[#1a1a1a] border-r border-white/10 p-6 hidden lg:flex flex-col">
-                <div className="flex-shrink-0 mb-12">
+            <aside className="w-72 bg-[#1a1a1a] border-r border-white/10 p-6 hidden lg:flex flex-col lg:sticky lg:top-0 h-screen z-50">
+                <div className="flex-shrink-0 mb-4">
                     <button
                         onClick={() => navigate('/')}
                         className="text-2xl font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[100px] w-auto inline-block brightness-0 invert" />
                     </button>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mt-2">Patient Portal</p>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto space-y-2 mb-8 pr-2 custom-scrollbar">
@@ -2270,7 +2269,6 @@ const Dashboard = () => {
                         { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
                         { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
                         { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-                        { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
                         { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z' },
                     ].map(item => (
                         <button
@@ -2311,110 +2309,108 @@ const Dashboard = () => {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="lg:ml-72 min-h-screen">
-                {/* Top Bar (Mobile) */}
-                <div className="lg:hidden sticky top-0 z-40 bg-[#111111]/95 backdrop-blur-xl border-b border-white/10 px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => setMobileMenuOpen(true)}
-                                className="p-2 -ml-2 text-white/60 hover:text-white transition-colors"
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </button>
+            {/* Mobile Top Bar */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black border-b border-white/10 px-6 pt-[30px] pb-[30px] flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="p-2 -ml-2 text-white/60 hover:text-white transition-colors"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => navigate('/')}
+                        className="text-xl font-black uppercase tracking-tighter "
+                    >
+                        <img src={logo} alt="uGlowMD" className="h-[104px] w-auto inline-block brightness-0 invert" />
+                    </button>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
+                    {userName.charAt(0).toUpperCase()}
+                </div>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div
+                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                        onClick={() => setMobileMenuOpen(false)}
+                    ></div>
+                    <div className="absolute top-0 left-0 w-[80%] max-w-sm h-full bg-[#0A0A0A] border-r border-white/10 p-6 shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
+                        <div className="flex items-center justify-between mb-4">
                             <button
                                 onClick={() => navigate('/')}
-                                className="text-xl font-black uppercase tracking-tighter "
+                                className="text-2xl font-black uppercase tracking-tighter text-white"
                             >
-                                <img src={logo} alt="uGlowMD" className="h-[80px] w-auto inline-block brightness-0 invert" />
+                                <img src={logo} alt="uGlowMD" className="h-[125px] w-auto inline-block invert" />
+                            </button>
+                            <button
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="p-2 text-white/50 hover:text-white transition-colors"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
                             </button>
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
-                            {userName.charAt(0).toUpperCase()}
+
+                        <nav className="space-y-2 flex-1">
+                            {[
+                                { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+                                { id: 'medications', label: 'Medications', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                                { id: 'assessments', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+                                { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+                                { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+                                { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+                            ].map(item => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => {
+                                        navigate(`/dashboard/${item.id}`);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all ${currentTab === item.id
+                                        ? 'bg-[#FFDE59] text-black'
+                                        : 'text-white/50 hover:text-white hover:bg-[#111111]/10'
+                                        }`}
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d={item.icon} />
+                                    </svg>
+                                    {item.label}
+                                </button>
+                            ))}
+                        </nav>
+
+                        <div className="pt-6 border-t border-white/10 mt-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
+                                    {userName.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black uppercase tracking-tight text-white">{userName}</p>
+                                    <p className="text-[9px] text-white/50 font-medium">Week {weekNumber}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleSignOut}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#111111]/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                                </svg>
+                                Sign Out
+                            </button>
                         </div>
                     </div>
                 </div>
+            )}
 
-                {/* Mobile Menu Overlay */}
-                {mobileMenuOpen && (
-                    <div className="fixed inset-0 z-50 lg:hidden">
-                        <div
-                            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-                            onClick={() => setMobileMenuOpen(false)}
-                        ></div>
-                        <div className="absolute top-0 left-0 w-[80%] max-w-sm h-full bg-[#0A0A0A] border-r border-white/10 p-6 shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
-                            <div className="flex items-center justify-between mb-10">
-                                <button
-                                    onClick={() => navigate('/')}
-                                    className="text-2xl font-black uppercase tracking-tighter text-white"
-                                >
-                                    <img src={logo} alt="uGlowMD" className="h-[96px] w-auto inline-block invert" />
-                                </button>
-                                <button
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="p-2 text-white/50 hover:text-white transition-colors"
-                                >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <nav className="space-y-2 flex-1">
-                                {[
-                                    { id: 'overview', label: 'Overview', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-                                    { id: 'medications', label: 'Medications', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                                    { id: 'assessments', label: 'Assessments', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-                                    { id: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
-                                    { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
-                                    { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-                                    { id: 'statements', label: 'Statements', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-                                ].map(item => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => {
-                                            navigate(`/dashboard/${item.id}`);
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl text-sm font-black uppercase tracking-wider transition-all ${currentTab === item.id
-                                            ? 'bg-[#FFDE59] text-black'
-                                            : 'text-white/50 hover:text-white hover:bg-[#111111]/10'
-                                            }`}
-                                    >
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d={item.icon} />
-                                        </svg>
-                                        {item.label}
-                                    </button>
-                                ))}
-                            </nav>
-
-                            <div className="pt-6 border-t border-white/10 mt-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
-                                        {userName.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-black uppercase tracking-tight text-white">{userName}</p>
-                                        <p className="text-[9px] text-white/50 font-medium">Week {weekNumber}</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={handleSignOut}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#111111]/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-                                    </svg>
-                                    Sign Out
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+            {/* Main Content */}
+            <main className="flex-1 min-h-screen pt-[164px] lg:pt-24 w-full overflow-x-hidden">
 
                 {/* Content Area */}
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto p-6 md:p-12">
@@ -2509,7 +2505,7 @@ const Dashboard = () => {
                                                             (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'In Review' : 'Attention'}
                                                     </span>
                                                 </div>
-                                                <p className="text-3xl font-black text-white mb-1 relative z-10">
+                                                <p className="text-3xl font-black text-white mb-1 relative z-10 truncate max-w-[90%] uppercase">
                                                     {(() => {
                                                         const cat = getMedicationCategory(submissions[0].selected_drug || submissions[0].dosage_preference);
                                                         const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
@@ -3051,9 +3047,7 @@ const Dashboard = () => {
                             <BillingView profile={profile} user={user} />
                         } />
 
-                        <Route path="statements" element={
-                            <ProviderStatementsView />
-                        } />
+
 
                         <Route path="notifications" element={
                             <NotificationsView submissions={submissions} orders={orders} />
@@ -3722,249 +3716,7 @@ const Dashboard = () => {
 };
 
 // ─────────────────────────────────────────────────────────────
-// PROVIDER STATEMENTS VIEW
-// ─────────────────────────────────────────────────────────────
-const ProviderStatementsView = () => {
-    const { user } = useAuth();
-    const [statements, setStatements] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
-    const [selectedStmt, setSelectedStmt] = React.useState(null);
 
-    React.useEffect(() => {
-        const fetchStatements = async () => {
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('provider_statements')
-                    .select('*')
-                    .eq('status', 'approved')
-                    .order('year', { ascending: false })
-                    .order('month', { ascending: false });
-                if (!error) setStatements(data || []);
-            } catch (err) {
-                console.error('Provider statements error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStatements();
-    }, []);
-
-    const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-    if (loading) return (
-        <div className="py-20 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin" />
-        </div>
-    );
-
-    if (statements.length === 0) return (
-        <div className="text-center py-24 border-2 border-dashed border-white/10 rounded-3xl">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" className="mx-auto mb-4">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">No statements available yet</p>
-            <p className="text-[9px] text-white/20 mt-2">Statements are released on the 5th of each month after admin review</p>
-        </div>
-    );
-
-    return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2">
-                    Monthly <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '0 8px' }}>Statements</span>
-                </h2>
-                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Your monthly compensation statements — released on the 5th of each month</p>
-            </div>
-
-            <div className="space-y-4">
-                {statements.map(stmt => (
-                    <div key={stmt.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-[#FFDE59]/10 flex items-center justify-center shrink-0">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5">
-                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-base font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
-                                <p className="text-[10px] text-white/40 uppercase tracking-wider mt-0.5">{stmt.statement_number} · {stmt.new_patient_count ?? 0} new + {stmt.recurring_patient_count ?? 0} recurring</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-6">
-                            <div className="text-right">
-                                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest mb-1">Total Payout</p>
-                                <p className="text-2xl font-black text-[#FFDE59]">{fmtMoney(stmt.total_payout)}</p>
-                            </div>
-                            <button
-                                onClick={() => setSelectedStmt(stmt)}
-                                className="px-5 py-2.5 bg-[#FFDE59] text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all"
-                            >
-                                View Statement
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Statement Document Modal */}
-            {selectedStmt && (
-                <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-3xl flex items-start justify-center p-4 md:p-8 overflow-y-auto animate-in fade-in duration-300">
-                    <div className="w-full max-w-4xl">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-black uppercase tracking-tight text-white">{selectedStmt.period_label}</h3>
-                                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">{selectedStmt.statement_number}</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => window.print()}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all"
-                                >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                    Print
-                                </button>
-                                <button
-                                    onClick={() => setSelectedStmt(null)}
-                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5 transition-all"
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Render the Statement Document */}
-                        <div style={{ backgroundColor: '#e5e7eb', padding: '32px', borderRadius: '24px' }}>
-                            {/* Inline statement rendering — same style as StatementDocument */}
-                            {(() => {
-                                const stmt = selectedStmt;
-                                const rates = { new_patient_rate: stmt.new_patient_rate ?? 5, recurring_patient_rate: stmt.recurring_patient_rate ?? 5 };
-                                const periodLabel = stmt.period_label || `${stmt.month_name} ${stmt.year}`;
-                                const newTotal = rates.new_patient_rate * (stmt.new_patient_count ?? 0);
-                                const recurringTotal = rates.recurring_patient_rate * (stmt.recurring_patient_count ?? 0);
-                                const grandTotal = stmt.total_payout ?? (newTotal + recurringTotal);
-                                const pageStyle = { backgroundColor: '#fff', color: '#111', fontFamily: 'Georgia, serif', padding: '48px 56px', minHeight: '900px', position: 'relative', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.08)', marginBottom: '24px' };
-
-                                return (
-                                    <div>
-                                        {/* Page 1 */}
-                                        <div style={pageStyle}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px' }}>
-                                                <div>
-                                                    <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PROVIDER COMPENSATION STATEMENT</div>
-                                                    <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
-                                                    <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
-                                                </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}>
-                                                        <img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} />
-                                                    </div>
-                                                    <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Portal</div>
-                                                </div>
-                                            </div>
-                                            <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '40px' }} />
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '48px' }}>
-                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Statement Period</div><div style={{ fontSize: '14px', fontWeight: '700', color: '#111' }}>{periodLabel}</div></div>
-                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Release Date</div><div style={{ fontSize: '14px', fontWeight: '700', color: '#111' }}>{stmt.release_date ? new Date(stmt.release_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}</div></div>
-                                                <div><div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#888', marginBottom: '4px' }}>Status</div><div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', backgroundColor: '#dcfce7', color: '#16a34a' }}>Approved</div></div>
-                                            </div>
-                                            <div style={{ backgroundColor: '#f9f9f9', borderRadius: '16px', overflow: 'hidden', marginBottom: '32px' }}>
-                                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                                                    <thead>
-                                                        <tr style={{ backgroundColor: '#111', color: '#fff' }}>
-                                                            <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Description</th>
-                                                            <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Count</th>
-                                                            <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Rate</th>
-                                                            <th style={{ padding: '16px 24px', textAlign: 'right', fontWeight: '900', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr style={{ borderBottom: '1px solid #e5e5e5' }}>
-                                                            <td style={{ padding: '20px 24px' }}><div style={{ fontWeight: '700' }}>New Patient Eligibility</div><div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>Patients enrolled for the first time in {periodLabel}</div></td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: '900', fontSize: '18px' }}>{stmt.new_patient_count ?? 0}</td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'center', color: '#555' }}>{fmtMoney(rates.new_patient_rate)} / patient</td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'right', fontWeight: '900', fontSize: '16px' }}>{fmtMoney(newTotal)}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style={{ padding: '20px 24px' }}><div style={{ fontWeight: '700' }}>Recurring Active Subscribers</div><div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>Active subscribers with recurring billing in {periodLabel}</div></td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'center', fontWeight: '900', fontSize: '18px' }}>{stmt.recurring_patient_count ?? 0}</td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'center', color: '#555' }}>{fmtMoney(rates.recurring_patient_rate)} / subscriber</td>
-                                                            <td style={{ padding: '20px 24px', textAlign: 'right', fontWeight: '900', fontSize: '16px' }}>{fmtMoney(recurringTotal)}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                <div style={{ backgroundColor: '#111', color: '#fff', borderRadius: '16px', padding: '24px 40px', textAlign: 'right', minWidth: '280px' }}>
-                                                    <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>Total Payout to Provider</div>
-                                                    <div style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-0.03em', color: '#FFDE59' }}>{fmtMoney(grandTotal)}</div>
-                                                </div>
-                                            </div>
-                                            <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}>Page 1 of 2</div>
-                                            </div>
-                                        </div>
-
-                                        {/* Page 2 — Patient Roster */}
-                                        <div style={{ ...pageStyle, marginBottom: 0 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
-                                                <div><div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PATIENT DETAIL — {periodLabel}</div><div style={{ fontSize: '22px', fontWeight: '900', color: '#111', letterSpacing: '-0.02em' }}>New & Recurring Patient Roster</div></div>
-                                                <div style={{ fontSize: '30px', fontWeight: '900', letterSpacing: '-0.04em', color: '#111', lineHeight: 1 }}><img src={logo} alt="uGlowMD" style={{ height: '112px', width: 'auto', display: 'inline-block' }} /></div>
-                                            </div>
-                                            <div style={{ height: '1px', backgroundColor: '#e5e5e5', marginBottom: '32px' }} />
-
-                                            {/* New Patients */}
-                                            <div style={{ marginBottom: '40px' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                                    <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>New Patients — {stmt.new_patient_count ?? 0} total</div>
-                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates.new_patient_rate)} each</div>
-                                                </div>
-                                                {(stmt.new_patients_list?.length > 0) ? (
-                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                                                        <thead><tr style={{ backgroundColor: '#f3f4f6' }}><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>#</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Patient Name</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Email</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Join Date</th><th style={{ padding: '10px 16px', textAlign: 'right', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Amount</th></tr></thead>
-                                                        <tbody>{stmt.new_patients_list.map((p, i) => (<tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}><td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td><td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || 'N/A'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.joined ? new Date(p.joined).toLocaleDateString() : '—'}</td><td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates.new_patient_rate)}</td></tr>))}</tbody>
-                                                    </table>
-                                                ) : <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '12px', textAlign: 'center', color: '#aaa', fontSize: '12px' }}>Roster not available for this period</div>}
-                                            </div>
-
-                                            {/* Recurring Patients */}
-                                            <div style={{ marginBottom: '40px' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                                    <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#111' }}>Recurring Subscribers — {stmt.recurring_patient_count ?? 0} total</div>
-                                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#555' }}>{fmtMoney(rates.recurring_patient_rate)} each</div>
-                                                </div>
-                                                {(stmt.recurring_patients_list?.length > 0) ? (
-                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                                                        <thead><tr style={{ backgroundColor: '#f3f4f6' }}><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>#</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Patient Name</th><th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Email</th><th style={{ padding: '10px 16px', textAlign: 'right', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#666' }}>Amount</th></tr></thead>
-                                                        <tbody>{stmt.recurring_patients_list.map((p, i) => (<tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}><td style={{ padding: '10px 16px', color: '#888' }}>{i + 1}</td><td style={{ padding: '10px 16px', fontWeight: '600' }}>{p.name || 'N/A'}</td><td style={{ padding: '10px 16px', color: '#555', fontSize: '12px' }}>{p.email || '—'}</td><td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: '700' }}>{fmtMoney(rates.recurring_patient_rate)}</td></tr>))}</tbody>
-                                                    </table>
-                                                ) : <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '12px', textAlign: 'center', color: '#aaa', fontSize: '12px' }}>Roster not available for this period</div>}
-                                            </div>
-
-                                            {/* Grand Total Page 2 */}
-                                            <div style={{ borderTop: '2px solid #111', paddingTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <div style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '8px' }}>Total Payout to Provider</div>
-                                                    <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.03em', color: '#111' }}>{fmtMoney(grandTotal)}</div>
-                                                    <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{stmt.new_patient_count ?? 0} new + {stmt.recurring_patient_count ?? 0} recurring patients</div>
-                                                </div>
-                                            </div>
-                                            <div style={{ position: 'absolute', bottom: '32px', left: '56px', right: '56px', borderTop: '1px solid #eee', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'grayscale(1) opacity(0.5)' }} /> · Provider Compensation · Confidential</div>
-                                                <div style={{ fontSize: '11px', color: '#bbb' }}>Page 2 of 2</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })()}
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
 
 export default Dashboard;
 

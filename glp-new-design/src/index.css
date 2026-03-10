@@ -128,3 +128,8 @@ body {
   font-style: italic;
   font-family: 'Cormorant Garamond', serif;
 }
+
+.placeholder-white::placeholder {
+  color: #ffffff;
+  opacity: 1;
+}
