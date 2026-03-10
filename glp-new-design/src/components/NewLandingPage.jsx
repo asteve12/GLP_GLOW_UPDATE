@@ -214,11 +214,22 @@ const NewLandingPage = () => {
 
                 {/* Glow Smarter Banner */}
                 <section className="py-0">
-                    <div className="w-full relative overflow-hidden bg-[#0a0a0a]">
-                        <img alt="Promotional banner" className="w-full h-auto max-h-[600px] object-cover block" src={glpPromoImg} />
-                        <div className="absolute inset-0 bg-black/5"></div>
-                        <div className="absolute left-4 bottom-4 right-4 md:right-12 md:bottom-12 z-10 flex md:block justify-center">
-                            <Link to="/qualify?category=weight-loss" className="bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-full text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300 shadow-2xl inline-block scale-100 md:scale-110 text-center w-full md:w-auto">Get started</Link>
+                    {/* No overflow-hidden so the button is never clipped */}
+                    <div className="w-full bg-[#0a0a0a] relative">
+                        {/* Image at full natural height — no cropping */}
+                        <img
+                            alt="Promotional banner"
+                            className="w-full h-auto block"
+                            src={glpPromoImg}
+                        />
+                        {/* Button sits on top of the image, bottom-right corner */}
+                        <div className="absolute bottom-6 right-6 md:bottom-12 md:right-12 z-10">
+                            <Link
+                                to="/qualify?category=weight-loss"
+                                className="bg-white text-black px-8 md:px-10 py-3 md:py-4 rounded-full text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all duration-300 shadow-2xl inline-block text-center whitespace-nowrap"
+                            >
+                                Get started
+                            </Link>
                         </div>
                     </div>
                 </section>

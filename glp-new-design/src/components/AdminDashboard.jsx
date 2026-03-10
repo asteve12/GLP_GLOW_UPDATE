@@ -2783,7 +2783,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                         method: 'POST',
                         body: {
                             phone: finalPhone,
-                            message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
+                            message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your uGlowMD assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
                         }
                     }).catch(err => console.warn('Approval SMS failed:', err));
                 } else {
@@ -2826,7 +2826,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                         method: 'POST',
                         body: {
                             phone: finalPhoneRej,
-                            message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
+                            message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your uGlowMD assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
                         }
                     }).catch(err => console.warn('Rejection SMS failed:', err));
                 }
@@ -7095,9 +7095,9 @@ const OrderManagement = () => {
                     if (finalPhone) {
                         let message = '';
                         if (updates.delivery_status === 'in transit') {
-                            message = `Your GLP-GLOW order has been shipped! You can track the progress in your patient dashboard.`;
+                            message = `Your uGlowMD order has been shipped! You can track the progress in your patient dashboard.`;
                         } else if (updates.delivery_status === 'delivered') {
-                            message = `Your GLP-GLOW order was delivered! Check your package for treatment instructions and start your journey.`;
+                            message = `Your uGlowMD order was delivered! Check your package for treatment instructions and start your journey.`;
                         }
 
                         if (message) {
@@ -7175,7 +7175,7 @@ const OrderManagement = () => {
                         method: 'POST',
                         body: {
                             phone: finalPhone,
-                            message: `Your GLP-GLOW order has been shipped! Tracking Number: ${trackingId}. Details: https://www.fedex.com/fedextrack/?tracknumbers=${trackingId}`
+                            message: `Your uGlowMD order has been shipped! Tracking Number: ${trackingId}. Details: https://www.fedex.com/fedextrack/?tracknumbers=${trackingId}`
                         }
                     });
                 }
