@@ -4614,10 +4614,56 @@ const PatientExpressEntry = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [patientEmail, setPatientEmail] = useState('');
     const [patientPhone, setPatientPhone] = useState('');
+    const [selectedCountryCode, setSelectedCountryCode] = useState('+1');
+    const [countrySearch, setCountrySearch] = useState('');
+    const [showCountryList, setShowCountryList] = useState(false);
     const [checking, setChecking] = useState(false);
     const [existingInfo, setExistingInfo] = useState(null);
     const [answers, setAnswers] = useState({});
     const [submitting, setSubmitting] = useState(false);
+
+    const countryCodes = [
+        { code: '+1', name: 'United States', flag: '🇺🇸' },
+        { code: '+1', name: 'Canada', flag: '🇨🇦' },
+        { code: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+        { code: '+61', name: 'Australia', flag: '🇦🇺' },
+        { code: '+234', name: 'Nigeria', flag: '🇳🇬' },
+        { code: '+91', name: 'India', flag: '🇮🇳' },
+        { code: '+971', name: 'UAE', flag: '🇦🇪' },
+        { code: '+33', name: 'France', flag: '🇫🇷' },
+        { code: '+49', name: 'Germany', flag: '🇩🇪' },
+        { code: '+81', name: 'Japan', flag: '🇯🇵' },
+        { code: '+86', name: 'China', flag: '🇨🇳' },
+        { code: '+52', name: 'Mexico', flag: '🇲🇽' },
+        { code: '+55', name: 'Brazil', flag: '🇧🇷' },
+        { code: '+27', name: 'South Africa', flag: '🇿🇦' },
+        { code: '+34', name: 'Spain', flag: '🇪🇸' },
+        { code: '+39', name: 'Italy', flag: '🇮🇹' },
+        { code: '+7', name: 'Russia', flag: '🇷🇺' },
+        { code: '+82', name: 'South Korea', flag: '🇰🇷' },
+        { code: '+31', name: 'Netherlands', flag: '🇳🇱' },
+        { code: '+41', name: 'Switzerland', flag: '🇨🇭' },
+        { code: '+46', name: 'Sweden', flag: '🇸🇪' },
+        { code: '+47', name: 'Norway', flag: '🇳🇴' },
+        { code: '+45', name: 'Denmark', flag: '🇩🇰' },
+        { code: '+353', name: 'Ireland', flag: '🇮🇪' },
+        { code: '+64', name: 'New Zealand', flag: '🇳🇿' },
+        { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+        { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
+        { code: '+66', name: 'Thailand', flag: '🇹🇭' },
+        { code: '+62', name: 'Indonesia', flag: '🇮🇩' },
+        { code: '+63', name: 'Philippines', flag: '🇵🇭' },
+        { code: '+84', name: 'Vietnam', flag: '🇻🇳' },
+        { code: '+90', name: 'Turkey', flag: '🇹🇷' },
+        { code: '+966', name: 'Saudi Arabia', flag: '🇸🇦' },
+        { code: '+972', name: 'Israel', flag: '🇮🇱' },
+        { code: '+20', name: 'Egypt', flag: '🇪🇬' }
+    ];
+
+    const filteredCountries = countryCodes.filter(c =>
+        c.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
+        c.code.includes(countrySearch)
+    );
 
     const categories = [
         { id: 'weight-loss', label: 'Weight Loss', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
@@ -4640,11 +4686,12 @@ const PatientExpressEntry = () => {
         setExistingInfo(null);
 
         try {
+            const fullPhone = `${selectedCountryCode}${patientPhone.replace(/\D/g, '')}`;
             // Update prescription state with current email and phone
             setPrescription(prev => ({
                 ...prev,
                 patientEmail: patientEmail,
-                patientPhone: patientPhone
+                patientPhone: fullPhone
             }));
 
             // Check for existing submissions with this email and category
@@ -4949,22 +4996,74 @@ const PatientExpressEntry = () => {
                     <p className="text-[10px] uppercase tracking-widest text-white/50 mb-8 font-bold">Enter patient email to verify records</p>
 
                     <form onSubmit={checkEmail} className="space-y-6">
-                        <input
-                            type="email"
-                            required
-                            placeholder="Patient Email (patient@example.com)"
-                            value={patientEmail}
-                            onChange={(e) => setPatientEmail(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
-                        />
-                        <input
-                            type="tel"
-                            required
-                            placeholder="Patient Phone (e.g. +1 123 456 7890)"
-                            value={patientPhone}
-                            onChange={(e) => setPatientPhone(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
-                        />
+                        <div className="relative group">
+                            <input
+                                type="email"
+                                required
+                                placeholder="Patient Email (patient@example.com)"
+                                value={patientEmail}
+                                onChange={(e) => setPatientEmail(e.target.value)}
+                                className="w-full bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-center text-white font-bold focus:outline-none focus:border-accent-black transition-all"
+                            />
+                        </div>
+
+                        <div className="flex gap-3">
+                            <div className="relative w-32 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCountryList(!showCountryList)}
+                                    className="w-full h-full bg-black/20 border border-white/10 rounded-2xl py-4 px-2 flex items-center justify-center gap-2 text-white font-bold transition-all hover:bg-white/5"
+                                >
+                                    <span className="text-lg">{countryCodes.find(c => c.code === selectedCountryCode)?.flag || '🇺🇸'}</span>
+                                    <span className="text-xs">{selectedCountryCode}</span>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={`transition-transform ${showCountryList ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+                                </button>
+
+                                {showCountryList && (
+                                    <div className="absolute bottom-full left-0 w-64 mb-2 bg-[#111111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                        <div className="p-3 border-b border-white/5">
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                placeholder="Search country..."
+                                                value={countrySearch}
+                                                onChange={(e) => setCountrySearch(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-[10px] text-white focus:outline-none focus:border-white/30"
+                                            />
+                                        </div>
+                                        <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+                                            {filteredCountries.map((c, i) => (
+                                                <button
+                                                    key={`${c.code}-${i}`}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedCountryCode(c.code);
+                                                        setShowCountryList(false);
+                                                        setCountrySearch('');
+                                                    }}
+                                                    className="w-full p-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left border-b border-white/5 last:border-0"
+                                                >
+                                                    <span className="text-lg">{c.flag}</span>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] font-black uppercase text-white">{c.name}</span>
+                                                        <span className="text-[9px] text-white/40 font-bold">{c.code}</span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <input
+                                type="tel"
+                                required
+                                placeholder="Phone number"
+                                value={patientPhone}
+                                onChange={(e) => setPatientPhone(e.target.value)}
+                                className="flex-1 bg-black/20 border border-white/10 rounded-2xl py-4 px-6 text-white font-bold focus:outline-none focus:border-accent-black transition-all"
+                            />
+                        </div>
                         <div className="flex gap-4">
                             <button
                                 type="button"
