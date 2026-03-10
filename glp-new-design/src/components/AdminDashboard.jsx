@@ -2565,7 +2565,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
             try {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('stripe_customer_id, date_of_birth')
+                    .select('stripe_customer_id, date_of_birth, phone_number')
                     .eq('id', submission.user_id)
                     .single();
 
@@ -2767,13 +2767,28 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
                 // 2.1 Send Approval SMS
                 console.log('Submission approved. Sending status SMS...');
-                await supabase.functions.invoke('send-sms', {
-                    method: 'POST',
-                    body: {
-                        phone: formData.shipping_phone || submission.shipping_phone,
-                        message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
-                    }
-                }).catch(err => console.warn('Approval SMS failed:', err));
+                const rawPhone = formData.shipping_phone || submission.shipping_phone || profileData?.phone_number;
+                const cleanPhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = cleanPhone(rawPhone);
+
+                if (finalPhone) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Congratulations ${formData.shipping_first_name || 'Valued Patient'}! Your GLP-GLOW assessment has been APPROVED. Log in to your dashboard to complete your checkout and start treatment.`
+                        }
+                    }).catch(err => console.warn('Approval SMS failed:', err));
+                } else {
+                    console.warn('No valid phone number found for approval SMS');
+                }
             }
 
             // 3. If rejected, send email & SMS notification
@@ -2795,13 +2810,26 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                 }
 
                 // Send Rejection SMS
-                await supabase.functions.invoke('send-sms', {
-                    method: 'POST',
-                    body: {
-                        phone: formData.shipping_phone || submission.shipping_phone,
-                        message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
-                    }
-                }).catch(err => console.warn('Rejection SMS failed:', err));
+                const rawPhoneRej = formData.shipping_phone || submission.shipping_phone || profileData?.phone_number;
+                const cleanPhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhoneRej = cleanPhone(rawPhoneRej);
+
+                if (finalPhoneRej) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhoneRej,
+                            message: `Hello ${formData.shipping_first_name || 'Valued Patient'}. Your GLP-GLOW assessment results are available. Unfortunately, we cannot proceed with your treatment at this time based on medical guidelines. Please check your email for more details.`
+                        }
+                    }).catch(err => console.warn('Rejection SMS failed:', err));
+                }
             }
 
             onAction(); // Refresh data
@@ -4726,7 +4754,7 @@ const PatientExpressEntry = () => {
                 shipping_city: '-',
                 shipping_state: '-',
                 shipping_zip: '-',
-                shipping_phone: '-',
+                shipping_phone: prescription.patientPhone || '-',
                 // Store prescription data if available
                 ...(selectedCategory === 'weight-loss' && {
                     additional_health_info: { prescription: prescription }, // Storing in JSONB column
@@ -4748,6 +4776,27 @@ const PatientExpressEntry = () => {
                 if (emailError) console.error('Error sending setup email:', emailError);
             } catch (emailErr) {
                 console.error('Failed to invoke email function:', emailErr);
+            }
+
+            // Send Approval SMS for Express Entry
+            try {
+                const rawPhone = prescription.patientPhone;
+                if (rawPhone && rawPhone !== '-' && rawPhone !== 'N/A') {
+                    const digits = rawPhone.replace(/\D/g, '');
+                    const finalPhone = digits.length === 10 ? `+1${digits}` : (digits.length === 11 && digits.startsWith('1') ? `+${digits}` : (digits.length > 0 ? `+1${digits}` : null));
+
+                    if (finalPhone) {
+                        await supabase.functions.invoke('send-sms', {
+                            method: 'POST',
+                            body: {
+                                phone: finalPhone,
+                                message: `Congratulations! Your GLP-GLOW assessment has been APPROVED via our back office. Log in to your account (${patientEmail}) to complete your setup and start treatment.`
+                            }
+                        });
+                    }
+                }
+            } catch (smsErr) {
+                console.warn('Express Entry SMS failed:', smsErr);
             }
 
             setStep('success');
@@ -6834,8 +6883,8 @@ const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
-    const [monthFilter, setMonthFilter] = useState('current'); // 'current', 'previous', 'all'
-    const [selectedDate, setSelectedDate] = useState(''); // New: Calendar Filter
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [page, setPage] = useState(1);
     const pageSize = 10;
     const [updatingId, setUpdatingId] = useState(null);
@@ -6847,7 +6896,7 @@ const OrderManagement = () => {
         try {
             const { data, error } = await supabase
                 .from('orders')
-                .select('*, profiles(id, first_name, last_name, email)')
+                .select('*, profiles(id, first_name, last_name, email, phone_number)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -6919,6 +6968,32 @@ const OrderManagement = () => {
                 toast.success('Tracking updated and patient has been notified.');
             }
 
+            // 3. Send SMS Notification
+            try {
+                const rawPhone = order.profiles?.phone_number;
+                const normalizePhone = (p) => {
+                    if (!p || p === '-') return null;
+                    const digits = p.replace(/\D/g, '');
+                    if (digits.length === 10) return `+1${digits}`;
+                    if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+                    if (digits.length > 10) return `+${digits}`;
+                    return digits.length > 0 ? `+1${digits}` : null;
+                };
+                const finalPhone = normalizePhone(rawPhone);
+
+                if (finalPhone) {
+                    await supabase.functions.invoke('send-sms', {
+                        method: 'POST',
+                        body: {
+                            phone: finalPhone,
+                            message: `Your GLP-GLOW order has been shipped! Tracking Number: ${trackingId}. Details: https://www.fedex.com/fedextrack/?tracknumbers=${trackingId}`
+                        }
+                    });
+                }
+            } catch (smsErr) {
+                console.warn('Tracking SMS failed:', smsErr);
+            }
+
             await fetchOrders();
             setEditingTrackingId(null);
         } catch (err) {
@@ -6934,22 +7009,10 @@ const OrderManagement = () => {
         const orderDate = new Date(o.created_at);
 
         // Calendar Date Filter (Higher priority if selected)
-        if (selectedDate) {
+        if (startDate || endDate) {
             const orderDateStr = o.created_at.split('T')[0];
-            if (orderDateStr !== selectedDate) return false;
-        } else {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            // Month Filter Logic
-            if (monthFilter === 'current') {
-                if (orderDate.getMonth() !== currentMonth || orderDate.getFullYear() !== currentYear) return false;
-            } else if (monthFilter === 'previous') {
-                const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-                const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-                if (orderDate.getMonth() !== prevMonth || orderDate.getFullYear() !== prevYear) return false;
-            }
+            if (startDate && orderDateStr < startDate) return false;
+            if (endDate && orderDateStr > endDate) return false;
         }
 
         // Status Filter Logic
@@ -6973,16 +7036,16 @@ const OrderManagement = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Filter Header */}
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[32px] p-6 md:p-8 overflow-hidden">
-                <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[32px] p-6 md:p-8 overflow-hidden">
+                <div className="flex flex-col md:flex-row flex-wrap xl:flex-nowrap gap-8">
                     <div className="space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-1">Fulfillment Status</p>
-                        <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white ml-1">Fulfillment Status</p>
+                        <div className="flex flex-wrap gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
                             {['all', 'processing', 'shipped', 'delivered'].map(f => (
                                 <button
                                     key={f}
                                     onClick={() => { setFilter(f); setPage(1); }}
-                                    className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-[#111111] text-white shadow-lg' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
+                                    className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === f ? 'bg-[#111111] text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
                                 >
                                     {f}
                                 </button>
@@ -6990,38 +7053,35 @@ const OrderManagement = () => {
                         </div>
                     </div>
 
-                    <div className="w-px h-12 bg-white/5 hidden md:block self-end mb-2"></div>
+                    <div className="w-px h-12 bg-white/5 hidden xl:block self-end mb-2"></div>
 
-                    <div className="space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 ml-1">Time Period</p>
-                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                            <div className="flex gap-2 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
-                                {[
-                                    { id: 'current', label: 'Current Month' },
-                                    { id: 'previous', label: 'Previous Month' },
-                                    { id: 'all', label: 'All History' }
-                                ].map(m => (
-                                    <button
-                                        key={m.id}
-                                        onClick={() => { setMonthFilter(m.id); setSelectedDate(''); setPage(1); }}
-                                        className={`px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${(!selectedDate && monthFilter === m.id) ? 'bg-[#bfff00] text-black shadow-lg font-black' : 'text-white/40 hover:text-white/60 hover:bg-white/5'}`}
-                                    >
-                                        {m.label}
-                                    </button>
-                                ))}
-                            </div>
-
+                    <div className="space-y-4 flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white ml-1">Time Period</p>
+                        <div className="flex flex-col lg:flex-row flex-wrap gap-4 items-start lg:items-center">
                             {/* Calendar Filter */}
-                            <div className="flex items-center gap-3 p-1.5 bg-black/40 border border-white/10 rounded-2xl">
-                                <input
-                                    type="date"
-                                    value={selectedDate}
-                                    onChange={(e) => { setSelectedDate(e.target.value); setPage(1); }}
-                                    className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white/80 focus:outline-none px-4 py-1.5 [color-scheme:dark]"
-                                />
-                                {selectedDate && (
+                            <div className="flex flex-col sm:flex-row items-center gap-3 p-1.5 bg-black/40 border border-white/10 rounded-2xl w-full sm:w-auto">
+                                <div className="flex items-center gap-2 flex-1 w-full">
+                                    <span className="text-[8px] font-black text-white/30 uppercase ml-2">From</span>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+                                        className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white focus:outline-none px-2 py-1.5 [color-scheme:dark] flex-1 min-w-[100px]"
+                                    />
+                                </div>
+                                <div className="w-px h-4 bg-white/10 hidden sm:block"></div>
+                                <div className="flex items-center gap-2 flex-1 w-full">
+                                    <span className="text-[8px] font-black text-white/30 uppercase">To</span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+                                        className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white focus:outline-none px-2 py-1.5 [color-scheme:dark] flex-1 min-w-[100px]"
+                                    />
+                                </div>
+                                {(startDate || endDate) && (
                                     <button
-                                        onClick={() => setSelectedDate('')}
+                                        onClick={() => { setStartDate(''); setEndDate(''); }}
                                         className="pr-4 text-white/30 hover:text-white transition-all"
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -7032,10 +7092,6 @@ const OrderManagement = () => {
                     </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end gap-1">
-                    <p className="text-4xl font-black text-white tracking-tighter">{filteredOrders.length}</p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#bfff00]">Total Matches in View</p>
-                </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-6">
@@ -8025,9 +8081,33 @@ const StatementsAdminView = () => {
         }
     };
 
-    const fmtMoney = (v) => `$${Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const inputStyle = { width: '100%', boxSizing: 'border-box', backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', color: '#fff', outline: 'none', fontFamily: 'inherit' };
-    const labelStyle = { display: 'block', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.35)', marginBottom: '6px' };
+    const fmtMoney = (v) => {
+        const num = Number(v || 0);
+        return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    const inputStyle = {
+        width: '100%',
+        boxSizing: 'border-box',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        border: '1.5px solid rgba(255,255,255,0.1)',
+        borderRadius: '12px',
+        padding: '12px 16px',
+        fontSize: '14px',
+        color: '#fff',
+        outline: 'none',
+        fontFamily: 'inherit'
+    };
+
+    const labelStyle = {
+        display: 'block',
+        fontSize: '9px',
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: '0.3em',
+        color: 'rgba(255,255,255,0.35)',
+        marginBottom: '6px'
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -8799,7 +8879,26 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex">
+        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex admin-dashboard-root">
+            <style>{`
+                .admin-dashboard-root input::placeholder,
+                .admin-dashboard-root textarea::placeholder {
+                    color: rgba(255, 255, 255, 1) !important;
+                }
+                .admin-dashboard-root select option {
+                    background-color: #0A0A0A;
+                    color: white;
+                }
+                .admin-dashboard-root .text-white\\/10,
+                .admin-dashboard-root .text-white\\/20,
+                .admin-dashboard-root .text-white\\/30,
+                .admin-dashboard-root .text-white\\/40,
+                .admin-dashboard-root .text-white\\/50,
+                .admin-dashboard-root .text-white\\/60,
+                .admin-dashboard-root .text-white\\/70 {
+                    color: white !important;
+                }
+            `}</style>
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase tracking-tighter" onClick={() => navigate('/')}>
