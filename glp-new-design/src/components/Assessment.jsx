@@ -2970,12 +2970,12 @@ const Assessment = () => {
                                 </div>
                                 <div className="space-y-4">
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Phone Number *</label>
-                                    <div className="flex gap-2 relative">
+                                    <div className="flex flex-col md:flex-row gap-3 relative">
                                         <div className="relative">
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                                                className="h-full bg-white border border-black/10 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center transition-all hover:bg-black/5"
+                                                className="w-full md:w-auto h-full bg-white border border-black/10 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap md:min-w-[100px] justify-center transition-all hover:bg-black/5"
                                             >
                                                 <span>{countryCodes.find(c => c.code === authData.countryCode)?.flag}</span>
                                                 <span>{authData.countryCode}</span>
@@ -3010,7 +3010,7 @@ const Assessment = () => {
                                                 const formatted = !x[2] ? x[1] : `(${x[1]}) ${x[2]}${x[3] ? `-${x[3]}` : ''}`;
                                                 setAuthData({ ...authData, phoneNumber: formatted });
                                             }}
-                                            className="flex-1 rounded-2xl py-5 px-8 font-bold outline-none transition-all"
+                                            className="w-full md:flex-1 rounded-2xl py-5 px-6 md:px-8 font-bold outline-none transition-all"
                                             style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
                                             onFocus={e => e.target.style.borderColor = '#1a1a1a'}
                                             onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
@@ -3635,14 +3635,8 @@ const Assessment = () => {
                 if (categoryId === 'weight-loss' || categoryId === 'retatrutide') {
                     setStep(25); // Weight-loss or Retatrutide: go to AI review step
                     callAIReview();
-                } else if (categoryId === 'sexual-health') {
-                    setStep(25);
-                    callSexualHealthAIReview();
-                } else if (categoryId === 'hair-restoration') {
-                    setStep(25);
-                    callHairRestorationAIReview();
                 } else {
-                    // For other categories: go to AI result step (auto-approve for now)
+                    // For other categories (Sexual Health, Hair restoration, etc.): go to AI result step (auto-approve)
                     setStep(25);
                     setAiApproved(true);
                     setAiReviewing(false);
@@ -4217,7 +4211,7 @@ const Assessment = () => {
                                                 {!piiData.noPcp && (
                                                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div className="flex flex-col gap-1.5 bg-black/[0.02] p-5 rounded-2xl border border-black/5 focus-within:border-amber-400 transition-all">
+                                                            <div className="flex flex-col gap-1.5 bg-black/[0.02] p-4 md:p-5 rounded-2xl border border-black/5 focus-within:border-amber-400 transition-all">
                                                                 <label className="text-[9px] font-black uppercase tracking-widest text-black/40">First Name</label>
                                                                 <input placeholder="Provider's first name" className="w-full bg-transparent border-none text-sm font-bold outline-none placeholder:text-black/40" value={piiData.pcpFirstName}
                                                                     onChange={e => {
@@ -4226,7 +4220,7 @@ const Assessment = () => {
                                                                         setIntakeData(prev => ({ ...prev, pcp_npi: '', pcp_details: null }));
                                                                     }} />
                                                             </div>
-                                                            <div className="flex flex-col gap-1.5 bg-black/[0.02] p-5 rounded-2xl border border-black/5 focus-within:border-amber-400 transition-all">
+                                                            <div className="flex flex-col gap-1.5 bg-black/[0.02] p-4 md:p-5 rounded-2xl border border-black/5 focus-within:border-amber-400 transition-all">
                                                                 <label className="text-[9px] font-black uppercase tracking-widest text-black/40">Last Name</label>
                                                                 <input placeholder="Provider's last name" className="w-full bg-transparent border-none text-sm font-bold outline-none placeholder:text-black/40" value={piiData.pcpLastName}
                                                                     onChange={e => {
@@ -5712,7 +5706,7 @@ const Assessment = () => {
                         <img
                             src={logo}
                             alt="uGlowMD Logo"
-                            className="h-[120px] md:h-[180px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
+                            className="h-[200px] md:h-[180px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
                             style={{
                                 filter: 'brightness(0.1)',
                                 maxWidth: 'none'
