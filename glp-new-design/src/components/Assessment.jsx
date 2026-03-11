@@ -5706,7 +5706,7 @@ const Assessment = () => {
                         <img
                             src={logo}
                             alt="uGlowMD Logo"
-                            className="h-[200px] md:h-[180px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
+                            className="h-[100px] md:h-[180px] w-auto transition-transform hover:scale-105 object-contain absolute left-0 "
                             style={{
                                 filter: 'brightness(0.1)',
                                 maxWidth: 'none'
