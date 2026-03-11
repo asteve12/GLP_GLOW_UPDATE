@@ -201,7 +201,7 @@ const AdminLogin = () => {
         fontWeight: '900',
         textTransform: 'uppercase',
         letterSpacing: '0.4em',
-        color: 'rgba(255,255,255,0.25)',
+        color: '#ffffff',
         marginBottom: '12px'
     };
 
@@ -221,7 +221,7 @@ const AdminLogin = () => {
             {/* Background Elements */}
             <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: 'radial-gradient(circle at 50% 50%, rgba(191,255,0,0.03) 0%, transparent 70%)',
+                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 70%)',
                 pointerEvents: 'none'
             }} />
             <div style={{
@@ -231,17 +231,21 @@ const AdminLogin = () => {
                 borderRadius: '50%', pointerEvents: 'none'
             }} />
 
+            <style>{`
+                input::placeholder {
+                    color: #ffffff !important;
+                    opacity: 1;
+                }
+            `}</style>
+
             <div className="admin-login-content" style={{ width: '100%', maxWidth: '440px', position: 'relative', zIndex: 1 }}>
 
                 {/* Brand */}
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.6em', color: '#bfff00', marginBottom: '16px', opacity: 0.8 }}>
-                        Console Management
-                    </h1>
-                    <h2 style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '-0.04em', lineHeight: '1', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', filter: 'brightness(0) invert(1)' }} /> <span style={{ color: '#bfff00' }}>Admin</span>
+                    <h2 style={{ fontSize: '42px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '-0.04em', lineHeight: '1', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
                     </h2>
-                    <p style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    <p style={{ fontSize: '11px', fontWeight: '600', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         {step === 'otp' ? 'OTP Verification Required' : 'Restricted Personnel Only'}
                     </p>
                 </div>
@@ -280,7 +284,7 @@ const AdminLogin = () => {
                                     placeholder="name@uglowmd.com"
                                     required
                                     style={inputStyle}
-                                    onFocus={e => { e.target.style.borderColor = '#bfff00'; e.target.style.backgroundColor = 'rgba(191,255,0,0.02)'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#ffffff'; e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
                                     onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
                                 />
                             </div>
@@ -295,7 +299,7 @@ const AdminLogin = () => {
                                         placeholder="••••••••••••"
                                         required
                                         style={{ ...inputStyle, paddingRight: '56px' }}
-                                        onFocus={e => { e.target.style.borderColor = '#bfff00'; e.target.style.backgroundColor = 'rgba(191,255,0,0.02)'; }}
+                                        onFocus={e => { e.target.style.borderColor = '#ffffff'; e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
                                         onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
                                     />
                                     <button
@@ -319,16 +323,12 @@ const AdminLogin = () => {
                                 disabled={loading}
                                 style={{
                                     width: '100%', padding: '20px', borderRadius: '16px',
-                                    backgroundColor: loading ? 'rgba(255,255,255,0.1)' : '#bfff00',
-                                    color: '#000', border: 'none', fontSize: '11px', fontWeight: '900',
+                                    backgroundColor: loading ? 'rgba(255,255,255,0.1)' : '#ffffff',
+                                    color: '#000000', border: 'none', fontSize: '11px', fontWeight: '900',
                                     textTransform: 'uppercase', letterSpacing: '0.4em',
                                     cursor: loading ? 'not-allowed' : 'pointer',
-                                    transition: 'all 0.4s cubic-bezier(0.175,0.885,0.32,1.275)',
-                                    marginTop: '12px',
-                                    boxShadow: loading ? 'none' : '0 10px 40px rgba(191,255,0,0.2)'
+                                    marginTop: '12px'
                                 }}
-                                onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 50px rgba(191,255,0,0.3)'; } }}
-                                onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 40px rgba(191,255,0,0.2)'; } }}
                             >
                                 {loading ? 'Authenticating...' : 'Establish Connection'}
                             </button>
@@ -373,7 +373,7 @@ const AdminLogin = () => {
                                         paddingTop: '22px',
                                         paddingBottom: '22px'
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#bfff00'; e.target.style.backgroundColor = 'rgba(191,255,0,0.02)'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#ffffff'; e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
                                     onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
                                 />
                             </div>
@@ -467,7 +467,7 @@ const AdminLogin = () => {
                                         paddingTop: '22px',
                                         paddingBottom: '22px'
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#60a5fa'; e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.03)'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#ffffff'; e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
                                     onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
                                 />
                             </div>
@@ -505,32 +505,6 @@ const AdminLogin = () => {
                     )}
                 </div>
 
-                {/* Return Link */}
-                <div style={{ textAlign: 'center', marginTop: '32px' }}>
-                    <button
-                        onClick={() => navigate('/login')}
-                        style={{
-                            background: 'none', border: 'none',
-                            fontSize: '9px', fontWeight: '900',
-                            textTransform: 'uppercase', letterSpacing: '0.3em',
-                            color: 'rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'color 0.3s'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
-                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.2)'}
-                    >
-                        Switch to Patient Portal
-                    </button>
-                </div>
-            </div>
-
-            {/* Footer */}
-            <div style={{
-                position: 'absolute', bottom: '32px', left: '0', right: '0',
-                textAlign: 'center', fontSize: '8px', fontWeight: '800',
-                textTransform: 'uppercase', letterSpacing: '0.4em',
-                color: 'rgba(255,255,255,0.1)', pointerEvents: 'none'
-            }}>
-                Authorization Trace Enabled • ISO-27001 Verified System
             </div>
         </div>
     );

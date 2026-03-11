@@ -315,19 +315,30 @@ const Assessment = () => {
         dobDay: '',
         dobYear: '',
         state: '',
+        countryCode: '+1',
         phone: '',
         consent: false,
         pcpVisitLast6Months: '',
         labResults: []
     });
     const [idData, setIdData] = useState({ type: '', number: '', file: null });
-    const [shippingData, setShippingData] = useState({ firstName: '', lastName: '', address: '', apt: '', city: '', state: '', zip: '', phone: '', email: '' });
+    const [shippingData, setShippingData] = useState({ firstName: '', lastName: '', address: '', apt: '', city: '', state: '', zip: '', countryCode: '+1', phone: '', email: '' });
     const [paymentData, setPaymentData] = useState({ cardNumber: '', expiry: '', cvc: '', coupon: '' });
     const [showStripe, setShowStripe] = useState(false);
     const [stateSearch, setStateSearch] = useState('');
     const [showStateDropdown, setShowStateDropdown] = useState(false);
     const [pcpStateSearch, setPcpStateSearch] = useState('');
     const [showPcpStateDropdown, setShowPcpStateDropdown] = useState(false);
+    const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+    const [showEligibilityCountryDropdown, setShowEligibilityCountryDropdown] = useState(false);
+    const [showShippingCountryDropdown, setShowShippingCountryDropdown] = useState(false);
+
+    const countryCodes = [
+        { code: '+1', country: 'US', flag: '🇺🇸' },
+        { code: '+44', country: 'UK', flag: '🇬🇧' },
+        { code: '+1', country: 'CA', flag: '🇨🇦' },
+        { code: '+61', country: 'AU', flag: '🇦🇺' },
+    ];
     const [authLoading, setAuthLoading] = useState(false);
     const [authError, setAuthError] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
@@ -921,7 +932,7 @@ const Assessment = () => {
                 shipping_city: shippingData.city,
                 shipping_state: shippingData.state,
                 shipping_zip: shippingData.zip,
-                shipping_phone: shippingData.phone || eligibilityData.phone,
+                shipping_phone: shippingData.phone ? `${shippingData.countryCode}${shippingData.phone.replace(/\D/g, '')}` : (eligibilityData.phone ? `${eligibilityData.countryCode}${eligibilityData.phone.replace(/\D/g, '')}` : ''),
                 shipping_email: shippingData.email || user?.email || authData.email,
 
                 // Metadata & Files
@@ -961,7 +972,7 @@ const Assessment = () => {
                     last_name: lastName,
                     email: user?.email || authData.email || shippingData.email,
                     date_of_birth: dob,
-                    phone_number: shippingData.phone || eligibilityData.phone,
+                    phone_number: shippingData.phone ? `${shippingData.countryCode}${shippingData.phone.replace(/\D/g, '')}` : (eligibilityData.phone ? `${eligibilityData.countryCode}${eligibilityData.phone.replace(/\D/g, '')}` : ''),
                     legal_address: `${shippingData.address || ''}, ${shippingData.city || ''}, ${shippingData.state || ''} ${shippingData.zip || ''}`.trim(),
                     updated_at: new Date().toISOString()
                 })
@@ -2886,7 +2897,7 @@ const Assessment = () => {
         if (user) {
             const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'there';
             return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#000000' }}>
+                <div className="assessment-step max-w-2xl mx-auto py-12 md:py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#ffffff' }}>
                     <div className="text-center mb-12">
                         <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
@@ -2897,15 +2908,15 @@ const Assessment = () => {
                         <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                             Welcome Back
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4" style={{ color: '#ffffff' }}>
+                        <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
                             Hi, <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>{firstName}.</span>
                         </h2>
-                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(0,0,0,0.5)' }}>
                             You're already signed in. Continue to your medical assessment below.
                         </p>
                     </div>
 
-                    <div className="rounded-[40px] p-8 md:p-12 space-y-6" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="rounded-[40px] p-6 md:p-12 space-y-8" style={{ backgroundColor: '#f9fafb', border: '1px solid rgba(0,0,0,0.1)' }}>
                         <div className="flex items-center gap-4 p-5 bg-white rounded-2xl" style={{ border: '1px solid #1a1a1a08' }}>
                             <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center shrink-0">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -2914,7 +2925,7 @@ const Assessment = () => {
                             </div>
                             <div>
                                 <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: '#1a1a1a50' }}>Signed in as</p>
-                                <p className="text-sm font-black" style={{ color: '#ffffff' }}>{user.email}</p>
+                                <p className="text-sm font-black" style={{ color: '#1a1a1a' }}>{user.email}</p>
                             </div>
                         </div>
 
@@ -2974,26 +2985,26 @@ const Assessment = () => {
 
         if (showOtpInput) {
             return (
-                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#000000' }}>
+                <div className="assessment-step max-w-2xl mx-auto py-20 px-6 animate-in fade-in duration-700" style={{ backgroundColor: '#ffffff' }}>
                     <div className="text-center mb-12">
-                        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.1)' }}>
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5">
+                        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: 'rgba(0,0,0,0.05)', border: '2px solid rgba(0,0,0,0.1)' }}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5">
                                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                             </svg>
                         </div>
                         <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-6">
                             Identity Verification
                         </div>
-                        <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#ffffff' }}>
-                            Verify Your <span style={{ color: '#ffffff', display: 'inline-block' }}>Email.</span>
+                        <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
+                            Verify Your <span style={{ color: '#1a1a1a', display: 'inline-block' }}>Email.</span>
                         </h2>
-                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#ffffff' }}>
+                        <p className="font-medium uppercase tracking-[0.2em] text-[10px] max-w-md mx-auto leading-relaxed" style={{ color: '#1a1a1a' }}>
                             A security code has been transmitted to{' '}
-                            <span className="font-black" style={{ color: '#ffffff' }}>{authData.email}</span>
+                            <span className="font-black" style={{ color: '#1a1a1a' }}>{authData.email}</span>
                         </p>
                     </div>
 
-                    <div className="rounded-[40px] p-8 md:p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="rounded-[40px] p-8 md:p-12 text-center" style={{ backgroundColor: '#f9fafb', border: '1px solid rgba(0,0,0,0.1)' }}>
                         <div className="space-y-6 mb-10">
                             <input
                                 type="text"
@@ -3002,9 +3013,9 @@ const Assessment = () => {
                                 placeholder="– – – – – – – –"
                                 maxLength={8}
                                 className="w-full rounded-2xl py-6 text-center text-4xl font-black tracking-[0.3em] outline-none transition-all"
-                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
+                                style={{ backgroundColor: '#ffffff', border: '2px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
                                 onFocus={e => e.target.style.borderColor = '#93C5FD'}
-                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                 required
                             />
                         </div>
@@ -3014,18 +3025,18 @@ const Assessment = () => {
                                 onClick={handleVerifyOtp}
                                 disabled={verifying || otp.length < 8}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 disabled:opacity-50"
-                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
-                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#ffffff'; } }}
-                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,0.2)', color: '#1a1a1a' }}
+                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor = '#1a1a1a'; } }}
+                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; }}
                             >
                                 {verifying ? 'Verifying...' : 'Unlock Protocol'}
                             </button>
                             <button
                                 onClick={() => setShowOtpInput(false)}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
-                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,0.2)', color: '#1a1a1a' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'}
                             >
                                 Back
                             </button>
@@ -3052,70 +3063,85 @@ const Assessment = () => {
 
 
         return (
-            <div className="assessment-step max-w-2xl mx-auto py-20 px-6" style={{ backgroundColor: '#000000' }}>
+            <div className="assessment-step max-w-2xl mx-auto py-12 md:py-20 px-6" style={{ backgroundColor: '#ffffff' }}>
                 <div className="text-center mb-12">
                     <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
                         Secure Clinical Portal
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4" style={{ color: '#ffffff' }}>
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4" style={{ color: '#1a1a1a' }}>
                         {authMode === 'signup' ? 'Create' : 'Access'}<br />
                         <span style={{ color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>Your Account.</span>
                     </h2>
-                    <p className="font-medium uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <p className="font-medium uppercase tracking-[0.2em] text-[10px]" style={{ color: 'rgba(0,0,0,0.5)' }}>
                         Join the telemedicine platform to proceed with your protocol.
                     </p>
                 </div>
 
-                <div className="rounded-[40px] p-8 md:p-12" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="rounded-[40px] p-6 md:p-12" style={{ backgroundColor: '#f9fafb', border: '1px solid rgba(0,0,0,0.1)' }}>
                     <div className="space-y-6">
                         {authMode === 'signup' && (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>First Name</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>First Name</label>
                                         <input
                                             type="text"
                                             placeholder="John"
                                             value={authData.firstName}
                                             onChange={(e) => setAuthData({ ...authData, firstName: e.target.value })}
                                             className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Last Name</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Last Name</label>
                                         <input
                                             type="text"
                                             placeholder="Doe"
                                             value={authData.lastName}
                                             onChange={(e) => setAuthData({ ...authData, lastName: e.target.value })}
                                             className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                         />
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Phone Number</label>
-                                    <div className="flex gap-4">
-                                        <input
-                                            type="text"
-                                            value={authData.countryCode}
-                                            onChange={(e) => {
-                                                let val = e.target.value;
-                                                if (!val.startsWith('+') && val.length > 0) val = '+' + val;
-                                                setAuthData({ ...authData, countryCode: val.replace(/[^\d+]/g, '').slice(0, 5) });
-                                            }}
-                                            placeholder="+1"
-                                            className="w-24 rounded-2xl py-5 text-center font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-                                            required
-                                        />
+                                <div className="space-y-4">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Phone Number *</label>
+                                    <div className="flex gap-2 relative">
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                                                className="h-full bg-white border border-black/10 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center transition-all hover:bg-black/5"
+                                            >
+                                                <span>{countryCodes.find(c => c.code === authData.countryCode)?.flag}</span>
+                                                <span>{authData.countryCode}</span>
+                                            </button>
+                                            {showCountryDropdown && (
+                                                <div className="absolute z-50 left-0 top-full mt-2 bg-white border border-black/10 rounded-2xl shadow-2xl min-w-[160px] overflow-hidden">
+                                                    {countryCodes.map((c, idx) => (
+                                                        <div
+                                                            key={`${c.country}-${idx}`}
+                                                            onClick={() => {
+                                                                setAuthData({ ...authData, countryCode: c.code });
+                                                                setShowCountryDropdown(false);
+                                                            }}
+                                                            className="px-6 py-4 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-3 text-black"
+                                                        >
+                                                            <span>{c.flag}</span>
+                                                            <span>{c.country} ({c.code})</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {showCountryDropdown && (
+                                                <div className="fixed inset-0 z-40" onClick={() => setShowCountryDropdown(false)} />
+                                            )}
+                                        </div>
                                         <input
                                             type="tel"
                                             placeholder="(555) 000-0000"
@@ -3126,9 +3152,9 @@ const Assessment = () => {
                                                 setAuthData({ ...authData, phoneNumber: formatted });
                                             }}
                                             className="flex-1 rounded-2xl py-5 px-8 font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                             required
                                         />
                                     </div>
@@ -3136,40 +3162,40 @@ const Assessment = () => {
 
                                 {/* DOB + Sex — collected at sign-up so biometrics are always available */}
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Date of Birth</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Date of Birth</label>
                                     <div className="grid grid-cols-3 gap-3">
                                         <input
                                             type="text" maxLength="2" placeholder="MM"
                                             value={authData.dobMonth}
                                             onChange={e => setAuthData(prev => ({ ...prev, dobMonth: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                         />
                                         <input
                                             type="text" maxLength="2" placeholder="DD"
                                             value={authData.dobDay}
                                             onChange={e => setAuthData(prev => ({ ...prev, dobDay: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                         />
                                         <input
                                             type="text" maxLength="4" placeholder="YYYY"
                                             value={authData.dobYear}
                                             onChange={e => setAuthData(prev => ({ ...prev, dobYear: e.target.value.replace(/\D/g, '') }))}
                                             className="w-full rounded-2xl py-5 text-center font-bold outline-none transition-all"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                            onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                            style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                            onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                            onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Biological Sex</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Biological Sex</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         {['Male', 'Female'].map(v => (
                                             <button
@@ -3178,10 +3204,10 @@ const Assessment = () => {
                                                 onClick={() => setAuthData(prev => ({ ...prev, sex: v.toLowerCase() }))}
                                                 className="py-4 px-6 rounded-2xl text-[10px] font-bold tracking-widest transition-all border"
                                                 style={{
-                                                    backgroundColor: authData.sex === v.toLowerCase() ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.02)',
-                                                    borderColor: authData.sex === v.toLowerCase() ? '#ffffff' : 'rgba(255,255,255,0.08)',
-                                                    color: authData.sex === v.toLowerCase() ? '#ffffff' : 'rgba(255,255,255,0.4)',
-                                                    boxShadow: authData.sex === v.toLowerCase() ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+                                                    backgroundColor: authData.sex === v.toLowerCase() ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)',
+                                                    borderColor: authData.sex === v.toLowerCase() ? '#1a1a1a' : 'rgba(0,0,0,0.08)',
+                                                    color: authData.sex === v.toLowerCase() ? '#1a1a1a' : 'rgba(0,0,0,0.4)',
+                                                    boxShadow: authData.sex === v.toLowerCase() ? '0 2px 8px rgba(0,0,0,0.1)' : 'none'
                                                 }}
                                             >
                                                 {v}
@@ -3192,36 +3218,36 @@ const Assessment = () => {
                             </>
                         )}
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Email Address</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Email Address</label>
                             <input
                                 type="email"
                                 placeholder="name@email.com"
                                 value={authData.email}
                                 onChange={(e) => setAuthData({ ...authData, email: e.target.value })}
                                 className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
-                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Password</label>
+                            <label className="block text-[10px] font-black uppercase tracking-widest mb-3 ml-1" style={{ color: 'rgba(0,0,0,0.4)' }}>Password</label>
                             <input
                                 type="password"
                                 placeholder="••••••••"
                                 value={authData.password}
                                 onChange={(e) => setAuthData({ ...authData, password: e.target.value })}
                                 className="w-full rounded-2xl py-5 px-8 font-bold outline-none transition-all"
-                                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                onFocus={e => e.target.style.borderColor = '#FFDE59'}
-                                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                style={{ backgroundColor: '#ffffff', border: '1.5px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                onFocus={e => e.target.style.borderColor = '#1a1a1a'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(0,0,0,0.1)'}
                             />
                             {authMode === 'signin' && (
                                 <div className="mt-2 text-right">
                                     <button
                                         type="button"
                                         onClick={() => navigate('/forgot-password')}
-                                        className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all"
+                                        className="text-[9px] font-black uppercase tracking-widest text-black/40 hover:text-black transition-all"
                                     >
                                         Forgot Password?
                                     </button>
@@ -3238,16 +3264,16 @@ const Assessment = () => {
                                             checked={acceptedTerms}
                                             onChange={(e) => setAcceptedTerms(e.target.checked)}
                                             className="peer appearance-none w-5 h-5 border-2 rounded-md transition-all"
-                                            style={{ borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'transparent' }}
-                                            onFocus={e => { e.target.style.borderColor = '#FFDE59'; }}
+                                            style={{ borderColor: 'rgba(0,0,0,0.2)', backgroundColor: 'transparent' }}
+                                            onFocus={e => { e.target.style.borderColor = '#1a1a1a'; }}
                                         />
-                                        <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
+                                        <div className="absolute inset-0 peer-checked:bg-[#000000] rounded-md transition-all pointer-events-none" />
                                         <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </div>
-                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                                        I accept all <a href="/terms-conditions" target="_blank" className="font-black underline hover:opacity-70 transition-opacity" style={{ color: '#ffffff' }}>Terms and Conditions</a> of the telemedicine platform.
+                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: 'rgba(0,0,0,0.4)' }}>
+                                        I accept all <a href="/terms-conditions" target="_blank" className="font-black underline hover:opacity-70 transition-opacity" style={{ color: '#1a1a1a' }}>Terms and Conditions</a> of the telemedicine platform.
                                     </span>
                                 </label>
 
@@ -3258,14 +3284,14 @@ const Assessment = () => {
                                             checked={acceptedRisks}
                                             onChange={(e) => setAcceptedRisks(e.target.checked)}
                                             className="peer appearance-none w-5 h-5 border-2 rounded-md transition-all"
-                                            style={{ borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'transparent' }}
+                                            style={{ borderColor: 'rgba(0,0,0,0.2)', backgroundColor: 'transparent' }}
                                         />
-                                        <div className="absolute inset-0 peer-checked:bg-[#FFDE59] rounded-md transition-all pointer-events-none" />
+                                        <div className="absolute inset-0 peer-checked:bg-[#000000] rounded-md transition-all pointer-events-none" />
                                         <svg className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                     </div>
-                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    <span className="text-[10px] font-medium leading-relaxed uppercase tracking-wider" style={{ color: 'rgba(0,0,0,0.4)' }}>
                                         I understand the medical risks and protocols.
                                     </span>
                                 </label>
@@ -3278,7 +3304,7 @@ const Assessment = () => {
                                 disabled={authLoading || (authMode === 'signup' && (!acceptedTerms || !acceptedRisks))}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500 disabled:opacity-30"
                                 style={{ backgroundColor: '#000', color: '#fff' }}
-                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
+                                onMouseEnter={e => { if (!e.currentTarget.disabled) { e.currentTarget.style.backgroundColor = '#333'; e.currentTarget.style.color = '#fff'; } }}
                                 onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000'; e.currentTarget.style.color = '#fff'; }}
                             >
                                 {authLoading ? (
@@ -3291,18 +3317,18 @@ const Assessment = () => {
                             <button
                                 onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] transition-all duration-500"
-                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.6)' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'}
                             >
                                 {authMode === 'signup' ? 'Already have an account? Sign In' : 'Need an account? Create one'}
                             </button>
                         </div>
 
                         <div className="flex items-center gap-4 py-2">
-                            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: 'rgba(255,255,255,0.2)' }}>OR</span>
-                            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
+                            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: 'rgba(0,0,0,0.3)' }}>OR</span>
+                            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
                         </div>
 
                         {/* Social Logins */}
@@ -3322,9 +3348,9 @@ const Assessment = () => {
                                     }
                                 }}
                                 className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all"
-                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff' }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,0.1)', color: '#1a1a1a' }}
+                                onMouseEnter={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'}
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -3340,7 +3366,7 @@ const Assessment = () => {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <button onClick={() => setStep(0)} className="font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity" style={{ color: '#ffffff', fontSize: '20px' }}>
+                    <button onClick={() => setStep(0)} className="font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity" style={{ color: '#1a1a1a', fontSize: '20px' }}>
                         ← Back to goals
                     </button>
                 </div>
@@ -3351,7 +3377,7 @@ const Assessment = () => {
 
     const renderEligibilityStep = () => {
         return (
-            <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+            <div className="assessment-step max-w-2xl mx-auto py-12 md:py-20 px-6">
                 <div className="text-center mb-10">
                     <div className="inline-block py-2 px-6 bg-black/5 border border-black/10 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-black mb-6">
                         {categoryId === 'sexual-health' ? 'Step 2: Eligibility' : 'Clinical Screening'}
@@ -3364,8 +3390,8 @@ const Assessment = () => {
                     </p>
                 </div>
 
-                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
-                    <div className="space-y-10">
+                <div className="bg-gray-50 border border-black/5 rounded-[40px] p-6 md:p-12 backdrop-blur-xl">
+                    <div className="space-y-12">
                         {/* Sex Selection - Only show for non-sexual-health categories */}
                         {categoryId !== 'sexual-health' && categoryId !== 'hair-restoration' && categoryId !== 'testosterone' && (
                             <div>
@@ -3388,9 +3414,9 @@ const Assessment = () => {
                         )}
 
                         {/* Date of Birth */}
-                        <div className="mb-10">
+                        <div className="mb-0">
                             <label className="block text-[11px] font-black uppercase tracking-[0.3em] text-gray-400 mb-6 ml-4">Date of Birth</label>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 gap-6">
                                 <div>
                                     <input
                                         type="text"
@@ -3506,30 +3532,61 @@ const Assessment = () => {
                                     />
                                 )}
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number</label>
-                                <input
-                                    type="tel"
-                                    placeholder="(XXX) XXX-XXXX"
-                                    className={`w-full bg-black/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
-                                    value={eligibilityData.phone}
-                                    onChange={(e) => {
-                                        const rawValue = e.target.value.replace(/\D/g, '');
-                                        let formattedValue = '';
-                                        if (rawValue.length > 0) {
-                                            formattedValue = '(' + rawValue.substring(0, 3);
-                                            if (rawValue.length > 3) {
-                                                formattedValue += ') ' + rawValue.substring(3, 6);
+                            <div className="relative">
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number *</label>
+                                <div className="relative flex gap-2">
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setShowEligibilityCountryDropdown(!showEligibilityCountryDropdown)}
+                                            className="h-full bg-black/5 border border-black/5 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center"
+                                        >
+                                            <span>{countryCodes.find(c => c.code === eligibilityData.countryCode)?.flag}</span>
+                                            <span>{eligibilityData.countryCode}</span>
+                                        </button>
+                                        {showEligibilityCountryDropdown && (
+                                            <div className="absolute z-50 left-0 top-full mt-2 bg-white border border-black/10 rounded-2xl shadow-2xl min-w-[160px] overflow-hidden">
+                                                {countryCodes.map((c, idx) => (
+                                                    <div
+                                                        key={`${c.country}-${idx}`}
+                                                        onClick={() => {
+                                                            setEligibilityData({ ...eligibilityData, countryCode: c.code });
+                                                            setShowEligibilityCountryDropdown(false);
+                                                        }}
+                                                        className="px-6 py-4 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-3"
+                                                    >
+                                                        <span>{c.flag}</span>
+                                                        <span>{c.country} ({c.code})</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {showEligibilityCountryDropdown && (
+                                            <div className="fixed inset-0 z-40" onClick={() => setShowEligibilityCountryDropdown(false)} />
+                                        )}
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        placeholder="(XXX) XXX-XXXX"
+                                        className={`flex-1 bg-black/5 border ${triedToContinue && !eligibilityData.phone ? 'border-red-500/50' : 'border-black/5'} rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold`}
+                                        value={eligibilityData.phone}
+                                        onChange={(e) => {
+                                            const rawValue = e.target.value.replace(/\D/g, '');
+                                            let formattedValue = '';
+                                            if (rawValue.length > 0) {
+                                                formattedValue = '(' + rawValue.substring(0, 3);
+                                                if (rawValue.length > 3) {
+                                                    formattedValue += ') ' + rawValue.substring(3, 6);
+                                                }
+                                                if (rawValue.length > 6) {
+                                                    formattedValue += '-' + rawValue.substring(6, 10);
+                                                }
+                                            } else {
+                                                formattedValue = rawValue;
                                             }
-                                            if (rawValue.length > 6) {
-                                                formattedValue += '-' + rawValue.substring(6, 10);
-                                            }
-                                        } else {
-                                            formattedValue = rawValue;
-                                        }
-                                        setEligibilityData({ ...eligibilityData, phone: formattedValue });
-                                    }}
-                                />
+                                            setEligibilityData({ ...eligibilityData, phone: formattedValue });
+                                        }}
+                                    />
+                                </div>
                                 {triedToContinue && !eligibilityData.phone && (
                                     <p className="text-red-500 text-[9px] mt-2 ml-4 font-black uppercase tracking-widest animate-pulse">Phone number is required</p>
                                 )}
@@ -3745,8 +3802,8 @@ const Assessment = () => {
         };
 
         return (
-            <div className={`assessment-step ${question.id === 'quote3' ? 'max-w-[1400px] 2xl:max-w-[1800px]' : 'max-w-3xl'} mx-auto py-20 px-6`}>
-                <div className={`${question.id === 'quote3' ? 'bg-white p-0 overflow-hidden' : 'bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-16 backdrop-blur-xl'}`}>
+            <div className={`assessment-step ${question.id === 'quote3' ? 'max-w-[1400px] 2xl:max-w-[1800px]' : 'max-w-3xl'} mx-auto py-12 md:py-20 px-6`}>
+                <div className={`${question.id === 'quote3' ? 'bg-white p-0 overflow-hidden' : 'bg-gray-50 border border-black/5 rounded-[40px] p-6 md:p-16 backdrop-blur-xl space-y-8'}`}>
                     {question.id !== 'quote3' && (
                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-6">Step {7 + medicalStep}: {question.title}</h3>
                     )}
@@ -3756,7 +3813,7 @@ const Assessment = () => {
                         </h2>
                     )}
                     {question.id !== 'quote3' && question.subtext && (
-                        <p className="text-sm font-medium text-gray-500 mb-12 -mt-8 leading-relaxed max-w-2xl">
+                        <p className="text-sm font-medium text-gray-500 mb-8 leading-relaxed max-w-2xl">
                             {question.subtext}
                         </p>
                     )}
@@ -5104,7 +5161,7 @@ const Assessment = () => {
     );
 
     const renderShippingStep = () => (
-        <div className="assessment-step max-w-2xl mx-auto py-20 px-6">
+        <div className="assessment-step max-w-2xl mx-auto py-12 md:py-20 px-6">
             <div className="text-center mb-12">
                 <div className="inline-block py-2 px-6 bg-accent-black/10 border border-accent-black/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-accent-black mb-8">
                     {categoryId === 'sexual-health' ? 'Step 35: Shipping' : 'Step 27: Delivery'}
@@ -5117,7 +5174,7 @@ const Assessment = () => {
                 </p>
             </div>
 
-            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-8 md:p-12 backdrop-blur-xl space-y-6">
+            <div className="bg-gray-50 border border-black/5 rounded-[40px] p-6 md:p-12 backdrop-blur-xl space-y-10">
                 {/* Name Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -5220,7 +5277,7 @@ const Assessment = () => {
                 </div>
 
                 {/* ZIP + Phone */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">ZIP Code *</label>
                         <input
@@ -5230,24 +5287,55 @@ const Assessment = () => {
                             onChange={(e) => setShippingData({ ...shippingData, zip: e.target.value })}
                         />
                     </div>
-                    <div>
+                    <div className="relative">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number *</label>
-                        <input
-                            type="tel"
-                            placeholder="(XXX) XXX-XXXX"
-                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
-                            value={shippingData.phone}
-                            onChange={(e) => {
-                                const rawValue = e.target.value.replace(/\D/g, '');
-                                let formattedValue = '';
-                                if (rawValue.length > 0) {
-                                    formattedValue = '(' + rawValue.substring(0, 3);
-                                    if (rawValue.length > 3) formattedValue += ') ' + rawValue.substring(3, 6);
-                                    if (rawValue.length > 6) formattedValue += '-' + rawValue.substring(6, 10);
-                                }
-                                setShippingData({ ...shippingData, phone: formattedValue });
-                            }}
-                        />
+                        <div className="relative flex gap-2">
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowShippingCountryDropdown(!showShippingCountryDropdown)}
+                                    className="h-full bg-black/5 border border-black/5 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center"
+                                >
+                                    <span>{countryCodes.find(c => c.code === shippingData.countryCode)?.flag}</span>
+                                    <span>{shippingData.countryCode}</span>
+                                </button>
+                                {showShippingCountryDropdown && (
+                                    <div className="absolute z-50 left-0 top-full mt-2 bg-white border border-black/10 rounded-2xl shadow-2xl min-w-[160px] overflow-hidden">
+                                        {countryCodes.map((c, idx) => (
+                                            <div
+                                                key={`${c.country}-${idx}`}
+                                                onClick={() => {
+                                                    setShippingData({ ...shippingData, countryCode: c.code });
+                                                    setShowShippingCountryDropdown(false);
+                                                }}
+                                                className="px-6 py-4 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-3"
+                                            >
+                                                <span>{c.flag}</span>
+                                                <span>{c.country} ({c.code})</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {showShippingCountryDropdown && (
+                                    <div className="fixed inset-0 z-40" onClick={() => setShowShippingCountryDropdown(false)} />
+                                )}
+                            </div>
+                            <input
+                                type="tel"
+                                placeholder="(XXX) XXX-XXXX"
+                                className="flex-1 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
+                                value={shippingData.phone}
+                                onChange={(e) => {
+                                    const rawValue = e.target.value.replace(/\D/g, '');
+                                    let formattedValue = '';
+                                    if (rawValue.length > 0) {
+                                        formattedValue = '(' + rawValue.substring(0, 3);
+                                        if (rawValue.length > 3) formattedValue += ') ' + rawValue.substring(3, 6);
+                                        if (rawValue.length > 6) formattedValue += '-' + rawValue.substring(6, 10);
+                                    }
+                                    setShippingData({ ...shippingData, phone: formattedValue });
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 
