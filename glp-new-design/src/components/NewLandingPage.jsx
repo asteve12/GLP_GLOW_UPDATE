@@ -197,10 +197,10 @@ const NewLandingPage = () => {
                                 >
                                     <div className="absolute inset-0  from-red-600/20 to-black z-0"></div>
                                     <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm z-20">New Clinical Research</div>
-                                    <div className=" bottom-0 left-0 right-0 flex flex-col items-center justify-end p-4 md:p-10 text-white z-10 text-center pb-6 md:pb-12">
-                                        <span className="text-[8px] md:text-[10px] font-black tracking-[0.4em] uppercase mb-1 text-[#FFDE59]/60">Retatrutide</span>
-                                        <h3 className="text-xs md:text-xl font-black uppercase tracking-tighter mb-3 leading-tight group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
-                                        <div className="mt-2 md:mt-4 px-5 py-2.5 md:px-6 md:py-3 bg-white text-black rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-xl group-hover:bg-[#FFDE59] transition-all duration-300">
+                                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-10 text-white z-10 text-center pb-8 md:pb-12">
+                                        <span className="text-[10px] md:text-[10px] font-black tracking-[0.4em] uppercase mb-1 text-[#FFDE59]/60">Retatrutide</span>
+                                        <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter mb-4 leading-tight group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
+                                        <div className="mt-2 md:mt-4 px-6 py-3 bg-white text-black rounded-full text-[10px] md:text-[10px] font-black uppercase tracking-widest shadow-xl group-hover:bg-[#FFDE59] transition-all duration-300">
                                             Join the Waitlist
                                         </div>
                                     </div>
