@@ -1418,44 +1418,6 @@ const productSpecificData = {
         strengths: [{ dosage: '150 IU/mL (5 mL)', plans: [{ name: 'Monthly', price: '$99.99', badge: '' }] }]
     },
 
-    // ─── Repair & Healing ──────────────────────────────────────────────────────
-    'bpc-157-injection': {
-        name: 'BPC 157 (Subq Inj)', type: 'Subcutaneous Injection', price: '$249.99/mo',
-        image: bpc157VialImg, signatureImage: bpc157Carton, heroBg: bpc157VialImg,
-        description: 'Body Protection Compound 157. A powerful regenerative peptide that accelerates healing of muscles, tendons, ligaments and joints.',
-        highlights: ['Body Protection Compound', 'Accelerates repair', 'Reduces inflammation', 'Physician-prescribed'],
-        benefits: [
-            { id: '01', title: 'Tissue Regeneration', desc: 'Stimulates growth factors to accelerate healing of damaged tissue.', color: '#FFDE59', image: hormonalMasteryImg },
-            { id: '02', title: 'Anti-Inflammatory', desc: 'Powerfully reduces local and systemic inflammation.', color: '#5CE1E6', image: metabolicPrecisionImg },
-            { id: '03', title: 'Gut Health', desc: 'Shown to support healing of the gastrointestinal tract lining.', color: '#7ED957', image: clinicalBreakthroughImg },
-        ],
-        ingredients: [{ name: 'BPC 157', desc: 'A 15-amino acid peptide fragment derived from a protective gastric protein.' }],
-        howItWorks: [{ id: '01', title: 'Growth Factor Activation.', desc: 'Stimulates VEGF for blood vessel formation and tissue repair.' }],
-        timeline: [{ time: 'Week 1-2', step: 'Reduced pain' }, { time: 'Month 1', step: 'Improved mobility' }],
-        faqs: [{ q: 'What injuries can it help?', a: 'Tendon, ligament, muscle, joint, and gut injuries.' }],
-        readyAccordion: [{ q: 'Is BPC 157 safe?', a: 'BPC 157 has a strong safety profile in research.' }],
-        strengths: [{ dosage: '5mg (Multi-dose)', plans: [{ name: 'Monthly', price: '$249.99', badge: '' }] }]
-    },
-    'bpc-157-tb500-injection': {
-        name: 'BPC 157 / TB 500 (Subq Inj)', type: 'Subcutaneous Injection', price: '$299.99/mo',
-        image: bpc157Tb500VialImg, signatureImage: bpc157Tb500Carton, heroBg: bpc157Tb500VialImg,
-        description: 'The ultimate healing stack. BPC-157 and TB-500 combined for synergistic tissue repair and accelerated recovery.',
-        highlights: ['BPC-157 + TB-500', 'Maximum repair', 'Systemic recovery', 'Physician-prescribed'],
-        benefits: [
-            { id: '01', title: 'Synergistic Repair', desc: 'Combined local and systemic action for superior healing.', color: '#FFDE59', image: hormonalMasteryImg },
-            { id: '02', title: 'Inflammation Control', desc: 'Both peptides powerfully downregulate inflammatory pathways.', color: '#5CE1E6', image: metabolicPrecisionImg },
-            { id: '03', title: 'Full-Body Recovery', desc: 'TB 500 circulates for comprehensive systemic support.', color: '#7ED957', image: clinicalBreakthroughImg },
-        ],
-        ingredients: [
-            { name: 'BPC 157', desc: 'Site-specific healing peptide.' }, { name: 'TB 500', desc: 'Systemic regenerative peptide.' },
-        ],
-        howItWorks: [{ id: '01', title: 'Dual Pathway.', desc: 'BPC 157 acts locally while TB 500 circulates for whole-body effect.' }],
-        timeline: [{ time: 'Week 1', step: 'Pain reduction' }, { time: 'Month 1', step: 'Restored mobility' }],
-        faqs: [{ q: 'Why combine them?', a: 'Complementary local and systemic mechanisms for best outcomes.' }],
-        readyAccordion: [{ q: 'Who is this for?', a: 'Athletes and individuals recovering from injury.' }],
-        strengths: [{ dosage: '5mg/5mg (Multi-dose)', plans: [{ name: 'Monthly', price: '$299.99', badge: '' }] }]
-    },
-
     // ─── Retatrutide ────────────────────────────────────────────────────────────
     'retatrutide-injection': {
         name: 'Retatrutide', type: 'Subcutaneous Injection', price: '$499.99/mo',
@@ -1524,7 +1486,6 @@ const ProductDetails = () => {
         if (id.includes('nad') || id.includes('glutathione')) return 'longevity';
         if (id.includes('testosterone') || id.includes('estradiol')) return 'hormone-therapy';
         if (id.includes('cream') || id.includes('peel') || id.includes('cleanser') || id.includes('rosacea') || id.includes('serum') || id === 'body-acne-cream' || id === 'anti-aging-cream') return 'skin-care';
-        if (id.includes('bpc-157')) return 'repair-healing';
         return 'weight-loss';
     };
 
@@ -1614,7 +1575,6 @@ const ProductDetails = () => {
     const hairLossIds = ['finasteride-tablets', 'finasteride-minoxidil-liquid', 'finasteride-minoxidil-tretinoin-liquid', 'minoxidil-max-compound-liquid', 'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1'];
     const sexualHealthIds = ['sildenafil-tadalafil-troche', 'sildenafil-yohimbe-troche', 'sildenafil-tadalafil-tablets', 'oxytocin-troche', 'oxytocin-nasal-spray', 'readysetgo-men', 'growtabs-sildenafil', 'growtabs-tadalafil', 'quicklover-women', 'loverspray-women'];
     const longevityIds = ['nad-nasal-spray', 'nad-injection', 'glutathione-injection'];
-    const repairHealingIds = ['bpc-157-injection', 'bpc-157-tb500-injection'];
     const weightLossIds = ['semaglutide-injection', 'tirzepatide-injection', 'semaglutide-drops', 'tirzepatide-drops', 'retatrutide-injection'];
     const hormoneTherapyIds = ['testosterone-injection', 'testosterone-rdt', 'estradiol-tabs'];
     const skinCareIds = ['anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream'];
@@ -1643,8 +1603,6 @@ const ProductDetails = () => {
         'nad-nasal-spray': { code: 'NAD-N', shortDesc: 'Direct energetic support for brain and cells.', active: 'Nicotinamide Adenine Dinucleotide (NAD+)', brand: 'Nicotinamide' },
         'nad-injection': { code: 'NAD-I', shortDesc: 'Max bioavailability for total cellular repair.', active: 'Nicotinamide Adenine Dinucleotide (NAD+)', brand: 'Nicotinamide' },
         'glutathione-injection': { code: 'GLU', shortDesc: 'The master antioxidant for detox and skin.', active: 'Glutathione', brand: 'Antioxidant' },
-        'bpc-157-injection': { code: 'BPC 157', shortDesc: 'Regenerative peptide for rapid tissue repair.', active: 'BPC 157 (Subq Inj)', brand: 'Regenerative' },
-        'bpc-157-tb500-injection': { code: 'BPC/TB', shortDesc: 'Ultimate recovery stack for joints and muscle.', active: 'BPC 157 / TB 500 (Subq Inj)', brand: 'Recovery' },
         'testosterone-injection': { code: 'TEST-I', shortDesc: 'Clinical grade testosterone replacement.', active: 'Testosterone', brand: 'Depo-Testosterone®' },
         'testosterone-rdt': { code: 'TEST-R', shortDesc: 'Fast-dissolving hormone replacement.', active: 'Testosterone', brand: 'AndroGel®' },
         'estradiol-tabs': { code: 'EST', shortDesc: 'Hormone balance for women.', active: 'Estradiol', brand: 'Estrace®' },
@@ -1793,9 +1751,7 @@ const ProductDetails = () => {
                                                         ? 'Physician-prescribed hormonal optimisation'
                                                         : skinCareIds.includes(productId)
                                                             ? 'Prescription-grade dermatology & skin science'
-                                                            : repairHealingIds.includes(productId)
-                                                                ? 'Advanced regenerative & tissue repair therapy'
-                                                                : 'Prescription GLP-1 for weight management'}
+                                                            : 'Prescription GLP-1 for weight management'}
                                     </p>
                                 </div>
 
@@ -1894,13 +1850,12 @@ const ProductDetails = () => {
                                                             productId.includes('sildenafil') ? 'Sildenafil is a PDE5 inhibitor that increases blood flow to specific areas of the body to support reliable performance.' :
                                                                 productId.includes('tadalafil') ? 'Tadalafil is a long-acting PDE5 inhibitor that remains effective for up to 36 hours for greater spontaneity.' :
                                                                     productId.includes('nad') ? 'NAD+ is a critical coenzyme found in all living cells that is essential for energy metabolism and DNA repair.' :
-                                                                        productId.includes('bpc-157') ? 'BPC-157 is a regenerative peptide that promotes tissue repair and reduces inflammation in muscles and joints.' :
-                                                                            productId.includes('glutathione') ? "Glutathione is the body's 'master antioxidant'—a vital molecule for detoxification, immune function, and protecting cells from oxidative stress." :
-                                                                                productId.includes('testosterone') ? 'Testosterone is a key hormone that regulates energy levels, muscle mass, and sexual health, delivered via clinically optimized protocols.' :
-                                                                                    productId.includes('estradiol') ? 'Estradiol is the primary human estrogen used to manage symptoms of hormonal decline and support long-term metabolic and bone health.' :
-                                                                                        productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? "Often called the 'love hormone,' Oxytocin promotes emotional bonding, trust, and heightened physical sensation during intimacy." :
-                                                                                            skinCareIds.includes(productId) ? 'This is a prescription-grade dermatological treatment designed to rejuvenate skin, clear acne, or fade pigmentation at the cellular level.' :
-                                                                                                `A physician-prescribed ${product.type?.toLowerCase() || 'treatment'} designed for clinical-grade results.`
+                                                                        productId.includes('glutathione') ? "Glutathione is the body's 'master antioxidant'—a vital molecule for detoxification, immune function, and protecting cells from oxidative stress." :
+                                                                            productId.includes('testosterone') ? 'Testosterone is a key hormone that regulates energy levels, muscle mass, and sexual health, delivered via clinically optimized protocols.' :
+                                                                                productId.includes('estradiol') ? 'Estradiol is the primary human estrogen used to manage symptoms of hormonal decline and support long-term metabolic and bone health.' :
+                                                                                    productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? "Often called the 'love hormone,' Oxytocin promotes emotional bonding, trust, and heightened physical sensation during intimacy." :
+                                                                                        skinCareIds.includes(productId) ? 'This is a prescription-grade dermatological treatment designed to rejuvenate skin, clear acne, or fade pigmentation at the cellular level.' :
+                                                                                            `A physician-prescribed ${product.type?.toLowerCase() || 'treatment'} designed for clinical-grade results.`
                                             },
                                             {
                                                 q: "Are there side effects?",
@@ -1908,11 +1863,10 @@ const ProductDetails = () => {
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Common side effects include mild nausea, vomiting, or digestive changes as your body adjusts. These typically subside within weeks.' :
                                                         productId.includes('sildenafil') || productId.includes('tadalafil') ? 'Potential effects include flushing, headaches, or mild congestion. These are usually temporary and dose-dependent.' :
                                                             productId.includes('nad') || productId.includes('glutathione') ? 'Generally well-tolerated. Some users may experience mild site irritation if injected, or a brief tingling sensation as the coenzymes enter circulation.' :
-                                                                productId.includes('bpc-157') ? 'BPC-157 has an excellent safety profile. Most users experience no side effects, though mild redness at the injection site can occur during the first few days of therapy.' :
-                                                                    productId.includes('testosterone') || productId.includes('estradiol') ? 'Hormone therapy can occasionally cause mood changes, fluid retention, or acne. A licensed provider monitors your labs to ensure optimal safety.' :
-                                                                        productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Oxytocin is highly safe and well-tolerated. Rare effects may include a mild temporary headache, slight nausea, or facial flushing.' :
-                                                                            skinCareIds.includes(productId) ? 'Medical-grade topicals may cause initial redness, dryness, or minor peeling as your skin adjusts to the potent active ingredients and increased cell turnover.' :
-                                                                                'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
+                                                                productId.includes('testosterone') || productId.includes('estradiol') ? 'Hormone therapy can occasionally cause mood changes, fluid retention, or acne. A licensed provider monitors your labs to ensure optimal safety.' :
+                                                                    productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Oxytocin is highly safe and well-tolerated. Rare effects may include a mild temporary headache, slight nausea, or facial flushing.' :
+                                                                        skinCareIds.includes(productId) ? 'Medical-grade topicals may cause initial redness, dryness, or minor peeling as your skin adjusts to the potent active ingredients and increased cell turnover.' :
+                                                                            'As with any prescription medication, side effects can occur. A licensed physician will review your history to ensure safety.'
                                             },
                                             {
                                                 q: "How long until I see results?",
@@ -1920,10 +1874,9 @@ const ProductDetails = () => {
                                                     productId.includes('semaglutide') || productId.includes('tirzepatide') ? 'Many patients see weight loss within the first 4-8 weeks, with more significant results after 3-4 months of consistent use.' :
                                                         productId.includes('sildenafil') || productId.includes('tadalafil') || productId.includes('oxytocin') || productId.includes('lover') || productId.includes('ready') ? 'Results are typically felt within 15 to 60 minutes of the first dose. Optimal response is usually achieved within 1-2 uses.' :
                                                             productId.includes('nad') || productId.includes('glutathione') ? 'Many users report improved energy and mental clarity within the first few days, with deeper cellular benefits appearing after 4-8 weeks.' :
-                                                                productId.includes('bpc-157') ? 'Significant reduction in localized pain and improved joint mobility are often noticed within the first 1 to 3 weeks of therapy.' :
-                                                                    productId.includes('testosterone') || productId.includes('estradiol') ? 'Improvements in energy and sleep often appear in 2 weeks, while full metabolic and physical benefits typically take 3 to 6 months.' :
-                                                                        skinCareIds.includes(productId) ? 'Initial texture improvement is seen in 2-4 weeks; visible reduction in wrinkles, acne, or dark spots typically takes 8-12 weeks of nightly use.' :
-                                                                            'Timeline varies by individual. Most clinical-grade therapies show noticeable results within 4-12 weeks of consistent use.'
+                                                                productId.includes('testosterone') || productId.includes('estradiol') ? 'Improvements in energy and sleep often appear in 2 weeks, while full metabolic and physical benefits typically take 3 to 6 months.' :
+                                                                    skinCareIds.includes(productId) ? 'Initial texture improvement is seen in 2-4 weeks; visible reduction in wrinkles, acne, or dark spots typically takes 8-12 weeks of nightly use.' :
+                                                                        'Timeline varies by individual. Most clinical-grade therapies show noticeable results within 4-12 weeks of consistent use.'
                                             }
                                         ].map((faq, idx) => (
                                             <div key={idx} className="group border-b border-gray-50 pb-4 last:border-0 overflow-hidden">
@@ -1979,9 +1932,7 @@ const ProductDetails = () => {
                                             ? "Restore peak hormonal balance with physician-prescribed, compounded therapy."
                                             : skinCareIds.includes(productId)
                                                 ? "Reveal your best skin with prescription-grade dermatology formulas."
-                                                : repairHealingIds.includes(productId)
-                                                    ? "Accelerate your recovery with medical-grade regenerative peptides."
-                                                    : "Experience medical-grade weight loss powered by precise compounding and hormonal mastery."}
+                                                : "Experience medical-grade weight loss powered by precise compounding and hormonal mastery."}
                         </p>
                     </div>
 
@@ -2223,7 +2174,6 @@ const ProductDetails = () => {
                                         'readysetgo-men', 'growtabs-sildenafil', 'growtabs-tadalafil', 'quicklover-women', 'loverspray-women',
                                         'hair-growth-tabs-3in1', 'hair-growth-tabs-2in1',
                                         'nad-nasal-spray', 'nad-injection', 'glutathione-injection',
-                                        'bpc-157-injection', 'bpc-157-tb500-injection',
                                         'testosterone-injection', 'testosterone-rdt', 'estradiol-tabs',
                                         'anti-aging-cream', 'face-spot-peel', 'acne-cleanser', 'rosacea-red-cream', 'eye-serum', 'body-acne-cream'
                                     ];

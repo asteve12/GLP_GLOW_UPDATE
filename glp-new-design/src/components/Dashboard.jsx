@@ -60,7 +60,6 @@ const getMedicationCategoryId = (drugName) => {
     if (drug.includes('nad') || drug.includes('longevity')) return 'longevity';
     if (drug.includes('testosterone')) return 'testosterone';
     if (drug.includes('skin')) return 'skin-care';
-    if (drug.includes('repair') || drug.includes('healing') || drug.includes('strength')) return 'repair-healing';
     return drugName; // Fallback
 };
 
@@ -101,8 +100,7 @@ const MedicationCategory = {
     HAIR_RESTORATION: 'Hair Restoration',
     LONGEVITY: 'Longevity',
     TESTOSTERONE: 'Testosterone',
-    SKIN_CARE: 'Skin Care',
-    REPAIR_HEALING: 'Repair & Healing'
+    SKIN_CARE: 'Skin Care'
 };
 
 const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
@@ -1037,8 +1035,8 @@ const BillingView = ({ profile, user }) => {
             if (typeof data === 'object' && data !== null) {
                 const forbidden = [
                     'weight-loss', 'longevity', 'hair-restoration', 'sexual-health',
-                    'testosterone', 'skin-care', 'repair-healing', 'none', 'null',
-                    'weight_loss', 'hair_restoration', 'sexual_health', 'repair_healing'
+                    'testosterone', 'skin-care', 'none', 'null',
+                    'weight_loss', 'hair_restoration', 'sexual_health'
                 ];
 
                 const plans = Object.values(data).map(val => {
@@ -1564,6 +1562,7 @@ const Dashboard = () => {
     const [showDuplicatePhoneModal, setShowDuplicatePhoneModal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [newDob, setNewDob] = useState({ month: '', day: '', year: '' });
+    const [isChangingPhone, setIsChangingPhone] = useState(false);
     const [newPhone, setNewPhone] = useState('');
 
     useEffect(() => {
@@ -1736,12 +1735,24 @@ const Dashboard = () => {
             }
 
             // Update Auth Phone
-            const { error: authError } = await updateUser({ phone: formatted });
+            const { error: authError } = await updateUser({
+                phone: formatted,
+                data: { phone_number: formatted }
+            });
             if (authError) throw authError;
+
+            // Sync with profiles table
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ phone_number: formatted })
+                .eq('id', user.id);
+            if (profileError) console.error('Profile phone update error:', profileError);
 
             // Note: Dashboard useEffect will pick up that phone is not confirmed and show verification modal
             toast.success('Phone updated! Please verify your new number.');
+            setIsChangingPhone(false);
             setShowDuplicatePhoneModal(false);
+            setProfile(prev => ({ ...prev, phone_number: formatted }));
         } catch (err) {
             console.error('Phone Update Error:', err);
             toast.error(err.message);
@@ -2310,8 +2321,8 @@ const Dashboard = () => {
             </aside>
 
             {/* Mobile Top Bar */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black border-b border-white/10 px-6 pt-[30px] pb-[30px] flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black border-b border-white/10 px-6 py-2 flex items-center justify-between h-[64px]">
+                <div className="flex items-center gap-4 h-full">
                     <button
                         onClick={() => setMobileMenuOpen(true)}
                         className="p-2 -ml-2 text-white/60 hover:text-white transition-colors"
@@ -2322,9 +2333,9 @@ const Dashboard = () => {
                     </button>
                     <button
                         onClick={() => navigate('/')}
-                        className="text-xl font-black uppercase tracking-tighter "
+                        className="text-xl font-black uppercase tracking-tighter flex items-center h-full"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-[104px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-10 md:h-12 w-auto inline-block brightness-0 invert" />
                     </button>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
@@ -2340,12 +2351,12 @@ const Dashboard = () => {
                         onClick={() => setMobileMenuOpen(false)}
                     ></div>
                     <div className="absolute top-0 left-0 w-[80%] max-w-sm h-full bg-[#0A0A0A] border-r border-white/10 p-6 shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-8">
                             <button
                                 onClick={() => navigate('/')}
-                                className="text-2xl font-black uppercase tracking-tighter text-white"
+                                className="text-2xl font-black uppercase tracking-tighter text-white flex items-center"
                             >
-                                <img src={logo} alt="uGlowMD" className="h-[125px] w-auto inline-block brightness-0 invert" />
+                                <img src={logo} alt="uGlowMD" className="h-12 w-auto inline-block brightness-0 invert" />
                             </button>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
@@ -2385,32 +2396,34 @@ const Dashboard = () => {
                             ))}
                         </nav>
 
-                        <div className="pt-6 border-t border-white/10 mt-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
-                                    {userName.charAt(0).toUpperCase()}
+                        <div className="pt-6 border-t border-white/10 mt-6 space-y-4">
+                            <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-[#FFDE59]/20 border border-[#FFDE59]/40 flex items-center justify-center font-black text-white text-lg">
+                                        {userName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-black uppercase tracking-tight text-white mb-1">{userName}</p>
+                                        <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Week {weekNumber}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-black uppercase tracking-tight text-white">{userName}</p>
-                                    <p className="text-[9px] text-white/50 font-medium">Week {weekNumber}</p>
-                                </div>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="w-full flex items-center justify-start gap-3 px-1 py-1 text-white/60 hover:text-red-400 transition-all font-black uppercase tracking-[0.2em] text-[10px]"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                                    </svg>
+                                    Sign Out
+                                </button>
                             </div>
-                            <button
-                                onClick={handleSignOut}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#111111]/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-xl transition-all font-bold uppercase tracking-widest text-xs"
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-                                </svg>
-                                Sign Out
-                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
             {/* Main Content */}
-            <main className="flex-1 min-h-screen pt-[164px] lg:pt-24 w-full overflow-x-hidden">
+            <main className="flex-1 min-h-screen pt-[80px] lg:pt-24 w-full overflow-x-hidden">
 
                 {/* Content Area */}
                 <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto p-6 md:p-12">
@@ -2432,30 +2445,42 @@ const Dashboard = () => {
                                     </p>
 
                                     {!phoneVerified && user?.phone && (
-                                        <div className="mt-8 bg-orange-500/10 border border-orange-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
-                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <div className="mt-8 bg-orange-500/10 border border-orange-500/20 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+                                            <div className="flex items-center gap-6 w-full md:w-auto">
+                                                <div className="w-16 h-16 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-500 shrink-0">
+                                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
                                                     </svg>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-black uppercase tracking-tight text-orange-400">Phone Verification Required</p>
-                                                    <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Please verify your phone number to access all clinical features.</p>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-black uppercase tracking-tight text-orange-400 mb-1">Verify Clinical Number</p>
+                                                    <p className="text-[10px] text-white/70 font-black uppercase tracking-[0.2em] mb-3">Is <span className="text-white">{user?.phone}</span> correct?</p>
+                                                    <div className="flex gap-4">
+                                                        <button
+                                                            onClick={() => setShowPhoneVerificationModal(true)}
+                                                            className="text-[9px] font-black uppercase tracking-widest text-white border-b border-orange-500/50 pb-0.5 hover:text-orange-400 transition-colors"
+                                                        >
+                                                            Yes, Verify Now →
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setNewPhone(user?.phone || '');
+                                                                setIsChangingPhone(true);
+                                                                setShowDuplicatePhoneModal(true);
+                                                            }}
+                                                            className="text-[9px] font-black uppercase tracking-widest text-white/40 border-b border-white/20 pb-0.5 hover:text-white transition-colors"
+                                                        >
+                                                            No, Change Number
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <button
-                                                onClick={() => setShowPhoneVerificationModal(true)}
-                                                className="px-6 py-3 bg-orange-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-lg"
-                                            >
-                                                Verify Now
-                                            </button>
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                                     <div
                                         onClick={() => navigate('/dashboard/medications')}
                                         className="dashboard-card bg-[#FFDE59]/10 border border-[#FFDE59]/40 rounded-3xl p-6 cursor-pointer hover:scale-[1.02] transition-transform"
@@ -2600,7 +2625,7 @@ const Dashboard = () => {
                                 )}
 
                                 {/* Product Recommendations Carousel */}
-                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden relative group mb-12">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden relative group mb-20">
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
                                             <h2 className="text-2xl font-black uppercase tracking-tighter  mb-1">
@@ -2658,13 +2683,6 @@ const Dashboard = () => {
                                                 image: testosteroneImg,
                                                 path: "/assessment/testosterone",
                                                 accent: '#FB923C'
-                                            },
-                                            {
-                                                id: 'repair-healing',
-                                                title: "Repair & Strength Healing",
-                                                image: repairImg,
-                                                path: "/assessment/repair-healing",
-                                                accent: '#EF4444'
                                             },
                                             {
                                                 id: 'skin-care',
@@ -3206,15 +3224,18 @@ const Dashboard = () => {
                                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
                         </div>
-                        <div className="inline-block py-1.5 px-4 bg-red-500 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
-                            Security Alert
+                        <div className={`inline-block py-1.5 px-4 rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6 ${isChangingPhone ? 'bg-orange-500' : 'bg-red-500'}`}>
+                            {isChangingPhone ? 'Number Change' : 'Security Alert'}
                         </div>
                         <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">
-                            Conflicting{' '}
-                            <span style={{ backgroundColor: '#ff4444', color: '#fff', padding: '2px 8px', display: 'inline-block' }}>Identity</span>
+                            {isChangingPhone ? 'Update' : 'Conflicting'} {' '}
+                            <span style={{ backgroundColor: isChangingPhone ? '#ff7c1a' : '#ff4444', color: '#fff', padding: '2px 8px', display: 'inline-block' }}>Identity</span>
                         </h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed text-red-100/40">
-                            The phone number linked to this account is already registered to another user. For security, please provide a unique number.
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed text-white/40">
+                            {isChangingPhone
+                                ? "Please provide the correct phone number for your clinical profile. We'll send a verification code to this new number."
+                                : "The phone number linked to this account is already registered to another user. For security, please provide a unique number."
+                            }
                         </p>
 
                         <form onSubmit={handleUpdateDuplicatePhone} className="space-y-6">
@@ -3242,8 +3263,19 @@ const Dashboard = () => {
                                 disabled={isUpdatingProfile || newPhone.replace(/[^0-9]/g, '').length < 10}
                                 className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#ff4444] text-white hover:bg-white hover:text-red-600"
                             >
-                                {isUpdatingProfile ? 'Processing...' : 'Transfer to New Number →'}
+                                {isUpdatingProfile ? 'Processing...' : (isChangingPhone ? 'Update Phone Number →' : 'Transfer to New Number →')}
                             </button>
+                            {isChangingPhone && (
+                                <button
+                                    onClick={() => {
+                                        setShowDuplicatePhoneModal(false);
+                                        setIsChangingPhone(false);
+                                    }}
+                                    className="mt-4 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                            )}
                         </form>
                     </div>
                 </div>

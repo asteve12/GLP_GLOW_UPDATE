@@ -99,9 +99,7 @@ const getMasterProductMap = () => {
     add('testosterone-rdt', 'Testosterone RDT Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '125' }] }]);
     add('estradiol-tabs', 'Estradiol Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '30.00' }] }]);
 
-    // 7. Repair & Healing
-    add('bpc-157-injection', 'BPC 157 (Subq Inj)', 'Repair & Healing', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '249.99' }] }]);
-    add('bpc-157-tb500-injection', 'BPC 157 / TB 500 (Subq Inj)', 'Repair & Healing', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '299.99' }] }]);
+    // No Repair & Healing products listed.
 
     // 8. Specialized Weight Loss
     add('retatruide-injection', 'Retatruide', 'Weight Loss', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '499.99' }] }]);
@@ -803,7 +801,6 @@ const getMedicationCategoryId = (drugName) => {
     if (drug.includes('nad') || drug.includes('longevity')) return 'longevity';
     if (drug.includes('testosterone')) return 'testosterone';
     if (drug.includes('skin')) return 'skin-care';
-    if (drug.includes('repair') || drug.includes('healing') || drug.includes('strength')) return 'repair-healing';
     return drugName; // Fallback
 };
 
@@ -828,8 +825,8 @@ const formatPlanName = (plan) => {
         if (typeof data === 'object' && data !== null) {
             const forbiddenSlugs = [
                 'weight-loss', 'longevity', 'hair-restoration', 'sexual-health',
-                'testosterone', 'skin-care', 'repair-healing', 'none', 'null',
-                'weight_loss', 'hair_restoration', 'sexual_health', 'repair_healing'
+                'testosterone', 'skin-care', 'none', 'null',
+                'weight_loss', 'hair_restoration', 'sexual_health'
             ];
 
             const plans = Object.values(data).map(val => {
@@ -872,8 +869,7 @@ const PatientPortalManager = () => {
         'Sexual Health',
         'Longevity',
         'Testosterone',
-        'Skin Care',
-        'Repair & Healing'
+        'Skin Care'
     ];
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [isDossierOpen, setIsDossierOpen] = useState(false);
@@ -1026,8 +1022,7 @@ const PatientPortalManager = () => {
                     'Sexual Health': ['sexual_health', 'sexual', 'sildenafil', 'tadalafil'],
                     'Longevity': ['longevity', 'nad', 'cjc', 'ipamorelin'],
                     'Testosterone': ['testosterone'],
-                    'Skin Care': ['skin_care', 'skin'],
-                    'Repair & Healing': ['repair_healing', 'repair', 'healing', 'strength']
+                    'Skin Care': ['skin_care', 'skin']
                 };
 
                 const keywords = categoryMap[categoryFilter] || [];
@@ -2367,14 +2362,6 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                             </optgroup>
 
                             <optgroup label="-- Repair & Healing" style={{ color: '#bfff00', backgroundColor: '#111' }}>
-                                {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Repair & Healing')
-                                    .map(([id, data]) => (
-                                        <option key={id} value={id} className="bg-[#111111] text-white">
-                                            {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
-                                        </option>
-                                    ))
-                                }
                             </optgroup>
                         </select>
                     </div>
@@ -3212,8 +3199,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                 { value: 'hair-restoration', label: 'Hair Restoration' },
                                                 { value: 'sexual-health', label: 'Sexual Health' },
                                                 { value: 'longevity', label: 'Longevity' },
-                                                { value: 'testosterone', label: 'Testosterone' },
-                                                { value: 'repair-healing', label: 'Repair & Healing' }
+                                                { value: 'testosterone', label: 'Testosterone' }
                                             ]}
                                             isEditing={isEditing} formData={formData} onChange={handleChange}
                                         />
@@ -3812,8 +3798,7 @@ const ClinicalQueue = ({ user, role }) => {
         { id: 'sexual-health', name: 'Sexual Health', color: '#FFDE59' },
         { id: 'longevity', name: 'Longevity', color: '#FF7E5F' },
         { id: 'hormone-therapy', name: 'Hormone Therapy', color: '#FFD700' },
-        { id: 'skin-care', name: 'Skin Care', color: '#FF69B4' },
-        { id: 'repair-healing', name: 'Repair & Healing', color: '#32CD32' }
+        { id: 'skin-care', name: 'Skin Care', color: '#FF69B4' }
     ];
 
     const fetchPendingCounts = async () => {
@@ -3855,8 +3840,6 @@ const ClinicalQueue = ({ user, role }) => {
                         category = 'hormone-therapy';
                     } else if (drug.includes('skin') || drug.includes('tretinoin') || drug.includes('acne')) {
                         category = 'skin-care';
-                    } else if (drug.includes('repair') || drug.includes('bpc')) {
-                        category = 'repair-healing';
                     } else {
                         category = item.selected_drug || 'all';
                     }
@@ -4003,8 +3986,6 @@ const ClinicalQueue = ({ user, role }) => {
                     category = 'longevity';
                 } else if (drug.includes('testosterone')) {
                     category = 'testosterone';
-                } else if (drug.includes('repair') || drug.includes('bpc')) {
-                    category = 'repair-healing';
                 } else {
                     category = q.selected_drug || 'unknown';
                 }
@@ -4702,8 +4683,7 @@ const PatientExpressEntry = () => {
         { id: 'hair-restoration', label: 'Hair Restoration', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'sexual-health', label: 'Sexual Health', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
         { id: 'longevity', label: 'Longevity', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
-        { id: 'testosterone', label: 'Testosterone', icon: 'M12 21a9 9 0 100-18 9 9 0 000 18zm0 0l-4-4m4 4l4-4' },
-        { id: 'repair-healing', label: 'Repair & Healing', icon: 'M13 10V3L4 14h7v7l9-11h-7z' }
+        { id: 'testosterone', label: 'Testosterone', icon: 'M12 21a9 9 0 100-18 9 9 0 000 18zm0 0l-4-4m4 4l4-4' }
     ];
 
     const handleCategorySelect = (id) => {

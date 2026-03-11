@@ -72,15 +72,6 @@ const NAV_ITEMS = [
 
 const DRAWER_ITEMS = [
   {
-    name: 'Repair and Strength Healing',
-    id: 'repair-healing',
-    description: 'Advanced Regenerative Peptide Therapy\nSpecial Access: Non-FDA Approved | Research Only',
-    products: [
-      { name: 'BPC 157 (Subq Inj)', path: 'bpc-157-injection' },
-      { name: 'BPC 157 / TB 500 (Subq Inj)', path: 'bpc-157-tb500-injection' },
-    ]
-  },
-  {
     name: 'Retatrutide (New Innovation)',
     id: 'retatrutide',
     description: 'The Successor to Tirzepatide (Expected Late 2026)\nResearch Based: Non-FDA Approved',
@@ -121,20 +112,20 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
 
   // Determine styles based on state
   const isCustomState = !scrolled && customBgColor;
-  const navbarBg = scrolled ? 'bg-white/85 shadow-sm' : isCustomState ? '' : 'bg-transparent';
-  const textColorClass = (scrolled || isCustomState) ? 'text-black' : 'text-white';
-  const logoClass = (isCustomState || scrolled) ? 'brightness-100' : 'brightness-0 invert';
+  const navbarBg = scrolled ? 'bg-black shadow-sm' : isCustomState ? 'bg-black' : 'bg-black';
+  const textColorClass = 'text-white';
+  const logoClass = 'brightness-0 invert';
 
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-black pt-[30px] pb-[30px] border-b border-white/5 transition-all duration-300`} >
-        <nav className={`max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-3 lg:px-6 relative flex items-center justify-between transition-all duration-300`}>
-          <div className="flex items-center h-full mt-[10px]">
+      <header className={`sticky top-0 z-50 ${navbarBg} pt-2 lg:pt-[30px] pb-2 lg:pb-[30px] border-b border-white/5 transition-all duration-300`} >
+        <nav className={`max-w-[1400px] 2xl:max-w-[1800px] mx-auto pl-1 pr-3 lg:px-6 relative flex items-center justify-between transition-all duration-300`}>
+          <div className="flex items-center h-full mt-1 lg:mt-[10px]">
             <Link to="/" className="relative h-full flex items-center">
               <img
                 src={logo}
                 alt="uGlowMD Logo"
-                className={`transition-all duration-300 hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2 h-[182px] md:h-[208px]`}
+                className={`transition-all duration-300 hover:scale-105 object-contain absolute left-0 top-1/2 -translate-y-1/2 h-[50px] md:h-[182px] lg:h-[208px] ${logoClass}`}
                 style={{
                   filter: 'brightness(1.2)',
                   maxWidth: 'none'
@@ -236,7 +227,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
                       <div className="mb-4">
                         <h3
                           className="text-lg font-black uppercase tracking-tight mb-1"
-                          style={{ color: category.color || (['repair-healing', 'retatrutide'].includes(category.id) ? '#EF4444' : 'white') }}
+                          style={{ color: category.color || (['retatrutide'].includes(category.id) ? '#EF4444' : 'white') }}
                         >
                           {category.name}
                         </h3>
@@ -253,14 +244,6 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
                             <Link
                               to={prd.type === 'waitlist' ? '#' : `/product/${prd.path}`}
                               onClick={(e) => {
-                                // Force login for Repair & Strength Healing category
-                                if (category.id === 'repair-healing' && !user) {
-                                  e.preventDefault();
-                                  setMobileMenuOpen(false);
-                                  navigate('/login');
-                                  return;
-                                }
-
                                 if (prd.type === 'waitlist') {
                                   e.preventDefault();
                                   setIsWaitlistOpen(true);
@@ -297,7 +280,6 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
                           'hair-loss': 'hair-restoration',
                           'longevity': 'longevity',
                           'hormone-therapy': 'testosterone',
-                          'repair-healing': 'repair-healing',
                         };
                         const routeId = assessmentRouteMap[category.id];
                         if (!routeId) return null;
