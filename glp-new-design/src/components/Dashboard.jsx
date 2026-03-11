@@ -1564,6 +1564,7 @@ const Dashboard = () => {
     const [newDob, setNewDob] = useState({ month: '', day: '', year: '' });
     const [isChangingPhone, setIsChangingPhone] = useState(false);
     const [newPhone, setNewPhone] = useState('');
+    const [displayedPhone, setDisplayedPhone] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -1571,8 +1572,8 @@ const Dashboard = () => {
             const isConfirmed = !!user.phone_confirmed_at;
             setPhoneVerified(isConfirmed);
 
-            // Get phone number from user record or metadata (stored during signup)
             const phoneNumber = user.phone || user.user_metadata?.phone_number;
+            setDisplayedPhone(phoneNumber || '');
 
             // If phone exists but not confirmed, show modal and trigger SMS automatically
             if (phoneNumber && !isConfirmed) {
@@ -3100,10 +3101,103 @@ const Dashboard = () => {
                             One Last{' '}
                             <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '2px 8px', display: 'inline-block' }}>Thing</span>
                         </h3>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                            We've sent a 6-digit code to{' '}
-                            <span className="font-black" style={{ color: '#ffffff' }}>{user?.phone}</span>. Please enter it below to confirm your clinical registration.
-                        </p>
+
+                        {/* Phone number display + edit toggle */}
+                        {!isChangingPhone ? (
+                            <div className="mb-8">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    We've sent a 6-digit code to
+                                </p>
+                                <div className="flex items-center justify-center gap-3 mb-3">
+                                    <span className="text-base font-black tracking-widest" style={{ color: '#ffffff' }}>
+                                        {displayedPhone || '—'}
+                                    </span>
+                                    <button
+                                        onClick={() => { setIsChangingPhone(true); setNewPhone(user?.phone || user?.user_metadata?.phone_number || ''); }}
+                                        className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full transition-all"
+                                        style={{ backgroundColor: 'rgba(255,222,89,0.12)', color: '#FFDE59', border: '1px solid rgba(255,222,89,0.3)' }}
+                                    >
+                                        ✏ Edit
+                                    </button>
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                                    Please enter the code below to confirm your registration.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="mb-8">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    Enter your correct phone number
+                                </p>
+                                <input
+                                    type="tel"
+                                    placeholder="+1 (555) 000-0000"
+                                    value={newPhone}
+                                    onChange={(e) => setNewPhone(e.target.value)}
+                                    className="w-full rounded-xl py-3 px-4 text-sm font-bold text-center outline-none transition-all mb-3"
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '2px solid rgba(255,222,89,0.4)', color: '#ffffff' }}
+                                />
+                                <div className="flex gap-2 mb-3">
+                                    {/* Save: writes to profiles table + refreshes displayed number */}
+                                    <button
+                                        onClick={async () => {
+                                            const cleaned = newPhone.replace(/\D/g, '');
+                                            if (cleaned.length < 10) { toast.error('Enter a valid phone number'); return; }
+                                            const formatted = newPhone.startsWith('+') ? newPhone : `+1${cleaned}`;
+                                            try {
+                                                // Save to profiles table
+                                                const { error: profileError } = await supabase
+                                                    .from('profiles')
+                                                    .update({ phone_number: formatted, updated_at: new Date().toISOString() })
+                                                    .eq('id', user.id);
+                                                if (profileError) throw profileError;
+                                                // Update auth metadata so user object reflects it
+                                                await updateUser({ data: { phone_number: formatted } });
+                                                // Update displayed number immediately
+                                                setDisplayedPhone(formatted);
+                                                setIsChangingPhone(false);
+                                                toast.success('Number saved! Send a new code below.');
+                                            } catch (err) {
+                                                toast.error(err.message);
+                                            }
+                                        }}
+                                        className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.15)' }}
+                                    >
+                                        💾 Save
+                                    </button>
+                                    {/* Send Code: triggers Supabase SMS OTP */}
+                                    <button
+                                        onClick={async () => {
+                                            const cleaned = newPhone.replace(/\D/g, '');
+                                            if (cleaned.length < 10) { toast.error('Enter a valid phone number'); return; }
+                                            const formatted = newPhone.startsWith('+') ? newPhone : `+1${cleaned}`;
+                                            try {
+                                                const { error } = await updateUser({ phone: formatted });
+                                                if (error) throw error;
+                                                setDisplayedPhone(formatted);
+                                                toast.success('Code sent to new number!');
+                                                setIsChangingPhone(false);
+                                                setOtp('');
+                                            } catch (err) {
+                                                toast.error(err.message);
+                                            }
+                                        }}
+                                        className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                        style={{ backgroundColor: '#FFDE59', color: '#000' }}
+                                    >
+                                        Send Code
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => setIsChangingPhone(false)}
+                                    className="text-[9px] font-black uppercase tracking-widest transition-all hover:opacity-70"
+                                    style={{ color: 'rgba(255,255,255,0.3)' }}
+                                >
+                                    ← Back
+                                </button>
+                            </div>
+                        )}
 
                         <form onSubmit={handleVerifyPhone} className="space-y-6">
                             <input
