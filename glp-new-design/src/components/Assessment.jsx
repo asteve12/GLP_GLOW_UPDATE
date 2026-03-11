@@ -38,8 +38,6 @@ import hairLossSecondQuoteImg from '../assets/hair_loss_second_quote.png';
 import longevityFirstQuoteImg from '../assets/longetivity_first_quote_img.png';
 import testosteroneQuote1Img from '../assets/testosterone-image-v2.png';
 import testosteroneQuote2Img from '../assets/testosterone-quote_img_2.png';
-import repairHealingQuote1Img from '../assets/STRENTHENING_FIRST_QUOTE_IMG.png';
-import repairHealingQuote2Img from '../assets/sec_quote_strenght_img.png';
 
 const categoryQuestions = {
     ...baseCategoryQuestions,
@@ -48,7 +46,6 @@ const categoryQuestions = {
     'sexual-health': { ...baseCategoryQuestions['sexual-health'], stat: { ...baseCategoryQuestions['sexual-health'].stat, image: smilingImg } },
     'longevity': { ...baseCategoryQuestions['longevity'], stat: { ...baseCategoryQuestions['longevity'].stat, image: smilingImg } },
     'testosterone': { ...baseCategoryQuestions['testosterone'], stat: { ...baseCategoryQuestions['testosterone'].stat, image: smilingImg } },
-    'repair-healing': { ...baseCategoryQuestions['repair-healing'], stat: { ...baseCategoryQuestions['repair-healing'].stat, image: smilingImg } },
     'skin-care': { ...baseCategoryQuestions['skin-care'], stat: { ...baseCategoryQuestions['skin-care'].stat, image: smilingImg } },
 };
 
@@ -256,8 +253,8 @@ const Assessment = () => {
     const { signUp, signIn, signOut, user, verifyOtp, updateUser } = useAuth();
     const [step, setStep] = useState(0);
 
-    const baseFee = (categoryId === 'weight-loss' || categoryId === 'retatrutide') ? 25.00 : (categoryId === 'repair-healing' ? 40.00 : (categoryId === 'testosterone' ? 30.00 : (categoryId === 'skin-care' ? 0.00 : 25.00)));
-    const baseFeeCents = (categoryId === 'weight-loss' || categoryId === 'retatrutide') ? 2500 : (categoryId === 'repair-healing' ? 4000 : (categoryId === 'testosterone' ? 3000 : (categoryId === 'skin-care' ? 0 : 2500)));
+    const baseFee = (categoryId === 'weight-loss' || categoryId === 'retatrutide') ? 25.00 : (categoryId === 'testosterone' ? 30.00 : (categoryId === 'skin-care' ? 0.00 : 25.00));
+    const baseFeeCents = (categoryId === 'weight-loss' || categoryId === 'retatrutide') ? 2500 : (categoryId === 'testosterone' ? 3000 : (categoryId === 'skin-care' ? 0 : 2500));
     const [showQuote, setShowQuote] = useState(true);
     const [showBMI, setShowBMI] = useState(false);
     const [showQuote2, setShowQuote2] = useState(false);
@@ -276,10 +273,6 @@ const Assessment = () => {
     const [showTestosteroneGoals, setShowTestosteroneGoals] = useState(false);
     const [showTestosteroneQuote2, setShowTestosteroneQuote2] = useState(false);
     const [selectedTestosteroneGoals, setSelectedTestosteroneGoals] = useState([]);
-    const [showRepairQuote, setShowRepairQuote] = useState(true);
-    const [showRepairGoals, setShowRepairGoals] = useState(false);
-    const [showRepairQuote2, setShowRepairQuote2] = useState(false);
-    const [selectedRepairGoals, setSelectedRepairGoals] = useState([]);
     const [selectedSkinCareGoals, setSelectedSkinCareGoals] = useState([]);
     const [bmiHeightFeet, setBmiHeightFeet] = useState('');
     const [bmiHeightInches, setBmiHeightInches] = useState('0');
@@ -332,12 +325,54 @@ const Assessment = () => {
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
     const [showEligibilityCountryDropdown, setShowEligibilityCountryDropdown] = useState(false);
     const [showShippingCountryDropdown, setShowShippingCountryDropdown] = useState(false);
+    const [countrySearch, setCountrySearch] = useState('');
 
     const countryCodes = [
-        { code: '+1', country: 'US', flag: '🇺🇸' },
-        { code: '+44', country: 'UK', flag: '🇬🇧' },
-        { code: '+1', country: 'CA', flag: '🇨🇦' },
-        { code: '+61', country: 'AU', flag: '🇦🇺' },
+        { code: '+1', country: 'United States', flag: '🇺🇸' },
+        { code: '+1', country: 'Canada', flag: '🇨🇦' },
+        { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+        { code: '+61', country: 'Australia', flag: '🇦🇺' },
+        { code: '+49', country: 'Germany', flag: '🇩🇪' },
+        { code: '+33', country: 'France', flag: '🇫🇷' },
+        { code: '+39', country: 'Italy', flag: '🇮🇹' },
+        { code: '+34', country: 'Spain', flag: '🇪🇸' },
+        { code: '+81', country: 'Japan', flag: '🇯🇵' },
+        { code: '+86', country: 'China', flag: '🇨🇳' },
+        { code: '+91', country: 'India', flag: '🇮🇳' },
+        { code: '+52', country: 'Mexico', flag: '🇲🇽' },
+        { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+        { code: '+234', country: 'Nigeria', flag: '🇳🇬' },
+        { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+        { code: '+971', country: 'United Arab Emirates', flag: '🇦🇪' },
+        { code: '+7', country: 'Russia', flag: '🇷🇺' },
+        { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+        { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+        { code: '+31', country: 'Netherlands', flag: '🇳🇱' },
+        { code: '+41', country: 'Switzerland', flag: '🇨🇭' },
+        { code: '+46', country: 'Sweden', flag: '🇸🇪' },
+        { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+        { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+        { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+        { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+        { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+        { code: '+90', country: 'Turkey', flag: '🇹🇷' },
+        { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
+        { code: '+972', country: 'Israel', flag: '🇮🇱' },
+        { code: '+20', country: 'Egypt', flag: '🇪🇬' },
+        { code: '+54', country: 'Argentina', flag: '🇦🇷' },
+        { code: '+56', country: 'Chile', flag: '🇨🇱' },
+        { code: '+57', country: 'Colombia', flag: '🇨🇴' },
+        { code: '+43', country: 'Austria', flag: '🇦🇹' },
+        { code: '+32', country: 'Belgium', flag: '🇧🇪' },
+        { code: '+45', country: 'Denmark', flag: '🇩🇰' },
+        { code: '+358', country: 'Finland', flag: '🇫🇮' },
+        { code: '+30', country: 'Greece', flag: '🇬🇷' },
+        { code: '+353', country: 'Ireland', flag: '🇮🇪' },
+        { code: '+47', country: 'Norway', flag: '🇳🇴' },
+        { code: '+48', country: 'Poland', flag: '🇵🇱' },
+        { code: '+351', country: 'Portugal', flag: '🇵🇹' },
+        { code: '+420', country: 'Czech Republic', flag: '🇨🇿' },
+        { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
     ];
     const [authLoading, setAuthLoading] = useState(false);
     const [authError, setAuthError] = useState(null);
@@ -854,7 +889,6 @@ const Assessment = () => {
             else if (categoryId === 'hair-restoration') resolvedGoals = selectedHairGoals;
             else if (categoryId === 'longevity') resolvedGoals = selectedLongevityGoals;
             else if (categoryId === 'testosterone') resolvedGoals = selectedTestosteroneGoals;
-            else if (categoryId === 'repair-healing') resolvedGoals = selectedRepairGoals;
             else if (categoryId === 'skin-care') resolvedGoals = selectedSkinCareGoals;
 
             // Prepare submission data mapping
@@ -2439,125 +2473,7 @@ const Assessment = () => {
         </div>
     );
 
-    const renderRepairQuoteStep = () => (
-        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
-            <div className="flex flex-col md:flex-row items-center gap-16">
-                {/* Left Side: Quote Image with APA fine print */}
-                <div className="w-full md:w-1/2 relative group">
-                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
-                        <img
-                            src={repairHealingQuote1Img}
-                            alt="BPC-157 & TB-500 Therapy"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                        <div className="absolute bottom-6 left-6 right-6 z-10">
-                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
-                                Reference (APA): Sikiric, P., Rucman, R., et al. (2018). Protective and regenerative effects of the peptide BPC 157 in animal models of injury. <em>Current Pharmaceutical Design</em>, 24(12), 1372–1384. https://doi.org/10.2174/1381612824666180118121915
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Right Side: Quote and CTA */}
-                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
-                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
-                        Clinical Evidence
-                    </div>
-                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
-                        <span className="block">"BPC-157 and TB-500 are peptides shown in preclinical studies to support</span>
-                        <span className="block">
-                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>tissue repair,</span>
-                        </span>
-                        <span className="block">reduce inflammation, and promote healing, potentially aiding recovery from musculoskeletal injuries</span>
-                        <span className="block">and joint discomfort."</span>
-                    </h2>
-                    <button
-                        onClick={() => { setShowRepairQuote(false); setShowRepairGoals(true); }}
-                        className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
-                        style={{ color: '#ffffff' }}
-                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                    >
-                        Continue Assessment
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderRepairGoalsStep = () => (
-        <div className="min-h-screen bg-white flex items-center">
-            <div className="max-w-4xl mx-auto px-6 py-20 w-full">
-                <div className="text-center mb-16">
-                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white mb-8">
-                        Health Goals
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-[#1a1a1a] leading-[1.05]">
-                        What is your goal(s)<br />for this treatment?
-                    </h2>
-                    <p className="text-black/40 text-xs uppercase tracking-[0.3em] mt-4">Select all that apply</p>
-                </div>
-                <div className="grid grid-cols-1 gap-4 mb-12">
-                    {[
-                        { id: 'recovery', label: 'Accelerate recovery from sports or musculoskeletal injuries' },
-                        { id: 'pain', label: 'Reduce joint or tendon pain and inflammation' },
-                        { id: 'mobility', label: 'Improve mobility, flexibility, and range of motion' },
-                        { id: 'tissue', label: 'Support soft tissue, ligament, or tendon integrity for long-term wellness' },
-                        { id: 'prevention', label: 'Enhance overall injury prevention and physical performance' },
-                    ].map(goal => (
-                        <div
-                            key={goal.id}
-                            onClick={() => toggleRepairGoal(goal.id)}
-                            className={`flex items-center gap-6 p-6 rounded-[20px] border-2 cursor-pointer transition-all duration-300 ${selectedRepairGoals.includes(goal.id)
-                                ? 'border-black bg-black/5'
-                                : 'border-black/10 hover:border-black/30'
-                                }`}
-                        >
-                            <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all ${selectedRepairGoals.includes(goal.id) ? 'border-black bg-black' : 'border-black/30'
-                                }`}>
-                                {selectedRepairGoals.includes(goal.id) && (
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="w-full h-full p-1">
-                                        <polyline points="20 6 9 17 4 12" />
-                                    </svg>
-                                )}
-                            </div>
-                            <span className="font-black text-sm uppercase tracking-wide text-[#1a1a1a]">{goal.label}</span>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <button
-                        onClick={() => { setShowRepairGoals(false); setShowRepairQuote(true); }}
-                        className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
-                    >
-                        Back
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (selectedRepairGoals.length === 0) { return; }
-                            setShowRepairGoals(false);
-                            setShowRepairQuote2(true);
-                        }}
-                        disabled={selectedRepairGoals.length === 0}
-                        className="w-full md:w-auto px-16 py-6 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4 text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        onMouseEnter={e => { if (selectedRepairGoals.length > 0) { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; } }}
-                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                    >
-                        Continue
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
     const renderSkinCareGoalsStep = () => (
         <div className="min-h-screen bg-white flex items-center">
             <div className="max-w-4xl mx-auto px-6 py-20 w-full">
@@ -2623,64 +2539,7 @@ const Assessment = () => {
         </div>
     );
 
-    const renderRepairQuote2Step = () => (
-        <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto py-20 px-6 bg-white" style={{ opacity: 1 }}>
-            <div className="flex flex-col md:flex-row items-center gap-16">
-                {/* Left Side: Quote Image with APA fine print */}
-                <div className="w-full md:w-1/2 relative group">
-                    <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
-                        <img
-                            src={repairHealingQuote2Img}
-                            alt="Peptide Recovery & Mobility"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                        <div className="absolute bottom-6 left-6 right-6 z-10">
-                            <p className="text-[8px] text-white/60 font-medium leading-relaxed">
-                                Reference (APA): Sikiric, P., et al. (2021). Therapeutic potential of BPC 157 and TB-500 peptides: Preclinical findings. <em>Peptides</em>, 135, 170474. https://doi.org/10.1016/j.peptides.2020.170474
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Right Side: Quote and CTA */}
-                <div className="w-full md:w-1/2 text-left flex flex-col gap-10 bg-white">
-                    <div className="inline-block py-2 px-6 bg-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-white self-start">
-                        Clinical Evidence
-                    </div>
-                    <h2 style={{ color: '#1a1a1a' }} className="text-4xl md:text-5xl font-black tracking-tighter leading-[1.05]">
-                        <span className="block">"Regular peptide therapy may enhance recovery,</span>
-                        <span className="block">
-                            <span style={{ backgroundColor: '#FFDE59', color: '#1a1a1a', padding: '2px 10px', display: 'inline-block' }}>improve mobility,</span>
-                        </span>
-                        <span className="block">and support tendon, ligament, and soft tissue integrity when combined with proper</span>
-                        <span className="block">rehabilitation and lifestyle support."</span>
-                    </h2>
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <button
-                            onClick={() => { setShowRepairQuote2(false); setShowRepairGoals(true); }}
-                            className="w-full md:w-auto px-10 py-6 bg-black/5 border border-black/10 text-[#1a1a1a] rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:border-black/30"
-                        >
-                            Back
-                        </button>
-                        <button
-                            onClick={() => { user ? (setMedicalStep(0), setStep(8)) : setStep(3); }}
-                            className="w-full md:w-auto px-16 py-8 bg-black rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all duration-700 transform hover:scale-105 flex items-center justify-center gap-4"
-                            style={{ color: '#ffffff' }}
-                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#FFDE59'; e.currentTarget.style.color = '#1a1a1a'; }}
-                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#ffffff'; }}
-                        >
-                            {user ? 'Start My Assessment' : 'Create Account'}
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
 
     const renderStep0 = () => (
         <div className="assessment-step max-w-5xl mx-auto py-20 px-6">
@@ -2873,7 +2732,7 @@ const Assessment = () => {
                 <button
                     onClick={() => {
                         if (user) {
-                            if (categoryId === 'longevity' || categoryId === 'testosterone' || categoryId === 'repair-healing') {
+                            if (categoryId === 'longevity' || categoryId === 'testosterone') {
                                 setMedicalStep(0);
                                 setStep(8); // Skip eligibility
                             } else {
@@ -5277,65 +5136,87 @@ const Assessment = () => {
                 </div>
 
                 {/* ZIP + Phone */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">ZIP Code *</label>
-                        <input
-                            type="text"
-                            className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
-                            value={shippingData.zip}
-                            onChange={(e) => setShippingData({ ...shippingData, zip: e.target.value })}
-                        />
-                    </div>
-                    <div className="relative">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number *</label>
-                        <div className="relative flex gap-2">
-                            <div className="relative">
-                                <button
-                                    onClick={() => setShowShippingCountryDropdown(!showShippingCountryDropdown)}
-                                    className="h-full bg-black/5 border border-black/5 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center"
-                                >
-                                    <span>{countryCodes.find(c => c.code === shippingData.countryCode)?.flag}</span>
-                                    <span>{shippingData.countryCode}</span>
-                                </button>
-                                {showShippingCountryDropdown && (
-                                    <div className="absolute z-50 left-0 top-full mt-2 bg-white border border-black/10 rounded-2xl shadow-2xl min-w-[160px] overflow-hidden">
-                                        {countryCodes.map((c, idx) => (
-                                            <div
-                                                key={`${c.country}-${idx}`}
-                                                onClick={() => {
-                                                    setShippingData({ ...shippingData, countryCode: c.code });
-                                                    setShowShippingCountryDropdown(false);
-                                                }}
-                                                className="px-6 py-4 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-3"
-                                            >
-                                                <span>{c.flag}</span>
-                                                <span>{c.country} ({c.code})</span>
-                                            </div>
-                                        ))}
+                <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">ZIP Code *</label>
+                    <input
+                        type="text"
+                        className="w-full bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
+                        value={shippingData.zip}
+                        onChange={(e) => setShippingData({ ...shippingData, zip: e.target.value })}
+                    />
+                </div>
+                <div className="relative">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 ml-4">Phone Number *</label>
+                    <div className="relative flex flex-col sm:flex-row gap-4">
+                        <div className="relative group/dropdown">
+                            <button
+                                type="button"
+                                onClick={() => setShowShippingCountryDropdown(!showShippingCountryDropdown)}
+                                className="h-full bg-black/5 border border-black/5 rounded-2xl py-5 px-4 text-black font-bold text-sm flex items-center gap-2 whitespace-nowrap min-w-[100px] justify-center hover:bg-black/10 transition-colors"
+                            >
+                                <span>{countryCodes.find(c => c.code === shippingData.countryCode)?.flag}</span>
+                                <span>{shippingData.countryCode}</span>
+                                <svg className={`w-3 h-3 transition-transform ${showShippingCountryDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                            </button>
+                            {showShippingCountryDropdown && (
+                                <div className="absolute z-[100] left-0 bottom-full mb-2 bg-white border border-black/10 rounded-2xl shadow-2xl min-w-[240px] max-h-[300px] overflow-hidden flex flex-col">
+                                    <div className="p-3 border-b border-black/5 bg-gray-50/50">
+                                        <input
+                                            type="text"
+                                            placeholder="Search country..."
+                                            className="w-full bg-white border border-black/10 rounded-xl py-2 px-4 text-[10px] font-bold outline-none focus:border-black transition-all"
+                                            value={countrySearch}
+                                            onChange={(e) => setCountrySearch(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            autoFocus
+                                        />
                                     </div>
-                                )}
-                                {showShippingCountryDropdown && (
-                                    <div className="fixed inset-0 z-40" onClick={() => setShowShippingCountryDropdown(false)} />
-                                )}
-                            </div>
-                            <input
-                                type="tel"
-                                placeholder="(XXX) XXX-XXXX"
-                                className="flex-1 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
-                                value={shippingData.phone}
-                                onChange={(e) => {
-                                    const rawValue = e.target.value.replace(/\D/g, '');
-                                    let formattedValue = '';
-                                    if (rawValue.length > 0) {
-                                        formattedValue = '(' + rawValue.substring(0, 3);
-                                        if (rawValue.length > 3) formattedValue += ') ' + rawValue.substring(3, 6);
-                                        if (rawValue.length > 6) formattedValue += '-' + rawValue.substring(6, 10);
-                                    }
-                                    setShippingData({ ...shippingData, phone: formattedValue });
-                                }}
-                            />
+                                    <div className="overflow-y-auto no-scrollbar py-2">
+                                        {countryCodes
+                                            .filter(c => c.country.toLowerCase().includes(countrySearch.toLowerCase()) || c.code.includes(countrySearch))
+                                            .map((c, idx) => (
+                                                <div
+                                                    key={`${c.country}-${idx}`}
+                                                    onClick={() => {
+                                                        setShippingData({ ...shippingData, countryCode: c.code });
+                                                        setShowShippingCountryDropdown(false);
+                                                        setCountrySearch('');
+                                                    }}
+                                                    className="px-5 py-3 hover:bg-black hover:text-white cursor-pointer text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-between"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span>{c.flag}</span>
+                                                        <span className="truncate max-w-[120px]">{c.country}</span>
+                                                    </div>
+                                                    <span className="opacity-40">{c.code}</span>
+                                                </div>
+                                            ))}
+                                        {countryCodes.filter(c => c.country.toLowerCase().includes(countrySearch.toLowerCase()) || c.code.includes(countrySearch)).length === 0 && (
+                                            <div className="px-5 py-8 text-center text-gray-400 text-[9px] font-black uppercase tracking-widest">No results</div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            {showShippingCountryDropdown && (
+                                <div className="fixed inset-0 z-[90]" onClick={() => setShowShippingCountryDropdown(false)} />
+                            )}
                         </div>
+                        <input
+                            type="tel"
+                            placeholder="(XXX) XXX-XXXX"
+                            className="flex-1 bg-black/5 border border-black/5 rounded-2xl py-5 px-8 text-black focus:outline-none focus:border-accent-black transition-all font-bold"
+                            value={shippingData.phone}
+                            onChange={(e) => {
+                                const rawValue = e.target.value.replace(/\D/g, '');
+                                let formattedValue = '';
+                                if (rawValue.length > 0) {
+                                    formattedValue = '(' + rawValue.substring(0, 3);
+                                    if (rawValue.length > 3) formattedValue += ') ' + rawValue.substring(3, 6);
+                                    if (rawValue.length > 6) formattedValue += '-' + rawValue.substring(6, 10);
+                                }
+                                setShippingData({ ...shippingData, phone: formattedValue });
+                            }}
+                        />
                     </div>
                 </div>
 
@@ -5853,7 +5734,7 @@ const Assessment = () => {
 
                 {/* Compact Progress Bar directly under the logo/header content */}
                 {
-                    ((step > 0 && step < 15) || (step === 0 && !(showQuote || showBMI || showQuote2 || showSexualHealthQuote || showSexualHealthGoals || showSexualHealthQuote2 || showHairQuote || showHairGoals || showHairQuote2 || showLongevityQuote || showLongevityGoals || showTestosteroneQuote || showTestosteroneGoals || showTestosteroneQuote2 || showRepairQuote || showRepairGoals || showRepairQuote2))) && (
+                    ((step > 0 && step < 15) || (step === 0 && !(showQuote || showBMI || showQuote2 || showSexualHealthQuote || showSexualHealthGoals || showSexualHealthQuote2 || showHairQuote || showHairGoals || showHairQuote2 || showLongevityQuote || showLongevityGoals || showTestosteroneQuote || showTestosteroneGoals || showTestosteroneQuote2))) && (
                         <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5">
                             <div
                                 className="h-full bg-black transition-all duration-1000 ease-out"
@@ -5915,12 +5796,7 @@ const Assessment = () => {
                                 showTestosteroneQuote2 ? renderTestosteroneQuote2Step() :
                                     renderTestosteroneQuoteStep() // Safety Fallback
                     )}
-                    {categoryId === 'repair-healing' && step === 0 && (
-                        showRepairQuote ? renderRepairQuoteStep() :
-                            showRepairGoals ? renderRepairGoalsStep() :
-                                showRepairQuote2 ? renderRepairQuote2Step() :
-                                    renderRepairQuoteStep() // Safety Fallback
-                    )}
+
                     {categoryId === 'skin-care' && step === 0 && (
                         renderSkinCareGoalsStep()
                     )}
@@ -5930,7 +5806,6 @@ const Assessment = () => {
                         categoryId !== 'hair-restoration' &&
                         categoryId !== 'longevity' &&
                         categoryId !== 'testosterone' &&
-                        categoryId !== 'repair-healing' &&
                         categoryId !== 'skin-care' &&
                         (step === 0 || step === 1) && renderStep0()}
                     {step === 2 && renderReviewStep()}
@@ -5951,18 +5826,7 @@ const Assessment = () => {
                 </div>
             </main>
 
-            {/* Mobile Clear Button */}
-            {step > 0 && step < 15 && (
-                <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
-                    <button
-                        onClick={handleClearProgress}
-                        className="w-full bg-black border border-black py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-2xl active:scale-95 transition-all"
-                    >
-                        Reset Progress & Exit
-                    </button>
-                </div>
-            )
-            }
+
 
             <style dangerouslySetInnerHTML={{
                 __html: `

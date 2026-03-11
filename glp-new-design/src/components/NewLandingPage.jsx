@@ -15,7 +15,6 @@ import prescribedImg from '../assets/get-prescribed-image.jpg';
 import rxShipmentImg from '../assets/rx-shipment-image.jpg';
 import drugImg from '../assets/drug.jpg';
 import exerciseImg from '../assets/exercise.jpg';
-import repairImg from '../assets/sec_quote_strenght_img.png';
 import medicalTeamImg from '../assets/medical-team.png';
 import fdaImg from '../assets/fda_image.webp';
 import doctorImg from '../assets/doctor_image.png';
@@ -125,7 +124,6 @@ const NewLandingPage = () => {
                                         'glutathione-injection': 'longevity',
                                         'testosterone': 'testosterone',
                                         'retatrutide': 'retatrutide',
-                                        'repair-healing': 'repair-healing',
                                         'anti-aging-cream': 'skin-care'
                                     };
                                     const categoryId = categoryMap[item.slug] || 'weight-loss';
@@ -182,29 +180,29 @@ const NewLandingPage = () => {
                                 })}
                             <div
                                 onClick={() => window.dispatchEvent(new CustomEvent('openMobileMenu'))}
-                                className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200 hover:border-black transition-colors"
+                                className="group relative aspect-square bg-gray-50 border-2 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center cursor-pointer hover:border-black transition-all p-8"
                             >
-                                <span className="text-sm font-bold text-gray-500 hover:text-black">Browse all treatments →</span>
+                                <span className="text-sm md:text-lg font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-black text-center leading-relaxed transition-colors">
+                                    Browse all<br />treatments →
+                                </span>
                             </div>
                         </div>
 
-                        {/* Upcoming Products Section */}
-                        <div className="mt-20">
+                        <div className="pt-20">
                             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                                 <div
                                     onClick={() => setIsWaitlistOpen(true)}
-                                    className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black border-2 border-red-500/20"
+                                    className="relative rounded-[32px] overflow-hidden aspect-square group cursor-pointer transition-all duration-500 hover:shadow-2xl bg-black border border-white/5"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-black z-0"></div>
+                                    <div className="absolute inset-0  from-red-600/20 to-black z-0"></div>
                                     <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm z-20">New Clinical Research</div>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
-                                        <span className="text-[11px] font-serif tracking-widest uppercase mb-1 transition-colors duration-300 opacity-60">Retatrutide</span>
-                                        <span className="text-lg font-bold text-center transition-colors duration-300 group-hover:text-red-500">Clinical Breakthrough</span>
-                                        <span className="mt-3 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+                                    <div className=" bottom-0 left-0 right-0 flex flex-col items-center justify-end p-4 md:p-10 text-white z-10 text-center pb-6 md:pb-12">
+                                        <span className="text-[8px] md:text-[10px] font-black tracking-[0.4em] uppercase mb-1 text-[#FFDE59]/60">Retatrutide</span>
+                                        <h3 className="text-xs md:text-xl font-black uppercase tracking-tighter mb-3 leading-tight group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
+                                        <div className="mt-2 md:mt-4 px-5 py-2.5 md:px-6 md:py-3 bg-white text-black rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-xl group-hover:bg-[#FFDE59] transition-all duration-300">
                                             Join the Waitlist
-                                        </span>
-                                        <span className="mt-2 text-[8px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-white/80 transition-colors">Eligibility Verification: $25</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +294,7 @@ const NewLandingPage = () => {
                 {/* Expert Care Section - Bird's Eye View Medical Team */}
                 <section className="py-24 animate-in fade-in duration-1000">
                     <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
-                        <div className="relative rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[1/1] md:aspect-[21/9]">
+                        <div className="relative rounded-[40px] md:rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[4/5] md:aspect-[21/9]">
                             <img
                                 src={medicalTeamImg}
                                 alt="uGlow MD Medical Team"

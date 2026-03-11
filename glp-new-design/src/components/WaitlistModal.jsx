@@ -87,7 +87,7 @@ const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
         >
             <div
                 ref={contentRef}
-                className="relative w-full max-w-2xl bg-[#170700] rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(234,88,12,0.2)] border border-[#FFC7A2]/10"
+                className="relative w-full max-w-2xl bg-[#170700] rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(234,88,12,0.2)] border border-[#FFC7A2]/10 max-h-[90vh] overflow-y-auto no-scrollbar"
             >
                 {/* Decorative Lava Glow */}
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-orange-600/20 rounded-full blur-[80px]"></div>
