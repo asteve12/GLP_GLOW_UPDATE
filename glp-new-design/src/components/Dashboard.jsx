@@ -2345,7 +2345,7 @@ const Dashboard = () => {
                                 onClick={() => navigate('/')}
                                 className="text-2xl font-black uppercase tracking-tighter text-white"
                             >
-                                <img src={logo} alt="uGlowMD" className="h-[125px] w-auto inline-block invert" />
+                                <img src={logo} alt="uGlowMD" className="h-[125px] w-auto inline-block brightness-0 invert" />
                             </button>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}

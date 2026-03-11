@@ -191,7 +191,7 @@ const NewLandingPage = () => {
                         {/* Upcoming Products Section */}
                         <div className="mt-20">
                             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full">
                                 <div
                                     onClick={() => setIsWaitlistOpen(true)}
                                     className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black border-2 border-red-500/20"
@@ -296,7 +296,7 @@ const NewLandingPage = () => {
                 {/* Expert Care Section - Bird's Eye View Medical Team */}
                 <section className="py-24 animate-in fade-in duration-1000">
                     <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
-                        <div className="relative rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[21/9]">
+                        <div className="relative rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[1/1] md:aspect-[21/9]">
                             <img
                                 src={medicalTeamImg}
                                 alt="uGlow MD Medical Team"

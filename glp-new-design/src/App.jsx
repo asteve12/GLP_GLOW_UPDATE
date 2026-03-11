@@ -32,6 +32,7 @@ import NewLandingPage from './components/NewLandingPage';
 import BlogPage from './components/BlogPage';
 import BlogPostDetails from './components/BlogPostDetails';
 import { Toaster } from 'react-hot-toast';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 const ScrollToHash = () => {
   const { hash } = useLocation();
@@ -69,6 +70,7 @@ function App() {
   return (
     <Router>
       <Toaster position="top-right" />
+      <PWAUpdatePrompt />
       {isLoading && <Loader loaded={isLoaded} onComplete={() => setIsLoading(false)} />}
       <div className="font-sans text-text-main bg-bg-primary min-h-screen">
         <ScrollToHash />

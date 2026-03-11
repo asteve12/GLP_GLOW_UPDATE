@@ -69,7 +69,7 @@ const Loader = ({ loaded, onComplete }) => {
 
                 {/* Loading Text (Optional but adds premium feel) */}
                 <span className="text-white/50 text-xs uppercase tracking-[0.3em] font-medium">
-                    Initializing Glow
+                    Initializing
                 </span>
             </div>
         </div>
