@@ -102,7 +102,7 @@ const WellnessSection = () => {
                             </div>
                         </div>
 
-                        <Link to="/qualify" className="bg-white text-bg-primary px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all shadow-2xl transform hover:scale-105 active:scale-95 inline-block">
+                        <Link to="/assessment/weight-loss" className="bg-white text-bg-primary px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all shadow-2xl transform hover:scale-105 active:scale-95 inline-block">
                             Start My Assessment
                         </Link>
                     </div>

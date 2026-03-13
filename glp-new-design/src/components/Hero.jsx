@@ -85,7 +85,7 @@ const Hero = () => {
 
                 <div className="flex flex-col w-full max-w-[300px] gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
                     <Link
-                        to="/qualify"
+                        to="/assessment/weight-loss"
                         className="w-full bg-accent-black text-black py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white transition-all shadow-[0_10px_40px_rgba(191,255,0,0.3)]"
                     >
                         Start Assessment
@@ -109,7 +109,7 @@ const Hero = () => {
                         { title: "Hair Restoration", desc: "Finasteride & Minoxidil", price: "Personalized Plans", path: "hair-restoration" },
                         { title: "Sexual Health", desc: "Sildenafil & Oxytocin", price: "Discreet Shipping", path: "sexual-health" }
                     ].map((product, index) => (
-                        <Link key={index} to={`/qualify?category=${product.path}`} className="block bg-black/40 backdrop-blur-md border border-white/10 p-4 md:p-6 rounded-xl hover:border-accent-black transition-all duration-300 group cursor-pointer hover:-translate-y-1 text-left">
+                        <Link key={index} to={`/assessment/${product.path}`} className="block bg-black/40 backdrop-blur-md border border-white/10 p-4 md:p-6 rounded-xl hover:border-accent-black transition-all duration-300 group cursor-pointer hover:-translate-y-1 text-left">
                             <h3 className="text-base md:text-xl font-bold text-white mb-1 group-hover:text-accent-black transition-colors">{product.title}</h3>
                             <p className="text-text-muted text-xs md:text-sm mb-2 md:mb-3">{product.desc}</p>
                             <div className="flex justify-between items-center flex-wrap gap-2">

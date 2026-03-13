@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -56,33 +56,32 @@ const getMedicationCategoryId = (drugName) => {
     const drug = (drugName || '').toLowerCase();
     if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight') || drug.includes('retatrutide')) return 'weight-loss';
     if (drug.includes('hair') || drug.includes('finasteride') || drug.includes('minoxidil')) return 'hair-restoration';
-    if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil')) return 'sexual-health';
-    if (drug.includes('nad') || drug.includes('longevity')) return 'longevity';
-    if (drug.includes('testosterone')) return 'testosterone';
-    if (drug.includes('skin')) return 'skin-care';
-    return drugName; // Fallback
+    if (drug.includes('sexual') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('readysetgo') || drug.includes('growtabs') || drug.includes('quicklover') || drug.includes('loverspray')) return 'sexual-health';
+    if (drug.includes('nad') || drug.includes('longevity') || drug.includes('glutathione')) return 'longevity';
+    if (drug.includes('testosterone') || drug.includes('estradiol') || drug.includes('hormone')) return 'testosterone';
+    if (drug.includes('skin') || drug.includes('acne') || drug.includes('rosacea') || drug.includes('serum')) return 'skincare';
+    return 'other';
 };
-
 const getMedicationCategory = (drugName) => {
     const drug = (drugName || '').toLowerCase();
 
-    // Weight Loss
+    // Weight loss
     if (drug.includes('semaglutide') || drug.includes('tirzepatide') || drug.includes('weight')) {
-        return 'Weight Loss';
+        return 'Weight loss';
     }
 
     // Sexual Health
     if (drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin') ||
         drug.includes('pt-141') || drug.includes('sexual') || drug.includes('yohimbe') ||
         drug.includes('scream') || drug.includes('cream')) {
-        return 'Sexual Health';
+        if (drug.includes('skin') || drug.includes('acne') || drug.includes('rosacea')) return 'skincare';
+        return 'Sexual health';
     }
 
     // Hair Restoration
     if (drug.includes('finasteride') || drug.includes('minoxidil') || drug.includes('hair') ||
-        drug.includes('dutasteride') || drug.includes('spironolactone') || drug.includes('latanoprost') ||
-        drug.includes('tretinoin')) {
-        return 'Hair Restoration';
+        drug.includes('dutasteride') || drug.includes('spironolactone') || drug.includes('latanoprost')) {
+        return 'Hair restoration';
     }
 
     // Longevity
@@ -91,16 +90,47 @@ const getMedicationCategory = (drugName) => {
         drug.includes('methylcobalamin') || drug.includes('glycine')) {
         return 'Longevity';
     }
-    return 'Other';
+
+    // Testosterone
+    if (drug.includes('testosterone')) {
+        return 'Testosterone';
+    }
+
+    // skincare
+    if (drug.includes('skin') || drug.includes('acne') || drug.includes('rosacea') || drug.includes('tretinoin')) {
+        return 'skincare';
+    }
+
+    return 'Active medication';
+};
+
+const getDosageOptionsList = (drugName) => {
+    const drug = (drugName || '').toLowerCase();
+
+    if (drug.includes('semaglutide')) return ['0.25 mg', '0.5 mg', '1 mg', '1.5 mg', '2 mg', '2.4 mg'];
+    if (drug.includes('tirzepatide')) return ['2.5 mg', '5 mg', '7.5 mg', '10 mg', '12 mg', '15 mg'];
+    if (drug.includes('readysetgo')) return ['40 mg / 14 mg / 2 mg', '65 mg / 22 mg / 2 mg', '80 mg / 22 mg / 3 mg', '110 mg / 22 mg / 3 mg'];
+    if (drug.includes('growtabs-sildenafil')) return ['30 mg', '45 mg'];
+    if (drug.includes('growtabs-tadalafil')) return ['6 mg', '9 mg'];
+    if (drug.includes('quicklover')) return ['50 IU', '100 IU'];
+    if (drug.includes('loverspray')) return ['150 IU/mL (5 mL)'];
+    if (drug.includes('nad-nasal')) return ['100 mg/mL (15mL)', '100 IU (15mL)'];
+    if (drug.includes('nad-injection')) return ['200 mg/mL (5 mL)'];
+    if (drug.includes('glutathione')) return ['200 mg/mL (10 mL)'];
+    if (drug.includes('hair-growth-tabs-2in1')) return ['1mg / 2.5mg'];
+    if (drug.includes('hair') || drug.includes('finasteride')) return ['Standard Protocol'];
+    if (drug.includes('retatrutide') || drug.includes('testosterone') || drug.includes('estradiol') || drug.includes('skin')) return ['Standard Protocol'];
+
+    return ['Standard Protocol'];
 };
 
 const MedicationCategory = {
-    WEIGHT_LOSS: 'Weight Loss',
-    SEXUAL_HEALTH: 'Sexual Health',
-    HAIR_RESTORATION: 'Hair Restoration',
+    WEIGHT_LOSS: 'Weight loss',
+    SEXUAL_HEALTH: 'Sexual health',
+    HAIR_RESTORATION: 'Hair restoration',
     LONGEVITY: 'Longevity',
     TESTOSTERONE: 'Testosterone',
-    SKIN_CARE: 'Skin Care'
+    SKINCARE: 'skincare'
 };
 
 const DosageChangePaymentForm = ({ onComplete, amount = 500 }) => {
@@ -182,15 +212,25 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
         if (isOpen) {
             setStep(1);
             setClientSecret(null);
-            setValue('');
+            setValue(medication?.approved_dosage || medication?.dosage_preference || '');
             setReason('');
         }
     }, [isOpen]);
 
     if (!isOpen) return null;
 
-    const dosageOptions = ['0.25mg', '0.5mg', '1.0mg', '1.7mg', '2.4mg'];
-    const medicationOptions = ['Semaglutide', 'Tirzepatide', 'Liraglutide', 'Retatruide'];
+    const dosageOptions = medication ? getDosageOptionsList(medication.selected_drug || medication.dosage_preference) : ['0.25 mg', '0.5 mg', '1 mg', '1.5 mg', '2 mg', '2.4 mg'];
+
+    const medicationOptions = medication ? (() => {
+        const cat = getMedicationCategoryId(medication.selected_drug || medication.dosage_preference);
+        if (cat === 'weight-loss') return ['Semaglutide (Subq Inj)', 'Tirzepatide (Subq Inj)', 'Retatrutide'];
+        if (cat === 'hair-restoration') return ['3-in-1 Hair Growth Tabs', '2-in-1 Hair Growth Tabs'];
+        if (cat === 'sexual-health') return ['ReadySetGo (2-in-1 RDT) *Men*', 'GrowTabs (Sildenafil)', 'GrowTabs (Tadalafil)', 'QuickLover (RDT) - Oxytocin', 'LoverSpray (Nasal) - Oxytocin'];
+        if (cat === 'longevity') return ['NAD+ Spray (Nasal)', 'NAD+ (Subq Inj)', 'Glutathione (Subq Inj)'];
+        if (cat === 'testosterone') return ['Testosterone (Inj)', 'Testosterone RDT Tabs', 'Estradiol Tabs'];
+        if (cat === 'skincare') return ['Anti-Aging Cream', 'Face Spot Peel', 'Acne Cleanser Cream', 'Rosacea Red Cream', 'Eye Serum', 'Body Acne Spots Cream'];
+        return ['Semaglutide (Subq Inj)', 'Tirzepatide (Subq Inj)'];
+    })() : ['Semaglutide (Subq Inj)', 'Tirzepatide (Subq Inj)'];
 
     const handleProceed = async (e) => {
         e.preventDefault();
@@ -205,8 +245,8 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
         if (type === 'dosage') {
             setPreparingPayment(true);
             try {
-                // Create Payment Intent
-                const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+                // Create Payment Intent using standard edge function
+                const { data, error: intentError } = await supabase.functions.invoke('create-payment-intent', {
                     body: {
                         amount: 500, // $5.00
                         type: 'dosage_change',
@@ -218,8 +258,8 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                     }
                 });
 
-                if (error || !data?.clientSecret) {
-                    throw new Error(error?.message || 'Failed to initialize payment');
+                if (intentError || !data?.clientSecret) {
+                    throw new Error(data?.error || intentError?.message || 'Failed to initialize payment');
                 }
 
                 setClientSecret(data.clientSecret);
@@ -308,7 +348,9 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                         <form onSubmit={handleProceed} className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-4 ml-2">
-                                    {type === 'dosage' ? 'Select New Dosage' : 'Select Replacement Medication'}
+                                    {type === 'dosage'
+                                        ? `Select New Dosage ${medication?.approved_dosage || medication?.dosage_preference ? `(Current: ${medication.approved_dosage || medication.dosage_preference})` : ''}`
+                                        : 'Select Replacement Medication'}
                                 </label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {(type === 'dosage' ? dosageOptions : medicationOptions).map((opt) => (
@@ -340,6 +382,9 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                 />
                             </div>
 
+
+
+
                             {type === 'dosage' && (
                                 <div className="bg-white/5 border border-white/20 rounded-2xl p-5">
                                     <div className="flex justify-between items-center mb-1">
@@ -351,8 +396,6 @@ const MedicationActionModal = ({ isOpen, type, medication, onClose, onSubmit, lo
                                     </p>
                                 </div>
                             )}
-
-
 
                             <button
                                 type="submit"
@@ -393,7 +436,7 @@ const SettingsView = ({ profile, user, onUpdate, setLastOptimisticUpdate }) => {
     const [form, setForm] = React.useState({
         first_name: profile?.first_name || '',
         last_name: profile?.last_name || '',
-        phone: profile?.phone || user?.phone || '',
+        phone_number: profile?.phone_number || '',
         date_of_birth: profile?.date_of_birth || '',
     });
     const [pwForm, setPwForm] = React.useState({ current: '', newPw: '', confirm: '' });
@@ -414,7 +457,7 @@ const SettingsView = ({ profile, user, onUpdate, setLastOptimisticUpdate }) => {
                 .update({
                     first_name: form.first_name,
                     last_name: form.last_name,
-                    phone: form.phone,
+                    phone_number: form.phone_number,
                     date_of_birth: form.date_of_birth,
                 })
                 .eq('id', user.id);
@@ -493,7 +536,7 @@ const SettingsView = ({ profile, user, onUpdate, setLastOptimisticUpdate }) => {
                         {[
                             { label: 'First Name', name: 'first_name', type: 'text', placeholder: 'John' },
                             { label: 'Last Name', name: 'last_name', type: 'text', placeholder: 'Doe' },
-                            { label: 'Phone Number', name: 'phone', type: 'tel', placeholder: '+1 (555) 000-0000' },
+                            { label: 'Phone Number', name: 'phone_number', type: 'tel', placeholder: '+1 (555) 000-0000' },
                             { label: 'Date of Birth', name: 'date_of_birth', type: 'date', placeholder: '' },
                         ].map(field => (
                             <div key={field.name}>
@@ -611,6 +654,22 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
         <div className="bg-[#111111] border border-white/10 rounded-[32px] p-8 hover:border-white/20 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
 
+            {!isSubscriptionActive && (
+                <div className="mb-8 p-6 bg-red-500/5 border border-red-500/20 rounded-[24px] flex items-center gap-6 relative z-20 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5">
+                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.33 1.732-2.66L13.732 4c-.77-1.33-2.694-1.33-3.464 0L3.34 16.34c-.77 1.33.192 2.66 1.732 2.66z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500 mb-1">Protocol Cancelled</p>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.15em] leading-relaxed">
+                            Your subscription has been discontinued. Reactivate below to resume treatment.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
                 <div className="flex flex-col md:flex-row items-start gap-6">
                     <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/20 group-hover:border-white/20 transition-all">
@@ -624,14 +683,30 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                         <div className="flex items-center gap-3 mb-6">
                             <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
                                 {(() => {
-                                    // PRODUCT NAME ACCESSED FROM DRUG_NAME COLUMN IN ORDERS TABLE
-                                    // IDENTIFIED VIA CURRENT_PLAN IN THE USER PROFILE
-                                    const submissionCategory = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
+                                    // PRIORITY: Use product mapping for "Full Product Name" display
+                                    const drugId = (submission.selected_drug || submission.dosage_preference || '').toLowerCase();
 
-                                    // 1. Try to find the exact order for this specific assessment
+                                    // Try exact match first
+                                    let productInfo = PRODUCT_MAP[drugId];
+
+                                    // Try partial match if no exact match
+                                    if (!productInfo) {
+                                        const key = Object.keys(PRODUCT_MAP).find(k => {
+                                            const normalizedK = k.replace(/-/g, ' ').toLowerCase();
+                                            const normalizedId = drugId.replace(/-/g, ' ').toLowerCase();
+                                            return normalizedId.includes(normalizedK) || normalizedK.includes(normalizedId);
+                                        });
+                                        if (key) productInfo = PRODUCT_MAP[key];
+                                    }
+
+                                    if (productInfo) {
+                                        return productInfo.name;
+                                    }
+
+                                    // Fallback to order or submission info
+                                    const submissionCategory = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
                                     let match = orders?.find(o => o.form_submission_id === submission.id);
 
-                                    // 2. If not found, try to find an order that matches the plan name from current_plan
                                     if (!match && submission.selected_drug) {
                                         match = orders?.find(o =>
                                             o.drug_name?.toLowerCase().includes(submission.selected_drug.toLowerCase()) ||
@@ -639,41 +714,51 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                                         );
                                     }
 
-                                    // 3. Fallback to category match or same category order
-                                    if (!match) {
+                                    if (!match && isApproved) {
                                         match = orders?.find(o => getMedicationCategory(o.drug_name) === submissionCategory);
                                     }
 
-                                    // Return the drug_name from orders, or the plan name from profile, or fallback
-                                    return match?.drug_name || submission.selected_drug || 'Active Protocol';
+                                    if (!isApproved && submission.selected_drug) {
+                                        return submission.selected_drug.replace(/-/g, ' ').replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+                                    }
+
+                                    return match?.drug_name || (submission.selected_drug || '').replace(/-/g, ' ') || 'Active Protocol';
                                 })()}
                             </h3>
 
+                            {submission.approval_status === 'pending' && (
+                                <div className="ml-4 px-3 py-1 bg-[#FFDE59]/10 border border-[#FFDE59]/20 rounded-full flex items-center gap-2">
+                                    <div className="w-1 h-1 bg-[#FFDE59] rounded-full animate-ping"></div>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-[#FFDE59]">Update Pending</span>
+                                </div>
+                            )}
                         </div>
 
 
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                            <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Medication Price</p>
-                                <p className="text-sm font-black text-[#FFDE59]">
-                                    {(() => {
-                                        const price = submission.plan_details?.price || submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299';
-                                        return price.toString().includes('.') ? `$${price}` : `$${price}.00`;
-                                    })()}
-                                </p>
-                            </div>
+                        {isSubscriptionActive && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                                <div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59] mb-1">Medication Price</p>
+                                    <p className="text-sm font-black text-[#FFDE59]">
+                                        {(() => {
+                                            const price = submission.plan_details?.price || submission.approved_price || (PRODUCT_MAP[submission.selected_drug] || PRODUCT_MAP[submission.dosage_preference])?.price || '299';
+                                            return price.toString().includes('.') ? `$${price}` : `$${price}.00`;
+                                        })()}
+                                    </p>
+                                </div>
 
-                            <div className="text-left">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">next delivery</p>
-                                <p className="text-sm font-bold text-white uppercase tracking-tighter">
-                                    {(() => {
-                                        const displayDate = submission.next_delivery_date || submission.plan_details?.Nextdelivery?.[0];
-                                        return displayDate ? new Date(displayDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Awaiting fulfillment';
-                                    })()}
-                                </p>
+                                <div className="text-left">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">next delivery</p>
+                                    <p className="text-sm font-bold text-white uppercase tracking-tighter">
+                                        {(() => {
+                                            const displayDate = submission.next_delivery_date || submission.plan_details?.Nextdelivery?.[0];
+                                            return displayDate ? new Date(displayDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Awaiting fulfillment';
+                                        })()}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -681,18 +766,15 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                     {isApproved ? (
                         isSubscriptionActive ? (
                             <>
-                                <button
-                                    onClick={() => onAction('dosage', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02]"
-                                >
-                                    Adjust Dosage
-                                </button>
-                                <button
-                                    onClick={() => onAction('medication', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all"
-                                >
-                                    Change Medication
-                                </button>
+                                {getDosageOptionsList(submission.selected_drug || submission.dosage_preference).length > 1 && (
+                                    <button
+                                        onClick={() => onAction('dosage', submission)}
+                                        className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02]"
+                                    >
+                                        Adjust Dosage
+                                    </button>
+                                )}
+
                                 <button
                                     onClick={() => onAction('cancel', submission)}
                                     className="w-full md:w-56 px-8 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all"
@@ -1327,7 +1409,7 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                                 <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">01</div>
                                 <div>
                                     <p className="text-xs font-black uppercase tracking-tight mb-1 ">Share Your Link</p>
-                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with <img src={logo} alt="uGlowMD" className="h-[48px] w-auto inline-block align-baseline invert opacity-80" />.</p>
+                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with <img src={logo} alt="uGlowMD" className="h-[72px] w-auto inline-block align-baseline invert opacity-80" />.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -1393,8 +1475,7 @@ const SubmissionCard = ({ submission, orders, setSelectedAssessment, navigate, o
                             <h4 className="text-lg font-black uppercase tracking-tight">
                                 {(() => {
                                     const cat = getMedicationCategory(submission.selected_drug || submission.dosage_preference);
-                                    const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
-                                    return matchingOrder?.drug_name || submission.selected_drug?.replace(/-/g, ' ') || submission.recommended_treatment || 'Assessment';
+                                    return cat === 'Active medication' ? (submission.selected_drug?.replace(/-/g, ' ') || 'Assessment') : cat;
                                 })()}
                             </h4>
                             <button
@@ -1558,10 +1639,16 @@ const Dashboard = () => {
     const [otp, setOtp] = useState('');
     const [verifying, setVerifying] = useState(false);
     const [phoneVerified, setPhoneVerified] = useState(true); // Default to true to avoid flash
-    const [showMissingDOBModal, setShowMissingDOBModal] = useState(false);
+    const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
+    const [missingFields, setMissingFields] = useState([]);
     const [showDuplicatePhoneModal, setShowDuplicatePhoneModal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-    const [newDob, setNewDob] = useState({ month: '', day: '', year: '' });
+    const [profileUpdates, setProfileUpdates] = useState({
+        first_name: '',
+        last_name: '',
+        phone_number: '',
+        date_of_birth: { month: '', day: '', year: '' }
+    });
     const [isChangingPhone, setIsChangingPhone] = useState(false);
     const [newPhone, setNewPhone] = useState('');
     const [displayedPhone, setDisplayedPhone] = useState('');
@@ -1679,31 +1766,56 @@ const Dashboard = () => {
         }
     };
 
-    const handleUpdateMissingDob = async (e) => {
+    const handleUpdateProfile = async (e) => {
         if (e) e.preventDefault();
-        if (!newDob.month || !newDob.day || !newDob.year) {
-            toast.error('Please enter your full date of birth');
-            return;
+
+        const updates = {};
+        if (missingFields.includes('first_name')) {
+            if (!profileUpdates.first_name) { toast.error('First Name is required'); return; }
+            updates.first_name = profileUpdates.first_name;
+        }
+        if (missingFields.includes('last_name')) {
+            if (!profileUpdates.last_name) { toast.error('Last Name is required'); return; }
+            updates.last_name = profileUpdates.last_name;
+        }
+        if (missingFields.includes('phone_number')) {
+            const cleaned = (profileUpdates.phone_number || '').replace(/\D/g, '');
+            if (cleaned.length < 10) { toast.error('Valid Phone Number is required'); return; }
+            updates.phone_number = (profileUpdates.phone_number.startsWith('+'))
+                ? profileUpdates.phone_number
+                : `+1${cleaned.slice(-10)}`;
+        }
+        if (missingFields.includes('date_of_birth')) {
+            const { month, day, year } = profileUpdates.date_of_birth;
+            if (!month || !day || !year) { toast.error('Full Date of Birth is required'); return; }
+            updates.date_of_birth = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         }
 
         setIsUpdatingProfile(true);
         try {
-            const dob = `${newDob.year}-${newDob.month.padStart(2, '0')}-${newDob.day.padStart(2, '0')}`;
             const { error } = await supabase
                 .from('profiles')
-                .update({ date_of_birth: dob })
+                .update(updates)
                 .eq('id', user.id);
 
             if (error) throw error;
 
-            // Also update Auth metadata for consistency
-            await updateUser({ data: { date_of_birth: dob } });
+            // Also update Auth metadata for names, DOB, and phone if needed
+            const authUpdates = { data: {} };
+            if (updates.first_name) authUpdates.data.first_name = updates.first_name;
+            if (updates.last_name) authUpdates.data.last_name = updates.last_name;
+            if (updates.date_of_birth) authUpdates.data.date_of_birth = updates.date_of_birth;
+            if (updates.phone_number) authUpdates.data.phone_number = updates.phone_number;
 
-            toast.success('Profile updated successfully');
-            setShowMissingDOBModal(false);
+            if (Object.keys(authUpdates.data).length > 0) {
+                await updateUser(authUpdates);
+            }
+
+            toast.success('Profile completed successfully');
+            setShowCompleteProfileModal(false);
             fetchProfile();
         } catch (err) {
-            console.error('DOB Update Error:', err);
+            console.error('Profile Update Error:', err);
             toast.error(err.message);
         } finally {
             setIsUpdatingProfile(false);
@@ -1779,26 +1891,49 @@ const Dashboard = () => {
 
     const handleRetakeSubmit = async () => {
         if (!retakeModal.submission) return;
+        const sub = retakeModal.submission;
 
-        const isSynthetic = retakeModal.submission.id === 'plan-from-profile';
+        // 1. Determine Category
+        const drug = sub.selected_drug || sub.dosage_preference || '';
+        let catSlug = 'weight_loss';
+        const dLow = drug.toLowerCase();
+        if (dLow.includes('hair') || dLow.includes('finasteride') || dLow.includes('minoxidil')) catSlug = 'hair_restoration';
+        else if (dLow.includes('sex') || dLow.includes('erectile') || dLow.includes('sildenafil') || dLow.includes('tadalafil') || dLow.includes('oxytocin')) catSlug = 'sexual_health';
+        else if (dLow.includes('longevity') || dLow.includes('nad') || dLow.includes('cjc') || dLow.includes('ipamorelin')) catSlug = 'longevity';
+        else if (dLow.includes('weight') || dLow.includes('semaglutide') || dLow.includes('tirzepatide')) catSlug = 'weight_loss';
 
-        if (!isSynthetic) {
-            try {
-                const { error } = await supabase
+        try {
+            // 2. Delete ALL corresponding assessments for that category from form_submissions
+            const submissionsToDelete = submissions.filter(s => {
+                const sDrug = s.selected_drug || s.dosage_preference || '';
+                const sdLow = sDrug.toLowerCase();
+                let sCat = 'weight_loss';
+                if (sdLow.includes('hair') || sdLow.includes('finasteride') || sdLow.includes('minoxidil')) sCat = 'hair_restoration';
+                else if (sdLow.includes('sex') || sdLow.includes('erectile') || sdLow.includes('sildenafil') || sdLow.includes('tadalafil') || sdLow.includes('oxytocin')) sCat = 'sexual_health';
+                else if (sdLow.includes('longevity') || sdLow.includes('nad') || sdLow.includes('cjc') || sdLow.includes('ipamorelin')) sCat = 'longevity';
+                else if (sdLow.includes('weight') || sdLow.includes('semaglutide') || sdLow.includes('tirzepatide')) sCat = 'weight_loss';
+
+                return sCat === catSlug;
+            });
+
+            if (submissionsToDelete.length > 0) {
+                const idsToDelete = submissionsToDelete.map(s => s.id);
+                const { error: delError } = await supabase
                     .from('form_submissions')
                     .delete()
-                    .eq('id', retakeModal.submission.id);
-
-                if (error) throw error;
-            } catch (err) {
-                console.error('Error deleting submission:', err);
-                alert('Failed to delete submission. Please try again.');
-                return;
+                    .in('id', idsToDelete);
+                if (delError) throw delError;
             }
+
+            toast.success('Previous assessments cleared');
+        } catch (err) {
+            console.error('Error during retake cleanup:', err);
+            toast.error('Failed to clear previous records');
         }
 
         setRetakeModal({ isOpen: false, submission: null });
-        navigate('/qualify');
+        fetchSubmissions();
+        navigate('/assessment/' + catSlug.replace(/_/g, '-'));
     };
 
     console.log('[Dashboard] Render:', { currentTab, userId: user?.id, loading });
@@ -1893,20 +2028,29 @@ const Dashboard = () => {
             }
 
             if (actionModal.type === 'activate') {
-                const shippingAddress = profile ?
-                    `${profile.shipping_address || ''}, ${profile.shipping_city || ''}, ${profile.shipping_state || ''} ${profile.shipping_zip || ''}`.trim()
-                    : '';
+                let subscriptionId = originalSubmission.stripe_subscription_id || profile?.stripe_subscription_id;
 
-                const { data, error } = await supabase.functions.invoke('charge-customer-responder', {
+                // Handle cases where stripe_subscription_id might be a JSON map in the profile
+                if (subscriptionId && typeof subscriptionId === 'string' && subscriptionId.startsWith('{')) {
+                    try {
+                        const subMap = JSON.parse(subscriptionId);
+                        subscriptionId = subMap[catSlug] || subscriptionId;
+                    } catch (e) {
+                        console.error('Error parsing subscription map:', e);
+                    }
+                } else if (subscriptionId && typeof subscriptionId === 'object') {
+                    subscriptionId = subscriptionId[catSlug] || subscriptionId;
+                }
+
+                if (!subscriptionId || (typeof subscriptionId === 'string' && subscriptionId.startsWith('{'))) {
+                    throw new Error('No subscription record found to reactivate.');
+                }
+
+                const { data, error } = await supabase.functions.invoke('activate-subscription', {
                     method: 'POST',
                     body: {
-                        userId: user.id,
-                        product_name: `${originalSubmission.selected_drug?.replace(/-/g, ' ')} - $180`,
-                        product_price: 18000,
-                        product_category: getMedicationCategory(originalSubmission.selected_drug),
-                        request_type: "activate subscription",
-                        shipping_address: shippingAddress,
-                        form_submission_id: (originalSubmission.id && !originalSubmission.id.toString().startsWith('plan-from-profile')) ? originalSubmission.id : null
+                        user_id: user.id,
+                        stripe_subscription_id: subscriptionId
                     }
                 });
 
@@ -1948,34 +2092,78 @@ const Dashboard = () => {
 
             const currentDosage = originalSubmission.dosage_preference || 'Standard';
 
-            // Clone the submission data for dosage/medication changes
+            console.log('[Dashboard] handleActionSubmit START:', {
+                type: actionModal.type,
+                value,
+                originalId: originalSubmission.id,
+                userId: user?.id
+            });
+
+            if (!user?.id) throw new Error('User authentication session not found. Please log in again.');
+
+            let formattedDrug = actionModal.type === 'medication' ? (value.toLowerCase().replace(/\s+/g, '-')) : (originalSubmission.selected_drug || originalSubmission.dosage_preference);
+
+            // Helpful slug correction for common drugs
+            if (actionModal.type === 'medication') {
+                if (formattedDrug === 'semaglutide' || formattedDrug === 'tirzepatide' || formattedDrug === 'retatrutide') {
+                    const originalWasDrops = (originalSubmission.selected_drug || '').toLowerCase().includes('drops');
+                    formattedDrug += originalWasDrops ? '-drops' : '-injection';
+                }
+            }
+
             const newSubmissionPayload = {
                 ...originalSubmission,
-                id: undefined,
-                created_at: undefined,
+                user_id: user.id,
                 submitted_at: new Date().toISOString(),
                 approval_status: 'pending',
-
                 dosage_preference: actionModal.type === 'dosage' ? value : currentDosage,
-                selected_drug: actionModal.type === 'medication' ? (value.toLowerCase().replace(/\s+/g, '-')) : originalSubmission.selected_drug,
+                selected_drug: formattedDrug,
                 submission_type: actionModal.type === 'dosage' ? 'dosage_change' : 'medication_change',
                 additional_health_info: `[${actionModal.type === 'dosage' ? 'DOSAGE' : 'MEDICATION'} CHANGE REQUEST]
             ${actionModal.type === 'dosage' ? 'New Dosage' : 'New Medication'}: ${value}
             Reason: ${reason}
-            Previous ${actionModal.type === 'dosage' ? 'Dosage' : 'Medication'}: ${actionModal.type === 'dosage' ? currentDosage : originalSubmission.selected_drug}
-            Original Submission ID: ${originalSubmission.id}`
+            Previous ${actionModal.type === 'dosage' ? 'Dosage' : 'Medication'}: ${actionModal.type === 'dosage' ? currentDosage : (originalSubmission.selected_drug || originalSubmission.dosage_preference)}
+            Original Ref ID: ${originalSubmission.id || 'N/A'}`
             };
 
+            // Clean up non-database and internal fields
             delete newSubmissionPayload.id;
             delete newSubmissionPayload.created_at;
             delete newSubmissionPayload.previous_dosage;
-            delete newSubmissionPayload.submission_type;
+            delete newSubmissionPayload.is_from_profile;
+            delete newSubmissionPayload.plan_details;
+            delete newSubmissionPayload.is_subscription_active;
 
-            const { error: insertError } = await supabase
+            console.log('[Dashboard] Final Payload for Insert:', newSubmissionPayload);
+
+            const { data: insertResult, error: insertError } = await supabase
                 .from('form_submissions')
-                .insert([newSubmissionPayload]);
+                .insert([newSubmissionPayload])
+                .select();
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('[Dashboard] Insert Error:', insertError);
+                throw insertError;
+            }
+
+            console.log('[Dashboard] Request submitted success:', insertResult);
+
+            // Send payment confirmation email for dosage changes
+            if (actionModal.type === 'dosage') {
+                const patientEmail = profile?.email || user?.email;
+                const patientName = profile?.first_name || 'Valued Patient';
+                if (patientEmail) {
+                    await supabase.functions.invoke('send-email---v2', {
+                        method: 'POST',
+                        body: {
+                            type: 'dosage_payment_received',
+                            email: patientEmail,
+                            first_name: patientName,
+                            amount: '5.00'
+                        }
+                    }).catch(err => console.warn('Dosage payment email failed:', err));
+                }
+            }
 
             alert('Your request has been submitted securely and is under clinical review.');
             setActionModal({ isOpen: false, type: null, medication: null });
@@ -2040,9 +2228,23 @@ const Dashboard = () => {
                     setProfile(data);
                 }
 
-                // 2. CHECK FOR MISSING DOB
-                if (profileData && !profileData.date_of_birth) {
-                    setShowMissingDOBModal(true);
+                // 2. CHECK FOR MISSING FIELDS
+                const missing = [];
+                if (!profileData?.first_name) missing.push('first_name');
+                if (!profileData?.last_name) missing.push('last_name');
+                if (!profileData?.phone_number) missing.push('phone_number');
+                if (!profileData?.date_of_birth) missing.push('date_of_birth');
+
+                if (missing.length > 0) {
+                    // Pre-fill state with whatever we have from Auth or Profile
+                    setProfileUpdates({
+                        first_name: profileData?.first_name || meta.first_name || '',
+                        last_name: profileData?.last_name || meta.last_name || '',
+                        phone_number: profileData?.phone_number || user.phone || meta.phone_number || '',
+                        date_of_birth: { month: '', day: '', year: '' }
+                    });
+                    setMissingFields(missing);
+                    setShowCompleteProfileModal(true);
                 }
 
                 // 3. CHECK FOR DUPLICATE PHONE
@@ -2269,7 +2471,7 @@ const Dashboard = () => {
                         onClick={() => navigate('/')}
                         className="text-2xl font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-[100px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[150px] w-auto inline-block brightness-0 invert" />
                     </button>
                 </div>
 
@@ -2336,7 +2538,7 @@ const Dashboard = () => {
                         onClick={() => navigate('/')}
                         className="text-xl font-black uppercase tracking-tighter flex items-center h-full"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-10 md:h-12 w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[100px] w-auto inline-block brightness-0 invert" />
                     </button>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
@@ -2357,7 +2559,7 @@ const Dashboard = () => {
                                 onClick={() => navigate('/')}
                                 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center"
                             >
-                                <img src={logo} alt="uGlowMD" className="h-12 w-auto inline-block brightness-0 invert" />
+                                <img src={logo} alt="uGlowMD" className="h-[100px] w-auto inline-block brightness-0 invert" />
                             </button>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
@@ -2689,7 +2891,7 @@ const Dashboard = () => {
                                                 id: 'skin-care',
                                                 title: "Skin Care",
                                                 image: skinCareImg,
-                                                path: "/qualify",
+                                                path: "/assessment/skin-care",
                                                 accent: '#34D399'
                                             }
                                         ].map((product, i) => {
@@ -2809,14 +3011,14 @@ const Dashboard = () => {
                                             <h4 className="text-xl font-black uppercase tracking-tighter  mb-3">No Records Yet</h4>
                                             {submissions.length === 0 ? (
                                                 <button
-                                                    onClick={() => navigate('/qualify')}
+                                                    onClick={() => navigate('/assessment/weight-loss')}
                                                     className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_30px_rgba(92,225,230,0.1)]"
                                                 >
                                                     Start Assessment →
                                                 </button>
                                             ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                 <button
-                                                    onClick={() => navigate('/qualify')}
+                                                    onClick={() => navigate('/assessment/weight-loss')}
                                                     className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg"
                                                 >
                                                     Retake Assessment
@@ -2826,7 +3028,13 @@ const Dashboard = () => {
                                     ) : (
                                         <div className="space-y-4">
                                             {submissions.slice(0, 3).map((submission) => (
-                                                <SubmissionCard key={submission.id} submission={submission} orders={orders} setSelectedAssessment={setSelectedAssessment} navigate={navigate} />
+                                                <SubmissionCard
+                                                    key={submission.id}
+                                                    submission={submission}
+                                                    orders={orders}
+                                                    setSelectedAssessment={setSelectedAssessment}
+                                                    navigate={navigate}
+                                                />
                                             ))}
                                         </div>
                                     )}
@@ -2858,7 +3066,7 @@ const Dashboard = () => {
                                         </p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
+                                        <button onClick={() => navigate('/assessment/weight-loss')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_40px_rgba(92,225,230,0.2)]">
                                             Request New Consultation
                                         </button>
                                     ) : null}
@@ -2888,9 +3096,10 @@ const Dashboard = () => {
                                                         return {
                                                             ...(realSub || {}),
                                                             id: realSub?.id || `plan-${category}`,
-                                                            selected_drug: planName,
-                                                            dosage_preference: planName,
-                                                            approval_status: 'approved',
+                                                            selected_drug: (realSub?.approval_status === 'pending' && realSub?.submission_type === 'medication_change') ? realSub.selected_drug : planName,
+                                                            dosage_preference: (realSub?.approval_status === 'pending' && realSub?.submission_type === 'dosage_change') ? realSub.dosage_preference : planName,
+                                                            approval_status: realSub?.approval_status || 'approved',
+                                                            submission_type: realSub?.submission_type,
                                                             is_from_profile: true,
                                                             plan_details: typeof planData === 'object' ? planData : null
                                                         };
@@ -2901,9 +3110,10 @@ const Dashboard = () => {
                                                     activeDisplayList = [{
                                                         ...(realSub || {}),
                                                         id: realSub?.id || 'plan-legacy',
-                                                        selected_drug: profile.current_plan,
-                                                        dosage_preference: profile.current_plan,
-                                                        approval_status: 'approved',
+                                                        selected_drug: (realSub?.approval_status === 'pending' && realSub?.submission_type === 'medication_change') ? realSub.selected_drug : profile.current_plan,
+                                                        dosage_preference: (realSub?.approval_status === 'pending' && realSub?.submission_type === 'dosage_change') ? realSub.dosage_preference : profile.current_plan,
+                                                        approval_status: realSub?.approval_status || 'approved',
+                                                        submission_type: realSub?.submission_type,
                                                         is_from_profile: true
                                                     }];
                                                 }
@@ -2933,14 +3143,14 @@ const Dashboard = () => {
                                                 </p>
                                                 {submissions.length === 0 ? (
                                                     <button
-                                                        onClick={() => navigate('/qualify')}
+                                                        onClick={() => navigate('/assessment/weight-loss')}
                                                         className="px-10 py-4 bg-[#FFDE59] text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all"
                                                     >
                                                         Start Assessment
                                                     </button>
                                                 ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
                                                     <button
-                                                        onClick={() => navigate('/qualify')}
+                                                        onClick={() => navigate('/assessment/weight-loss')}
                                                         className="px-10 py-4 bg-white text-black rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg"
                                                     >
                                                         Retake Assessment
@@ -2986,7 +3196,8 @@ const Dashboard = () => {
                                                         }
 
                                                         // Check if subscription is active for this category
-                                                        isSubscriptionActive = !!statusMap[catSlug];
+                                                        // Default to true if category is missing from map
+                                                        isSubscriptionActive = statusMap[catSlug] !== false;
                                                     } catch (e) { console.error("Error determining subscription status", e); }
                                                 }
 
@@ -3015,11 +3226,11 @@ const Dashboard = () => {
                                         <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Complete clinical log</p>
                                     </div>
                                     {submissions.length === 0 ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
+                                        <button onClick={() => navigate('/assessment/weight-loss')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">
                                             New Assessment +
                                         </button>
                                     ) : (submissions[0]?.approval_status !== 'pending' && submissions[0]?.approval_status !== 'under_review') ? (
-                                        <button onClick={() => navigate('/qualify')} className="px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg">
+                                        <button onClick={() => navigate('/assessment/weight-loss')} className="px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-lg">
                                             Retake Assessment
                                         </button>
                                     ) : null}
@@ -3237,69 +3448,102 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Missing DOB Modal */}
-            {showMissingDOBModal && (
+            {/* Complete Profile Modal */}
+            {showCompleteProfileModal && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-6">
                     <div className="absolute inset-0 bg-[#111111]/95 backdrop-blur-xl"></div>
                     <div className="relative w-full max-w-md bg-[#111111] rounded-[40px] shadow-2xl p-10 text-center" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
                         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8" style={{ backgroundColor: '#FFDE5915', border: '2px solid #FFDE5940' }}>
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                         </div>
                         <div className="inline-block py-1.5 px-4 bg-black rounded-full text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6">
                             Profile Completion
                         </div>
                         <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">
-                            Verify Your{' '}
-                            <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '2px 8px', display: 'inline-block' }}>Birthdate</span>
+                            Complete Your{' '}
+                            <span style={{ backgroundColor: '#FFDE59', color: '#000', padding: '2px 8px', display: 'inline-block' }}>Profile</span>
                         </h3>
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 leading-relaxed opacity-40 text-white">
-                            Clinical safety protocols require a verified date of birth. Please confirm yours below.
+                            Clinical safety protocols require a verified clinical identity. Please provide your missing details.
                         </p>
-                        <form onSubmit={handleUpdateMissingDob} className="space-y-6">
-                            <div className="grid grid-cols-3 gap-3">
+                        <form onSubmit={handleUpdateProfile} className="space-y-4">
+                            {missingFields.includes('first_name') && (
                                 <input
                                     type="text"
-                                    maxLength="2"
-                                    placeholder="MM"
-                                    value={newDob.month}
-                                    onChange={(e) => setNewDob({ ...newDob, month: e.target.value.replace(/\D/g, '') })}
-                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="First Name"
+                                    value={profileUpdates.first_name}
+                                    onChange={(e) => setProfileUpdates({ ...profileUpdates, first_name: e.target.value })}
+                                    className="w-full rounded-2xl py-4 px-6 bg-white/5 border border-white/10 text-white font-bold"
                                     required
                                 />
+                            )}
+                            {missingFields.includes('last_name') && (
                                 <input
                                     type="text"
-                                    maxLength="2"
-                                    placeholder="DD"
-                                    value={newDob.day}
-                                    onChange={(e) => setNewDob({ ...newDob, day: e.target.value.replace(/\D/g, '') })}
-                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="Last Name"
+                                    value={profileUpdates.last_name}
+                                    onChange={(e) => setProfileUpdates({ ...profileUpdates, last_name: e.target.value })}
+                                    className="w-full rounded-2xl py-4 px-6 bg-white/5 border border-white/10 text-white font-bold"
                                     required
                                 />
+                            )}
+                            {missingFields.includes('phone_number') && (
                                 <input
-                                    type="text"
-                                    maxLength="4"
-                                    placeholder="YYYY"
-                                    value={newDob.year}
-                                    onChange={(e) => setNewDob({ ...newDob, year: e.target.value.replace(/\D/g, '') })}
-                                    className="w-full rounded-2xl py-5 text-center text-xl font-black text-white"
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    type="tel"
+                                    placeholder="Phone Number (e.g. 555-000-0000)"
+                                    value={profileUpdates.phone_number}
+                                    onChange={(e) => setProfileUpdates({ ...profileUpdates, phone_number: e.target.value })}
+                                    className="w-full rounded-2xl py-4 px-6 bg-white/5 border border-white/10 text-white font-bold"
                                     required
                                 />
-                            </div>
+                            )}
+                            {missingFields.includes('date_of_birth') && (
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-left text-white/30 ml-2">Date of Birth</p>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <input
+                                            type="text"
+                                            maxLength="2"
+                                            placeholder="MM"
+                                            value={profileUpdates.date_of_birth.month}
+                                            onChange={(e) => setProfileUpdates({ ...profileUpdates, date_of_birth: { ...profileUpdates.date_of_birth, month: e.target.value.replace(/\D/g, '') } })}
+                                            className="w-full rounded-2xl py-4 text-center text-xl font-black text-white"
+                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                            required
+                                        />
+                                        <input
+                                            type="text"
+                                            maxLength="2"
+                                            placeholder="DD"
+                                            value={profileUpdates.date_of_birth.day}
+                                            onChange={(e) => setProfileUpdates({ ...profileUpdates, date_of_birth: { ...profileUpdates.date_of_birth, day: e.target.value.replace(/\D/g, '') } })}
+                                            className="w-full rounded-2xl py-4 text-center text-xl font-black text-white"
+                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                            required
+                                        />
+                                        <input
+                                            type="text"
+                                            maxLength="4"
+                                            placeholder="YYYY"
+                                            value={profileUpdates.date_of_birth.year}
+                                            onChange={(e) => setProfileUpdates({ ...profileUpdates, date_of_birth: { ...profileUpdates.date_of_birth, year: e.target.value.replace(/\D/g, '') } })}
+                                            className="w-full rounded-2xl py-4 text-center text-xl font-black text-white"
+                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
                                 disabled={isUpdatingProfile}
-                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#FFDE59] text-black hover:bg-white"
+                                className="w-full py-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-50 mt-4 bg-[#FFDE59] text-black hover:bg-white shadow-[0_0_30px_rgba(255,222,89,0.2)]"
                             >
-                                {isUpdatingProfile ? 'Saving...' : 'Confirm Birthdate'}
+                                {isUpdatingProfile ? 'Saving...' : 'Complete Registration →'}
                             </button>
                         </form>
                     </div>
@@ -3675,7 +3919,7 @@ const Dashboard = () => {
                             </div>
 
                             <div className="text-center mb-8">
-                                <h3 className="text-2xl font-black uppercase tracking-tighter  text-white mb-3">Warning: Action Cannot Be Undone</h3>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-3">Retake Assessment?</h3>
                                 <p className="text-sm text-white/60 font-medium leading-relaxed">
                                     Are you sure you want to retake your assessment? This will <span className="text-red-400 font-bold">permanently delete</span> your previous submission and approval status for this protocol.
                                 </p>
@@ -3699,6 +3943,8 @@ const Dashboard = () => {
                     </div>
                 )
             }
+
+
 
             <MedicationActionModal
                 isOpen={actionModal.isOpen}
@@ -3795,7 +4041,7 @@ const Dashboard = () => {
                     <div className="relative w-full max-w-4xl bg-[#111111] border border-white/10 rounded-[40px] shadow-2xl p-8 md:p-12 overflow-hidden max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-10">
                             <div className="text-left">
-                                <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">Skin Care <span className="text-white/40">Collection</span></h3>
+                                <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">skincare <span className="text-white/40">Collection</span></h3>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Prescription-grade formulas for clinical results</p>
                             </div>
                             <button

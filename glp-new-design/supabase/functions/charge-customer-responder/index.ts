@@ -91,6 +91,12 @@ Deno.serve(async (req) => {
     } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione') || catSearch.includes('longevity')) {
         display_category = 'Longevity';
         category_slug = 'longevity';
+    } else if (drug.includes('skin') || drug.includes('face-spot') || drug.includes('acne-cleanser') || drug.includes('anti-aging-cream') || catSearch.includes('skin')) {
+        display_category = 'Skin Care';
+        category_slug = 'skin_care';
+    } else if (drug.includes('testosterone') || catSearch.includes('testosterone') || catSearch.includes('hormone')) {
+        display_category = 'Hormone Therapy';
+        category_slug = 'testosterone';
     } else if (drug.includes('weight-loss') || drug.includes('semaglutide') || drug.includes('tirzepatide') || catSearch.includes('weight')) {
         display_category = 'Weight Loss';
         category_slug = 'weight_loss';
@@ -264,33 +270,98 @@ Deno.serve(async (req) => {
             );
 
             const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Welcome Back to GLP-GLOW!</title></head>
-<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
-      <h1 style="margin:0;font-size:28px">Welcome Back!</h1>
-    </div>
-    <div style="padding:30px;line-height:1.7;color:#333">
-      <p>Dear ${first_name} ${last_name},</p>
-      <p>We're thrilled to have you back! Your GLP-GLOW subscription has been <strong>reactivated</strong> on our <strong>${plan_label}</strong> plan.</p>
-      <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745;font-size:16px">
-        <strong>You will NOT be charged today.</strong><br>
-        Your next billing date is <strong>${nextBilling}</strong> — exactly when your original paid period ends.
-      </div>
-      ${providerHtml}
-      <p style="text-align:center;margin:40px 0">
-        <a href="https://quiz.americahealthsolutions.com/dashboard" 
-           style="background:#28a745;color:#fff;padding:16px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:17px">
-          Go to My Dashboard
-        </a>
-      </p>
-      <p>Thank you for choosing GLP-GLOW again!<br><strong>The GLP-GLOW Team</strong></p>
-    </div>
-    <div style="background:#f4f4f4;padding:20px;text-align:center;font-size:12px;color:#666">
-      <p>© ${new Date().getFullYear()} GLP-GLOW • americahealthsolutions.com</p>
-    </div>
-  </div>
-</body></html>`;
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome Back to uGlowMD!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Welcome Back!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Your <strong>${product_name || current_plan}</strong> protocol from <strong>uGlowMD</strong> has been reactivated. Since your original coverage period hasn’t ended yet, your next charge isn’t until <strong>${nextBilling}</strong>.
+</p>
+
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+<h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">Reactivation Summary</h3>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Next Charge:</strong> ${nextBilling}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Amount:</strong> $${(product_price / 100).toFixed(2)}</p>
+</div>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:16px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:17px;display:inline-block;">
+Go to My Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Best regards,<br>
+<strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${new Date().getFullYear()} uGlowMD. All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+<p style="margin-top:25px;font-size:12px;color:#aaaaaa;text-align:center;">
+Secure HIPAA Compliant Communication
+</p>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
 
             if (SENDGRID_API_KEY) {
                 await fetch("https://api.sendgrid.com/v3/mail/send", {
@@ -301,9 +372,9 @@ Deno.serve(async (req) => {
                     },
                     body: JSON.stringify({
                         personalizations: [{ to: [{ email }] }],
-                        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+                        from: { email: MAILER_FROM, name: "uGlowMD" },
                         subject:
-                            "Welcome Back! Your Subscription is Reactivated (No Charge Today)",
+                            "Welcome Back! Your uGlowMD Subscription is Reactivated (No Charge Today)",
                         content: [{ type: "text/html", value: html }],
                     }),
                 });
@@ -449,9 +520,26 @@ Deno.serve(async (req) => {
                 price: ((real_price ?? product_price) / 100).toFixed(2)
             };
 
+            let subMap: any = {};
+            try {
+                const currentSubId = latestProfile?.stripe_subscription_id;
+                if (typeof currentSubId === 'string' && currentSubId.startsWith('{')) {
+                    subMap = JSON.parse(currentSubId);
+                } else if (typeof currentSubId === 'object' && currentSubId !== null) {
+                    subMap = currentSubId;
+                } else if (currentSubId) {
+                    // Handle legacy string sub ID
+                    subMap = { 'weight_loss': currentSubId };
+                }
+            } catch {
+                subMap = {};
+            }
+            subMap[category_slug] = newSub.id;
+
             await supabase.from("profiles").update({
                 current_plan: JSON.stringify(currentPlans),
                 current_sub_end_date: new Date(trialEnd * 1000).toISOString(),
+                stripe_subscription_id: JSON.stringify(subMap)
             }).eq("id", userId);
 
             // Approve form
@@ -476,34 +564,104 @@ Deno.serve(async (req) => {
             );
 
             const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Dosage Change Approved – GLP-GLOW</title></head>
-<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
-      <h1 style="margin:0;font-size:28px">Dosage Change Approved!</h1>
-    </div>
-    <div style="padding:30px;line-height:1.7;color:#333">
-      <p>Dear ${first_name} ${last_name},</p>
-      <p>Your request to update your medication dosage has been <strong>approved</strong> by our medical team.</p>
-      <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745;font-size:16px">
-        <strong>No charge today.</strong><br>
-        Your new <strong>${plan_label}</strong> plan (${product_name}) starts automatically on <strong>${nextBilling}</strong> when your current paid period ends.
-      </div>
-      ${providerHtml}
-      <p>Your next shipment will include the updated dosage.</p>
-      <p style="text-align:center;margin:40px 0">
-        <a href="https://quiz.americahealthsolutions.com/dashboard" 
-           style="background:#28a745;color:#fff;padding:16px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:17px">
-          Go to My Dashboard
-        </a>
-      </p>
-      <p>Thank you,<br><strong>The GLP-GLOW Medical Team</strong></p>
-    </div>
-    <div style="background:#f4f4f4;padding:20px;text-align:center;font-size:12px;color:#666">
-      <p>© ${new Date().getFullYear()} GLP-GLOW • americahealthsolutions.com</p>
-    </div>
-  </div>
-</body></html>`;
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dosage Change Approved!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Dosage Request Approved
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Our medical team has reviewed and <strong>approved</strong> your dosage adjustment. We have updated your protocol and your next shipment will reflect these changes.
+</p>
+
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+<h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">New Plan Details</h3>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Treatment:</strong> ${product_name}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Schedule:</strong> ${plan_label}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Activation:</strong> ${nextBilling}</p>
+</div>
+
+${providerHtml}
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Your next shipment will include the updated dosage. No additional charge is required today.
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:16px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:17px;display:inline-block;">
+Go to My Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Thank you,<br><strong>The uGlowMD Medical Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${new Date().getFullYear()} uGlowMD. All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+<p style="margin-top:25px;font-size:12px;color:#aaaaaa;text-align:center;">
+Secure HIPAA Compliant Communication
+</p>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
 
             console.log("verifying email", email)
 
@@ -516,7 +674,7 @@ Deno.serve(async (req) => {
                     },
                     body: JSON.stringify({
                         personalizations: [{ to: [{ email }] }],
-                        from: { email: MAILER_FROM, name: "GLP-GLOW" },
+                        from: { email: MAILER_FROM, name: "uGlowMD" },
                         subject: `Dosage Change Approved – Next Charge: ${nextBilling}`,
                         content: [{ type: "text/html", value: html }],
                     }),
@@ -761,31 +919,100 @@ Deno.serve(async (req) => {
             });
 
             const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Your GLP-GLOW ${plan_label} Plan is Active!</title></head>
-<body style="font-family:Arial;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
-      <h1 style="margin:0;font-size:28px">Success! Welcome to GLP-GLOW.</h1>
-    </div>
-    <div style="padding:30px;line-height:1.7;color:#333">
-      <p>Dear ${first_name} ${last_name},</p>
-      <p>Your <strong>${plan_label}</strong> subscription for <strong>${product_name}</strong> is now <strong>active</strong>.</p>
-      <div style="background:#e6f7e8;padding:20px;border-radius:8px;margin:25px 0;border-left:5px solid #28a745">
-        Your first month's medication will ship in 3–5 business days. Your subsequent supplies are covered under your ${plan_duration_months}-month plan.
-      </div>
-      ${providerHtml}
-      <div style="background:#f8f9fa;padding:20px;border-radius:8px">
-        <p><strong>Plan Duration:</strong> ${plan_label}</p>
-        <p><strong>Total Charged Today:</strong> $${amount}</p>
-        <p><strong>Next Billing Date:</strong> ${nextDateLabel} (Next $${amount} renewal)</p>
-      </div>
-      <p style="text-align:center;margin:30px 0">
-        <a href="https://quiz.americahealthsolutions.com/dashboard" style="background:#28a745;color:#fff;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold">Go to Dashboard</a>
-      </p>
-      <p><strong>The GLP-GLOW Team</strong></p>
-    </div>
-  </div>
-</body></html>`;
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your uGlowMD ${plan_label} Plan is Active!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Success! Welcome to uGlowMD.
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Your <strong>${plan_label}</strong> protocol for <strong>${product_name}</strong> is now <strong>active</strong>. Your first supply will ship in 3–5 business days. Subsequent medication is covered under your ${plan_duration_months}-month plan.
+</p>
+
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+<h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">Order Summary</h3>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Total Charged:</strong> $${amount}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Next Delivery:</strong> ${nextDateLabel}</p>
+</div>
+
+${providerHtml}
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 40px;text-decoration:none;border-radius:12px;font-weight:bold;font-size:18px;display:inline-block;">
+Go to Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Best regards,<br>
+<strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${new Date().getFullYear()} uGlowMD. All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+<p style="margin-top:25px;font-size:12px;color:#aaaaaa;text-align:center;">
+Secure HIPAA Compliant Communication
+</p>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
 
             if (SENDGRID_API_KEY) {
                 await fetch("https://api.sendgrid.com/v3/mail/send", {
@@ -796,8 +1023,8 @@ Deno.serve(async (req) => {
                     },
                     body: JSON.stringify({
                         personalizations: [{ to: [{ email }] }],
-                        from: { email: MAILER_FROM, name: "GLP-GLOW" },
-                        subject: `Your ${plan_label} GLP-GLOW Subscription is Active!`,
+                        from: { email: MAILER_FROM, name: "uGlowMD" },
+                        subject: `Your ${plan_label} uGlowMD Subscription is Active!`,
                         content: [{ type: "text/html", value: html }],
                     }),
                 });

@@ -1,7 +1,7 @@
-# Mobile Responsiveness Implementation - GLP-GLOW
+# Mobile Responsiveness Implementation - uGlowMD
 
 ## Overview
-This document outlines the mobile responsive improvements made to the GLP-GLOW application. All components have been updated to provide an optimal viewing and interaction experience across all devices, from mobile phones to tablets to desktop screens.
+This document outlines the mobile responsive improvements made to the uGlowMD application. All components have been updated to provide an optimal viewing and interaction experience across all devices, from mobile phones to tablets to desktop screens.
 
 ## Components Updated
 

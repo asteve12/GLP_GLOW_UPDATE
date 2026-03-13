@@ -187,8 +187,28 @@ const NewLandingPage = () => {
                                 </span>
                             </div>
                         </div>
+                        {/* Expert Care Section - Bird's Eye View Medical Team */}
+                        <div className="mt-20 mb-32 animate-in fade-in duration-1000">
+                            <div className="relative rounded-[40px] md:rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[4/5] md:aspect-[21/9]">
+                                <img
+                                    src={medicalTeamImg}
+                                    alt="uGlow MD Medical Team"
+                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-20 text-left">
+                                    <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                                        <h2 className="text-2xl md:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                            The best care <br />by the best in medicine
+                                        </h2>
+                                        <p className="text-white/80 text-sm md:text-xl font-light max-w-xl">
+                                            Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <div className="pt-20">
+                        <div className="pt-0">
                             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                                 <div
@@ -223,7 +243,7 @@ const NewLandingPage = () => {
                         {/* Button sits on top of the image, bottom-right corner */}
                         <div className="absolute bottom-6 right-6 md:bottom-12 md:right-12 z-10">
                             <Link
-                                to="/qualify?category=weight-loss"
+                                to="/assessment/weight-loss"
                                 className="bg-white text-black px-8 md:px-10 py-3 md:py-4 rounded-full text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all duration-300 shadow-2xl inline-block text-center whitespace-nowrap"
                             >
                                 Get started
@@ -254,7 +274,7 @@ const NewLandingPage = () => {
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>1. Account Registration</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Complete a quick online evaluation to determine if this prescription medication is right for you. Our team of licensed professionals will review your information and provide approval within 24-48 business hours.</p>
-                                    <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
+                                    <Link to="/assessment/weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
 
@@ -269,7 +289,7 @@ const NewLandingPage = () => {
                                 <div className="w-full md:w-1/2 md:pr-4 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>2. Get Prescribed</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Once approved, you'll receive personalized care and a prescription to support your weight loss and health goals. Your care plan is designed to help you achieve lasting results safely and effectively.</p>
-                                    <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
+                                    <Link to="/assessment/weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
 
@@ -284,35 +304,14 @@ const NewLandingPage = () => {
                                 <div className="w-full md:w-1/2 md:pl-12 text-center md:text-left">
                                     <h3 className="text-2xl font-bold mb-4 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>3. Rx Shipment Arrived</h3>
                                     <p className="text-gray-600 max-w-sm mx-auto md:mx-0 mb-6">Your medication will be shipped directly to your door for maximum convenience. With <img src={logo} alt="uGlowMD" className="h-[56px] w-auto inline-block align-baseline brightness-0" />, starting your treatment is as simple as opening your package and following our easy-to-use instructions.</p>
-                                    <Link to="/qualify?category=weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
+                                    <Link to="/assessment/weight-loss" className="bg-black text-white px-8 py-3 rounded-md text-sm font-bold hover:bg-gray-800 transition-colors inline-block">Get started</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Expert Care Section - Bird's Eye View Medical Team */}
-                <section className="py-24 animate-in fade-in duration-1000">
-                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
-                        <div className="relative rounded-[40px] md:rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[4/5] md:aspect-[21/9]">
-                            <img
-                                src={medicalTeamImg}
-                                alt="uGlow MD Medical Team"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-20">
-                                <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                    <h2 className="text-2xl md:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
-                                        The best care <br />by the best in medicine
-                                    </h2>
-                                    <p className="text-white/80 text-sm md:text-xl font-light max-w-xl">
-                                        Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+
 
                 {/* Content Sections 2 */}
                 <section className="py-24 bg-white">

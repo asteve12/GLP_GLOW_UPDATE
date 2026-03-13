@@ -6,7 +6,6 @@ import StatsSection from './components/StatsSection';
 import ProductShowcase from './components/ProductShowcase';
 
 import ProductDetails from './components/ProductDetails';
-import QualifyNow from './components/QualifyNow';
 import Assessment from './components/Assessment';
 import ProgressQuestionnaire from './components/ProgressQuestionnaire';
 import LoginPage from './components/LoginPage';
@@ -78,13 +77,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
 
           <Route path="/product/:productId" element={<ProductDetails />} />
-          <Route path="/qualify" element={<QualifyNow />} />
           <Route path="/assessment/:categoryId" element={<Assessment />} />
           <Route path="/progress/:category" element={<ProgressQuestionnaire />} />
           <Route path="/satisfaction-survey" element={<SatisfactionSurvey />} />
 
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin-sign-in" element={<AdminLogin />} />
+          <Route path="/company-login" element={<AdminLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/signup" element={<SignUpPage />} />

@@ -1490,7 +1490,7 @@ const ProductDetails = () => {
     };
 
     const category = getCategory(productId);
-    const qualifyLink = `/qualify?category=${category}&product=${productId}`;
+    const qualifyLink = `/assessment/${category}?product=${productId}`;
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -2007,7 +2007,7 @@ const ProductDetails = () => {
                             Our Signature Series represents a <span className="text-white font-extrabold">new era of clinical care</span>. <br /> Combining high-grade compounding with personalized protocols.
                         </p>
 
-                        <Link to="/qualify" className="bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
+                        <Link to={qualifyLink} className="bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
                             Get started
                         </Link>
                     </div>
@@ -2087,7 +2087,7 @@ const ProductDetails = () => {
                                     Prescription products require an online consultation with a healthcare provider.
                                 </p>
                                 <div className="pt-4">
-                                    <Link to="/qualify" className="bg-black text-white px-10 py-4 rounded-full font-black uppercase tracking-widest border border-white/20 hover:bg-white hover:text-black transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
+                                    <Link to={qualifyLink} className="bg-black text-white px-10 py-4 rounded-full font-black uppercase tracking-widest border border-white/20 hover:bg-white hover:text-black transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
                                         Get started
                                     </Link>
                                 </div>
@@ -2118,7 +2118,7 @@ const ProductDetails = () => {
             {/* CTA BANNER - Reordered */}
             <div className="py-24 md:py-32 bg-black text-white text-center px-6">
                 <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none">Ready for <br /><span className="text-white">Results?</span></h2>
-                <Link to="/qualify" className="bg-white text-[#1a1a1a] px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-2xl text-xl inline-block">
+                <Link to={qualifyLink} className="bg-white text-[#1a1a1a] px-12 py-5 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-2xl text-xl inline-block">
                     Get Started
                 </Link>
             </div>

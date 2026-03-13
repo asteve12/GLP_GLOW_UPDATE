@@ -313,7 +313,7 @@ const productsData = {
             { name: 'Glutathione (IM or Subcutaneous Injection)', type: 'IM or Subcutaneous Injection', price: '$149/mo', featured: false, slug: 'glutathione-injection', productImage: glutathionePrd }
         ],
         detailsTabs: {
-            'What is it?': 'NAD+ and Glutathione supplements to support cellular health and detoxification. Retatruide is the next-generation weight loss medication, successor to Tirzepatide.',
+            'What is it?': 'NAD+ and Glutathione supplements to support cellular health and detoxification. Retatrutide is the next-generation weight loss medication, successor to Tirzepatide.',
             'How to take': 'Subcutaneous injections or nasal spray for maximum absorption, typically 1-3 times per week.',
             'Side Effects': 'Injection site reactions, mild fatigue initially.'
         },
@@ -326,7 +326,7 @@ const productsData = {
         faqs: [
             { q: 'How often do I take it?', a: 'Protocols vary, typically 1-3 times per week based on your needs.' },
             { q: 'Is it safe?', a: 'Yes, these are naturally occurring compounds in the body.' },
-            { q: 'What is Retatruide?', a: 'The successor to Tirzepatide, launching late 2026. Join our waitlist for early access.' }
+            { q: 'What is Retatrutide?', a: 'The successor to Tirzepatide, launching late 2026. Join our waitlist for early access.' }
         ]
     }
 };
@@ -491,7 +491,7 @@ const ProductPage = () => {
                                 ))}
                             </div>
 
-                            <Link to={`/qualify?category=${categoryId}`} className="bg-bg-primary text-white w-full md:w-auto px-6 md:px-8 lg:px-10 py-3 md:py-4 text-sm md:text-base uppercase font-bold tracking-widest hover:bg-accent-black hover:text-white transition-all rounded-full shadow-lg inline-block text-center">
+                            <Link to={`/assessment/${categoryId}`} className="bg-bg-primary text-white w-full md:w-auto px-6 md:px-8 lg:px-10 py-3 md:py-4 text-sm md:text-base uppercase font-bold tracking-widest hover:bg-accent-black hover:text-white transition-all rounded-full shadow-lg inline-block text-center">
                                 Get Started
                             </Link>
                         </div>
@@ -620,7 +620,7 @@ const ProductPage = () => {
                                                     </div>
 
                                                     <div className="flex flex-col gap-4">
-                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg group-hover:shadow-accent-black/20 block">
+                                                        <Link to={`/assessment/${categoryId}`} className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg group-hover:shadow-accent-black/20 block">
                                                             Start Evaluation
                                                         </Link>
                                                         <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-black transition-all inline-block mx-auto">
@@ -665,7 +665,7 @@ const ProductPage = () => {
                                                     </div>
 
                                                     <div className="flex flex-col gap-4">
-                                                        <Link to="/qualify" className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg block">
+                                                        <Link to={`/assessment/${categoryId}`} className="bg-[#1A1A1A] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-accent-black hover:text-white transition-all transform active:scale-95 shadow-lg block">
                                                             Start Evaluation
                                                         </Link>
                                                         <Link to={`/product/${item.slug}`} className="text-[#1A1A1A] py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-transparent hover:border-accent-black transition-all inline-block mx-auto">
@@ -890,7 +890,7 @@ const ProductPage = () => {
                                             It's not magic—it's <span className="text-white font-bold">metabolic science</span>. GLP-1 is a naturally occurring hormone that regulates appetite, <span className="text-accent-green font-bold italic">re-engineering your biology</span> for effortless fat loss.
                                         </p>
                                         <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                                            <Link to="/qualify?category=weight-loss" className="group relative bg-accent-green text-black px-12 py-6 rounded-full font-black uppercase tracking-[0.2em] transform transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(191,255,0,0.3)] inline-block text-center">
+                                            <Link to="/assessment/weight-loss" className="group relative bg-accent-green text-black px-12 py-6 rounded-full font-black uppercase tracking-[0.2em] transform transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(191,255,0,0.3)] inline-block text-center">
                                                 <span className="relative z-10">Start My Assessment</span>
                                                 <div className="absolute inset-0 bg-white rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
                                             </Link>
@@ -1156,7 +1156,7 @@ const ProductPage = () => {
                                     {data.scienceSection?.title || "We will fix your broken metabolism."}
                                 </h2>
                                 <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: data.scienceSection?.description || "Traditional diets don't work because nearly <span class=\"font-semibold text-gray-900\">70% of weight is genetically determined</span>. With medication, you will work <span class=\"font-semibold text-gray-900\">with your body</span> rather than against it - to reach your goal weight and keep it that way." }} />
-                                <Link to={`/qualify?category=${categoryId}`} className="mt-8 bg-gray-900 text-white px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg transform hover:scale-105 inline-block">
+                                <Link to={`/assessment/${categoryId}`} className="mt-8 bg-gray-900 text-white px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg transform hover:scale-105 inline-block">
                                     {data.scienceSection?.cta || "Get Started"}
                                 </Link>
                             </div>
@@ -1308,7 +1308,7 @@ const ProductPage = () => {
 
                         {/* CTA Bottom */}
                         <div className="mt-20 md:mt-28 text-center">
-                            <Link to="/qualify" className="bg-[#1A1A1A] text-white px-16 py-7 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-[#1A1A1A] transition-all shadow-2xl transform hover:scale-105 active:scale-95 group inline-flex items-center gap-4">
+                            <Link to={`/assessment/${categoryId}`} className="bg-[#1A1A1A] text-white px-16 py-7 rounded-full font-black uppercase tracking-widest hover:bg-accent-green hover:text-[#1A1A1A] transition-all shadow-2xl transform hover:scale-105 active:scale-95 group inline-flex items-center gap-4">
                                 Start Your Evaluation
                                 <span className="group-hover:translate-x-1 transition-transform">→</span>
                             </Link>
@@ -1456,7 +1456,7 @@ const ProductPage = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    window.location.href = `/qualify?category=${cat.id}`;
+                                                    window.location.href = `/assessment/${cat.id}`;
                                                 }}
                                                 className="w-full py-3 bg-white/5 border border-white/10 text-white hover:bg-accent-green hover:border-accent-green hover:text-black rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0"
                                             >
