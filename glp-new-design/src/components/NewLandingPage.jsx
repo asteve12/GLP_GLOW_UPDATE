@@ -154,9 +154,15 @@ const NewLandingPage = () => {
                                                     loop
                                                     muted
                                                     playsInline
+                                                    webkit-playsinline="true"
+                                                    x5-playsinline="true"
+                                                    preload="auto"
+                                                    poster={item.img}
+                                                    onContextMenu={(e) => e.preventDefault()}
                                                     className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500"
                                                 >
                                                     <source src={item.video} type="video/mp4" />
+                                                    <img alt={item.title} src={item.img} className="w-full h-full object-cover brightness-[0.85]" />
                                                 </video>
                                             ) : (
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
