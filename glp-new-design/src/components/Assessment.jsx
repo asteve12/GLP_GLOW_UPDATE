@@ -16,28 +16,28 @@ if (!stripePublishableKey) {
 const stripePromise = loadStripe(stripePublishableKey || '');
 
 // Assets
-import weightLossImg from '../assets/weight-loss.png';
-import hairLossImg from '../assets/hair-loss.png';
-import mensHealthImg from '../assets/mens-health.png';
-import longevityImg from '../assets/longevity.png';
-import smilingImg from '../assets/happy_people.png';
-import alabamaMapImg from '../assets/us_map_alabama.png';
-import ongoingSupportImg from '../assets/ongoing_support.png';
-import smilingDoctorImg from '../assets/smiling_doctor.png';
+const weightLossImg = null; // Removed missing import: ../assets/weight-loss.png
+import hairLossImg from '../assets/hair-loss.webp';
+import mensHealthImg from '../assets/mens-health.webp';
+import longevityImg from '../assets/longevity.webp';
+const smilingImg = null; // Removed missing import: ../assets/happy_people.png
+const alabamaMapImg = null; // Removed missing import: ../assets/us_map_alabama.png
+const ongoingSupportImg = null; // Removed missing import: ../assets/ongoing_support.png
+import smilingDoctorImg from '../assets/smiling_doctor.webp';
 import happyPatientImg from '../assets/happy_patient.webp';
 
 import { categoryQuestions as baseCategoryQuestions, intakeQuestions } from '../data/questions';
-import logo from '../assets/logo.png';
-import weightlossQuoteImg from '../assets/weightloss-quote-img.png';
-import quoteTargetImg from '../assets/quote-target.png';
-import quoteFatCutImg from '../assets/quote-image-fat-cut-weight-loss.png';
-import sexualHealthFirstQuoteImg from '../assets/sexual_health_first_quote.png';
-import sexualHealthQuote2Img from '../assets/sexual_health_quote_2.png';
-import hairLossFirstQuoteImg from '../assets/hair-loss-first-quote.png';
-import hairLossSecondQuoteImg from '../assets/hair_loss_second_quote.png';
-import longevityFirstQuoteImg from '../assets/longetivity_first_quote_img.png';
-import testosteroneQuote1Img from '../assets/testosterone-image-v2.png';
-import testosteroneQuote2Img from '../assets/testosterone-quote_img_2.png';
+import logo from '../assets/logo.webp';
+import weightlossQuoteImg from '../assets/weightloss-quote-img.webp';
+import quoteTargetImg from '../assets/quote-target.webp';
+import quoteFatCutImg from '../assets/quote-image-fat-cut-weight-loss.webp';
+import sexualHealthFirstQuoteImg from '../assets/sexual_health_first_quote.webp';
+import sexualHealthQuote2Img from '../assets/sexual_health_quote_2.webp';
+import hairLossFirstQuoteImg from '../assets/hair-loss-first-quote.webp';
+import hairLossSecondQuoteImg from '../assets/hair_loss_second_quote.webp';
+import longevityFirstQuoteImg from '../assets/longetivity_first_quote_img.webp';
+import testosteroneQuote1Img from '../assets/testosterone-image-v2.webp';
+import testosteroneQuote2Img from '../assets/testosterone-quote_img_2.webp';
 
 const categoryQuestions = {
     ...baseCategoryQuestions,

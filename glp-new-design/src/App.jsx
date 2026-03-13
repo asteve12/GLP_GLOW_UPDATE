@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import logo from './assets/logo.png';
+import logo from './assets/logo.webp';
 import Hero from './components/Hero';
 import StatsSection from './components/StatsSection';
 import ProductShowcase from './components/ProductShowcase';

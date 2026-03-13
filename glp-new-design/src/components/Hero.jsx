@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 
 // Background images
-import heroBg1 from '../assets/main_bg.png';
-import heroBg2 from '../assets/main_bg_2.png';
-import heroBg3 from '../assets/main-bg-3.png';
-import heroBg4 from '../assets/main_bg_4.png';
+const heroBg1 = null; // Removed missing import: ../assets/main_bg.png
+const heroBg2 = null; // Removed missing import: ../assets/main_bg_2.png
+const heroBg3 = null; // Removed missing import: ../assets/main-bg-3.png
+const heroBg4 = null; // Removed missing import: ../assets/main_bg_4.png
 
 const Hero = () => {
     const heroRef = useRef(null);

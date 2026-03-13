@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
-import happyPeopleImg from '../assets/happy_people.png';
+const happyPeopleImg = null; // Removed missing import: ../assets/happy_people.png
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Loader from './Loader';
@@ -9,95 +9,95 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 // Import assets directly since we are in a new file
-import semaglutideInjection from '../assets/semaglutide-injection.png';
-import tirzepetideInjection from '../assets/tirzepetide_injection.png';
-import semaglutideDrops from '../assets/semaglutide_drops.png';
-import tirzepatideDrops from '../assets/tirzepatide_drops.png';
-import semaglutidePrdBg from '../assets/semaglutide_prd_bg.png';
-import tirzepatidePrdBg from '../assets/tirzepatide_prd_bg.png';
-import semaglutideDropBg from '../assets/semaglutide_drop_bg.png';
-import tirzepatideDropBg from '../assets/tirpetide_drop.png';
-import medicalConsult from '../assets/medical_consult.png';
-import medicationDelivery from '../assets/medication_delivery.png';
-import labAnalysis from '../assets/lab_analysis.png';
-import ongoingSupport from '../assets/ongoing_support.png';
-import finasterideBottleImg from '../assets/finastride_tablet_bottle.png';
-import sildenafilTadalafilTabletsPrdImg from '../assets/Sildenafil _Tadalafil_Tablets_prd.png';
-import growthTabsSildenafilImg from '../assets/growth-tab-sidnafil.png';
+import semaglutideInjection from '../assets/semaglutide-injection.webp';
+import tirzepetideInjection from '../assets/tirzepetide_injection.webp';
+const semaglutideDrops = null; // Removed missing import: ../assets/semaglutide_drops.png
+const tirzepatideDrops = null; // Removed missing import: ../assets/tirzepatide_drops.png
+const semaglutidePrdBg = null; // Removed missing import: ../assets/semaglutide_prd_bg.png
+const tirzepatidePrdBg = null; // Removed missing import: ../assets/tirzepatide_prd_bg.png
+const semaglutideDropBg = null; // Removed missing import: ../assets/semaglutide_drop_bg.png
+const tirzepatideDropBg = null; // Removed missing import: ../assets/tirpetide_drop.png
+import medicalConsult from '../assets/medical_consult.webp';
+import medicationDelivery from '../assets/medication_delivery.webp';
+import labAnalysis from '../assets/lab_analysis.webp';
+import ongoingSupport from '../assets/ongoing_support.webp';
+import finasterideBottleImg from '../assets/finastride_tablet_bottle.webp';
+import sildenafilTadalafilTabletsPrdImg from '../assets/Sildenafil _Tadalafil_Tablets_prd.webp';
+import growthTabsSildenafilImg from '../assets/growth-tab-sidnafil.webp';
 
-import finasterideHeroImg from '../assets/finasteride_tablet.png';
-import finasterideMinoxidilBg from '../assets/Finasteride_  Minoxidil_bg.png';
-import finasterideTripleBg from '../assets/Finasteride  Minoxidil  Tretinoi_bg.png';
-import threeInOneImg from '../assets/3_in_1img.png';
-import fiveInOneImg from '../assets/5_in-1_hairloss.png';
-import fiveInOneBg from '../assets/5_IN_1_HAIRLOSS_BG.png';
-import dualGrowthPrdImg from '../assets/Finasteride_  Minoxidil_prd.png';
-import hairGrowth2in1Img from '../assets/2-in-1 Hair Growth Tabs___vial.png';
+const finasterideHeroImg = null; // Removed missing import: ../assets/finasteride_tablet.png
+const finasterideMinoxidilBg = null; // Removed missing import: ../assets/Finasteride_  Minoxidil_bg.png
+const finasterideTripleBg = null; // Removed missing import: ../assets/Finasteride  Minoxidil  Tretinoi_bg.png
+const threeInOneImg = null; // Removed missing import: ../assets/3_in_1img.png
+const fiveInOneImg = null; // Removed missing import: ../assets/5_in-1_hairloss.png
+const fiveInOneBg = null; // Removed missing import: ../assets/5_IN_1_HAIRLOSS_BG.png
+const dualGrowthPrdImg = null; // Removed missing import: ../assets/Finasteride_  Minoxidil_prd.png
+import hairGrowth2in1Img from '../assets/2-in-1 Hair Growth Tabs___vial.webp';
 
-import hairLossImg from '../assets/hair-loss.png';
-import mensHealthImg from '../assets/mens-health.png';
-import sildenafilTadalafilBg from '../assets/Sildenafil_Tadalafil_bg.png';
-import sildenafilTadalafilTabletsBg from '../assets/Sildenafil_Tadalafil_bg.png';
-import sildenafilYohimbeBg from '../assets/Sildenafil_ Yohimbe_bg.png';
-import sildenafilYohimbePrdImg from '../assets/Sildenafil_ Yohimbe_prd.png';
-import oxytocinPrdImg from '../assets/Oxytocin (Fast Absorb Tab)_jk.png';
-import oxytocinTabletsPrd from '../assets/Oxytocin_Tablets_prd__3.png';
-import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.png';
-import oxytocinNasalBg from '../assets/oxytocin_nasal.png';
-import prdDetailBg from '../assets/prd_detial_bg_image.png';
-import longevityImg from '../assets/longevity.png';
-import nadInjectionImg from '../assets/NAD+ (Subcutaneous Injection)_prd.png';
-import nadInjectionPrd from '../assets/NAD+ (Subcutaneous Injection)_prd.png';
-import glutathioneBg from '../assets/Glutathione (IM or Subcutaneous Injection)_bg.png';
-import glutathionePrd from '../assets/Glutathione (IM or Subcutaneous Injection)_prd.png';
-import nadNasalSprayBg from '../assets/Nad+_spray_bg.png';
-import nadSprayPrd from '../assets/nad_spray_prd.png';
-import hormonalMasteryImg from '../assets/hormonal_mastery.png';
-import metabolicPrecisionImg from '../assets/metabolic_precision.png';
-import clinicalBreakthroughImg from '../assets/clinical_breakthrough.png';
-import dualActionImg from '../assets/dual_action.png';
-import glycemicControlImg from '../assets/glycemic_control.png';
-import maxPotencyImg from '../assets/max_potency.png';
-import testosteroneHeroImg from '../assets/testosterone-image-v2.png';
-import testosteroneInjectionImg from '../assets/testosterone_injection.png';
-import boostedTestosteroneImg from '../assets/boosted-testosterone.png';
-import testosteroneRdtImg from '../assets/testosterone_rdt_prd_img.png';
-import estPrdImg from '../assets/est_prd_image.png';
-import skincareHeroImg from '../assets/skincare.png';
-import antiAgingImg from '../assets/ant-aging.png';
-import faceSpotImg from '../assets/face-spot.png';
-import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
-import rosaceaCareImg from '../assets/rosacea_care_set.png';
-import eyeSerumImg from '../assets/Eye-Serum-prd-image.png';
-import bodyAcneCreamImg from '../assets/Body-Acne-Spots-Cream.png';
-import bpc157VialImg from '../assets/BPC-157-vial.png';
-import bpc157Tb500VialImg from '../assets/BPC-157-TB-500--vial.png';
-import semaglutideVialImg from '../assets/semaglutide_vial.png';
-import tirzepatideVialImg from '../assets/tirzepatide_vial.png';
-import threeInOneHairVialImg from '../assets/3-in-1 Hair Growth Tabs---vial.png';
-import estradiolTabsVialImg from '../assets/Estradiol Tabs---vial.png';
-import glutathioneVialImg from '../assets/Glutathione--vial.png';
-import growTabsTadalafilVialImg from '../assets/GrowTabs-Tadalafil-vial.png';
-import growTabsSildenafilVialImg from '../assets/GrowTabs-sildenafil-vial.png';
-import loverSprayVialImg from '../assets/LoverSpray-vial.png';
-import nadSprayVialImg from '../assets/NAD+spray--vial.png';
-import nadSubjVialImg from '../assets/NAD+subjinj---vial.png';
-import quickLoverVialImg from '../assets/QuickLover-vial.png';
-import readySetGoVialImg from '../assets/ReadySetGo_vial.png';
-import testosteroneRdtVialImg from '../assets/Testosterone (RDT)--vial.png';
-import bpc157Carton from '../assets/BPC-157-(Subq Inj).png';
-import bpc157Tb500Carton from '../assets/BPC-157-TB-500 -(Subq Inj).png';
-import hairGrowth2in1Carton from '../assets/2-in-1-hairgrowthtab.png';
-import hairGrowth2in1Series from '../assets/2-in-1-tab-series.png';
-import hairGrowth3in1Carton from '../assets/3_in_1img.png';
-import hairGrowth3in1Series from '../assets/3-in-1-series.png';
-import sildenafilTadalafilCarton from '../assets/sildenafil_tadalafil_tablets_verified.png';
-import antiAgingSeries from '../assets/Anti-Aging Cream---series.png';
-import faceSpotSeries from '../assets/Face Spot Peel----series.png';
-import acneCleanserSeries from '../assets/Acne Cleanser--series.png';
-import rosaceaSeries from '../assets/Rosacea Relief Cream--series.png';
-import eyeSerumSeries from '../assets/Eye Serum---series.png';
-import bodyAcneSeries from '../assets/Body Acne Cream---series.png';
+import hairLossImg from '../assets/hair-loss.webp';
+import mensHealthImg from '../assets/mens-health.webp';
+const sildenafilTadalafilBg = null; // Removed missing import: ../assets/Sildenafil_Tadalafil_bg.png
+const sildenafilTadalafilTabletsBg = null; // Removed missing import: ../assets/Sildenafil_Tadalafil_bg.png
+const sildenafilYohimbeBg = null; // Removed missing import: ../assets/Sildenafil_ Yohimbe_bg.png
+const sildenafilYohimbePrdImg = null; // Removed missing import: ../assets/Sildenafil_ Yohimbe_prd.png
+const oxytocinPrdImg = null; // Removed missing import: ../assets/Oxytocin (Fast Absorb Tab)_jk.png
+import oxytocinTabletsPrd from '../assets/Oxytocin_Tablets_prd__3.webp';
+import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.webp';
+const oxytocinNasalBg = null; // Removed missing import: ../assets/oxytocin_nasal.png
+import prdDetailBg from '../assets/prd_detial_bg_image.webp';
+import longevityImg from '../assets/longevity.webp';
+import nadInjectionImg from '../assets/NAD+ (Subcutaneous Injection)_prd.webp';
+import nadInjectionPrd from '../assets/NAD+ (Subcutaneous Injection)_prd.webp';
+const glutathioneBg = null; // Removed missing import: ../assets/Glutathione (IM or Subcutaneous Injection)_bg.png
+import glutathionePrd from '../assets/Glutathione (IM or Subcutaneous Injection)_prd.webp';
+const nadNasalSprayBg = null; // Removed missing import: ../assets/Nad+_spray_bg.png
+import nadSprayPrd from '../assets/nad_spray_prd.webp';
+import hormonalMasteryImg from '../assets/hormonal_mastery.webp';
+import metabolicPrecisionImg from '../assets/metabolic_precision.webp';
+import clinicalBreakthroughImg from '../assets/clinical_breakthrough.webp';
+import dualActionImg from '../assets/dual_action.webp';
+import glycemicControlImg from '../assets/glycemic_control.webp';
+import maxPotencyImg from '../assets/max_potency.webp';
+import testosteroneHeroImg from '../assets/testosterone-image-v2.webp';
+import testosteroneInjectionImg from '../assets/testosterone_injection.webp';
+import boostedTestosteroneImg from '../assets/boosted-testosterone.webp';
+import testosteroneRdtImg from '../assets/testosterone_rdt_prd_img.webp';
+import estPrdImg from '../assets/est_prd_image.webp';
+import skincareHeroImg from '../assets/skincare.webp';
+import antiAgingImg from '../assets/ant-aging.webp';
+import faceSpotImg from '../assets/face-spot.webp';
+import acneCleanserImg from '../assets/Acne-Cleanser-Cream.webp';
+import rosaceaCareImg from '../assets/rosacea_care_set.webp';
+import eyeSerumImg from '../assets/Eye-Serum-prd-image.webp';
+import bodyAcneCreamImg from '../assets/Body-Acne-Spots-Cream.webp';
+import bpc157VialImg from '../assets/BPC-157-vial.webp';
+import bpc157Tb500VialImg from '../assets/BPC-157-TB-500--vial.webp';
+import semaglutideVialImg from '../assets/semaglutide_vial.webp';
+import tirzepatideVialImg from '../assets/tirzepatide_vial.webp';
+import threeInOneHairVialImg from '../assets/3-in-1 Hair Growth Tabs---vial.webp';
+import estradiolTabsVialImg from '../assets/Estradiol Tabs---vial.webp';
+import glutathioneVialImg from '../assets/Glutathione--vial.webp';
+import growTabsTadalafilVialImg from '../assets/GrowTabs-Tadalafil-vial.webp';
+import growTabsSildenafilVialImg from '../assets/GrowTabs-sildenafil-vial.webp';
+import loverSprayVialImg from '../assets/LoverSpray-vial.webp';
+import nadSprayVialImg from '../assets/NAD+spray--vial.webp';
+import nadSubjVialImg from '../assets/NAD+subjinj---vial.webp';
+import quickLoverVialImg from '../assets/QuickLover-vial.webp';
+import readySetGoVialImg from '../assets/ReadySetGo_vial.webp';
+import testosteroneRdtVialImg from '../assets/Testosterone (RDT)--vial.webp';
+import bpc157Carton from '../assets/BPC-157-(Subq Inj).webp';
+import bpc157Tb500Carton from '../assets/BPC-157-TB-500 -(Subq Inj).webp';
+import hairGrowth2in1Carton from '../assets/2-in-1-hairgrowthtab.webp';
+import hairGrowth2in1Series from '../assets/2-in-1-tab-series.webp';
+const hairGrowth3in1Carton = null; // Removed missing import: ../assets/3_in_1img.png
+import hairGrowth3in1Series from '../assets/3-in-1-series.webp';
+import sildenafilTadalafilCarton from '../assets/sildenafil_tadalafil_tablets_verified.webp';
+import antiAgingSeries from '../assets/Anti-Aging Cream---series.webp';
+import faceSpotSeries from '../assets/Face Spot Peel----series.webp';
+import acneCleanserSeries from '../assets/Acne Cleanser--series.webp';
+import rosaceaSeries from '../assets/Rosacea Relief Cream--series.webp';
+import eyeSerumSeries from '../assets/Eye Serum---series.webp';
+import bodyAcneSeries from '../assets/Body Acne Cream---series.webp';
 import Footer from './Footer';
 
 // Mock data
@@ -1993,7 +1993,7 @@ const ProductDetails = () => {
                             className="w-full max-w-[320px] md:max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 lg:-rotate-12 hover:rotate-0 transition-transform duration-1000"
                             alt="Signature Medication"
                         />
-                        <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] md:text-[10px] text-white font-bold uppercase tracking-[0.15em] whitespace-nowrap">
+                        <span className="absolute -bottom-16 md:-bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[280px] md:max-w-[400px] text-center text-[8px] md:text-[10px] text-white/70 font-bold uppercase tracking-[0.15em] whitespace-normal leading-relaxed">
                             We do not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
                         </span>
                     </div>

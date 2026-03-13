@@ -3,9 +3,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Fallback images from existing assets
-import microscopeImg from '../assets/lab_microscope.png';
-import labAnalysisImg from '../assets/lab_analysis.png';
-import deliveryImg from '../assets/medication_delivery.png';
+import microscopeImg from '../assets/lab_microscope.webp';
+const labAnalysisImg = null; // Removed missing import: ../assets/lab_analysis.png
+const deliveryImg = null; // Removed missing import: ../assets/medication_delivery.png
 
 gsap.registerPlugin(ScrollTrigger);
 

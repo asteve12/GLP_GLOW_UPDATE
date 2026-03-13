@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -6667,7 +6667,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">DEA Certification (Optional)</label>
                                 <input
                                     type="file"
-                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    accept=".pdf,.jpg,.jpeg,.webp"
                                     onChange={(e) => setProviderForm({ ...providerForm, deaCertFile: e.target.files[0] })}
                                     className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-accent-black file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-black file:text-white file:font-bold file:text-xs file:uppercase"
                                 />
