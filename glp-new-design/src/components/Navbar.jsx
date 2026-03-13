@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import WaitlistModal from './WaitlistModal';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 
 const NAV_ITEMS = [
   {

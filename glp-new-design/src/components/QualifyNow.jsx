@@ -7,11 +7,11 @@ import Footer from './Footer';
 import { gsap } from 'gsap';
 
 // Assets
-import weightLossImg from '../assets/weight-loss.png';
-import hairLossImg from '../assets/hair-loss.png';
-import mensHealthImg from '../assets/mens-health.png';
-import longevityImg from '../assets/longevity.png';
-import skincareImg from '../assets/skincare.png';
+const weightLossImg = null; // Removed missing import: ../assets/weight-loss.png
+import hairLossImg from '../assets/hair-loss.webp';
+import mensHealthImg from '../assets/mens-health.webp';
+import longevityImg from '../assets/longevity.webp';
+import skincareImg from '../assets/skincare.webp';
 
 const categories = [
     {

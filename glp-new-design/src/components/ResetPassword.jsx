@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');

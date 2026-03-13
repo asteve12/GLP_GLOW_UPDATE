@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { useAuth } from '../context/AuthContext';
 import { gsap } from 'gsap';
 import { supabase } from '../lib/supabaseClient';

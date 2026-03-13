@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import weightLossImg from '../assets/weight-loss.png';
-import hairLossImg from '../assets/hair-loss.png';
-import mensHealthImg from '../assets/mens-health.png';
-import longevityImg from '../assets/longevity.png';
+const weightLossImg = null; // Removed missing import: ../assets/weight-loss.png
+import hairLossImg from '../assets/hair-loss.webp';
+import mensHealthImg from '../assets/mens-health.webp';
+import longevityImg from '../assets/longevity.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,40 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import Navbar from './Navbar';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-import weightLossImg from '../assets/weight-loss.png';
-import hairLossImg from '../assets/hair-loss.png';
-import mensHealthImg from '../assets/mens-health.png';
-import longevityImg from '../assets/longevity.png';
-import prdDetailBg from '../assets/prd_detial_bg_image.png';
-import weightLossBanner from '../assets/weight-loss-banner.png';
-import semaglutideInjection from '../assets/semaglutide-injection.png';
-import tirzepetideInjection from '../assets/tirzepetide_injection.png';
-import semaglutideDrops from '../assets/semaglutide_drops.png';
-import tirzepatideDrops from '../assets/tirzepatide_drops.png';
-import medicationDelivery from '../assets/medication_delivery.png';
-import ongoingSupport from '../assets/ongoing_support.png';
-import medicalConsult from '../assets/medical_consult.png';
-import labAnalysis from '../assets/lab_analysis.png';
-import medicalEvalDashboard from '../assets/medical-eval-dashboard.png';
-import finasterideTabletBg from '../assets/finastride_tablet_bottle.png';
-import threeInOneImg from '../assets/3_in_1img.png';
-import finasterideMinoxidilPrd from '../assets/Finasteride_  Minoxidil_prd.png';
-import fiveInOneImg from '../assets/5_in-1_hairloss.png';
-import sildenafilTadalafilPrdImg from '../assets/sildenafil_tadalafi_prd_img.png';
-import sildenafilTadalafilTabletsPrd from '../assets/Sildenafil _Tadalafil_Tablets_prd.png';
-import sildenafilYohimbePrd from '../assets/Sildenafil_ Yohimbe_prd.png';
-import oxytocinTabletsPrd from '../assets/Oxytocin_Tablets_prd.png';
-import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.png';
-import nadInjectionImg from '../assets/NAD+ (Subcutaneous Injection).png';
-import nadInjectionPrd from '../assets/NAD+ (Subcutaneous Injection)_prd.png';
-import glutathionePrd from '../assets/Glutathione (IM or Subcutaneous Injection)_prd.png';
-import nadSprayPrd from '../assets/nad_spray_prd.png';
+const weightLossImg = null; // Removed missing import: ../assets/weight-loss.png
+import hairLossImg from '../assets/hair-loss.webp';
+import mensHealthImg from '../assets/mens-health.webp';
+import longevityImg from '../assets/longevity.webp';
+import prdDetailBg from '../assets/prd_detial_bg_image.webp';
+import weightLossBanner from '../assets/weight-loss-banner.webp';
+import semaglutideInjection from '../assets/semaglutide-injection.webp';
+import tirzepetideInjection from '../assets/tirzepetide_injection.webp';
+const semaglutideDrops = null; // Removed missing import: ../assets/semaglutide_drops.png
+const tirzepatideDrops = null; // Removed missing import: ../assets/tirzepatide_drops.png
+import medicationDelivery from '../assets/medication_delivery.webp';
+import ongoingSupport from '../assets/ongoing_support.webp';
+import medicalConsult from '../assets/medical_consult.webp';
+import labAnalysis from '../assets/lab_analysis.webp';
+const medicalEvalDashboard = null; // Removed missing import: ../assets/medical-eval-dashboard.png
+import finasterideTabletBg from '../assets/finastride_tablet_bottle.webp';
+const threeInOneImg = null; // Removed missing import: ../assets/3_in_1img.png
+const finasterideMinoxidilPrd = null; // Removed missing import: ../assets/Finasteride_  Minoxidil_prd.png
+const fiveInOneImg = null; // Removed missing import: ../assets/5_in-1_hairloss.png
+const sildenafilTadalafilPrdImg = null; // Removed missing import: ../assets/sildenafil_tadalafi_prd_img.png
+import sildenafilTadalafilTabletsPrd from '../assets/Sildenafil _Tadalafil_Tablets_prd.webp';
+const sildenafilYohimbePrd = null; // Removed missing import: ../assets/Sildenafil_ Yohimbe_prd.png
+const oxytocinTabletsPrd = null; // Removed missing import: ../assets/Oxytocin_Tablets_prd.png
+import oxytocinNasalPrd from '../assets/oxytocin_nasal_prd.webp';
+const nadInjectionImg = null; // Removed missing import: ../assets/NAD+ (Subcutaneous Injection).png
+import nadInjectionPrd from '../assets/NAD+ (Subcutaneous Injection)_prd.webp';
+import glutathionePrd from '../assets/Glutathione (IM or Subcutaneous Injection)_prd.webp';
+import nadSprayPrd from '../assets/nad_spray_prd.webp';
 import Footer from './Footer';
 
 const productsData = {

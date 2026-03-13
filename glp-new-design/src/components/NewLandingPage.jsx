@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import Navbar from './Navbar';
 import weightlossVideo from '../assets/weightloss-video.mp4';
 import intimateVideo from '../assets/intimate-glow-video.mp4';
 import hairVideo from '../assets/hair-glow-video.mp4';
 import longevityVideo from '../assets/longevity-glow-video-v3.mp4';
-import labTestingImg from '../assets/lab-testing-image.png';
-import testosteroneImg from '../assets/testosterone-image-v2.png';
-import skincareImg from '../assets/skincare.png';
-import glpPromoImg from '../assets/glp-promo-image.png';
-import registrationImg from '../assets/account-registration-image.jpg';
-import prescribedImg from '../assets/get-prescribed-image.jpg';
-import rxShipmentImg from '../assets/rx-shipment-image.jpg';
-import drugImg from '../assets/drug.jpg';
-import exerciseImg from '../assets/exercise.jpg';
-import medicalTeamImg from '../assets/medical-team.png';
+import labTestingImg from '../assets/lab-testing-image.webp';
+import testosteroneImg from '../assets/testosterone-image-v2.webp';
+import skincareImg from '../assets/skincare.webp';
+import glpPromoImg from '../assets/glp-promo-image.webp';
+import registrationImg from '../assets/account-registration-image.webp';
+import prescribedImg from '../assets/get-prescribed-image.webp';
+import rxShipmentImg from '../assets/rx-shipment-image.webp';
+import drugImg from '../assets/drug.webp';
+const exerciseImg = null; // Removed missing import: ../assets/exercise.jpg
+import medicalTeamImg from '../assets/medical-team.webp';
 import fdaImg from '../assets/fda_image.webp';
-import doctorImg from '../assets/doctor_image.png';
-import antiAgingImg from '../assets/ant-aging.png';
-import faceSpotImg from '../assets/face-spot.png';
-import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
+import doctorImg from '../assets/doctor_image.webp';
+import antiAgingImg from '../assets/ant-aging.webp';
+import faceSpotImg from '../assets/face-spot.webp';
+import acneCleanserImg from '../assets/Acne-Cleanser-Cream.webp';
 import { useNavigate } from 'react-router-dom';
 import WaitlistModal from './WaitlistModal';
 import { FaInstagram, FaFacebook, FaXTwitter } from 'react-icons/fa6';
@@ -154,9 +154,15 @@ const NewLandingPage = () => {
                                                     loop
                                                     muted
                                                     playsInline
+                                                    webkit-playsinline="true"
+                                                    x5-playsinline="true"
+                                                    preload="auto"
+                                                    poster={item.img}
+                                                    onContextMenu={(e) => e.preventDefault()}
                                                     className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500"
                                                 >
                                                     <source src={item.video} type="video/mp4" />
+                                                    <img alt={item.title} src={item.img} className="w-full h-full object-cover brightness-[0.85]" />
                                                 </video>
                                             ) : (
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
@@ -210,17 +216,17 @@ const NewLandingPage = () => {
 
                         <div className="pt-0">
                             <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 <div
                                     onClick={() => setIsWaitlistOpen(true)}
-                                    className="relative rounded-[32px] overflow-hidden aspect-square group cursor-pointer transition-all duration-500 hover:shadow-2xl bg-black border border-white/5"
+                                    className="relative rounded-[32px] overflow-hidden min-h-[320px] group cursor-pointer transition-all duration-500 hover:shadow-2xl bg-black border border-white/5"
                                 >
-                                    <div className="absolute inset-0  from-red-600/20 to-black z-0"></div>
-                                    <div className="absolute top-4 left-4 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm z-20">New Clinical Research</div>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-10 text-white z-10 text-center pb-8 md:pb-12">
-                                        <span className="text-[10px] md:text-[10px] font-black tracking-[0.4em] uppercase mb-1 text-[#FFDE59]/60">Retatrutide</span>
-                                        <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter mb-4 leading-tight group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
-                                        <div className="mt-2 md:mt-4 px-6 py-3 bg-white text-black rounded-full text-[10px] md:text-[10px] font-black uppercase tracking-widest shadow-xl group-hover:bg-[#FFDE59] transition-all duration-300">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black z-0"></div>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-8 text-white z-10 text-center">
+                                        <div className="bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-sm z-20 leading-tight shadow-md mb-4">New Clinical Research</div>
+                                        <span className="text-[11px] font-black tracking-[0.4em] uppercase mb-2 text-[#FFDE59]/80 block">Retatrutide</span>
+                                        <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-6 leading-[1.15] group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
+                                        <div className="py-3 px-8 bg-white text-black rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg group-hover:bg-[#FFDE59] group-hover:scale-105 transition-all duration-300">
                                             Join the Waitlist
                                         </div>
                                     </div>
@@ -363,33 +369,14 @@ const NewLandingPage = () => {
 
                         <div className="mb-12 flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                             <span className="px-6 py-2 bg-[#FFDE59] border border-[#d4b43c] rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-black shadow-md">
-                                Coming Soon • March 15th 2026
+                                Coming Soon
                             </span>
                             <p className="text-gray-600 text-sm font-medium tracking-tight">
                                 Our comprehensive biomarker analysis becomes available mid-month.
                             </p>
                         </div>
 
-                        <div className="flex flex-col md:flex-row justify-center items-center gap-5 mb-24">
-                            <button className="bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-[13px] font-bold hover:bg-black hover:shadow-2xl transition-all duration-300 min-w-[160px]">
-                                Start my labs
-                            </button>
-                            <button className="bg-white border border-gray-200 text-[#1a1a1a] px-8 py-3 rounded-full text-[13px] font-medium hover:border-black hover:bg-gray-50 transition-all duration-300 min-w-[160px]">
-                                Learn more
-                            </button>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mb-24 max-w-4xl mx-auto">
-                            <div>
-                                <h3 className="font-bold text-lg mb-4 text-gray-900">Find your baseline</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">Get a clear picture of your health with a simple lab test.</p>
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg mb-4 text-gray-900">Plan your breakthrough</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">Optimize your health with a doctor-developed action plan.</p>
-                                <a className="text-xs font-bold border-b border-black pb-1 inline-block mt-4 hover:text-gray-600 hover:border-gray-600 transition-colors" href="#">Explore the plan →</a>
-                            </div>
-                        </div>
 
                         {/* Biomarker Lists */}
                         <div className="bg-gray-50/50 p-12 rounded-3xl border border-gray-100">

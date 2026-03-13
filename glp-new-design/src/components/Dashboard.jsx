@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -11,17 +11,17 @@ import { toast } from 'react-hot-toast';
 
 const stripePromise = loadStripe('pk_test_51RNxytRZvtknfMGgwf0Tsuvx6jguIyVph5rWBAMFzFcfpj9SuWUWIdm06eCsxwAhbeQE69EFOo7ExXCqyLBpHVvl00Kr3ycplu');
 
-import weightLossImg from '../assets/weightloss-quote-img.png';
-import hairLossImg from '../assets/hair-loss-first-quote.png';
-import sexualHealthImg from '../assets/sexual_health_first_quote.png';
-import longevityImg from '../assets/longetivity_first_quote_img.png';
-import testosteroneImg from '../assets/testosterone-image-v2.png';
-import skinCareImg from '../assets/skincare.png';
-import retatrutideImg from '../assets/clinical_breakthrough.png';
-import repairImg from '../assets/STRENTHENING_FIRST_QUOTE_IMG.png';
-import antiAgingImg from '../assets/ant-aging.png';
-import faceSpotImg from '../assets/face-spot.png';
-import acneCleanserImg from '../assets/Acne-Cleanser-Cream.png';
+import weightLossImg from '../assets/weightloss-quote-img.webp';
+import hairLossImg from '../assets/hair-loss-first-quote.webp';
+import sexualHealthImg from '../assets/sexual_health_first_quote.webp';
+import longevityImg from '../assets/longetivity_first_quote_img.webp';
+import testosteroneImg from '../assets/testosterone-image-v2.webp';
+import skinCareImg from '../assets/skincare.webp';
+import retatrutideImg from '../assets/clinical_breakthrough.webp';
+import repairImg from '../assets/STRENTHENING_FIRST_QUOTE_IMG.webp';
+import antiAgingImg from '../assets/ant-aging.webp';
+import faceSpotImg from '../assets/face-spot.webp';
+import acneCleanserImg from '../assets/Acne-Cleanser-Cream.webp';
 import WaitlistModal from './WaitlistModal';
 
 const PRODUCT_MAP = {
