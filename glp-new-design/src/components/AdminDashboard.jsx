@@ -2199,8 +2199,8 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
         // Get intake data to extract category
         let intakeData = {};
         try {
-            intakeData = typeof submission.intake_data === 'string' 
-                ? JSON.parse(submission.intake_data) 
+            intakeData = typeof submission.intake_data === 'string'
+                ? JSON.parse(submission.intake_data)
                 : (submission.intake_data || {});
         } catch (e) { intakeData = {}; }
 
@@ -2806,11 +2806,11 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                 // Get intake data to extract category
                 let intake = {};
                 try {
-                    intake = typeof submission.intake_data === 'string' 
-                        ? JSON.parse(submission.intake_data) 
+                    intake = typeof submission.intake_data === 'string'
+                        ? JSON.parse(submission.intake_data)
                         : (submission.intake_data || {});
                 } catch (e) { intake = {}; }
-                
+
                 // Trust the "category" field in intake_data as the source of truth
                 const rawCategory = (intake.category || formData.selected_drug || submission.selected_drug || '').toLowerCase();
                 const category = rawCategory.replace(/-/g, '_');
