@@ -339,7 +339,7 @@ export const intakeQuestions = {
             options: [
                 'Semaglutide (Wegovy/Ozempic)',
                 'Tirzepatide (Zepbound/Mounjaro)',
-                'Retatruide',
+                'Retatrutide',
                 'Liraglutide (Saxenda)',
                 'Orlistat (Xenical, Alli)',
                 'Phentermine (Adipex, Lomaira, Fen-Phen)',

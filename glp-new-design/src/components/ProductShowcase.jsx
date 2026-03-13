@@ -15,7 +15,7 @@ const categories = [
         title: 'Weight Loss',
         description: 'Semaglutide & Tirzepatide Injections and Drops',
         image: weightLossImg,
-        products: ['Semaglutide', 'Tirzepatide', 'Retatruide (Waitlist)']
+        products: ['Semaglutide', 'Tirzepatide', 'Retatrutide (Waitlist)']
     },
     {
         id: 'hair-loss',
@@ -36,7 +36,7 @@ const categories = [
         title: 'Longevity',
         description: 'NAD+ & Glutathione for Cellular Repair',
         image: longevityImg,
-        products: ['NAD+', 'Glutathione', 'Retatruide']
+        products: ['NAD+', 'Glutathione', 'Retatrutide']
     }
 ];
 
@@ -103,7 +103,7 @@ const ProductShowcase = () => {
                                 </div>
 
                                 <button
-                                    onClick={() => window.location.href = `/qualify?category=${cat.id}`}
+                                    onClick={() => window.location.href = `/assessment/${cat.id}`}
                                     className="w-full py-4 bg-white/5 border border-white/10 text-white hover:bg-accent-blue hover:border-accent-blue hover:text-black rounded text-sm uppercase font-bold tracking-widest transition-all duration-300 flex items-center justify-center gap-2 group/btn"
                                 >
                                     Qualify Now <span className="group-hover/btn:translate-x-1 transition-transform">→</span>

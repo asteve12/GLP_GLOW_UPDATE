@@ -137,7 +137,7 @@ const handler = async (req: Request): Promise<Response> => {
         };
 
         // Title
-        drawText("GLP-GLOW", width / 2 - 40, y, { font: boldFont, size: 24 });
+        drawText("uGlowMD", width / 2 - 40, y, { font: boldFont, size: 24 });
         y -= 35;
 
         // Provider and Date

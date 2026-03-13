@@ -98,26 +98,90 @@ serve(async (req) => {
             const nextBilling = new Date(subscription.current_period_end * 1000).toLocaleDateString();
 
             const html = `<!DOCTYPE html>
-<html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:20px;">
-  <div style="max-width:600px;margin:auto;background:white;border-radius:8px;overflow:hidden;">
-    <div style="background:#e6f7e8;padding:20px;text-align:center;">
-      <h1 style="margin:0;color:#1e7b34;">Subscription Reactivated!</h1>
-    </div>
-    <div style="padding:20px;">
-      <p>Hi ${fullName},</p>
-      <p>Your GLP-1 subscription has been <strong>successfully reactivated</strong>!</p>
-      <p><strong>Next charge:</strong> $${price.toFixed(2)} on ${nextBilling}</p>
-      <p>Your medication will resume shipping automatically.</p>
-      <p>Thank you for continuing your journey with us!</p>
-      <p><strong>GLP-GLOW Team</strong></p>
-    </div>
-    <div style="background:#f4f4f4;padding:15px;text-align:center;font-size:12px;color:#666;">
-      <p>© ${new Date().getFullYear()} GLP-GLOW. All rights reserved.</p>
-    </div>
-  </div>
-</body></html>`;
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your uGlowMD Plan is Active!</title>
+</head>
 
-            const plainText = `Hi ${fullName},\n\nYour subscription has been reactivated. Next charge: $${price.toFixed(2)} on ${nextBilling}.\n\nThank you,\nGLP-GLOW`;
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Success! Your Plan is Active.
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${fullName},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Your subscription has been successfully <strong>reactivated</strong>. Your next billing date is ${nextBilling}. Thank you for choosing uGlowMD!
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 40px;text-decoration:none;border-radius:12px;font-weight:bold;font-size:18px;display:inline-block;">
+Go to Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Best regards,<br>
+<strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${new Date().getFullYear()} All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
+
+            const plainText = `Hi ${fullName},\n\nYour subscription has been reactivated. Next charge: $${price.toFixed(2)} on ${nextBilling}.\n\nThank you,\nuGlowMD Team`;
 
             const sendPromise = fetch("https://api.sendgrid.com/v3/mail/send", {
                 method: "POST",
@@ -136,9 +200,10 @@ serve(async (req) => {
                         }
                     ],
                     from: {
-                        email: MAILER_FROM
+                        email: MAILER_FROM,
+                        name: "uGlowMD"
                     },
-                    subject: "Your Subscription is Back On! – GLP-GLOW",
+                    subject: "Your Subscription is Back On! – uGlowMD",
                     content: [
                         {
                             type: "text/plain",

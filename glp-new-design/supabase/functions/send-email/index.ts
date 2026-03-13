@@ -44,6 +44,7 @@ serve(async (req) => {
   const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY")!;
   const MAILER_FROM = "ahs@americahealthsolutions.com";
+  const MAILER_FROM_NAME = "uGlowMD";
   const YEAR = new Date().getFullYear();
 
   if (!SENDGRID_API_KEY) {
@@ -98,37 +99,92 @@ serve(async (req) => {
   if (type === "eligibility") {
     const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Assessment Received!</title></head>
-<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:40px 20px;text-align:center">
-      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
-      <h1 style="margin:0;font-size:28px">Assessment Received!</h1>
-    </div>
-    <div style="padding:40px 30px;line-height:1.7;color:#333;text-align:center">
-      <p style="font-size:18px">Hi ${first_name},</p>
-      <p style="font-size:16px">
-        Thank you! Your <strong>Eligibility Assessment</strong> has been successfully submitted.
-      </p>
-      <div style="background:#e6f7e8;padding:25px;border-radius:10px;margin:30px 0;border-left:6px solid #28a745;font-size:16px">
-        We’re reviewing your information now.<br>
-        You’ll receive an email from us within the next 24–48 hours with the next steps.
-      </div>
-      <p style="margin:40px 0">
-        <a href="https://quiz.americahealthsolutions.com/dashboard"
-           style="background:#28a745;color:#fff;padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">
-          Go to Dashboard
-        </a>
-      </p>
-      <p style="color:#666;margin-top:40px">
-        Thank you,<br><strong>The Medical Team</strong>
-      </p>
-    </div>
-    <a href="https://quiz.americahealthsolutions.com" style="color: #0066cc; text-decoration: underline;text-align:center;display:block;margin-bottom:20px;">unsubscribe here</a>
-    <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
-      © ${YEAR} America Health Solutions • All rights reserved
-    </div>
-  </div>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment Received!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Assessment Received!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Thank you! Your <strong>Eligibility Assessment</strong> has been successfully submitted. We’re reviewing your information now. You’ll receive an email from us within the next 24–48 hours with the next steps.
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;">
+Go to Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+If you have any questions, feel free to contact our medical team by replying to this email.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Thank you,<br><strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} uGlowMD. All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+<p style="margin-top:25px;font-size:12px;color:#aaaaaa;text-align:center;">
+Secure HIPAA Compliant Communication
+</p>
+
+</td>
+</tr>
+</table>
+
 </body>
 </html>`;
 
@@ -141,7 +197,7 @@ We’re reviewing your information now and will email you within the next 24–4
 Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
 
 Thank you,
-The Medical Team`;
+The uGlowMD Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -151,7 +207,7 @@ The Medical Team`;
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email }], subject: "We Received Your Eligibility Assessment" }],
-        from: { email: MAILER_FROM, name: "Medical Team" },
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
         content: [
           { type: "text/plain", value: text },
           { type: "text/html", value: html },
@@ -177,36 +233,88 @@ The Medical Team`;
   if (type === "skincare_eligibility") {
     const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Skincare Assessment Received!</title></head>
-<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#5CE1E6,#38b6ff);color:#fff;padding:40px 20px;text-align:center">
-      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
-      <h1 style="margin:0;font-size:28px">Skin Health Review Started!</h1>
-    </div>
-    <div style="padding:40px 30px;line-height:1.7;color:#333;text-align:center">
-      <p style="font-size:18px">Hi ${first_name},</p>
-      <p style="font-size:16px">
-        Thank you for choosing us! We've received your <strong>Skincare Assessment</strong>.
-      </p>
-      <div style="background:#e3f2fd;padding:25px;border-radius:10px;margin:30px 0;border-left:6px solid #38b6ff;font-size:16px">
-        <strong>Good news:</strong> Your initial skincare consultation is 100% free of charge.<br><br>
-        Our medical team is now reviewing your skin history and photos. You'll receive a personalized treatment plan via email within the next 24–48 hours.
-      </div>
-      <p style="margin:40px 0">
-        <a href="https://quiz.americahealthsolutions.com/dashboard"
-           style="background:#38b6ff;color:#fff;padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">
-          View My Progress
-        </a>
-      </p>
-      <p style="color:#666;margin-top:40px">
-        Thank you,<br><strong>The Skincare Team</strong>
-      </p>
-    </div>
-    <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
-      © ${YEAR} America Health Solutions • All rights reserved
-    </div>
-  </div>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skincare Assessment Received!</title>
+</head>
+
+<body style="margin:0;padding:0;background_color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Skin Health Review Started!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Thank you for choosing us! We've received your <strong>Skincare Assessment</strong>. Your initial consultation is 100% free of charge. Our medical team is now reviewing your skin history and photos. You'll receive a personalized treatment plan via email within the next 24–48 hours.
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;">
+View My Progress
+</a>
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Stay tuned for your personalized plan. If you need immediate assistance, please reply to this message.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Best regards,<br><strong>The uGlowMD Skincare Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
 </body>
 </html>`;
 
@@ -219,7 +327,7 @@ Your initial consultation is free. Our medical team is reviewing your informatio
 Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
 
 Thank you,
-The Skincare Team`;
+The uGlowMD Skincare Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -229,7 +337,7 @@ The Skincare Team`;
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email }], subject: "We Received Your Skincare Assessment" }],
-        from: { email: MAILER_FROM, name: "Skincare Team" },
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
         content: [
           { type: "text/plain", value: text },
           { type: "text/html", value: html },
@@ -255,37 +363,98 @@ The Skincare Team`;
   if (type === "TRACKING_ID" && tracking_id) {
     const trackingHtml = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Your Order is On Its Way!</title></head>
-<body style="font-family:Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)">
-    <div style="background:linear-gradient(135deg,#1e7b34,#28a745);color:#fff;padding:50px 20px;text-align:center">
-      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
-      <h1 style="margin:0;font-size:28px">Great News, ${first_name}!</h1>
-      <p style="font-size:18px;margin:10px 0 0">Your medication is on its way!</p>
-    </div>
-    <div style="padding:40px 30px;text-align:center">
-      <p style="font-size:16px;color:#333">
-        Your package has been shipped and is headed to you with care.
-      </p>
-      <div style="background:#e6f7e8;padding:20px;border-radius:10px;margin:30px 0;border-left:6px solid #28a745">
-        <p style="margin:0;font-size:20px;font-weight:bold;color:#1e7b34">Tracking Number:</p>
-        <p style="margin:15px 0 0;font-size:28px;font-family:monospace;letter-spacing:2px;color:#1e7b34">
-          ${tracking_id}
-        </p>
-      </div>
-      <a href="https://quiz.americahealthsolutions.com/orders"
-         style="background:#007bff;color:#fff;padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;margin:20px 0">
-        Track Your Order Live
-      </a>
-      <p style="color:#666;margin-top:40px">
-        Questions? Just reply to this email.<br>
-        <strong>The Team</strong>
-      </p>
-    </div>
-    <div style="background:#f8f9fa;padding:20px;text-align:center;color:#888;font-size:12px">
-      © ${YEAR} America Health Solutions • All rights reserved
-    </div>
-  </div>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Order is On Its Way!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Great News, ${first_name}!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Your medication is on its way! Your package has been shipped and is headed to you with care.
+</p>
+
+<!-- Tracking Box -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:30px;">
+<tr>
+<td align="center" style="background:#f7f7f7;border:2px dashed #dcdcdc;border-radius:8px;padding:20px;">
+    
+<span style="font-size:14px;color:#555555;display:block;margin-bottom:5px;font-weight:600;">TRACKING NUMBER</span>
+<span style="font-size:24px;font-weight:800;letter-spacing:2px;color:#111111;">
+${tracking_id}
+</span>
+
+</td>
+</tr>
+</table>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/orders"
+style="background:#000000;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;">
+Track Your Order Live
+</a>
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Questions? Just reply to this email. We're here to help you every step of the way.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Best,<br><strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
 </body>
 </html>`;
 
@@ -297,7 +466,7 @@ The Skincare Team`;
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email }], subject: "Your Order Has Shipped!" }],
-        from: { email: MAILER_FROM, name: "Medical Team" },
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
         content: [
           { type: "text/plain", value: `Your order has shipped! Tracking: ${tracking_id}` },
           { type: "text/html", value: trackingHtml },
@@ -323,46 +492,81 @@ The Skincare Team`;
     const rejectHtml = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Update Regarding Your Assessment</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update Regarding Your Assessment</title>
 </head>
-<body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#f9f9f9;margin:0;padding:20px">
-  <div style="max-width:600px;margin:30px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08)">
-    <div style="background:linear-gradient(135deg,#d32f2f,#b71c1c);color:#fff;padding:45px 25px;text-align:center">
-      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
-      <h1 style="margin:0;font-size:28px">Update on Your Application</h1>
-    </div>
-    <div style="padding:40px 35px;color:#333;line-height:1.65;text-align:center">
-      <p style="font-size:18px;margin-bottom:24px">Dear ${first_name},</p>
-      <p style="font-size:16px">
-        Thank you for taking the time to complete the eligibility assessment 
-        and for sharing your health information with us.
-      </p>
-      <div style="background:#ffebee;padding:28px;border-radius:10px;margin:32px 0;border-left:6px solid #d32f2f;font-size:16px">
-        After careful review by our medical team, we regret to inform you that 
-        <strong>you do not currently meet the eligibility criteria</strong> 
-        for our weight loss program at this time.
-      </div>
-      <p style="font-size:16px">
-        We understand this may be disappointing news.<br>
-        Your health and safety are our top priority, and our decisions are always based on 
-        clinical guidelines and safety considerations.
-      </p>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
     
-      <p style="color:#555;font-size:15px;margin:40px 0 20px">
-        Thank you again for considering us.<br>
-        We truly wish you the very best on your health journey.
-      </p>
-      <p style="color:#666">
-        Warm regards,<br>
-        <strong>The Medical Review Team</strong>
-      </p>
-    </div>
-    <div style="background:#f8f9fa;padding:25px;text-align:center;color:#777;font-size:13px">
-      © ${YEAR} America Health Solutions • All rights reserved<br>
-      <a href="https://quiz.americahealthsolutions.com" style="color:#0066cc;text-decoration:underline">unsubscribe here</a>
-    </div>
-  </div>
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Update on Your Application
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Dear ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Thank you for taking the time to complete the eligibility assessment and for sharing your health information with us. After careful review by our medical team, we regret to inform you that <strong>you do not currently meet the eligibility criteria</strong> for our program at this time.
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Your health and safety are our top priority, and our decisions are always based on clinical guidelines and safety considerations. We truly wish you the very best on your health journey.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Warm regards,<br>
+<strong>The uGlowMD Medical Review Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
 </body>
 </html>`;
 
@@ -379,7 +583,7 @@ We recommend discussing this result with your primary care physician or speciali
 We truly wish you the best in your continued health journey.
 
 Warm regards,
-The Medical Review Team`;
+The uGlowMD Medical Review Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -392,7 +596,7 @@ The Medical Review Team`;
           to: [{ email }],
           subject: "Update Regarding Your Eligibility Assessment",
         }],
-        from: { email: MAILER_FROM, name: "Medical Team" },
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
         content: [
           { type: "text/plain", value: rejectText },
           { type: "text/html", value: rejectHtml },
@@ -424,60 +628,88 @@ The Medical Review Team`;
     const setupHtml = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Congratulations! You're Approved</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Congratulations! You're Approved</title>
 </head>
-<body style="font-family:'Helvetica Neue',Arial,sans-serif;background:#f4f7fa;margin:0;padding:20px">
-  <div style="max-width:620px;margin:40px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1)">
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#00c853,#00a844);color:#fff;padding:50px 30px;text-align:center">
-      <img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png" alt="Logo" style="height:160px;width:auto;display:block;margin:0 auto 20px;">
-      <h1 style="margin:0;font-size:32px;font-weight:900">You're Approved!</h1>
-      <p style="font-size:20px;margin:12px 0 0;opacity:0.95">Welcome to our ${category || 'Weight Loss'} Program</p>
-    </div>
 
-    <!-- Body -->
-    <div style="padding:50px 40px;text-align:center;color:#333">
-      <p style="font-size:19px;line-height:1.7">Hi ${first_name},</p>
-      <p style="font-size:17px;line-height:1.7">
-        Great news — our medical team has <strong>reviewed and approved</strong> your assessment, labs, and documents!
-      </p>
-      <p style="font-size:17px;line-height:1.7">
-        You're now officially cleared to begin your weight loss journey.
-      </p>
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
 
-      <div style="background:#e8f5e8;padding:30px;border-radius:12px;margin:35px 0;border-left:8px solid #00c853">
-        <h2 style="margin:0 0 16px;font-size:22px;color:#006400">Next Step: Complete Your Account</h2>
-        <p style="margin:0;font-size:17px;color:#333">
-          Click the button below to set your password and add a payment method.<br>
-          Once done, your medication will be processed and shipped within 1–3 business days.
-        </p>
-      </div>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
 
-      <a href="https://quiz.americahealthsolutions.com/dashboard"
-         style="display:inline-block;background:#00c853;color:#fff;padding:18px 48px;text-decoration:none;border-radius:12px;font-weight:bold;font-size:18px;margin:30px 0;box-shadow:0 6px 20px rgba(0,200,83,0.3);transition:all 0.3s">
-        Complete My Account & Start Treatment
-      </a>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
 
-      <p style="color:#555;font-size:15px;margin-top:40px;line-height:1.6">
-        This link expires in 72 hours for your security.
-      </p>
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+    
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
 
-      <hr style="border:none;border-top:1px dashed #ddd;margin:50px 0">
+</td>
+</tr>
 
-      <p style="color:#666;font-size:16px">
-        We’re so excited to support you on your transformation!<br>
-        <strong>The Medical Team</strong>
-      </p>
-    </div>
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
 
-    <!-- Footer -->
-    <div style="background:#f8f9fa;padding:30px;text-align:center;color:#777;font-size:13px">
-      © ${YEAR} America Health Solutions • Confidential & Secure<br>
-      Need help? Reply to this email or call us at (+1214)-699-7654
-    </div>
-     <a href="https://quiz.americahealthsolutions.com" style="color: #0066cc; text-decoration: underline;text-align:center;display:block;margin-top:10px;">unsubscribe here</a>
-  </div>
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+You're Approved!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Great news — our medical team has <strong>reviewed and approved</strong> your assessment, labs, and documents! You're now officially cleared to begin your journey with our ${category || 'Weight Loss'} Program.
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="${setup_link || 'https://quiz.americahealthsolutions.com/dashboard'}"
+style="background:#000000;color:#ffffff;padding:18px 48px;text-decoration:none;border-radius:12px;font-weight:bold;font-size:18px;display:inline-block;">
+Complete My Account & Start Treatment
+</a>
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Click the button above to set your password and add a payment method. Once done, your medication will be processed and shipped within 1–3 business days. This link expires in 72 hours for your security.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+We’re so excited to support you on your transformation!<br>
+<strong>The uGlowMD Medical Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
 </body>
 </html>`;
 
@@ -495,7 +727,7 @@ Once completed, your medication will be shipped within 1–3 business days.
 
 Welcome to the program!
 
-— The Medical Team`;
+— The uGlowMD Medical Team`;
 
     const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
@@ -508,7 +740,7 @@ Welcome to the program!
           to: [{ email }],
           subject: "You're Approved! Complete Your Account Now",
         }],
-        from: { email: MAILER_FROM, name: "Medical Team" },
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
         content: [
           { type: "text/plain", value: setupText },
           { type: "text/html", value: setupHtml },
@@ -523,6 +755,288 @@ Welcome to the program!
     }
 
     return new Response(JSON.stringify({ success: true, sent_to: email, type: "user_setup_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // ==================================================================
+  // DOSAGE / MEDICATION CHANGE APPROVED
+  // ==================================================================
+  if (type === "dosage_change_approved") {
+    const { drug_name, dosage, change_type } = payload;
+    const changeLabel = change_type || "Dosage Adjustment";
+    const drugLabel = drug_name || "your medication";
+    const dosageLabel = dosage || "";
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${changeLabel} Approved!</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+${changeLabel} Approved!
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Great news! Our medical team has reviewed and <strong>approved</strong> your ${changeLabel.toLowerCase()} request for <strong>${drugLabel}</strong>. Your protocol has been updated and your next shipment will reflect these changes.
+</p>
+
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+<h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">Update Summary</h3>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Change Type:</strong> ${changeLabel}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Treatment:</strong> ${drugLabel}</p>
+${dosageLabel ? `<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">New Dosage:</strong> ${dosageLabel}</p>` : ''}
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Status:</strong> <span style="color:#22C55E;font-weight:bold;">Approved & Active</span></p>
+</div>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;">
+View My Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#555555;margin-bottom:25px;">
+Your next shipment will include the updated protocol. No additional action is required on your part. If you have any questions, please reply to this email.
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Thank you,<br><strong>The uGlowMD Medical Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} uGlowMD. All rights reserved.
+</p>
+
+<p style="font-size:12px;color:#aaaaaa;margin-top:8px;">
+End-to-End Encryption • HIPAA Secure Environment
+</p>
+
+</td>
+</tr>
+
+</table>
+
+<p style="margin-top:25px;font-size:12px;color:#aaaaaa;text-align:center;">
+Secure HIPAA Compliant Communication
+</p>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
+
+    const text = `Hi ${first_name},
+
+Your ${changeLabel} request for ${drugLabel} has been APPROVED by our medical team.
+
+Update Details:
+- Treatment: ${drugLabel}
+${dosageLabel ? `- New Dosage: ${dosageLabel}` : ''}
+- Status: Approved & Active
+
+Your protocol has been updated and your next shipment will reflect these changes.
+
+Go to Dashboard: https://quiz.americahealthsolutions.com/dashboard
+
+Thank you,
+The uGlowMD Medical Team`;
+
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email }], subject: `Your ${changeLabel} Approved!` }],
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
+        content: [
+          { type: "text/plain", value: text },
+          { type: "text/html", value: html },
+        ],
+      }),
+    });
+
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid dosage_change_approved error:", err);
+      return new Response(JSON.stringify({ success: false, error: "SendGrid failed" }), { status: 502 });
+    }
+
+    return new Response(JSON.stringify({ success: true, sent_to: email, type: "dosage_change_approved_email_sent" }), {
+      status: 200,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    });
+  }
+
+  // ==================================================================
+  // 3. DOSAGE CHANGE PAYMENT RECEIVED
+  // ==================================================================
+  if (type === "dosage_payment_received") {
+    const { amount } = payload;
+    const amountLabel = amount || "5.00";
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charge Approved - Dosage Change Request</title>
+</head>
+
+<body style="margin:0;padding:0;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:40px 15px;">
+<tr>
+<td align="center">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr style="background:#000000">
+<td align="center" style="padding:7px;border-bottom:1px solid #eeeeee;">
+<span style="padding:7px 7px;border-radius:8px;display:inline-block;">
+<img src="https://glp-glow-update-xwxw.vercel.app/assets/logo-oeJLxYFy.png"
+alt="uGlowMD"
+style="height:160px;width:auto;display:block;">
+</span>
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding:40px 40px 20px 40px;">
+
+<h2 style="margin-top:0;margin-bottom:20px;font-size:24px;color:#1a1a1a;font-weight:800;">
+Charge Approved
+</h2>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+Hi ${first_name},
+</p>
+
+<p style="font-size:16px;color:#4a4a4a;margin-bottom:25px;">
+The <strong>$${amountLabel} charge</strong> for your dosage change request has been <strong>approved</strong>. Your request has been sent to our medical team for clinical review.
+</p>
+
+<div style="background:#f8f9fa;padding:25px;border-radius:15px;margin:25px 0;border:1px solid #eee;text-align:left;">
+<h3 style="margin:0 0 15px;font-size:16px;color:#333;text-transform:uppercase;letter-spacing:1px;font-weight:900;">Order Details</h3>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Service:</strong> Dosage Change Clinical Review</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Amount Paid:</strong> $${amountLabel}</p>
+<p style="margin:8px 0;font-size:14px;color:#555;"><strong style="color:#333;">Status:</strong> <span style="color:#22C55E;font-weight:bold;">Processing</span></p>
+</div>
+
+<p style="font-size:14px;color:#4a4a4a;margin-bottom:25px;">
+Typical clinical reviews are completed within 24-48 business hours. You will receive another notification once your request has been reviewed by a provider.
+</p>
+
+<p style="text-align:center;margin:30px 0;">
+<a href="https://quiz.americahealthsolutions.com/dashboard"
+style="background:#000000;color:#ffffff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;display:inline-block;">
+View My Dashboard
+</a>
+</p>
+
+<p style="font-size:14px;color:#777777;margin-bottom:0;">
+Thank you,<br><strong>The uGlowMD Team</strong>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td align="center" style="padding:25px 40px;background:#fafafa;border-top:1px solid #eeeeee;">
+<p style="font-size:12px;color:#999999;margin:0;">
+© ${YEAR} uGlowMD. All rights reserved.
+</p>
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>`;
+
+    const text = `Hi ${first_name},
+
+The $${amountLabel} charge for your dosage change request has been APPROVED. Our medical team is now reviewing your information.
+
+Clinical reviews are typically completed within 24-48 business hours. We'll notify you as soon as there's an update.
+
+Thank you,
+The uGlowMD Team`;
+
+    const sgRes = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email }], subject: "Charge Approved: Dosage Change Request" }],
+        from: { email: MAILER_FROM, name: MAILER_FROM_NAME },
+        content: [
+          { type: "text/plain", value: text },
+          { type: "text/html", value: html },
+        ],
+      }),
+    });
+
+    if (!sgRes.ok) {
+      const err = await sgRes.text();
+      console.error("SendGrid dosage_payment_received error:", err);
+      return new Response(JSON.stringify({ success: false, error: "SendGrid failed" }), { status: 502 });
+    }
+
+    return new Response(JSON.stringify({ success: true, sent_to: email, type: "dosage_payment_received_email_sent" }), {
       status: 200,
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
     });

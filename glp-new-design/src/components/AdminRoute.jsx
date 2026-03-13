@@ -51,7 +51,7 @@ const AdminRoute = ({ children }) => {
     }
 
     if (!user) {
-        return <Navigate to="/admin-sign-in" replace />;
+        return <Navigate to="/company-login" replace />;
     }
 
     const isAuthorized = ['admin', 'marketing_rep', 'physician', 'nurse_practitioner', 'physician_assistant', 'back_office', 'provider'].includes(role);

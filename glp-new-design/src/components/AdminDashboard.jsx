@@ -33,7 +33,7 @@ const getMasterProductMap = () => {
     };
 
     // 1. Weight Loss Injections
-    add('semaglutide-injection', 'Semaglutide (Subq Inj)', 'Weight Loss', [
+    add('semaglutide-injection', 'Semaglutide (Subq Inj)', 'Weight loss', [
         { dosage: '0.25 mg', plans: [{ name: 'Monthly', price: '99.99' }, { name: '3 Month', price: '269.99' }, { name: '6 Month', price: '499.99' }] },
         { dosage: '0.5 mg', plans: [{ name: 'Monthly', price: '134.99' }, { name: '3 Month', price: '364.50' }, { name: '6 Month', price: '674.99' }] },
         { dosage: '1 mg', plans: [{ name: 'Monthly', price: '179.99' }, { name: '3 Month', price: '484.99' }, { name: '6 Month', price: '899.99' }] },
@@ -41,7 +41,7 @@ const getMasterProductMap = () => {
         { dosage: '2 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
         { dosage: '2.4 mg', plans: [{ name: 'Monthly', price: '249.99' }, { name: '3 Month', price: '689.99' }, { name: '6 Month', price: '1279.99' }] },
     ]);
-    add('tirzepatide-injection', 'Tirzepatide (Subq Inj)', 'Weight Loss', [
+    add('tirzepatide-injection', 'Tirzepatide (Subq Inj)', 'Weight loss', [
         { dosage: '2.5 mg', plans: [{ name: 'Monthly', price: '190.00' }, { name: '3 Month', price: '499.99' }, { name: '6 Month', price: '999.99' }] },
         { dosage: '5 mg', plans: [{ name: 'Monthly', price: '299.99' }, { name: '3 Month', price: '799.99' }, { name: '6 Month', price: '1499.99' }] },
         { dosage: '7.5 mg', plans: [{ name: 'Monthly', price: '320.00' }, { name: '3 Month', price: '864.99' }, { name: '6 Month', price: '1599.99' }] },
@@ -51,58 +51,58 @@ const getMasterProductMap = () => {
     ]);
 
     // 2. Hair Growth Tabs
-    add('hair-growth-tabs-3in1', '3-in-1 Hair Growth Tabs', 'Hair Restoration', [
+    add('hair-growth-tabs-3in1', '3-in-1 Hair Growth Tabs', 'Hair Loss', [
         { dosage: 'TBA', plans: [{ name: '30 Day Supply', price: '99.99' }, { name: '60 Day Supply', price: '179.99' }, { name: '90 Day Supply', price: '249.99' }] }
     ]);
-    add('hair-growth-tabs-2in1', '2-in-1 Hair Growth Tabs', 'Hair Restoration', [
+    add('hair-growth-tabs-2in1', '2-in-1 Hair Growth Tabs', 'Hair Loss', [
         { dosage: '1mg / 2.5mg', plans: [{ name: '30 Day Supply', price: '89.99' }, { name: '60 Day Supply', price: '159.99' }, { name: '90 Day Supply', price: '224.99' }] }
     ]);
 
     // 3. Sexual Health (Packs)
-    add('readysetgo-men', 'ReadySetGo (2-in-1 RDT) *Men*', 'Sexual Health', [
+    add('readysetgo-men', 'ReadySetGo (2-in-1 RDT) *Men*', 'Better sex', [
         { dosage: '40 mg / 14 mg / 2 mg', plans: [{ name: '6 Pack', price: '39' }, { name: '10 Pack', price: '59.99' }, { name: '17 Pack', price: '94.99' }, { name: '34 Pack', price: '189.99' }] },
         { dosage: '65 mg / 22 mg / 2 mg', plans: [{ name: '6 Pack', price: '42' }, { name: '10 Pack', price: '62.99' }, { name: '17 Pack', price: '99.99' }, { name: '34 Pack', price: '199.99' }] },
         { dosage: '80 mg / 22 mg / 3 mg', plans: [{ name: '6 Pack', price: '45' }, { name: '10 Pack', price: '67.50' }, { name: '17 Pack', price: '104.99' }, { name: '34 Pack', price: '209.99' }] },
         { dosage: '110 mg / 22 mg / 3 mg', plans: [{ name: '6 Pack', price: '50' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
     ]);
-    add('growtabs-sildenafil', 'GrowTabs (Sildenafil)', 'Sexual Health', [
+    add('growtabs-sildenafil', 'GrowTabs (Sildenafil)', 'Better sex', [
         { dosage: '30 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
         { dosage: '45 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
     ]);
-    add('growtabs-tadalafil', 'GrowTabs (Tadalafil)', 'Sexual Health', [
+    add('growtabs-tadalafil', 'GrowTabs (Tadalafil)', 'Better sex', [
         { dosage: '6 mg', plans: [{ name: '6 Pack', price: '29.99' }, { name: '10 Pack', price: '44.99' }, { name: '17 Pack', price: '69.99' }, { name: '34 Pack', price: '139.99' }] },
         { dosage: '9 mg', plans: [{ name: '6 Pack', price: '35' }, { name: '10 Pack', price: '52.50' }, { name: '17 Pack', price: '83.00' }, { name: '34 Pack', price: '164.99' }] },
     ]);
-    add('quicklover-women', 'QuickLover (RDT) - Oxytocin', 'Sexual Health', [
+    add('quicklover-women', 'QuickLover (RDT) - Oxytocin', 'Better sex', [
         { dosage: '50 IU', plans: [{ name: '6 Pack', price: '43.99' }, { name: '10 Pack', price: '64.99' }, { name: '17 Pack', price: '102.99' }, { name: '34 Pack', price: '204.99' }] },
         { dosage: '100 IU', plans: [{ name: '6 Pack', price: '49.99' }, { name: '10 Pack', price: '74.99' }, { name: '17 Pack', price: '116.99' }, { name: '34 Pack', price: '229.99' }] },
     ]);
-    add('loverspray-nasal', 'LoverSpray (Nasal) - Oxytocin', 'Sexual Health', [
+    add('loverspray-nasal', 'LoverSpray (Nasal) - Oxytocin', 'Better sex', [
         { dosage: '150 IU/mL (5 mL)', plans: [{ name: 'Monthly', price: '99.99' }] }
     ]);
 
     // 4. Skincare
-    add('anti-aging-cream', 'Anti-Aging Cream - Tretinoin, Niacinamide, Hyaluronic Acid', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '79.99' }, { name: 'Every 2 Monthly', price: '69.99' }] }]);
-    add('face-spot-peel', 'Face Spot Peel - Hydroquinone, Kojic Acid, Niacinamide, Azelaic Acid, Traexamic Acid, Tretinoin', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '99.99' }, { name: 'Every 2 Monthly', price: '72.00' }] }]);
-    add('acne-cleanser', 'Acne Cleanser Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '84.99' }, { name: 'Every 2 Monthly', price: '59.99' }] }]);
-    add('rosacea-red-cream', 'Rosacea Red Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
-    add('eye-serum', 'Eye Serum', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
-    add('body-acne-cream', 'Body Acne Spots Cream', 'Skin Care', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Monthly', price: '99.99' }] }]);
+    add('anti-aging-cream', 'Anti-Aging Cream - Tretinoin, Niacinamide, Hyaluronic Acid', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '79.99' }, { name: 'Every 2 Monthly', price: '69.99' }] }]);
+    add('face-spot-peel', 'Face Spot Peel - Hydroquinone, Kojic Acid, Niacinamide, Azelaic Acid, Traexamic Acid, Tretinoin', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '99.99' }, { name: 'Every 2 Monthly', price: '72.00' }] }]);
+    add('acne-cleanser', 'Acne Cleanser Cream', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '84.99' }, { name: 'Every 2 Monthly', price: '59.99' }] }]);
+    add('rosacea-red-cream', 'Rosacea Red Cream', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
+    add('eye-serum', 'Eye Serum', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '114.99' }, { name: 'Every 2 Monthly', price: '79.99' }] }]);
+    add('body-acne-cream', 'Body Acne Spots Cream', 'skincare', [{ dosage: 'Standard', plans: [{ name: 'Monthly', price: '139.99' }, { name: 'Every 2 Monthly', price: '99.99' }] }]);
 
     // 5. Longevity
-    add('nad-nasal-spray', 'NAD+ Spray (Nasal)', 'Longevity', [{ dosage: '100 mg/mL (15mL)', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU (15mL)', plans: [{ name: 'Monthly', price: '149.99' }] }]);
-    add('nad-injection', 'NAD+ (Subq Inj)', 'Longevity', [{ dosage: '200 mg/mL (5 mL)', plans: [{ name: 'Monthly', price: '119.99' }] }]);
-    add('glutathione-injection', 'Glutathione (Subq Inj)', 'Longevity', [{ dosage: '200 mg/mL (10 mL)', plans: [{ name: 'Monthly', price: '64.99' }] }]);
+    add('nad-nasal-spray', 'NAD+ Spray (Nasal)', 'Longetivity', [{ dosage: '100 mg/mL (15mL)', plans: [{ name: 'Monthly', price: '124.99' }] }, { dosage: '100 IU (15mL)', plans: [{ name: 'Monthly', price: '149.99' }] }]);
+    add('nad-injection', 'NAD+ (Subq Inj)', 'Longetivity', [{ dosage: '200 mg/mL (5 mL)', plans: [{ name: 'Monthly', price: '119.99' }] }]);
+    add('glutathione-injection', 'Glutathione (Subq Inj)', 'Longetivity', [{ dosage: '200 mg/mL (10 mL)', plans: [{ name: 'Monthly', price: '64.99' }] }]);
 
     // 6. Hormone Therapy
-    add('testosterone-injection', 'Testosterone (Inj)', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '99.99' }] }]);
-    add('testosterone-rdt', 'Testosterone RDT Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '125' }] }]);
-    add('estradiol-tabs', 'Estradiol Tabs', 'Hormone Therapy', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '30.00' }] }]);
+    add('testosterone-injection', 'Testosterone (Inj)', 'Testosterone', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '99.99' }] }]);
+    add('testosterone-rdt', 'Testosterone RDT Tabs', 'Testosterone', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '125' }] }]);
+    add('estradiol-tabs', 'Estradiol Tabs', 'Testosterone', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '30.00' }] }]);
 
     // No Repair & Healing products listed.
 
     // 8. Specialized Weight Loss
-    add('retatruide-injection', 'Retatruide', 'Weight Loss', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '499.99' }] }]);
+    add('retatrutide-injection', 'Retatrutide', 'Weight loss', [{ dosage: 'TBA', plans: [{ name: 'Monthly', price: '499.99' }] }]);
 
     return map;
 };
@@ -1319,6 +1319,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('profile');
 
+
     const formatDate = (dateString) => {
         if (!dateString) return 'Not Stored';
         const d = new Date(dateString);
@@ -1470,7 +1471,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                         { id: 'subscription', label: 'Subscription' },
                         { id: 'submissions', label: `Assessments (${submissions.length})` },
                         { id: 'documents', label: 'Documents' },
-                        { id: 'rx', label: 'GLP-1 Rx' },
+                        { id: 'rx', label: 'Prescription' },
                         { id: 'billing', label: `Billing (${billing.length})` },
                         { id: 'dosage', label: 'Dosage Req' },
                         { id: 'surveys', label: `Surveys (${questionnaires.length})` }
@@ -1721,7 +1722,7 @@ const PatientDossierModal = ({ patientId, onClose }) => {
                                 orders.map(order => (
                                     <div key={order.id} className="bg-[#0D0D0D] border border-white/10 rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] text-white font-black uppercase tracking-[0.2em] ">GLP-1 RX SHIPPED</p>
+                                            <p className="text-[10px] text-white font-black uppercase tracking-[0.2em] ">PRESCRIPTION SHIPPED</p>
                                             <h5 className="text-2xl font-black uppercase  tracking-tighter text-white">{order.product_name}</h5>
                                             <p className="text-[11px] text-white/30 uppercase font-black tracking-[0.2em]">FEDEX: {order.tracking_id || 'PENDING ASSIGNMENT'}</p>
                                         </div>
@@ -2177,7 +2178,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
         }
 
         const productInfo = FINAL_PRODUCT_MAP[product];
-        const selectedProductLabel = productInfo ? `${productInfo.name} ${productInfo.dosage || ''} ${productInfo.plan}` : product;
+        const selectedProductLabel = productInfo
+            ? `${productInfo.name} ${productInfo.dosage === 'TBA' ? '' : (productInfo.dosage || '')} ${productInfo.plan}`.replace(/\s+/g, ' ').trim()
+            : product;
         const chargePriceCents = Math.round(parseFloat(price) * 100);
         const basePriceCents = 29900;
 
@@ -2193,16 +2196,17 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
             return;
         }
 
-        // Determine category for metadata
-        const drug = (submission.selected_drug || '').toLowerCase();
-        let category = 'Weight Loss';
-        if (drug.includes('hair-restoration') || drug.includes('finasteride') || drug.includes('minoxidil')) {
-            category = 'Hair Restoration';
-        } else if (drug.includes('sexual-health') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin')) {
-            category = 'Sexual Health';
-        } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
-            category = 'Longevity';
-        }
+        // Get intake data to extract category
+        let intakeData = {};
+        try {
+            intakeData = typeof submission.intake_data === 'string' 
+                ? JSON.parse(submission.intake_data) 
+                : (submission.intake_data || {});
+        } catch (e) { intakeData = {}; }
+
+        // Determine category for metadata from the source of truth
+        const drug = (intakeData.category || submission.selected_drug || '').toLowerCase();
+        const category = drug.replace(/-/g, ' ').replace(/_/g, ' ').replace(/(^\w|\s\w)/g, m => m.toUpperCase());
 
         // Determine plan duration explicitly based on labels from ProductDetails.jsx
         const plan_duration_months =
@@ -2242,7 +2246,7 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
         try {
             console.log('Initiating charge with payload:', payload);
 
-            const { data, error: invokeError } = await supabase.functions.invoke('charge-customer-responder', {
+            const { data, error: invokeError } = await supabase.functions.invoke('charge-customer-responder---v2', {
                 method: 'POST',
                 body: payload
             });
@@ -2295,9 +2299,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                         >
                             <option value="">Select a product...</option>
 
-                            <optgroup label="-- Weight Loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Weight loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Weight Loss')
+                                    .filter(([, data]) => data.category === 'Weight loss')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2306,9 +2310,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Hair Restoration" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Hair Loss" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Hair Restoration')
+                                    .filter(([, data]) => data.category === 'Hair Loss')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2317,9 +2321,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Sexual Health" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Better sex" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Sexual Health')
+                                    .filter(([, data]) => data.category === 'Better sex')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2328,9 +2332,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Longevity" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Longetivity" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Longevity')
+                                    .filter(([, data]) => data.category === 'Longetivity')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2339,9 +2343,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Hormone Therapy" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- Testosterone" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Hormone Therapy')
+                                    .filter(([, data]) => data.category === 'Testosterone')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2350,9 +2354,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
                                 }
                             </optgroup>
 
-                            <optgroup label="-- Skin Care" style={{ color: '#bfff00', backgroundColor: '#111' }}>
+                            <optgroup label="-- skincare" style={{ color: '#bfff00', backgroundColor: '#111' }}>
                                 {Object.entries(FINAL_PRODUCT_MAP)
-                                    .filter(([, data]) => data.category === 'Skin Care')
+                                    .filter(([, data]) => data.category === 'skincare')
                                     .map(([id, data]) => (
                                         <option key={id} value={id} className="bg-[#111111] text-white">
                                             {data.name} {data.dosage === 'TBA' ? '' : data.dosage} {data.plan} – ${data.price}
@@ -2543,7 +2547,8 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [profileData, setProfileData] = useState(null);
-    const [hasPaymentMethod, setHasPaymentMethod] = useState(true); // Default to true to avoid flash, or check immediately
+    const [hasPaymentMethod, setHasPaymentMethod] = useState(true);
+    const [previousAssessment, setPreviousAssessment] = useState(null);
 
     // Check for payment method on load
     useEffect(() => {
@@ -2574,6 +2579,98 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
         };
         syncProfileData();
     }, [submission.user_id]);
+
+    // Fetch the user's ORIGINAL initial assessment for the same product category.
+    // When admin reviews a dosage/medication change request, they need to see
+    // the full clinical intake_data from the patient's first assessment for that
+    // category, so they can decide whether to approve the change.
+    useEffect(() => {
+        const fetchOriginalAssessment = async () => {
+            const userId = submission?.user_id || formData?.user_id;
+            if (!userId) return;
+
+            const isChangeRequest = submission.submission_type === 'dosage_change' ||
+                submission.submission_type === 'medication_change';
+
+            // Only need to fetch for change requests
+            if (!isChangeRequest) return;
+
+            // Determine category keywords from the change request's drug slug
+            const drugSlug = (submission.selected_drug || submission.category || '').toLowerCase();
+            let categoryKeywords = [];
+            if (drugSlug.includes('weight') || drugSlug.includes('semaglutide') || drugSlug.includes('tirzepatide') || drugSlug.includes('retatrutide')) {
+                categoryKeywords = ['weight', 'semaglutide', 'tirzepatide', 'retatrutide'];
+            } else if (drugSlug.includes('hair') || drugSlug.includes('finasteride') || drugSlug.includes('minoxidil')) {
+                categoryKeywords = ['hair', 'finasteride', 'minoxidil'];
+            } else if (drugSlug.includes('sex') || drugSlug.includes('sildenafil') || drugSlug.includes('tadalafil') || drugSlug.includes('oxytocin')) {
+                categoryKeywords = ['sex', 'sildenafil', 'tadalafil', 'oxytocin'];
+            } else if (drugSlug.includes('longevity') || drugSlug.includes('nad') || drugSlug.includes('glutathione')) {
+                categoryKeywords = ['longevity', 'nad', 'glutathione'];
+            } else if (drugSlug.includes('testosterone')) {
+                categoryKeywords = ['testosterone'];
+            } else if (drugSlug.includes('skin')) {
+                categoryKeywords = ['skin'];
+            }
+
+            console.log('[SubmissionModal] Fetching original assessment for user:', userId, '| category drug:', drugSlug);
+
+            try {
+                // Fetch all original (non-change-request) submissions for this user, oldest first
+                const { data: allSubs, error } = await supabase
+                    .from('form_submissions')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .neq('id', submission.id)
+                    .is('submission_type', null)   // original assessments have no submission_type
+                    .order('submitted_at', { ascending: true });
+
+                if (error) {
+                    console.warn('[SubmissionModal] Filtered query failed, trying unfiltered:', error);
+                    // Fallback: fetch any other submission and match by category client-side
+                    const { data: allFallback } = await supabase
+                        .from('form_submissions')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .neq('id', submission.id)
+                        .order('submitted_at', { ascending: true });
+
+                    if (allFallback?.length > 0) {
+                        const matched = categoryKeywords.length > 0
+                            ? allFallback.find(s => categoryKeywords.some(kw => (s.selected_drug || s.category || '').toLowerCase().includes(kw)))
+                            : allFallback[0];
+                        if (matched) {
+                            console.log('[SubmissionModal] Fallback original found:', matched.id);
+                            setPreviousAssessment(matched);
+                        }
+                    }
+                    return;
+                }
+
+                if (!allSubs || allSubs.length === 0) {
+                    console.log('[SubmissionModal] No original assessments found for this user');
+                    return;
+                }
+
+                // Find the assessment matching the same drug category
+                let originalAssessment = categoryKeywords.length > 0
+                    ? allSubs.find(s => categoryKeywords.some(kw => (s.selected_drug || s.category || '').toLowerCase().includes(kw)))
+                    : null;
+
+                // Fallback: use the oldest submission (most likely the first/only assessment)
+                if (!originalAssessment) originalAssessment = allSubs[0];
+
+                if (originalAssessment) {
+                    console.log('[SubmissionModal] Original assessment found:', originalAssessment.id,
+                        '| drug:', originalAssessment.selected_drug,
+                        '| intake_data keys:', Object.keys(originalAssessment.intake_data || {}).length);
+                    setPreviousAssessment(originalAssessment);
+                }
+            } catch (err) {
+                console.error('[SubmissionModal] Error fetching original assessment:', err);
+            }
+        };
+        fetchOriginalAssessment();
+    }, [submission.user_id, submission.id, submission.submission_type, submission.selected_drug]);
 
 
 
@@ -2613,11 +2710,62 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
         setFormData(JSON.parse(JSON.stringify(submission)));
     }, [submission, isEditing]);
 
-    // Normalize data sources for display
-    const intake = {
-        ...(typeof formData.intake_data === 'object' ? formData.intake_data : {}),
-        ...(typeof formData.medical_responses === 'object' ? formData.medical_responses : {})
+    // Helper to safely parse intake_data - handles both object and string (double-encoded) formats
+    const parseIntakeData = (data) => {
+        if (!data) return {};
+        if (typeof data === 'object') return data;
+        if (typeof data === 'string') {
+            try { return JSON.parse(data); } catch { return {}; }
+        }
+        return {};
     };
+
+    // Build the merged intake from all available sources.
+    // Priority: current submission's intake_data > previousAssessment's intake_data
+    const intake = React.useMemo(() => {
+        // Parse current submission's intake data (handles string or object)
+        const currIntake = parseIntakeData(formData.intake_data);
+        const currMedical = parseIntakeData(formData.medical_responses);
+        const currData = { ...currIntake, ...currMedical };
+
+        // Parse original assessment's intake data as fallback
+        const prevIntake = parseIntakeData(previousAssessment?.intake_data);
+        const prevMedical = parseIntakeData(previousAssessment?.medical_responses);
+        const prevData = { ...prevIntake, ...prevMedical };
+
+        // Merge: start with previous (original assessment), then overlay current (change request)
+        // so that current values always win but previous fills in any gaps
+        const merged = { ...prevData };
+        Object.entries(currData).forEach(([key, val]) => {
+            if (val !== undefined && val !== null && val !== '' &&
+                !(Array.isArray(val) && val.length === 0)) {
+                merged[key] = val;
+            }
+        });
+        return merged;
+    }, [previousAssessment, formData.intake_data, formData.medical_responses]);
+
+    // Create display object: current submission fields take priority,
+    // previousAssessment fills any top-level gaps (name, weight, height, etc.)
+    const displaySubmission = React.useMemo(() => {
+        const base = { ...formData };
+
+        if (previousAssessment) {
+            Object.entries(previousAssessment).forEach(([key, val]) => {
+                const currentVal = base[key];
+                const currentMissing = currentVal === undefined || currentVal === null || currentVal === '' ||
+                    (Array.isArray(currentVal) && currentVal.length === 0);
+                const prevMeaningful = val !== undefined && val !== null && val !== '' &&
+                    !(Array.isArray(val) && val.length === 0);
+                if (currentMissing && prevMeaningful) base[key] = val;
+            });
+        }
+
+        // Always use the deeply merged intake for JSON columns
+        base.medical_responses = intake;
+        base.intake_data = intake;
+        return base;
+    }, [formData, previousAssessment, intake]);
 
     const handleQuickAssign = async (providerId) => {
         setProcessing(true);
@@ -2655,29 +2803,60 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
             // 2. If approved, update the user's current_plan in profiles table
             if (status === 'approved' && submission.user_id) {
-                // Determine the category for this submission
-                const drug = (formData.selected_drug || '').toLowerCase();
-                let category = 'weight_loss';
+                // Get intake data to extract category
+                let intake = {};
+                try {
+                    intake = typeof submission.intake_data === 'string' 
+                        ? JSON.parse(submission.intake_data) 
+                        : (submission.intake_data || {});
+                } catch (e) { intake = {}; }
+                
+                // Trust the "category" field in intake_data as the source of truth
+                const rawCategory = (intake.category || formData.selected_drug || submission.selected_drug || '').toLowerCase();
+                const category = rawCategory.replace(/-/g, '_');
 
-                if (drug.includes('hair-restoration') || drug.includes('finasteride') || drug.includes('minoxidil')) {
-                    category = 'hair_restoration';
-                } else if (drug.includes('sexual-health') || drug.includes('sildenafil') || drug.includes('tadalafil') || drug.includes('oxytocin')) {
-                    category = 'sexual_health';
-                } else if (drug.includes('longevity') || drug.includes('nad') || drug.includes('glutathione')) {
-                    category = 'longevity';
-                } else if (drug.includes('weight-loss') || drug.includes('semaglutide') || drug.includes('tirzepatide')) {
-                    category = 'weight_loss';
-                }
-
-                // Fetch current profile
+                // Fetch current profile including subscription info
                 const { data: profileData, error: profileFetchError } = await supabase
                     .from('profiles')
-                    .select('current_plan')
+                    .select('current_plan, stripe_subscription_id')
                     .eq('id', submission.user_id)
-                    .single();
+                    .maybeSingle();
 
                 if (profileFetchError && profileFetchError.code !== 'PGRST116') {
                     console.warn('Could not fetch profile:', profileFetchError);
+                }
+
+                // If this is a change request, cancel the existing subscription for this category
+                const isChangeRequest = formData.submission_type === 'dosage_change' || formData.submission_type === 'medication_change';
+                if (isChangeRequest && profileData?.stripe_subscription_id) {
+                    try {
+                        let subIdToCancel = null;
+                        const subIdData = profileData.stripe_subscription_id;
+
+                        if (typeof subIdData === 'string' && subIdData.startsWith('{')) {
+                            const subMap = JSON.parse(subIdData);
+                            subIdToCancel = subMap[category];
+                        } else if (typeof subIdData === 'object' && subIdData !== null) {
+                            subIdToCancel = subIdData[category];
+                        } else if (category === 'weight_loss') {
+                            // Legacy fallback
+                            subIdToCancel = subIdData;
+                        }
+
+                        if (subIdToCancel) {
+                            console.log(`[AdminDashboard] Cancelling old subscription ${subIdToCancel} for category ${category}`);
+                            await supabase.functions.invoke('cancel-subscription', {
+                                method: 'POST',
+                                body: {
+                                    userId: submission.user_id,
+                                    subscriptionId: subIdToCancel,
+                                    category: category
+                                }
+                            }).catch(err => console.warn('Old subscription cancellation failed:', err));
+                        }
+                    } catch (e) {
+                        console.error('Error processing subscription cancellation:', e);
+                    }
                 }
 
                 // Parse existing current_plan (handle both old string format and new JSON format)
@@ -2700,7 +2879,30 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                 }
 
                 // 1. Get medication details for the new structured format
-                const selectedMedication = formData.dosage_preference || formData.selected_drug || submission.selected_drug || '';
+                const drugSlug = formData.selected_drug || submission.selected_drug || '';
+                const dosagePref = formData.dosage_preference || submission.dosage_preference || '';
+
+                // Construct a pretty name - prioritize base product name from master catalog
+                let masterInfo = MASTER_PRODUCT_MAP[drugSlug];
+
+                // Fuzzy match for Product Name if no exact slug match
+                if (!masterInfo && drugSlug) {
+                    const key = Object.keys(MASTER_PRODUCT_MAP).find(k => {
+                        const nk = k.replace(/-/g, ' ').toLowerCase();
+                        const ns = drugSlug.replace(/-/g, ' ').toLowerCase();
+                        return nk.includes(ns) || ns.includes(nk);
+                    });
+                    if (key) masterInfo = MASTER_PRODUCT_MAP[key];
+                }
+
+                let selectedMedication = masterInfo
+                    ? `${masterInfo.name} ${masterInfo.dosage === 'TBA' ? '' : (masterInfo.dosage || '')} ${masterInfo.plan}`.replace(/\s+/g, ' ').trim()
+                    : (drugSlug ? drugSlug.replace(/-/g, ' ').replace(/(^\w|\s\w)/g, m => m.toUpperCase()) : dosagePref);
+
+                // If it's a dosage change and we don't have a drug slug match, ensure we mention the dosage pref
+                if (formData.submission_type === 'dosage_change' && !masterInfo && dosagePref) {
+                    selectedMedication = dosagePref;
+                }
                 const price = parseFloat(formData.price || submission.approved_price || '0');
 
                 // Determine plan type - check name first, then price
@@ -2742,10 +2944,32 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                     };
                 }
 
+                // Also sync the subscription ID map if there's a new ID from a charge process
+                let subIdMap = {};
+                try {
+                    const currentSubId = profileData?.stripe_subscription_id;
+                    if (typeof currentSubId === 'string' && currentSubId.startsWith('{')) {
+                        subIdMap = JSON.parse(currentSubId);
+                    } else if (typeof currentSubId === 'object' && currentSubId !== null) {
+                        subIdMap = currentSubId;
+                    } else if (currentSubId) {
+                        subIdMap = { 'weight_loss': currentSubId };
+                    }
+                } catch { subIdMap = {}; }
+
+                // If the submission has a stripe_subscription_id (set by charge-customer-responder---v2), use it
+                const newSubId = formData.stripe_subscription_id || submission.stripe_subscription_id;
+                if (newSubId) {
+                    subIdMap[category] = newSubId;
+                }
+
                 // Save back as stringified JSON
                 const { error: profileUpdateError } = await supabase
                     .from('profiles')
-                    .update({ current_plan: JSON.stringify(currentPlans) })
+                    .update({
+                        current_plan: JSON.stringify(currentPlans),
+                        stripe_subscription_id: JSON.stringify(subIdMap)
+                    })
                     .eq('id', submission.user_id);
 
                 if (profileUpdateError) {
@@ -2776,12 +3000,36 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                 } else {
                     console.warn('No valid phone number found for approval SMS');
                 }
+
+                // Send approval email for dosage/medication change requests
+                if (isChangeRequest) {
+                    const patientEmail = formData.email || submission.email || formData.shipping_email;
+                    const patientName = formData.shipping_first_name || submission.shipping_first_name || 'Valued Patient';
+                    const drugName = formData.selected_drug || submission.selected_drug || '';
+                    const dosageValue = formData.dosage_preference || submission.dosage_preference || '';
+                    const changeType = formData.submission_type === 'dosage_change' ? 'Dosage Adjustment' : 'Medication Change';
+
+                    if (patientEmail) {
+                        await supabase.functions.invoke('send-email---v2', {
+                            method: 'POST',
+                            body: {
+                                type: 'dosage_change_approved',
+                                email: patientEmail,
+                                first_name: patientName,
+                                drug_name: selectedMedication,
+                                dosage: dosageValue === 'TBA' ? '' : dosageValue,
+                                change_type: changeType
+                            }
+                        }).catch(err => console.warn('Approval email failed:', err));
+                        console.log(`Dosage/medication change approval email sent to ${patientEmail}`);
+                    }
+                }
             }
 
             // 3. If rejected, send email & SMS notification
             if (status === 'rejected') {
                 console.log('Submission rejected. Sending notification email & SMS...');
-                const { error: emailError } = await supabase.functions.invoke('send-email', {
+                const { error: emailError } = await supabase.functions.invoke('send-email---v2', {
                     method: 'POST',
                     body: {
                         type: 'REJECTION',
@@ -2982,7 +3230,13 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 <h3 className="text-3xl 2xl:text-5xl font-black uppercase tracking-tighter leading-none text-white">Review <span className="text-white">Assessment</span></h3>
                                 <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-[8px] 2xl:text-[10px] font-black text-white uppercase tracking-widest">{String(submission.id).substring(0, 8)}</span>
                             </div>
-                            <p className="text-[10px] 2xl:text-xs text-white uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">{formData.shipping_first_name} {formData.shipping_last_name}</span></p>
+                            <p className="text-[10px] 2xl:text-xs text-white uppercase font-black tracking-[0.2em]">Complete Clinical Intelligence for <span className="text-white">
+                                {displaySubmission.shipping_first_name
+                                    ? `${displaySubmission.shipping_first_name} ${displaySubmission.shipping_last_name || ''}`
+                                    : (intake?.shipping?.firstName
+                                        ? `${intake.shipping.firstName} ${intake.shipping.lastName || ''}`
+                                        : (displaySubmission.email || 'This Patient'))}
+                            </span></p>
                         </div>
                         <div className="flex flex-wrap items-center gap-4">
 
@@ -3093,19 +3347,18 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 {/* Personal Information */}
                                 <SectionHeader title="Personal Information" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                    <InfoRow label="First Name" field="shipping_first_name" value={formData.shipping_first_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Last Name" field="shipping_last_name" value={formData.shipping_last_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Email" field="email" value={formData.email || formData.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Sex" field="sex" value={formData.sex || intake.sex || intake.assigned_sex_intake || (intake.eligibility && intake.eligibility.sex)} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Date of Birth" field="date_of_birth" value={formData.date_of_birth ||
-                                        profileData?.date_of_birth ||
+                                    <InfoRow label="First Name" field="shipping_first_name" value={displaySubmission.shipping_first_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Last Name" field="shipping_last_name" value={displaySubmission.shipping_last_name} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Email" field="email" value={displaySubmission.email || displaySubmission.shipping_email} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Sex" field="sex" value={displaySubmission.sex || intake.sex || intake.assigned_sex_intake || (intake.eligibility && intake.eligibility.sex)} type="select" options={['male', 'female', 'other']} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Date of Birth" field="date_of_birth" value={displaySubmission.date_of_birth ||
                                         (typeof intake.dob === 'object' ? `${intake.dob.month}/${intake.dob.day}/${intake.dob.year}` : intake.dob) ||
                                         (typeof intake.date_of_birth === 'object' ? `${intake.date_of_birth.month}/${intake.date_of_birth.day}/${intake.date_of_birth.year}` : intake.date_of_birth) ||
                                         (intake.eligibility && (typeof intake.eligibility.dob === 'object' ? `${intake.eligibility.dob.month}/${intake.eligibility.dob.day}/${intake.eligibility.dob.year}` : intake.eligibility.dob)) ||
-                                        formData.dob ||
-                                        submission.birthday} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="State" field="shipping_state" value={formData.shipping_state || formData.state || (intake.eligibility && intake.eligibility.state)} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={formData.race_ethnicity || intake.ethnicity || intake.race || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                        displaySubmission.dob ||
+                                        displaySubmission.birthday} type="date" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="State" field="shipping_state" value={displaySubmission.shipping_state || displaySubmission.state || (intake.eligibility && intake.eligibility.state)} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Race/Ethnicity" field="race_ethnicity" value={displaySubmission.race_ethnicity || intake.ethnicity || intake.race || 'Not specified'} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
 
                                 {/* Physical Measurements - Only show for Weight Loss */}
@@ -3147,7 +3400,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                     } isEditing={isEditing} formData={formData} onChange={handleChange} />
                                                 )}
 
-                                                <InfoRow label="Weight (lbs)" field="weight" value={formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight || 'N/A'} type="number" isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                                <InfoRow label="Weight (lbs)" field="weight" value={displaySubmission.weight || intake.weight || intake.bmi_weight || intake.bmiWeight || 'N/A'} type="number" isEditing={isEditing} formData={formData} onChange={handleChange} />
 
                                                 <div className="md:col-span-2 mt-4">
                                                     <div className="flex items-center justify-between p-8 bg-accent-black/[0.03] border border-accent-black/10 rounded-[32px]">
@@ -3159,9 +3412,9 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                                             <p className="text-4xl font-black  tracking-tighter text-white leading-none mb-1">
                                                                 {/* Recalculate BMI if editing */}
                                                                 {(() => {
-                                                                    const hFeet = formData.height_feet || (intake.height_feet) || (intake.bmi_height_feet);
-                                                                    const hInches = formData.height_inches || (intake.height_inches) || (intake.bmi_height_inches) || 0;
-                                                                    const wVal = formData.weight || intake.weight || intake.bmi_weight || intake.bmiWeight;
+                                                                    const hFeet = displaySubmission.height_feet || (intake.height_feet) || (intake.bmi_height_feet);
+                                                                    const hInches = displaySubmission.height_inches || (intake.height_inches) || (intake.bmi_height_inches) || 0;
+                                                                    const wVal = displaySubmission.weight || intake.weight || intake.bmi_weight || intake.bmiWeight;
 
                                                                     const hTotal = (Number(hFeet) * 12) + Number(hInches);
                                                                     const w = Number(wVal);
@@ -3192,7 +3445,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         <InfoRow
                                             label="Program Category"
                                             field="selected_drug"
-                                            value={formData.selected_drug || 'General Consult'}
+                                            value={displaySubmission.selected_drug || 'General Consult'}
                                             type="select"
                                             options={[
                                                 { value: 'weight-loss', label: 'Weight Loss' },
@@ -3205,7 +3458,7 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                         />
                                         <InfoRow
                                             label="Subscription Plan"
-                                            value={formData.subscription_plan || intake.subscription_plan || 'Not Selected'}
+                                            value={displaySubmission.subscription_plan || intake.subscription_plan || 'Not Selected'}
                                             isEditing={false}
                                         />
                                     </div>
@@ -3335,134 +3588,150 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
 
 
                                     {(() => {
-                                        const categoryId = getMedicationCategoryId(formData.selected_drug);
-                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'];
-                                        const answers = (formData.medical_responses && Object.keys(formData.medical_responses).length > 0)
-                                            ? formData.medical_responses
-                                            : (formData.intake_data || {});
+                                        // Resolve category from current or historical data to ensure we show the right questions
+                                        const drugSource = displaySubmission.selected_drug || 'weight-loss';
+                                        const categoryId = getMedicationCategoryId(drugSource);
+                                        const questions = intakeQuestions[categoryId] || intakeQuestions['weight-loss'] || [];
 
-                                        return questions
-                                            .filter(q => q.id !== 'other_health_goals' && q.id !== 'selected_medication' && q.id !== 'medication_preference' && q.id !== 'dosage_preference' && q.id !== 'pcp_labs')
-                                            .map((q) => {
-                                                if (q.type === 'info') return null;
+                                        // Merge historical answers with current ones using the robust logic defined in intake literal
+                                        const answers = intake;
 
-                                                let answer = answers[q.id];
+                                        return (
+                                            <>
+                                                {previousAssessment && (
+                                                    <div className="mb-6 p-4 bg-accent-black/5 border border-accent-black/10 rounded-2xl flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-accent-black/10 flex items-center justify-center text-accent-black">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
+                                                        </div>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#bfff00]">
+                                                            Displaying Integrated Clinical Profile (Current Request + Historical Assessment)
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                {questions
+                                                    .filter(q => q.id !== 'other_health_goals' && q.id !== 'selected_medication' && q.id !== 'medication_preference' && q.id !== 'dosage_preference' && q.id !== 'pcp_labs')
+                                                    .map((q) => {
+                                                        if (q.type === 'info') return null;
 
-                                                // Fallback for top-level keys if not in medical_responses
-                                                if (answer === undefined && formData[q.id]) answer = formData[q.id];
+                                                        let answer = answers[q.id];
 
-                                                if ((answer === undefined || answer === null || answer === '') && !isEditing) return null;
+                                                        // Fallback for top-level keys if not in medical_responses
+                                                        if (answer === undefined && formData[q.id]) answer = formData[q.id];
 
-                                                return (
-                                                    <div key={q.id} className="flex flex-col gap-2 border-b border-white/10 pb-6 last:border-0">
-                                                        <p className="text-[10px] 2xl:text-xs font-black tracking-widest text-white mb-1">{q.question}</p>
-                                                        {isEditing ? (
-                                                            q.type === 'select' || q.type === 'boolean' || (q.options?.length > 0) ? (
-                                                                <select
-                                                                    value={answer || ''}
-                                                                    onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
-                                                                >
-                                                                    <option value="">Select...</option>
-                                                                    {q.options ? q.options.map(opt => (
-                                                                        <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value}>
-                                                                            {typeof opt === 'string' ? opt : opt.label}
-                                                                        </option>
-                                                                    )) : (
-                                                                        <>
-                                                                            <option value="Yes">Yes</option>
-                                                                            <option value="No">No</option>
-                                                                        </>
-                                                                    )}
-                                                                </select>
-                                                            ) : (
-                                                                <textarea
-                                                                    value={answer || ''}
-                                                                    onChange={(e) => handleIntakeChange(q.id, e.target.value)}
-                                                                    className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
-                                                                />
-                                                            )
-                                                        ) : (
-                                                            <div className="text-sm 2xl:text-base font-bold text-white leading-relaxed">
-                                                                {Array.isArray(answer) ? (
-                                                                    <ul className="list-disc list-inside space-y-1 marker:text-white">
-                                                                        {answer.map((item, i) => <li key={i}>{item}</li>)}
-                                                                    </ul>
-                                                                ) : (
-                                                                    answer?.toString()
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                        if ((answer === undefined || answer === null || answer === '') && !isEditing) return null;
 
-                                                        {/* Edit details if applicable */}
-                                                        {(q.details || answers[`${q.id}_details`]) && (
-                                                            <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
-                                                                <p className="text-[9px] 2xl:text-xs text-white font-black uppercase tracking-wider mb-2">Details:</p>
+                                                        return (
+                                                            <div key={q.id} className="flex flex-col gap-2 border-b border-white/10 pb-6 last:border-0">
+                                                                <p className="text-[10px] 2xl:text-xs font-black tracking-widest text-white mb-1">{q.question}</p>
                                                                 {isEditing ? (
-                                                                    <textarea
-                                                                        value={answers[`${q.id}_details`] || ''}
-                                                                        onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
-                                                                        className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
-                                                                    />
-                                                                ) : (
-                                                                    <p className="text-sm 2xl:text-base text-white">{answers[`${q.id}_details`]}</p>
-                                                                )}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Files (e.g. current_meds upload, lab results, ID, Step 19) */}
-                                                        {(q.upload || q.isStep19) && (() => {
-                                                            const fileUrls = [...new Set([
-                                                                answers[`${q.id}_file`],
-                                                                (q.id === 'current_medications' || q.id === 'current_meds') && formData.glp1_prescription_url,
-                                                            ].filter(Boolean).flat())];
-
-                                                            if (fileUrls.length === 0) return null;
-
-                                                            return (
-                                                                <div className="mt-3 flex flex-wrap gap-2">
-                                                                    {fileUrls.map((url, fi) => (
-                                                                        <a
-                                                                            key={fi}
-                                                                            href={url}
-                                                                            target="_blank"
-                                                                            rel="noreferrer"
-                                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/30 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all"
+                                                                    q.type === 'select' || q.type === 'boolean' || (q.options?.length > 0) ? (
+                                                                        <select
+                                                                            value={answer || ''}
+                                                                            onChange={(e) => handleIntakeChange(q.id, e.target.value)}
+                                                                            className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
                                                                         >
-                                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
-                                                                            {fileUrls.length > 1 ? `View Document ${fi + 1}` : (q.isStep19 ? 'View Prescription Photo' : 'View Document')}
-                                                                        </a>
-                                                                    ))}
-                                                                </div>
-                                                            );
-                                                        })()}
+                                                                            <option value="">Select...</option>
+                                                                            {q.options ? q.options.map(opt => (
+                                                                                <option key={typeof opt === 'string' ? opt : opt.value} value={typeof opt === 'string' ? opt : opt.value}>
+                                                                                    {typeof opt === 'string' ? opt : opt.label}
+                                                                                </option>
+                                                                            )) : (
+                                                                                <>
+                                                                                    <option value="Yes">Yes</option>
+                                                                                    <option value="No">No</option>
+                                                                                </>
+                                                                            )}
+                                                                        </select>
+                                                                    ) : (
+                                                                        <textarea
+                                                                            value={answer || ''}
+                                                                            onChange={(e) => handleIntakeChange(q.id, e.target.value)}
+                                                                            className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full h-24"
+                                                                        />
+                                                                    )
+                                                                ) : (
+                                                                    <div className="text-sm 2xl:text-base font-bold text-white leading-relaxed">
+                                                                        {Array.isArray(answer) ? (
+                                                                            <ul className="list-disc list-inside space-y-1 marker:text-white">
+                                                                                {answer.map((item, i) => <li key={i}>{item}</li>)}
+                                                                            </ul>
+                                                                        ) : (
+                                                                            answer?.toString()
+                                                                        )}
+                                                                    </div>
+                                                                )}
 
-                                                        {/* Past Dosage for Step 19 */}
-                                                        {q.isStep19 && (answers.past_dosage || answers.pastDosage) && (
-                                                            <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl">
-                                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Past Dosage Amount</p>
-                                                                <p className="text-sm font-bold text-white/80">{answers.past_dosage || answers.pastDosage}</p>
-                                                            </div>
-                                                        )}
+                                                                {/* Edit details if applicable */}
+                                                                {(q.details || answers[`${q.id}_details`]) && (
+                                                                    <div className="mt-3 pl-4 border-l-2 border-accent-black/30">
+                                                                        <p className="text-[9px] 2xl:text-xs text-white font-black uppercase tracking-wider mb-2">Details:</p>
+                                                                        {isEditing ? (
+                                                                            <textarea
+                                                                                value={answers[`${q.id}_details`] || ''}
+                                                                                onChange={(e) => handleIntakeChange(`${q.id}_details`, e.target.value)}
+                                                                                className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white focus:outline-none focus:border-accent-black w-full"
+                                                                            />
+                                                                        ) : (
+                                                                            <p className="text-sm 2xl:text-base text-white">{answers[`${q.id}_details`]}</p>
+                                                                        )}
+                                                                    </div>
+                                                                )}
 
-                                                        {/* Dosage Preference for Step 19 */}
-                                                        {q.isStep19 && (answers.dosagePreference || answers.dosage_preference) && (
-                                                            <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                                                                <div>
-                                                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Dosage Preference</p>
-                                                                    <p className="text-sm font-bold text-white/80">{answers.dosagePreference || answers.dosage_preference}</p>
-                                                                </div>
-                                                                {(answers.desiredDose || answers.desired_dose) && (
-                                                                    <div className="pt-2 border-t border-white/5">
-                                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Desired Dose</p>
-                                                                        <p className="text-sm font-bold text-accent-black bg-accent-black/10 px-2 py-0.5 rounded inline-block">{answers.desiredDose || answers.desired_dose}</p>
+                                                                {/* Files (e.g. current_meds upload, lab results, ID, Step 19) */}
+                                                                {(q.upload || q.isStep19) && (() => {
+                                                                    const fileUrls = [...new Set([
+                                                                        answers[`${q.id}_file`],
+                                                                        (q.id === 'current_medications' || q.id === 'current_meds') && formData.glp1_prescription_url,
+                                                                    ].filter(Boolean).flat())];
+
+                                                                    if (fileUrls.length === 0) return null;
+
+                                                                    return (
+                                                                        <div className="mt-3 flex flex-wrap gap-2">
+                                                                            {fileUrls.map((url, fi) => (
+                                                                                <a
+                                                                                    key={fi}
+                                                                                    href={url}
+                                                                                    target="_blank"
+                                                                                    rel="noreferrer"
+                                                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-accent-black/10 border border-accent-black/30 rounded-lg text-[10px] font-black uppercase tracking-widest text-white hover:bg-accent-black hover:text-white transition-all"
+                                                                                >
+                                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                                                                                    {fileUrls.length > 1 ? `View Document ${fi + 1}` : (q.isStep19 ? 'View Prescription Photo' : 'View Document')}
+                                                                                </a>
+                                                                            ))}
+                                                                        </div>
+                                                                    );
+                                                                })()}
+
+                                                                {/* Past Dosage for Step 19 */}
+                                                                {q.isStep19 && (answers.past_dosage || answers.pastDosage) && (
+                                                                    <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl">
+                                                                        <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Past Dosage Amount</p>
+                                                                        <p className="text-sm font-bold text-white/80">{answers.past_dosage || answers.pastDosage}</p>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Dosage Preference for Step 19 */}
+                                                                {q.isStep19 && (answers.dosagePreference || answers.dosage_preference) && (
+                                                                    <div className="mt-3 px-4 py-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
+                                                                        <div>
+                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Dosage Preference</p>
+                                                                            <p className="text-sm font-bold text-white/80">{answers.dosagePreference || answers.dosage_preference}</p>
+                                                                        </div>
+                                                                        {(answers.desiredDose || answers.desired_dose) && (
+                                                                            <div className="pt-2 border-t border-white/5">
+                                                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Desired Dose</p>
+                                                                                <p className="text-sm font-bold text-accent-black bg-accent-black/10 px-2 py-0.5 rounded inline-block">{answers.desiredDose || answers.desired_dose}</p>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            });
+                                                        );
+                                                    })}
+                                            </>
+                                        );
                                     })()}
                                 </div>
 
@@ -3586,9 +3855,9 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                 {/* Identification */}
                                 <SectionHeader title="Security & Verification" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                    <InfoRow label="ID Type" field="identification_type" value={formData.identification_type || 'License'} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="ID Number" field="identification_number" value={formData.identification_number || '????????'} isEditing={isEditing} formData={formData} onChange={handleChange} />
-                                    <InfoRow label="Identification Document" value={formData.identification_url} isFile={!!formData.identification_url} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="ID Type" field="identification_type" value={displaySubmission.identification_type || intake?.identification?.type || 'Not provided'} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="ID Number" field="identification_number" value={displaySubmission.identification_number || intake?.identification?.number || 'Not provided'} isEditing={isEditing} formData={formData} onChange={handleChange} />
+                                    <InfoRow label="Identification Document" value={displaySubmission.identification_url || intake?.identification?.file_url} isFile={!!(displaySubmission.identification_url || intake?.identification?.file_url)} isEditing={isEditing} formData={formData} onChange={handleChange} />
                                 </div>
 
                                 {/* Shipping & Logistics */}
@@ -3617,12 +3886,16 @@ const SubmissionModal = ({ submission, onClose, onAction, staff = [] }) => {
                                             </div>
                                         ) : (
                                             <div>
-                                                <h5 className="text-xl font-black uppercase  tracking-tighter mb-2">{formData.shipping_first_name} {formData.shipping_last_name}</h5>
+                                                <h5 className="text-xl font-black uppercase tracking-tighter mb-2">
+                                                    {displaySubmission.shipping_first_name || intake?.shipping?.firstName} {displaySubmission.shipping_last_name || intake?.shipping?.lastName}
+                                                </h5>
                                                 <p className="text-[11px] text-white/70 leading-[1.8] font-bold uppercase tracking-widest">
-                                                    {formData.shipping_street || formData.shipping_address}<br />
-                                                    {formData.shipping_city}, {formData.shipping_state} {formData.shipping_zip}<br />
-                                                    <span className="text-white">PH: {formData.shipping_phone}</span><br />
-                                                    <span className="text-white/50">{formData.shipping_email}</span>
+                                                    {displaySubmission.shipping_street || displaySubmission.shipping_address || intake?.shipping?.address}<br />
+                                                    {displaySubmission.shipping_city || intake?.shipping?.city}, {displaySubmission.shipping_state || intake?.shipping?.state} {displaySubmission.shipping_zip || intake?.shipping?.zip}<br />
+                                                    {(displaySubmission.shipping_phone || intake?.shipping?.phone || profileData?.phone_number) && (
+                                                        <span className="text-white">PH: {displaySubmission.shipping_phone || intake?.shipping?.phone || profileData?.phone_number}</span>
+                                                    )}<br />
+                                                    <span className="text-white/50">{displaySubmission.shipping_email || intake?.shipping?.email}</span>
                                                 </p>
                                             </div>
                                         )}
@@ -3788,6 +4061,8 @@ const ClinicalQueue = ({ user, role }) => {
     const [reviewingSubmission, setReviewingSubmission] = useState(null);
     const [assigningSubmission, setAssigningSubmission] = useState(null);
     const [staff, setStaff] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
 
     const [pendingCounts, setPendingCounts] = useState({});
 
@@ -3934,6 +4209,9 @@ const ClinicalQueue = ({ user, role }) => {
     };
 
     useEffect(() => {
+        // Reset to page 1 whenever filters change
+        setCurrentPage(1);
+
         // Only fetch when user and role are both available to avoid unfiltered requests
         if (user?.id && role) {
             console.log('[ClinicalQueue] Triggering fetchQueue because requirements met.');
@@ -3994,6 +4272,10 @@ const ClinicalQueue = ({ user, role }) => {
             }));
         }
     }, [filter, queue, user]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filter]);
 
     if (loading) return (
         <div className="py-20 flex flex-col items-center justify-center gap-4">
@@ -4061,98 +4343,136 @@ const ClinicalQueue = ({ user, role }) => {
                         <p className="opacity-20 uppercase font-black text-xs tracking-widest">No pending {filter !== 'all' ? filter.replace('-', ' ') : ''} submissions</p>
                     </div>
                 ) : (
-                    filteredQueue.map(item => {
-                        const catInfo = categories.find(c => c.id === item.selected_drug) || categories[0];
-                        return (
-                            <div key={item.id} className="group p-6 md:p-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[40px] hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div className="flex flex-col md:flex-row md:items-center gap-6">
-                                    <div
-                                        className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl  border border-white/10 shrink-0"
-                                        style={{ color: catInfo.color, backgroundColor: `${catInfo.color}10` }}
-                                    >
-                                        {item.shipping_first_name?.charAt(0) || '?'}
-                                    </div>
-                                    <div>
-                                        <div className="flex flex-wrap items-center gap-3 mb-1">
-                                            <p className="text-lg font-black uppercase tracking-tighter ">{item.shipping_first_name} {item.shipping_last_name}</p>
-                                            <span
-                                                className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border"
-                                                style={{ borderColor: `${catInfo.color}40`, color: catInfo.color, backgroundColor: `${catInfo.color}05` }}
+                    <>
+                        {filteredQueue
+                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                            .map(item => {
+                                const catInfo = categories.find(c => c.id === item.selected_drug) || categories[0];
+                                return (
+                                    <div key={item.id} className="group p-6 md:p-8 bg-white/5 border border-white/10 rounded-3xl md:rounded-[40px] hover:border-white/20 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-6">
+                                            <div
+                                                className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl  border border-white/10 shrink-0"
+                                                style={{ color: catInfo.color, backgroundColor: `${catInfo.color}10` }}
                                             >
-                                                {item.selected_drug?.replace('-', ' ')}
-                                            </span>
-                                            {/* Dosage/Medication Change Tags */}
-                                            {item.additional_health_info && item.additional_health_info.includes('[DOSAGE CHANGE REQUEST]') && (
-                                                <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-purple-500/40 text-purple-400 bg-purple-500/10">
-                                                    Dosage Change
-                                                </span>
-                                            )}
-                                            {item.additional_health_info && item.additional_health_info.includes('[MEDICATION CHANGE REQUEST]') && (
-                                                <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-blue-500/40 text-blue-400 bg-blue-500/10">
-                                                    Medication Change
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-4 text-[10px] text-white/50 uppercase font-black tracking-widest">
-                                            <span>Received {new Date(item.submitted_at).toLocaleDateString()}</span>
-                                            <span className="w-1 h-1 bg-white/5 rounded-full"></span>
-                                            <span>{item.shipping_state}</span>
-                                            <span className="w-1 h-1 bg-white/5 rounded-full"></span>
-                                            <div className="flex items-center gap-3">
-                                                {item.assigned_provider_id && (
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/assigned">
-                                                            <div className="flex flex-col text-left">
-                                                                <span className="text-[7px] font-black uppercase tracking-widest text-white">Assigned To</span>
-                                                                <span className="text-[10px] font-black uppercase text-white">
-                                                                    {staff.find(s => s.id === item.assigned_provider_id)?.display_name || 'Assigned Staff'}
-                                                                </span>
-                                                            </div>
-                                                            <button
-                                                                onClick={() => setAssigningSubmission(item)}
-                                                                className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:bg-accent-black hover:text-white hover:border-accent-black transition-all"
-                                                                title="Change Assignment"
-                                                            >
-                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
-                                                            </button>
-                                                        </div>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); handleAssign(item.id, null); }}
-                                                            className="px-4 py-2 border border-red-500/20 rounded-xl text-[8px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                                                        >
-                                                            Unassign
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                {(item.shipping_first_name || item.email || item.selected_drug || '?').charAt(0).toUpperCase()}
                                             </div>
+                                            <div>
+                                                <div className="flex flex-wrap items-center gap-3 mb-1">
+                                                    <p className="text-lg font-black uppercase tracking-tighter ">
+                                                        {item.shipping_first_name
+                                                            ? `${item.shipping_first_name} ${item.shipping_last_name || ''}`
+                                                            : (item.email || item.selected_drug?.replace(/-/g, ' ') || 'Patient')}
+                                                    </p>
+                                                    <span
+                                                        className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border"
+                                                        style={{ borderColor: `${catInfo.color}40`, color: catInfo.color, backgroundColor: `${catInfo.color}05` }}
+                                                    >
+                                                        {item.selected_drug?.replace('-', ' ')}
+                                                    </span>
+                                                    {/* Dosage/Medication Change Tags */}
+                                                    {item.additional_health_info && item.additional_health_info.includes('[DOSAGE CHANGE REQUEST]') && (
+                                                        <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-purple-500/40 text-purple-400 bg-purple-500/10">
+                                                            Dosage Change
+                                                        </span>
+                                                    )}
+                                                    {item.additional_health_info && item.additional_health_info.includes('[MEDICATION CHANGE REQUEST]') && (
+                                                        <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-blue-500/40 text-blue-400 bg-blue-500/10">
+                                                            Medication Change
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-4 text-[10px] text-white/50 uppercase font-black tracking-widest">
+                                                    <span>Received {new Date(item.submitted_at).toLocaleDateString()}</span>
+                                                    <span className="w-1 h-1 bg-white/5 rounded-full"></span>
+                                                    <span>{item.shipping_state}</span>
+                                                    <span className="w-1 h-1 bg-white/5 rounded-full"></span>
+                                                    <div className="flex items-center gap-3">
+                                                        {item.assigned_provider_id && (
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/assigned">
+                                                                    <div className="flex flex-col text-left">
+                                                                        <span className="text-[7px] font-black uppercase tracking-widest text-white">Assigned To</span>
+                                                                        <span className="text-[10px] font-black uppercase text-white">
+                                                                            {staff.find(s => s.id === item.assigned_provider_id)?.display_name || 'Assigned Staff'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => setAssigningSubmission(item)}
+                                                                        className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:bg-accent-black hover:text-white hover:border-accent-black transition-all"
+                                                                        title="Change Assignment"
+                                                                    >
+                                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleAssign(item.id, null); }}
+                                                                    className="px-4 py-2 border border-red-500/20 rounded-xl text-[8px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                                                >
+                                                                    Unassign
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div >
+                                        <div className="flex items-center gap-3">
+                                            {!item.assigned_provider_id && (
+                                                <button
+                                                    onClick={() => setAssigningSubmission(item)}
+                                                    className="px-6 py-5 bg-white/[0.03] border border-white/10 text-white/40 hover:text-white hover:border-white/30 rounded-2xl font-black text-[10px] 2xl:text-xs uppercase tracking-widest transition-all flex items-center gap-2"
+                                                >
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="8.5" cy="7" r="4" />
+                                                        <line x1="20" y1="8" x2="20" y2="14" />
+                                                        <line x1="23" y1="11" x2="17" y2="11" />
+                                                    </svg>
+                                                    Assign Assessment
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => setReviewingSubmission(item)}
+                                                className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-black hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
+                                            >
+                                                {statusFilter === 'pending' ? 'Review Submission' : 'View Record'}
+                                            </button>
                                         </div>
-                                    </div>
-                                </div >
-                                <div className="flex items-center gap-3">
-                                    {!item.assigned_provider_id && (
+                                    </div >
+                                );
+                            })}
+
+                        {filteredQueue.length > itemsPerPage && (
+                            <div className="flex items-center justify-center gap-2 pt-8">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-all"
+                                >
+                                    Previous
+                                </button>
+                                <div className="flex items-center gap-1">
+                                    {[...Array(Math.ceil(filteredQueue.length / itemsPerPage))].map((_, i) => (
                                         <button
-                                            onClick={() => setAssigningSubmission(item)}
-                                            className="px-6 py-5 bg-white/[0.03] border border-white/10 text-white/40 hover:text-white hover:border-white/30 rounded-2xl font-black text-[10px] 2xl:text-xs uppercase tracking-widest transition-all flex items-center gap-2"
+                                            key={i}
+                                            onClick={() => setCurrentPage(i + 1)}
+                                            className={`w-8 h-8 flex items-center justify-center rounded-xl text-[10px] font-black transition-all ${currentPage === i + 1 ? 'bg-white text-black' : 'bg-white/5 text-white/40 border border-white/10 hover:bg-white/10'}`}
                                         >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                                <circle cx="8.5" cy="7" r="4" />
-                                                <line x1="20" y1="8" x2="20" y2="14" />
-                                                <line x1="23" y1="11" x2="17" y2="11" />
-                                            </svg>
-                                            Assign Assessment
+                                            {i + 1}
                                         </button>
-                                    )}
-                                    <button
-                                        onClick={() => setReviewingSubmission(item)}
-                                        className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-accent-black hover:shadow-[0_0_40px_rgba(255,222,89,0.4)] transition-all"
-                                    >
-                                        {statusFilter === 'pending' ? 'Review Submission' : 'View Record'}
-                                    </button>
+                                    ))}
                                 </div>
-                            </div >
-                        );
-                    })
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredQueue.length / itemsPerPage), prev + 1))}
+                                    disabled={currentPage === Math.ceil(filteredQueue.length / itemsPerPage)}
+                                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-all"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div >
 
@@ -4835,7 +5155,7 @@ const PatientExpressEntry = () => {
             // Send User Setup Email
             try {
                 const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || 'Treatment';
-                const { error: emailError } = await supabase.functions.invoke('send-email', {
+                const { error: emailError } = await supabase.functions.invoke('send-email---v2', {
                     body: {
                         type: 'USER_SETUP',
                         email: patientEmail,
@@ -7118,7 +7438,7 @@ const OrderManagement = () => {
             if (updateError) throw updateError;
 
             // 2. Send Email Notification
-            const { error: emailError } = await supabase.functions.invoke('send-email', {
+            const { error: emailError } = await supabase.functions.invoke('send-email---v2', {
                 method: 'POST',
                 body: {
                     userId: order.user_id,
@@ -7893,7 +8213,7 @@ const StatementDocument = ({ stmt, rates }) => {
                         <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
                         <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
                     </div>
-                    {/* uGlowMD Logo ? top right, large */}
+                    {/* uGlowMD Logo — top right, large */}
                     <div style={{ textAlign: 'right' }}>
                         <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', display: 'inline-block', filter: 'brightness(0)' }} />
                         <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Portal</div>
@@ -9352,7 +9672,7 @@ const AdminDashboard = () => {
                         <button
                             onClick={() => {
                                 signOut();
-                                navigate('/admin-sign-in');
+                                navigate('/company-login');
                             }}
                             className="w-full flex items-center gap-3 px-4 py-3 mt-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all border border-red-500/10 hover:border-red-500/30"
                         >

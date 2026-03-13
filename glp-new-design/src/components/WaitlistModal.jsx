@@ -110,13 +110,13 @@ const WaitlistModal = ({ isOpen, onClose, user, profile }) => {
                     </div>
 
                     <h2 className="text-4xl md:text-5xl font-black text-[#FAF9F6] mb-6 leading-tight uppercase italic tracking-tighter">
-                        Retatruide: <br />
+                        Retatrutide: <br />
                         <span className="text-[#FFC7A2]">The Successor.</span>
                     </h2>
 
                     <div className="space-y-6 mb-10 text-[#FAF9F6]/70 leading-relaxed text-lg">
                         <p>
-                            Prepare for the next evolution in metabolic science. <span className="text-[#FAF9F6] font-bold">Retatruide</span> is a breakthrough triple-hormone agonist, engineered to be the definitive successor to Tirzepatide.
+                            Prepare for the next evolution in metabolic science. <span className="text-[#FAF9F6] font-bold">Retatrutide</span> is a breakthrough triple-hormone agonist, engineered to be the definitive successor to Tirzepatide.
                         </p>
                         <p>
                             Designed for high-precision <span className="text-[#FFC7A2] italic underline decoration-[#FFC7A2]/30 underline-offset-4">Subcutaneous Injections</span>, this treatment targets three key pathways for unmatched weight management and metabolic optimization.

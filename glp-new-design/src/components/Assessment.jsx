@@ -102,9 +102,8 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
             if (accessToken) invokeHeaders['Authorization'] = `Bearer ${accessToken}`;
 
             if (amount > 0) {
-                // Payment Intent for > $0
+                // Payment Intent for > $0 using standard edge function
                 const { data, error: intentError } = await supabase.functions.invoke('create-payment-intent', {
-                    method: 'POST',
                     body: {
                         couponCode: couponCode || null,
                         amount: amount,
@@ -112,8 +111,7 @@ const CheckoutForm = ({ onComplete, amount, couponCode, categoryId, tempUserId, 
                         categoryId: categoryId,
                         userId: session?.user?.id || tempUserId,
                         email: session?.user?.email || email
-                    },
-                    headers: invokeHeaders
+                    }
                 });
 
                 if (intentError || !data?.clientSecret) {
@@ -761,7 +759,8 @@ const Assessment = () => {
         if (!file) return;
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const filePath = `${folder}/${fileName}`;
+        const ownerId = user?.id || tempUserId;
+        const filePath = `${ownerId}/${folder}/${fileName}`;
 
         setUploading(folder);
         console.log('Upload starting for folder:', folder, 'User:', user?.id, 'TempUser:', tempUserId);
@@ -1038,7 +1037,7 @@ const Assessment = () => {
             })();
 
             if (isFree || categoryId === 'skin-care') {
-                await supabase.functions.invoke('send-email', {
+                await supabase.functions.invoke('send-email---v2', {
                     body: {
                         userId: user?.id,
                         email: user?.email || authData.email,
@@ -3568,12 +3567,12 @@ const Assessment = () => {
             // Step 19 Validation (Past Prescriptions)
             if (question.id === 'past_rx_weightloss') {
                 const selected = intakeData[question.id] || [];
-                const hasRetatruide = selected.includes('Retatruide');
+                const hasRetatrutide = selected.includes('Retatrutide');
                 const hasSema = selected.includes('Semaglutide (Wegovy/Ozempic)');
                 const hasTirz = selected.includes('Tirzepatide (Zepbound/Mounjaro)');
 
-                if (hasRetatruide && !intakeData[`${question.id}_file`]) {
-                    setIntakeError('⚠️ A prescription photo is strictly REQUIRED for Retatruide.');
+                if (hasRetatrutide && !intakeData[`${question.id}_file`]) {
+                    setIntakeError('⚠️ A prescription photo is strictly REQUIRED for Retatrutide.');
                     return;
                 }
 
@@ -3699,7 +3698,7 @@ const Assessment = () => {
                                 </div>
                                 {(intakeData[question.id]?.includes('Semaglutide (Wegovy/Ozempic)') ||
                                     intakeData[question.id]?.includes('Tirzepatide (Zepbound/Mounjaro)') ||
-                                    intakeData[question.id]?.includes('Retatruide')) && (
+                                    intakeData[question.id]?.includes('Retatrutide')) && (
                                         <div className="mt-8 p-8 bg-black/5 rounded-[32px] border border-black/10">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 text-black">Prescription Verification</h4>
 
@@ -3733,7 +3732,7 @@ const Assessment = () => {
                                                     onClick={() => document.getElementById('step19-upload').click()}
                                                     className="w-full py-4 border-2 border-dashed border-black/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black/40 hover:border-black transition-all"
                                                 >
-                                                    {intakeData[`${question.id}_file`]?.length > 0 ? 'Upload Another Prescription Photo' : `Upload Prescription Photo ${intakeData[question.id]?.includes('Retatruide') ? '(Required)' : ''}`}
+                                                    {intakeData[`${question.id}_file`]?.length > 0 ? 'Upload Another Prescription Photo' : `Upload Prescription Photo ${intakeData[question.id]?.includes('Retatrutide') ? '(Required)' : ''}`}
                                                 </button>
 
                                                 {pendingFile && pendingFile.type === 'past_rx' && (
@@ -3781,7 +3780,7 @@ const Assessment = () => {
                                                     </div>
                                                 )}
 
-                                                {!intakeData[question.id]?.includes('Retatruide') && (
+                                                {!intakeData[question.id]?.includes('Retatrutide') && (
                                                     <div className="space-y-3">
                                                         <p className="text-[9px] font-black uppercase tracking-widest text-black/40 text-center">— OR —</p>
                                                         <input
