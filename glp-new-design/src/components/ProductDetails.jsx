@@ -1994,7 +1994,7 @@ const ProductDetails = () => {
                             alt="Signature Medication"
                         />
                         <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] md:text-[10px] text-white font-bold uppercase tracking-[0.15em] whitespace-nowrap">
-                            * Not Compounded or package by us
+                            We do not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
                         </span>
                     </div>
 
