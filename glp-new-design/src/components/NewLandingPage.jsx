@@ -105,10 +105,10 @@ const NewLandingPage = () => {
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16 mx-auto">
                             {[
-                                { label: 'GLP-GLOW', title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGvcK-3tlbjIWtIFzaWM7UB-wTXnw-xcTorW6EKs35Zb_MJiXGdjts9GTFCcPx0XZzTI1Qh1vGq6hb1prDR0eaNEpH4piu0z8vq_PuI7CF4i_owBUEOXYSK6Kup0sSYvQGgj605M_GTD1kkVjaXhmsxgjWiS2yKiOIrVJnvlEWVLgi2LRAkSrjY1pPqBBmtDRX9_9RvXOjXBBFa6XzTnv9GJ0mJjDaXpbdU7PfK6SPuk8oWULv6eZYwFrJQrCHiQve_khcChpRPYRs' },
-                                { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBk-P9ExB4ilqJL1UkZSLqJge4yP48tLNb4NIInHSChVNJ4-tp-eDJmz_C9fH2wGcuTmsRX-rXhip5YNc9X_8WcLdfWLlFag2oVcgukvK6oS-A5DcI7leabU9z7Heb7qDZLmvdRL7-iZ459vXeCgYNsT_qlszT5bSPygOfyiGwNulj_Ru5xtuDkS_lb5N4AJkgu91RhKfxIGz8k7H_wzR3avsYk98Kh_wTj5xciCsgE1QlVr1Sca73uKfdggWstfk-wqvqM-0vZzfSX' },
-                                { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAv6wve4IaUgF73Lo9B1lOz-pbcNVHhWnowiQfXy-87zYhvAlbWm2widJbI65HI5YwlAf2GzY6OQywDcS3OUvZixeZAoIq2P9qvgUkrXxhTZiYF06bSVuoAXspBMsea0t_am-c326QgzfcLrzcaeP6vQoTj-5Undg5PRT4U70mU39zB-vZZfWfujFbXUNXBXXRWkGDPfZ6d2aUr_NfcHh8D6Bagm_9YXhNGLq0IEeu7TwZAnfyEkRHCmdb_yBwn5j6BYouVBbyLzCHe' },
-                                { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7-ipYFRVrPiuFu-R6Y_Sz-aTOJh48jBupdGHajJ_3zcvE-HEH7Fa-rZJCHUh9FTSkjph_G0F6YOjwrz_JJYRujbnPMWM2l88Qyk7zmNryvB8vONuE5BZg46zVMGF81az-AjwmB06-apba4vUCwfGLi7vygGnzxAkW4bcYSqRInUyYms82vs8AOdBcPEyBVV7mZOqSzjnITQqtC-XkqrjAgtSGEwI1MRDULuhtG6vqyL9VrBOmYFPkPiuDxrBrn6bZAvI2CU5p31V' },
+                                { label: 'GLP-GLOW', title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo },
+                                { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo },
+                                { label: 'HAIR GLOW', title: 'Hair Loss', slug: 'finasteride-tablets', video: hairVideo },
+                                { label: 'LONGEVITY GLOW', title: 'Slows Aging & DNA Repair', slug: 'nad-injection', video: longevityVideo },
                                 { label: 'SKIN GLOW', title: 'Skin Care', slug: 'anti-aging-cream', img: skincareImg },
                                 { label: 'TESTOSTERONE', title: 'Hormonal Therapy', slug: 'testosterone', img: testosteroneImg },
                                 { label: 'LAB TESTING', title: 'Biomarkers', slug: 'nad-nasal-spray', img: labTestingImg },
@@ -157,15 +157,15 @@ const NewLandingPage = () => {
                                                     webkit-playsinline="true"
                                                     x5-playsinline="true"
                                                     preload="auto"
-                                                    poster={item.img}
                                                     onContextMenu={(e) => e.preventDefault()}
                                                     className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500"
                                                 >
                                                     <source src={item.video} type="video/mp4" />
-                                                    <img alt={item.title} src={item.img} className="w-full h-full object-cover brightness-[0.85]" />
                                                 </video>
-                                            ) : (
+                                            ) : item.img ? (
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
+                                            ) : (
+                                                <div className="w-full h-full bg-[#111] group-hover:bg-[#222] transition-colors duration-500"></div>
                                             )}
 
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-white z-10">
