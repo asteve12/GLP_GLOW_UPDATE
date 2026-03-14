@@ -27,7 +27,9 @@ const AdminRoute = ({ children }) => {
                 }
 
                 if (data) {
-                    console.log('[AdminRoute] Role fetched:', data.role);
+                    if (import.meta.env.DEV) {
+                        console.log('[AdminRoute] Role fetched:', data.role);
+                    }
                     setRole(data.role);
                 } else {
                     console.warn('[AdminRoute] No role found for user:', user.id);
@@ -64,19 +66,21 @@ const AdminRoute = ({ children }) => {
                     </svg>
                 </div>
                 <h2 className="text-2xl font-black uppercase italic tracking-tighter mb-2">Access <span className="text-red-500">Denied</span></h2>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full space-y-4">
-                    <div className="text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Authenticated UID</p>
-                        <p className="text-xs font-mono break-all text-white/60">{user.id}</p>
+                {import.meta.env.DEV && (
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full space-y-4">
+                        <div className="text-left">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Authenticated UID</p>
+                            <p className="text-xs font-mono break-all text-white/60">{user.id}</p>
+                        </div>
+                        <div className="text-left">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Detected Role</p>
+                            <p className="text-xs font-black uppercase text-red-400">{role || 'None/Null'}</p>
+                        </div>
+                        <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest pt-4 border-t border-white/5">
+                            Ensure the UID above has an entry in the <code className="text-accent-green">user_roles</code> table with the role <code className="text-accent-green">'admin'</code>.
+                        </p>
                     </div>
-                    <div className="text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Detected Role</p>
-                        <p className="text-xs font-black uppercase text-red-400">{role || 'None/Null'}</p>
-                    </div>
-                    <p className="text-[10px] text-white/40 leading-relaxed font-bold uppercase tracking-widest pt-4 border-t border-white/5">
-                        Ensure the UID above has an entry in the <code className="text-accent-green">user_roles</code> table with the role <code className="text-accent-green">'admin'</code>.
-                    </p>
-                </div>
+                )}
                 <button
                     onClick={() => window.location.href = '/dashboard'}
                     className="mt-8 text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all underline decoration-accent-green underline-offset-8"

@@ -9,7 +9,7 @@ const Footer = () => {
 
     return (
         <footer className="bg-[#121212] text-white pt-24 pb-[30px] overflow-hidden">
-            <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
+            <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 md:px-6">
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32 text-white text-center lg:text-left">
                     <div>

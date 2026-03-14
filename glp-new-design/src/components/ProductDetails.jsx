@@ -1342,7 +1342,7 @@ const productSpecificData = {
     },
     'growtabs-tadalafil': {
         name: 'GrowTabs (Tadalafil)', type: 'Oral Tablet (Men)', price: '$29.99',
-        image: growTabsTadalafilVialImg, signatureImage: sildenafilTadalafilCarton, heroBg: sildenafilTadalafilBg,
+        image: growTabsTadalafilVialImg, signatureImage: sildenafilTadalafilTabletsPrdImg, heroBg: sildenafilTadalafilBg,
         description: 'Long-acting Tadalafil. Stay ready for up to 36 hours with a single dose.',
         highlights: ['36-hr duration', 'Daily-dose option', 'Flexible pack sizes', 'Physician-prescribed'],
         benefits: [

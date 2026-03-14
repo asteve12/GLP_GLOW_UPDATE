@@ -119,7 +119,7 @@ const Navbar = ({ isProductDetails = false, customBgColor = null }) => {
   return (
     <>
       <header className={`sticky top-0 z-50 ${navbarBg} pt-2 lg:pt-[30px] pb-2 lg:pb-[30px] border-b border-white/5 transition-all duration-300`} >
-        <nav className={`max-w-[1400px] 2xl:max-w-[1800px] mx-auto pl-1 pr-3 lg:px-6 relative flex items-center justify-between transition-all duration-300`}>
+        <nav className={`max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 lg:px-6 relative flex items-center justify-between transition-all duration-300`}>
           <div className="flex items-center h-full mt-1 lg:mt-[10px]">
             <Link to="/" className="relative h-full flex items-center">
               <img
