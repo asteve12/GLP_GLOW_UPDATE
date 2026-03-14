@@ -58,16 +58,6 @@ const NewLandingPage = () => {
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        const videos = document.querySelectorAll('video');
-        videos.forEach(video => {
-            if (video) {
-                video.muted = true;
-                video.defaultMuted = true;
-                video.play().catch(err => console.log('Autoplay prevented by browser:', err));
-            }
-        });
-    }, []);
 
     const [scrollProgress, setScrollProgress] = useState(0);
     const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -161,6 +151,13 @@ const NewLandingPage = () => {
                                         <Link key={i} to={linkTo} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                             {item.video ? (
                                                 <video
+                                                    ref={(el) => {
+                                                        if (el) {
+                                                            el.muted = true;
+                                                            el.defaultMuted = true;
+                                                            el.play().catch(err => console.log('Autoplay prevented by browser:', err));
+                                                        }
+                                                    }}
                                                     autoPlay
                                                     loop
                                                     muted
