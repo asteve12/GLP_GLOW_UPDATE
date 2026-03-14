@@ -130,12 +130,12 @@ const RevenueChart = ({ data, chartKey = 'amount', label = 'Gross Revenue', peri
     const trendLabel = periodLabels[period] || 'Revenue Trend';
     const xKey = data?.[0]?.hour !== undefined ? 'hour' : (data?.[0]?.date !== undefined ? 'date' : 'month');
     return (
-        <div className="h-[340px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 md:p-8 lg:p-10 relative overflow-hidden group">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-3">
-                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter">{label} ? {trendLabel}</h3>
+        <div className="h-[280px] lg:h-[340px] w-full bg-white/5 border border-white/10 rounded-[32px] p-6 lg:p-8 xl:p-10 relative overflow-hidden group">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 lg:mb-8 gap-3">
+                <h3 className="text-base lg:text-lg xl:text-xl font-black uppercase tracking-tighter">{label} ? {trendLabel}</h3>
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }}></div>
-                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30">Live Stripe Data</span>
+                    <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full animate-pulse" style={{ backgroundColor: color }}></div>
+                    <span className="text-[8px] lg:text-[9px] xl:text-[10px] font-black uppercase tracking-widest text-white/30">Live Stripe data</span>
                 </div>
             </div>
             <ResponsiveContainer width="100%" height="100%">
@@ -262,24 +262,24 @@ const AdminOverview = () => {
             </div>
 
             {/* Core Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 {[
                     { label: 'Total Patients', value: stats.totalPatients, color: 'blue', icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 110-8 4 4 0 010 8z' },
                     { label: 'Pending Reviews', value: stats.pendingReviews, color: 'orange', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
                     { label: 'Active Subs', value: stats.activeSubscriptions, color: 'accent-black', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
                     { label: 'Stripe Txns', value: earnings.loading ? '...' : earnings.transactionCount, color: 'purple', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
+                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-4 lg:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
                         <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-500/5 blur-3xl transition-opacity group-hover:opacity-10 opacity-0`}></div>
                         <div className="flex items-center justify-between mb-4">
-                            <div className={`w-12 h-12 rounded-2xl bg-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-500/10 flex items-center justify-center`}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-400`}>
+                            <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-500/10 flex items-center justify-center`}>
+                                <svg width="20" height="20" lg-width="24" lg-height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color === 'accent-black' ? 'accent-black' : stat.color}-400 lg:w-6 lg:h-6`}>
                                     <path d={stat.icon} />
                                 </svg>
                             </div>
                         </div>
-                        <p className="text-2xl md:text-3xl font-black tracking-tighter mb-1">{stat.value}</p>
-                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/50">{stat.label}</p>
+                        <p className="text-xl lg:text-2xl xl:text-3xl font-black tracking-tighter mb-1">{stat.value}</p>
+                        <p className="text-[8px] lg:text-[9px] xl:text-[10px] font-black uppercase tracking-widest text-white/50">{stat.label}</p>
                     </div>
                 ))}
             </div>
@@ -287,28 +287,28 @@ const AdminOverview = () => {
             {/* Earnings Cards ? Live Stripe Data */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {/* Gross Earnings */}
-                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
+                <div className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-6 lg:p-10 relative overflow-hidden hover:border-white/20 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-[#bfff00]/5 to-transparent pointer-events-none rounded-3xl" />
                     <div className="flex items-center justify-between mb-6">
-                        <div className="w-11 h-11 rounded-2xl bg-[#bfff00]/10 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#bfff00" strokeWidth="2">
+                        <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-[#bfff00]/10 flex items-center justify-center">
+                            <svg width="18" height="18" lg-width="20" lg-height="20" viewBox="0 0 24 24" fill="none" stroke="#bfff00" strokeWidth="2" className="lg:w-5 lg:h-5">
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                             </svg>
                         </div>
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-[#bfff00]/10 rounded-full">
                             <div className="w-1.5 h-1.5 bg-[#bfff00] rounded-full animate-pulse" />
-                            <span className="text-[8px] font-black uppercase tracking-widest text-[#bfff00]">Stripe Live</span>
+                            <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest text-[#bfff00]">Stripe Live</span>
                         </div>
                     </div>
                     {earnings.loading ? (
-                        <div className="w-7 h-7 border-2 border-[#bfff00]/30 border-t-[#bfff00] rounded-full animate-spin mb-4" />
+                        <div className="w-6 h-6 lg:w-7 lg:h-7 border-2 border-[#bfff00]/30 border-t-[#bfff00] rounded-full animate-spin mb-4" />
                     ) : earnings.error ? (
-                        <p className="text-red-400 text-xs font-bold mb-4" title={earnings.error}>Error loading</p>
+                        <p className="text-red-400 text-[10px] lg:text-xs font-bold mb-4" title={earnings.error}>Error loading</p>
                     ) : (
-                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-[#bfff00] mb-2">{fmtMoney(earnings.gross)}</p>
+                        <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-[#bfff00] mb-2">{fmtMoney(earnings.gross)}</p>
                     )}
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Gross Revenue</p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total charged before fees</p>
+                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/40">Gross Revenue</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total charged before fees</p>
                 </div>
 
                 {/* Stripe Fees */}
@@ -332,23 +332,23 @@ const AdminOverview = () => {
                 </div>
 
                 {/* Net Earnings */}
-                <div className="bg-white/5 border border-[#FFDE59]/20 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-[#FFDE59]/40 transition-all">
+                <div className="bg-white/5 border border-[#FFDE59]/20 rounded-2xl lg:rounded-3xl p-6 lg:p-10 relative overflow-hidden hover:border-[#FFDE59]/40 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-[#FFDE59]/8 to-transparent pointer-events-none rounded-3xl" />
                     <div className="flex items-center justify-between mb-6">
-                        <div className="w-11 h-11 rounded-2xl bg-[#FFDE59]/10 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2">
+                        <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-[#FFDE59]/10 flex items-center justify-center">
+                            <svg width="18" height="18" lg-width="20" lg-height="20" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2" className="lg:w-5 lg:h-5">
                                 <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                             </svg>
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-[#FFDE59] px-3 py-1 bg-[#FFDE59]/10 rounded-full">Take Home</span>
+                        <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest text-[#FFDE59] px-3 py-1 bg-[#FFDE59]/10 rounded-full">Take Home</span>
                     </div>
                     {earnings.loading ? (
-                        <div className="w-7 h-7 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin mb-4" />
+                        <div className="w-6 h-6 lg:w-7 lg:h-7 border-2 border-[#FFDE59]/30 border-t-[#FFDE59] rounded-full animate-spin mb-4" />
                     ) : (
-                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-[#FFDE59] mb-2">{fmtMoney(earnings.net)}</p>
+                        <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-[#FFDE59] mb-2">{fmtMoney(earnings.net)}</p>
                     )}
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Net Earnings</p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">After all Stripe charges</p>
+                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/40">Net Earnings</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase tracking-wider">After all Stripe charges</p>
                 </div>
             </div>
 
@@ -578,24 +578,24 @@ const MarketingOverview = () => {
             </div>
 
             {/* Core Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 {[
                     { label: 'My Doctors', value: stats.myDoctors, color: 'amber', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
                     { label: 'Approved Orders', value: loading ? '...' : stats.approvedOrders, color: 'green', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
                     { label: 'Pending Submissions', value: loading ? '...' : stats.pendingSubmissions, color: 'orange', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
                     { label: 'Total Transactions', value: loading ? '...' : stats.approvedOrders, color: 'purple', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
+                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-4 lg:p-6 hover:border-white/20 transition-all group overflow-hidden relative">
                         <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${stat.color}-500/5 blur-3xl transition-opacity group-hover:opacity-10 opacity-0`}></div>
                         <div className="flex items-center justify-between mb-4">
-                            <div className={`w-12 h-12 rounded-2xl bg-${stat.color}-500/10 flex items-center justify-center`}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color}-400`}>
+                            <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-${stat.color}-500/10 flex items-center justify-center`}>
+                                <svg width="20" height="20" lg-width="24" lg-height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-${stat.color}-400 lg:w-6 lg:h-6`}>
                                     <path d={stat.icon} />
                                 </svg>
                             </div>
                         </div>
-                        <p className="text-2xl md:text-3xl font-black tracking-tighter mb-1">{stat.value}</p>
-                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/50">{stat.label}</p>
+                        <p className="text-xl lg:text-2xl xl:text-3xl font-black tracking-tighter mb-1">{stat.value}</p>
+                        <p className="text-[8px] lg:text-[9px] xl:text-[10px] font-black uppercase tracking-widest text-white/50">{stat.label}</p>
                     </div>
                 ))}
             </div>
@@ -603,26 +603,26 @@ const MarketingOverview = () => {
             {/* Revenue Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {/* Gross Revenue */}
-                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden hover:border-white/20 transition-all">
+                <div className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-6 lg:p-10 relative overflow-hidden hover:border-white/20 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none rounded-3xl" />
                     <div className="flex items-center justify-between mb-6">
-                        <div className="w-11 h-11 rounded-2xl bg-amber-500/10 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                        <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+                            <svg width="18" height="18" lg-width="20" lg-height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" className="lg:w-5 lg:h-5">
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                             </svg>
                         </div>
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 rounded-full">
                             <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-                            <span className="text-[8px] font-black uppercase tracking-widest text-amber-400">Gross</span>
+                            <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest text-amber-400">Gross</span>
                         </div>
                     </div>
                     {loading ? (
-                        <div className="w-7 h-7 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mb-4" />
+                        <div className="w-6 h-6 lg:w-7 lg:h-7 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mb-4" />
                     ) : (
-                        <p className="text-3xl md:text-4xl font-black tracking-tighter text-amber-400 mb-2">{fmtMoney(stats.grossRevenue)}</p>
+                        <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-amber-400 mb-2">{fmtMoney(stats.grossRevenue)}</p>
                     )}
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Gross Revenue</p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total product value approved</p>
+                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/40">Gross Revenue</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total product value approved</p>
                 </div>
 
                 {/* Stripe Fees */}
@@ -959,7 +959,9 @@ const PatientPortalManager = () => {
                     };
                 });
 
-                console.log('[PatientPortalManager] Combined data:', combinedData.length, 'records');
+                if (import.meta.env.DEV) {
+                    console.log('[PatientPortalManager] Combined data:', combinedData.length, 'records');
+                }
                 setPatients(combinedData);
 
                 // Categories are fixed now as per requirements
@@ -1330,7 +1332,9 @@ const PatientDossierModal = ({ patientId, onClose }) => {
     useEffect(() => {
         console.log('[PatientDossierModal] Effect triggered for ID:', patientId);
         const fetchDossierData = async () => {
-            console.log('[PatientDossierModal] Starting fetch for patientId:', patientId);
+            if (import.meta.env.DEV) {
+                console.log('[PatientDossierModal] Starting fetch for patientId:', patientId);
+            }
             setLoading(true);
             try {
                 // Fetch Profile - Try finding by ID first
@@ -1954,7 +1958,9 @@ const GenerateReportModal = ({ submission, onClose, onAction }) => {
                 throw new Error(`Failed to generate report: ${invokeError.message || 'Unknown error'}`);
             }
 
-            console.log('Invoke Response Data:', data);
+            if (import.meta.env.DEV) {
+                console.log('Invoke Response Data:', data);
+            }
 
             let responseData = data;
             if (typeof data === 'string') {
@@ -2244,7 +2250,9 @@ const CreateOrderModal = ({ submission, onClose, onApprove }) => {
 
         setCharging(true);
         try {
-            console.log('Initiating charge with payload:', payload);
+            if (import.meta.env.DEV) {
+                console.log('Initiating charge with payload:', payload);
+            }
 
             const { data, error: invokeError } = await supabase.functions.invoke('charge-customer-responder---v2', {
                 method: 'POST',
@@ -4140,7 +4148,9 @@ const ClinicalQueue = ({ user, role }) => {
             }
 
             const staffList = data?.staff || [];
-            console.log('[fetchStaff] Staff returned:', staffList.length, staffList);
+            if (import.meta.env.DEV) {
+                console.log('[fetchStaff] Staff returned:', staffList.length, staffList);
+            }
             setStaff(staffList);
         } catch (err) {
             console.error('[fetchStaff] Unexpected exception:', err);
@@ -7914,23 +7924,23 @@ const ProfitTrackerView = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white/5 border border-red-500/20 rounded-3xl p-6">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-3">Total Purchase Cost</p>
-                    <p className="text-3xl font-black tracking-tighter text-red-400">{fmtMoney(totalCostAll)}</p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase">Pharmacy spend</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+                <div className="bg-white/5 border border-red-500/20 rounded-2xl lg:rounded-3xl p-5 lg:p-8">
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Purchase Cost</p>
+                    <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-red-500">{fmtMoney(totalCostAll)}</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">Pharmacy spend</p>
                 </div>
-                <div className="bg-white/5 border border-[#bfff00]/20 rounded-3xl p-6">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-3">Total Drug Revenue</p>
-                    <p className="text-3xl font-black tracking-tighter text-[#bfff00]">{fmtMoney(totalRevAll)}</p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase">From billing records</p>
+                <div className="bg-white/5 border border-[#bfff00]/20 rounded-2xl lg:rounded-3xl p-5 lg:p-8">
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Drug Revenue</p>
+                    <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-[#bfff00]">{fmtMoney(totalRevAll)}</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">From billing records</p>
                 </div>
-                <div className={`bg-white/5 border rounded-3xl p-6 ${totalProfitAll >= 0 ? 'border-[#FFDE59]/30' : 'border-red-500/30'}`}>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-3">Estimated Profit</p>
-                    <p className={`text-3xl font-black tracking-tighter ${totalProfitAll >= 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>
+                <div className={`bg-white/5 border rounded-2xl lg:rounded-3xl p-5 lg:p-8 ${totalProfitAll >= 0 ? 'border-[#FFDE59]/30' : 'border-red-500/30'}`}>
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Estimated Profit</p>
+                    <p className={`text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter ${totalProfitAll >= 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>
                         {totalProfitAll >= 0 ? '' : '-'}{fmtMoney(Math.abs(totalProfitAll))}
                     </p>
-                    <p className="text-[9px] text-white/25 mt-1 uppercase">Revenue minus cost</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">Revenue minus cost</p>
                 </div>
             </div>
 
@@ -9383,7 +9393,7 @@ const WaitlistView = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-10">
+            <div className="bg-white/5 border border-white/10 rounded-[32px] p-6 lg:p-10 xl:p-12">
                 <div className="flex items-center justify-between mb-10">
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Managing interest for Retatrutide (Subq Injection)</p>
@@ -9628,10 +9638,10 @@ const AdminDashboard = () => {
             </div>
 
             {/* Sidebar - Desktop and Mobile */}
-            <aside className={`w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 md:p-8 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
-                <div className=" ">
+            <aside className={`w-64 xl:w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 lg:p-10 xl:p-12 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
+                <div className="mb-8 lg:mb-12">
                     <h1 className="text-2xl font-black uppercase tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
-                        <img src={logo} alt="uGlowMD" className="h-[112px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[80px] lg:h-[100px] xl:h-[112px] w-auto inline-block brightness-0 invert" />
                     </h1>
                 </div>
                 <nav className="space-y-1">
@@ -9693,10 +9703,10 @@ const AdminDashboard = () => {
                 />
             )}
 
-            <main className="flex-1 pt-24 lg:pt-24 w-full overflow-x-hidden">
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 py-4 md:px-6 md:py-8 lg:px-8 lg:py-12">
-                    <header className="mb-8 md:mb-16">
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black uppercase  tracking-tighter">
+            <main className="flex-1 pt-20 lg:pt-0 w-full overflow-x-hidden">
+                <div className="max-w-[1400px] 2xl:max-w-[1700px] mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 xl:px-12 lg:py-10">
+                    <header className="mb-8 lg:mb-12 xl:mb-16">
+                        <h2 className="text-2xl lg:text-3xl xl:text-4xl font-black uppercase tracking-tighter">
                             {currentTab === 'overview' && (role === 'marketing_rep' ? 'Representative Overview' : 'Platform Overview')}
                             {currentTab === 'patients' && 'Patient Directory'}
                             {currentTab === 'clinical' && 'Submissions'}

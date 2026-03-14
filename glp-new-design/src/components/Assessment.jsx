@@ -763,18 +763,24 @@ const Assessment = () => {
         const filePath = `${ownerId}/${folder}/${fileName}`;
 
         setUploading(folder);
-        console.log('Upload starting for folder:', folder, 'User:', user?.id, 'TempUser:', tempUserId);
+        if (import.meta.env.DEV) {
+            console.log('Upload starting for folder:', folder, 'User:', user?.id, 'User: (TEMP)', tempUserId);
+        }
         try {
             const { data, error } = await supabase.storage
                 .from('assessment-uploads')
                 .upload(filePath, file);
 
-            console.log('Upload attempt for:', filePath);
+            if (import.meta.env.DEV) {
+                console.log('Upload attempt for:', filePath);
+            }
             if (error) {
                 console.error('Supabase upload error object:', error);
                 throw error;
             }
-            console.log('Upload success data:', data);
+            if (import.meta.env.DEV) {
+                console.log('Upload success data:', data);
+            }
 
             const { data: signedData, error: signedError } = await supabase.storage
                 .from('assessment-uploads')

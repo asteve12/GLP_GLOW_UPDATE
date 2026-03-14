@@ -88,23 +88,23 @@ const NewLandingPage = () => {
 
             <main>
                 {/* Hero & Treatment Grid */}
-                <section className="pt-2 pb-12 md:pb-20">
-                    <div className="w-[92%] md:w-[85%] lg:w-[80%] mx-auto px-4 md:px-6">
-                        <div className="text-left mb-12">
-                            <div className="h-[2.5rem] sm:h-[3.5rem] md:h-[6rem] overflow-hidden relative mb-2">
+                <section className="min-h-screen flex flex-col justify-center pt-2 pb-12 md:pb-20 overflow-hidden">
+                    <div className="w-full lg:w-[90%] max-w-[1800px] 2xl:max-w-[2200px] mx-auto px-4 md:px-6 lg:px-8">
+                        <div className="text-left mb-10 lg:mb-12">
+                            <div className="h-[2.5rem] sm:h-[3.5rem] md:h-[5rem] lg:h-[6rem] overflow-hidden relative mb-2">
                                 <span
-                                    className={`absolute left-0 text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
+                                    className={`absolute left-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-tight transition-all duration-500 ease-in-out block whitespace-nowrap ${categories[index].color} ${animationClass}`}
                                 >
                                     {categories[index].text}
                                 </span>
                             </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-7xl font-extrabold mb-4 md:mb-6 tracking-tight leading-tight text-gray-900">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-4 md:mb-6 tracking-tight leading-tight text-gray-900">
                                 personalized to you
                             </h1>
-                            <p className="text-gray-500 text-base md:text-xl">Customized care starts here</p>
+                            <p className="text-gray-500 text-sm md:text-lg lg:text-xl">Customized care starts here</p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full mb-16 mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6 w-full mb-16 mx-auto">
                             {[
                                 { label: 'GLP-GLOW', title: 'Weight-Loss', slug: 'semaglutide-injection', video: weightlossVideo },
                                 { label: 'INTIMATE GLOW', title: 'Sex Health', slug: 'sildenafil-tadalafil-troche', video: intimateVideo },
@@ -151,13 +151,7 @@ const NewLandingPage = () => {
                                         <Link key={i} to={linkTo} className="relative rounded-2xl overflow-hidden aspect-square group cursor-pointer transition-all duration-300 hover:shadow-2xl bg-black">
                                             {item.video ? (
                                                 <video
-                                                    ref={(el) => {
-                                                        if (el) {
-                                                            el.muted = true;
-                                                            el.defaultMuted = true;
-                                                            el.play().catch(err => console.log('Autoplay prevented by browser:', err));
-                                                        }
-                                                    }}
+                                                    src={item.video}
                                                     autoPlay
                                                     loop
                                                     muted
@@ -166,10 +160,23 @@ const NewLandingPage = () => {
                                                     x5-playsinline="true"
                                                     preload="auto"
                                                     onContextMenu={(e) => e.preventDefault()}
+                                                    onLoadedData={(e) => {
+                                                        e.target.muted = true;
+                                                        e.target.play().catch(() => { });
+                                                    }}
+                                                    onCanPlay={(e) => {
+                                                        e.target.muted = true;
+                                                        e.target.play().catch(() => { });
+                                                    }}
+                                                    ref={(el) => {
+                                                        if (el) {
+                                                            el.muted = true;
+                                                            el.defaultMuted = true;
+                                                            el.play().catch(() => { });
+                                                        }
+                                                    }}
                                                     className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500"
-                                                >
-                                                    <source src={item.video} type="video/mp4" />
-                                                </video>
+                                                />
                                             ) : item.img ? (
                                                 <img alt={item.title} className="w-full h-full object-cover brightness-[0.85] group-hover:scale-105 group-hover:opacity-0 transition-all duration-500" src={item.img} />
                                             ) : (
@@ -200,43 +207,49 @@ const NewLandingPage = () => {
                                     Browse all<br />treatments →
                                 </span>
                             </div>
+                            </div>
                         </div>
-                        {/* Expert Care Section - Bird's Eye View Medical Team */}
-                        <div className="mt-20 mb-32 animate-in fade-in duration-1000">
-                            <div className="relative rounded-[40px] md:rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[4/5] md:aspect-[21/9]">
-                                <img
-                                    src={medicalTeamImg}
-                                    alt="uGlow MD Medical Team"
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-20 text-left">
-                                    <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                        <h2 className="text-2xl md:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
-                                            The best care <br />by the best in medicine
-                                        </h2>
-                                        <p className="text-white/80 text-sm md:text-xl font-light max-w-xl">
-                                            Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
-                                        </p>
-                                    </div>
+                </section>
+
+                {/* Expert Care Section - Bird's Eye View Medical Team */}
+                <section className="w-full mb-24 lg:mb-32 animate-in fade-in duration-1000 px-4 md:px-6 lg:px-8 max-w-[2000px] mx-auto overflow-hidden">
+                    <div className="relative rounded-[24px] md:rounded-[50px] lg:rounded-[60px] overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.08)] bg-gray-50 aspect-[4/5] md:aspect-[21/9]">
+                        <img
+                            src={medicalTeamImg}
+                            alt="uGlow MD Medical Team"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12 lg:p-16 xl:p-24 text-left">
+                            <div className="w-full lg:w-[70%] max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8">
+                                <div className="max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                                    <h2 className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 md:mb-8 text-white leading-tight italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                                        The best care <br />by the best in medicine
+                                    </h2>
+                                    <p className="text-white/80 text-xs md:text-lg xl:text-2xl font-light max-w-2xl">
+                                        Meet our network of world-class specialists with decades of combined experience across internal medicine, urology, dermatology, and endocrinology.
+                                    </p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
 
-                        <div className="pt-0">
-                            <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-8 border-b border-gray-100 pb-4 inline-block">Upcoming Innovations</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                <div
-                                    onClick={() => setIsWaitlistOpen(true)}
-                                    className="relative rounded-[32px] overflow-hidden min-h-[320px] group cursor-pointer transition-all duration-500 hover:shadow-2xl bg-black border border-white/5"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black z-0"></div>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-8 text-white z-10 text-center">
-                                        <div className="bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-sm z-20 leading-tight shadow-md mb-4">New Clinical Research</div>
-                                        <span className="text-[11px] font-black tracking-[0.4em] uppercase mb-2 text-[#FFDE59]/80 block">Retatrutide</span>
-                                        <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-6 leading-[1.15] group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
-                                        <div className="py-3 px-8 bg-white text-black rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg group-hover:bg-[#FFDE59] group-hover:scale-105 transition-all duration-300">
-                                            Join the Waitlist
-                                        </div>
+                {/* Upcoming Innovations Section */}
+                <section className="w-full pb-24 lg:pb-32">
+                    <div className="w-full max-w-[2000px] mx-auto px-4 md:px-6 lg:px-8">
+                        <h2 className="text-xs font-black uppercase tracking-[0.5em] text-gray-400 mb-12 border-b border-gray-100 pb-4 block text-left">Upcoming Innovations</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                            <div
+                                onClick={() => setIsWaitlistOpen(true)}
+                                className="relative rounded-[24px] overflow-hidden min-h-[400px] group cursor-pointer transition-all duration-500 hover:shadow-2xl bg-black border border-white/5"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black z-0"></div>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-white z-10 text-center">
+                                    <div className="bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-sm z-20 leading-tight shadow-md mb-6">New Clinical Research</div>
+                                    <span className="text-[11px] font-black tracking-[0.4em] uppercase mb-2 text-[#FFDE59]/80 block">Retatrutide</span>
+                                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-8 leading-[1.15] group-hover:text-[#FFDE59] transition-colors">Triple-Action Clinical Breakthrough</h3>
+                                    <div className="py-4 px-10 bg-white text-black rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg group-hover:bg-[#FFDE59] group-hover:scale-105 transition-all duration-300">
+                                        Join the Waitlist
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +282,7 @@ const NewLandingPage = () => {
 
                 {/* How It Works */}
                 <section id="how-it-works" className="py-24 overflow-hidden relative" ref={stepsRef}>
-                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 md:px-6">
                         <div className="relative">
                             <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gray-200 -translate-x-1/2 hidden md:block"></div>
                             <div
@@ -278,9 +291,9 @@ const NewLandingPage = () => {
                             ></div>
 
                             {/* Step 1 */}
-                            <div className="flex flex-col md:flex-row items-center gap-24 mb-48 relative">
+                            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24 mb-32 lg:mb-48 relative">
                                 <div className="w-full md:w-1/2 flex justify-center md:justify-end z-10">
-                                    <div className="w-full max-w-[500px] h-[350px] md:h-[600px] rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
+                                    <div className="w-[calc(100%+2rem)] -mx-4 md:mx-0 md:w-full max-w-[500px] h-[350px] md:h-[500px] lg:h-[600px] rounded-none md:rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
                                         <img alt="Account Registration" className="w-full h-full object-cover" src={registrationImg} />
                                     </div>
                                 </div>
@@ -293,9 +306,9 @@ const NewLandingPage = () => {
                             </div>
 
                             {/* Step 2 */}
-                            <div className="flex flex-col md:flex-row-reverse items-center gap-24 mb-48 relative">
+                            <div className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-24 mb-32 lg:mb-48 relative">
                                 <div className="w-full md:w-1/2 flex justify-center md:justify-start z-10">
-                                    <div className="w-full max-w-[500px] h-[600px] rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
+                                    <div className="w-[calc(100%+2rem)] -mx-4 md:mx-0 md:w-full max-w-[500px] h-[350px] md:h-[500px] lg:h-[600px] rounded-none md:rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
                                         <img alt="Get Prescribed" className="w-full h-full object-cover" src={prescribedImg} />
                                     </div>
                                 </div>
@@ -308,9 +321,9 @@ const NewLandingPage = () => {
                             </div>
 
                             {/* Step 3 */}
-                            <div className="flex flex-col md:flex-row items-center gap-24 relative">
+                            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24 relative">
                                 <div className="w-full md:w-1/2 flex justify-center md:justify-end z-10">
-                                    <div className="w-full max-w-[500px] h-[600px] rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
+                                    <div className="w-[calc(100%+2rem)] -mx-4 md:mx-0 md:w-full max-w-[500px] h-[350px] md:h-[500px] lg:h-[600px] rounded-none md:rounded-[32px] overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-500">
                                         <img alt="Rx Delivered" className="w-full h-full object-cover" src={rxShipmentImg} />
                                     </div>
                                 </div>
@@ -329,7 +342,7 @@ const NewLandingPage = () => {
 
                 {/* Content Sections 2 */}
                 <section className="py-24 bg-white">
-                    <div className="max-w-[1000px] mx-auto px-6">
+                    <div className="max-w-[1000px] mx-auto px-4 md:px-6">
                         {/* Trusted Treatments */}
                         <div className="flex flex-col md:flex-row items-center gap-16 mb-32">
                             <div className="w-full md:w-1/2">
@@ -359,7 +372,7 @@ const NewLandingPage = () => {
 
                 {/* Lab Testing Section */}
                 <section className="py-32 bg-[#fcfbfa] border-y border-gray-100 transition-all duration-700">
-                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-6 text-center">
+                    <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto px-4 md:px-6 text-center">
                         <p className="text-[11px] tracking-[0.4em] uppercase mb-2 font-black text-gray-500 transition-colors">LABS BY</p>
 
                         <div className="flex justify-center mb-4">
@@ -370,7 +383,7 @@ const NewLandingPage = () => {
                             </div>
                         </div>
 
-                        <h2 className="text-4xl md:text-5xl mb-8 tracking-tight leading-[1.15]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl mb-8 tracking-tight leading-[1.15]" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
                             <span className="text-black font-bold block transition-colors">Get your labs.</span>
                             <span className="text-gray-400 italic">Go for your optimal.</span>
                         </h2>
@@ -427,9 +440,9 @@ const NewLandingPage = () => {
 
                 {/* FAQ Section */}
                 <section id="faq" className="py-32 bg-white">
-                    <div className="max-w-[1000px] mx-auto px-6">
-                        <div className="text-center mb-24">
-                            <h2 className="text-4xl md:text-6xl font-bold mb-6 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
+                    <div className="max-w-[1000px] mx-auto px-4 md:px-6">
+                        <div className="text-center mb-16 lg:mb-24">
+                            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 italic" style={{ fontFamily: '"Cormorant Garamond", Georgia, serif' }}>
                                 Frequently Asked Questions
                             </h2>
                             <p className="text-gray-500 text-lg max-w-2xl mx-auto">

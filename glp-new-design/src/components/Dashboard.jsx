@@ -651,7 +651,7 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
     const isApproved = submission.approval_status === 'approved';
 
     return (
-        <div className="bg-[#111111] border border-white/10 rounded-[32px] p-8 hover:border-white/20 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
+        <div className="bg-[#111111] border border-white/10 rounded-[32px] p-6 lg:p-8 hover:border-white/20 transition-all font-sans relative overflow-hidden group mb-6 dashboard-card">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-[100px] -mr-32 -mt-32 rounded-full transition-opacity opacity-0 group-hover:opacity-100"></div>
 
             {!isSubscriptionActive && (
@@ -672,8 +672,8 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
                 <div className="flex flex-col md:flex-row items-start gap-6">
-                    <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/20 group-hover:border-white/20 transition-all">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white">
+                    <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/20 group-hover:border-white/20 transition-all">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white lg:w-10 lg:h-10">
                             <path d="M10.5 21l-7.5-7.5 3.5-3.5 7.5 7.5-3.5 3.5z" />
                             <path d="M14.5 7L21 13.5l-3.5 3.5L11 10.5 14.5 7z" />
                             <path d="M12 12l2.5-2.5" strokeLinecap="round" />
@@ -681,7 +681,7 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                     </div>
                     <div>
                         <div className="flex items-center gap-3 mb-6">
-                            <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
+                            <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-white">
                                 {(() => {
                                     // PRIORITY: Use product mapping for "Full Product Name" display
                                     const drugId = (submission.selected_drug || submission.dosage_preference || '').toLowerCase();
@@ -769,7 +769,7 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                                 {getDosageOptionsList(submission.selected_drug || submission.dosage_preference).length > 1 && (
                                     <button
                                         onClick={() => onAction('dosage', submission)}
-                                        className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02]"
+                                        className="w-full md:w-48 lg:w-56 px-6 lg:px-8 py-3 lg:py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02]"
                                     >
                                         Adjust Dosage
                                     </button>
@@ -777,7 +777,7 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
 
                                 <button
                                     onClick={() => onAction('cancel', submission)}
-                                    className="w-full md:w-56 px-8 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all"
+                                    className="w-full md:w-48 lg:w-56 px-6 lg:px-8 py-3 lg:py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all"
                                 >
                                     Cancel Subscription
                                 </button>
@@ -785,19 +785,19 @@ const MedicationCard = ({ submission, orders, isSubscriptionActive = true, onAct
                         ) : (
                             <button
                                 onClick={() => onAction('activate', submission)}
-                                className="w-full md:w-56 px-8 py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02] "
+                                className="w-full md:w-48 lg:w-56 px-6 lg:px-8 py-3 lg:py-4 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFDE59]/90 transition-all transform hover:scale-[1.02] "
                             >
                                 Activate Subscription
                             </button>
                         )
                     ) : (
-                        <div className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white/50 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center">
+                        <div className="w-full md:w-48 lg:w-56 px-6 lg:px-8 py-3 lg:py-4 bg-white/5 border border-white/10 text-white/50 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center">
                             Awaiting Approval
                         </div>
                     )}
                     <button
                         onClick={() => onRetake && onRetake(submission)}
-                        className="w-full md:w-56 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 hover:text-white transition-all"
+                        className="w-full md:w-48 lg:w-56 px-6 lg:px-8 py-3 lg:py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 hover:text-white transition-all"
                     >
                         Retake Assessment
                     </button>
@@ -826,18 +826,18 @@ const OrdersView = ({ orders }) => {
 
             <div className="grid grid-cols-1 gap-6">
                 {currentMonthOrders.length === 0 ? (
-                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-20 text-center">
-                        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30">
+                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-10 lg:p-20 text-center">
+                        <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/30 lg:w-8 lg:h-8">
                                 <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
-                        <p className="text-white/50 font-black uppercase tracking-widest text-xs">No orders for this month</p>
-                        <p className="text-[10px] text-white/30 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed for the current month</p>
+                        <p className="text-white/50 font-black uppercase tracking-widest text-[10px] lg:text-xs">No orders for this month</p>
+                        <p className="text-[9px] lg:text-[10px] text-white/30 mt-2 uppercase tracking-[0.2em]">Orders appear here once your assessment is approved and processed for the current month</p>
                     </div>
                 ) : (
                     currentMonthOrders.map(order => (
-                        <div key={order.id} className="bg-[#111111] border border-white/10 rounded-[40px] p-8 md:p-10 hover:border-[#FFDE59]/50 transition-all group relative overflow-hidden">
+                        <div key={order.id} className="bg-[#111111] border border-white/10 rounded-[32px] lg:rounded-[40px] p-6 lg:p-10 hover:border-[#FFDE59]/50 transition-all group relative overflow-hidden">
                             {/* Decorative Background Element */}
                             <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59]/5 blur-3xl -mr-32 -mt-32 transition-opacity group-hover:opacity-20 opacity-0"></div>
 
@@ -946,7 +946,9 @@ const UpdatePaymentForm = ({ onCancel, onComplete, profile, user }) => {
                     : setupIntent.payment_method?.id;
 
                 if (setupIntent && pmId) {
-                    console.log('Captured setup payment method:', pmId);
+                    if (import.meta.env.DEV) {
+                        console.log('Captured setup payment method:', pmId);
+                    }
 
                     // Call the new update-payment-method edge function
                     const { data: updateData, error: updateError } = await supabase.functions.invoke('update-payment-method', {
@@ -1163,29 +1165,29 @@ const BillingView = ({ profile, user }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Financial <span className="text-white">Portal</span></h2>
-                    <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Manage your payment methods and history</p>
+                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-black uppercase tracking-tighter mb-2">Financial <span className="text-white">Portal</span></h2>
+                    <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">Manage your payment methods and history</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-6 lg:gap-8">
                 {/* Active Payment Method */}
-                <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 md:p-12">
-                        <div className="w-16 h-16 rounded-3xl bg-[#FFDE59]/5 flex items-center justify-center border border-accent-blue/10">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white opacity-40">
+                <div className="bg-white/5 border border-white/10 rounded-[32px] lg:rounded-[40px] p-6 lg:p-12 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 lg:p-12">
+                        <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-3xl bg-[#FFDE59]/5 flex items-center justify-center border border-accent-blue/10">
+                            <svg width="24" height="24" lg-width="32" lg-height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white opacity-40 lg:w-8 lg:h-8">
                                 <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
                         </div>
                     </div>
 
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-16">Primary Payment Method</h3>
+                    <h3 className="text-[9px] lg:text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-10 lg:mb-16">Primary Payment Method</h3>
 
-                    <div className="space-y-12">
-                        <div className="flex items-center gap-8">
-                            <div className="w-24 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black  text-sm tracking-tighter">
+                    <div className="space-y-8 lg:space-y-12">
+                        <div className="flex items-center gap-6 lg:gap-8">
+                            <div className="w-20 h-14 lg:w-24 lg:h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-black text-xs lg:text-sm tracking-tighter">
                                 {paymentMethod.brand.toUpperCase()}
                             </div>
                             <div>
@@ -1226,12 +1228,12 @@ const BillingView = ({ profile, user }) => {
                             <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">Loading statements...</p>
                         </div>
                     ) : billingHistory.length === 0 ? (
-                        <div className="text-center py-12 border border-dashed border-white/10 rounded-3xl">
+                        <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl lg:rounded-3xl">
                             <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">No transaction records found</p>
                         </div>
                     ) : (
                         billingHistory.map(inv => (
-                            <div key={inv?.id || Math.random()} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-white/10 transition-all group">
+                            <div key={inv?.id || Math.random()} className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-4 lg:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-white/10 transition-all group">
                                 <div className="flex items-center gap-6">
                                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/30 group-hover:bg-[#FFDE59]/20 group-hover:text-white transition-all">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1334,17 +1336,17 @@ const ReferralView = ({ profile, user, onUpdate }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter  mb-2">Referral <span className="text-white">Programme</span></h2>
-                    <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Give $25, Get $25 – Share your journey</p>
+                    <h2 className="text-2xl lg:text-3xl xl:text-4xl font-black uppercase tracking-tighter mb-2">Referral <span className="text-white">Programme</span></h2>
+                    <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">Give $25, Get $25 – Share your journey</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 md:p-12 text-white opacity-20 group-hover:opacity-40 transition-opacity">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[32px] lg:rounded-[40px] p-6 lg:p-12 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 lg:p-12 text-white opacity-20 group-hover:opacity-40 transition-opacity">
+                        <svg width="40" height="40" lg-width="48" lg-height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="lg:w-12 lg:h-12">
                             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
                             <path d="M23 21v-2a4 4 0 00-3-3.87" />
@@ -1352,16 +1354,16 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                         </svg>
                     </div>
 
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-12">Your Exclusive Invite</h3>
+                    <h3 className="text-[9px] lg:text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8 lg:mb-12">Your Exclusive Invite</h3>
 
                     {!referralLink ? (
-                        <div className="py-12 border-2 border-dashed border-white/10 rounded-3xl text-center">
-                            <h4 className="text-xl font-bold mb-4  tracking-tight uppercase">Ready to start referring?</h4>
-                            <p className="text-xs text-white/50 mb-8 max-w-sm mx-auto uppercase tracking-widest font-bold">Generate your unique link below and start earning credits for every successful transformation.</p>
+                        <div className="py-8 lg:py-12 border-2 border-dashed border-white/10 rounded-2xl lg:rounded-3xl text-center">
+                            <h4 className="text-lg lg:text-xl font-bold mb-4 tracking-tight uppercase">Ready to start referring?</h4>
+                            <p className="text-[9px] lg:text-xs text-white/50 mb-8 max-w-sm mx-auto uppercase tracking-widest font-bold">Generate your unique link below and start earning credits for every successful transformation.</p>
                             <button
                                 onClick={generateReferral}
                                 disabled={generating}
-                                className="px-10 py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
+                                className="px-8 lg:px-10 py-4 lg:py-5 bg-[#FFDE59] text-black rounded-2xl font-black text-[10px] lg:text-xs uppercase tracking-widest hover:bg-[#111111] transition-all shadow-[0_0_50px_rgba(191,255,0,0.2)]"
                             >
                                 {generating ? 'Generating...' : 'Generate My Link →'}
                             </button>
@@ -1371,30 +1373,30 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                             <div>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-4">Your Unique Link</p>
                                 <div className="flex flex-col md:flex-row gap-4">
-                                    <div className="flex-1 bg-black p-5 rounded-2xl border border-white/10 font-mono text-xs text-white truncate">
+                                    <div className="flex-1 bg-black p-4 lg:p-5 rounded-2xl border border-white/10 font-mono text-[10px] lg:text-xs text-white truncate">
                                         {referralLink}
                                     </div>
                                     <button
                                         onClick={copyToClipboard}
-                                        className="px-8 py-5 bg-[#111111] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all whitespace-nowrap"
+                                        className="px-6 lg:px-8 py-4 lg:py-5 bg-[#111111] text-white rounded-2xl font-black text-[10px] lg:text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all whitespace-nowrap"
                                     >
                                         Copy Link
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-6 pt-12 border-t border-white/10">
+                            <div className="grid grid-cols-3 gap-6 pt-8 lg:pt-12 border-t border-white/10">
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Total Referrals</p>
-                                    <p className="text-2xl font-black ">0</p>
+                                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Total Referrals</p>
+                                    <p className="text-xl lg:text-2xl font-black ">0</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Credits Earned</p>
-                                    <p className="text-2xl font-black  text-white">$0</p>
+                                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Credits Earned</p>
+                                    <p className="text-xl lg:text-2xl font-black  text-white">$0</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Pending</p>
-                                    <p className="text-2xl font-black ">0</p>
+                                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Pending</p>
+                                    <p className="text-xl lg:text-2xl font-black ">0</p>
                                 </div>
                             </div>
                         </div>
@@ -1402,28 +1404,28 @@ const ReferralView = ({ profile, user, onUpdate }) => {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white/5 border border-white/10 rounded-[40px] p-8">
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8">How it works</h3>
-                        <div className="space-y-8">
+                    <div className="bg-white/5 border border-white/10 rounded-[32px] lg:rounded-[40px] p-6 lg:p-8">
+                        <h3 className="text-[9px] lg:text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-8">How it works</h3>
+                        <div className="space-y-6 lg:space-y-8">
                             <div className="flex gap-4">
                                 <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">01</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">Share Your Link</p>
-                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with <img src={logo} alt="uGlowMD" className="h-[72px] w-auto inline-block align-baseline invert opacity-80" />.</p>
+                                    <p className="text-[11px] lg:text-xs font-black uppercase tracking-tight mb-1 ">Share Your Link</p>
+                                    <p className="text-[9px] lg:text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Invite friends to start their journey with <img src={logo} alt="uGlowMD" className="h-[40px] lg:h-[72px] w-auto inline-block align-baseline invert opacity-80" />.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
                                 <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">02</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">They Get $25 Off</p>
-                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Friends receive $25 off their first medical assessment.</p>
+                                    <p className="text-[11px] lg:text-xs font-black uppercase tracking-tight mb-1 ">They Get $25 Off</p>
+                                    <p className="text-[9px] lg:text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Friends receive $25 off their first medical assessment.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
                                 <div className="w-8 h-8 rounded-full bg-[#FFDE59]/30 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white border border-[#FFDE59]/40">03</div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-tight mb-1 ">You Earn $25 Credit</p>
-                                    <p className="text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Get $25 credit once their first assessment is processed.</p>
+                                    <p className="text-[11px] lg:text-xs font-black uppercase tracking-tight mb-1 ">You Earn $25 Credit</p>
+                                    <p className="text-[9px] lg:text-[10px] text-white/50 leading-relaxed font-bold uppercase tracking-widest">Get $25 credit once their first assessment is processed.</p>
                                 </div>
                             </div>
                         </div>
@@ -1462,7 +1464,7 @@ const SubmissionCard = ({ submission, orders, setSelectedAssessment, navigate, o
     });
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all font-sans">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 lg:p-6 hover:border-white/20 transition-all font-sans">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div className="flex flex-col md:flex-row items-start gap-4">
                     <div className={`w-12 h-12 rounded-full bg-${status.color === '[#FFDE59]' ? '[#FFDE59]' : status.color}-500/10 flex items-center justify-center flex-shrink-0`}>
@@ -1598,23 +1600,23 @@ const NotificationsView = ({ submissions, orders }) => {
 
             <div className="grid grid-cols-1 gap-4">
                 {sortedNotifications.length === 0 ? (
-                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[40px] p-20 text-center">
-                        <p className="text-white/30 font-black uppercase tracking-widest text-xs">No active notifications</p>
+                    <div className="bg-[#111111] border border-dashed border-white/20 rounded-[32px] lg:rounded-[40px] p-12 lg:p-20 text-center">
+                        <p className="text-white/30 font-black uppercase tracking-widest text-[10px] lg:text-xs">No active notifications</p>
                     </div>
                 ) : (
                     sortedNotifications.map(notif => (
-                        <div key={notif.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex gap-6 hover:border-white/20 transition-all items-start group">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.type === 'success' ? 'bg-[#FFDE59]/20 text-white' : notif.type === 'warning' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <div key={notif.id} className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-4 lg:p-6 flex gap-4 lg:gap-6 hover:border-white/20 transition-all items-start group">
+                            <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 ${notif.type === 'success' ? 'bg-[#FFDE59]/20 text-white' : notif.type === 'warning' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                <svg width="20" height="20" lg-width="24" lg-height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="lg:w-6 lg:h-6">
                                     <path d={notif.icon} />
                                 </svg>
                             </div>
                             <div className="flex-1">
                                 <div className="flex justify-between items-start mb-1">
-                                    <h4 className="text-sm font-black uppercase tracking-tight">{notif.title}</h4>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30">{new Date(notif.time).toLocaleDateString()}</span>
+                                    <h4 className="text-[12px] lg:text-sm font-black uppercase tracking-tight">{notif.title}</h4>
+                                    <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/30">{new Date(notif.time).toLocaleDateString()}</span>
                                 </div>
-                                <p className="text-xs text-white/60 leading-relaxed font-bold uppercase tracking-widest">{notif.message}</p>
+                                <p className="text-[10px] lg:text-xs text-white/60 leading-relaxed font-bold uppercase tracking-widest">{notif.message}</p>
                             </div>
                         </div>
                     ))
@@ -1674,7 +1676,9 @@ const Dashboard = () => {
 
                     const autoTriggerSms = async () => {
                         try {
-                            console.log('[Dashboard] Triggering OTP for:', phoneNumber);
+                            if (import.meta.env.DEV) {
+                                console.log('[Dashboard] Triggering OTP for:', phoneNumber);
+                            }
                             // Update phone will trigger the SMS.
                             // This specifically requires 'phone_change' type for verification.
                             const { error } = await updateUser({ phone: phoneNumber });
@@ -1702,7 +1706,9 @@ const Dashboard = () => {
             const phoneNumber = user.phone || user.user_metadata?.phone_number;
             if (!phoneNumber) throw new Error("No phone number found for verification.");
 
-            console.log('[Dashboard] Verifying OTP for:', phoneNumber, 'Token:', otp);
+            if (import.meta.env.DEV) {
+                console.log('[Dashboard] Verifying OTP for:', phoneNumber, 'Token:', otp);
+            }
 
             // CRITICAL: When triggered via updateUser({phone}), the type MUST be 'phone_change'
             const { error } = await verifyOtp({
@@ -1936,7 +1942,9 @@ const Dashboard = () => {
         navigate('/assessment/' + catSlug.replace(/_/g, '-'));
     };
 
-    console.log('[Dashboard] Render:', { currentTab, userId: user?.id, loading });
+    if (import.meta.env.DEV) {
+        console.log('[Dashboard] Render:', { currentTab, userId: user?.id, loading });
+    }
 
     const [submissions, setSubmissions] = useState([]);
     const [orders, setOrders] = useState([]);
@@ -2134,7 +2142,9 @@ const Dashboard = () => {
             delete newSubmissionPayload.plan_details;
             delete newSubmissionPayload.is_subscription_active;
 
-            console.log('[Dashboard] Final Payload for Insert:', newSubmissionPayload);
+            if (import.meta.env.DEV) {
+                console.log('[Dashboard] Final Payload for Insert:', newSubmissionPayload);
+            }
 
             const { data: insertResult, error: insertError } = await supabase
                 .from('form_submissions')
@@ -2146,7 +2156,9 @@ const Dashboard = () => {
                 throw insertError;
             }
 
-            console.log('[Dashboard] Request submitted success:', insertResult);
+            if (import.meta.env.DEV) {
+                console.log('[Dashboard] Request submitted success:', insertResult);
+            }
 
             // Send payment confirmation email for dosage changes
             if (actionModal.type === 'dosage') {
@@ -2524,7 +2536,7 @@ const Dashboard = () => {
             </aside>
 
             {/* Mobile Top Bar */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black border-b border-white/10 px-6 py-2 flex items-center justify-between h-[64px]">
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black border-b border-white/10 px-4 py-2 flex items-center justify-between h-[64px]">
                 <div className="flex items-center gap-4 h-full">
                     <button
                         onClick={() => setMobileMenuOpen(true)}
@@ -2629,7 +2641,7 @@ const Dashboard = () => {
             <main className="flex-1 min-h-screen pt-[80px] lg:pt-24 w-full overflow-x-hidden">
 
                 {/* Content Area */}
-                <div className="max-w-[1400px] 2xl:max-w-[1800px] mx-auto p-6 md:p-12">
+                <div className="max-w-[1400px] 2xl:max-w-[1700px] mx-auto p-4 md:p-8 lg:p-12">
 
 
                     {/* Tabbed Content */}
@@ -2639,11 +2651,11 @@ const Dashboard = () => {
                         <Route path="overview" element={
                             <>
                                 {/* Welcome Header */}
-                                <div className="mb-12">
-                                    <h1 className="text-[30px] font-black uppercase tracking-tighter mb-2">
+                                <div className="mb-8 lg:mb-12">
+                                    <h1 className="text-[24px] md:text-[30px] lg:text-[28px] xl:text-[32px] font-black uppercase tracking-tighter mb-2">
                                         Welcome Back, <span style={{ backgroundColor: "#FFDE59", padding: "0 8px", color: "#000" }}>{userName}</span>
                                     </h1>
-                                    <p className="text-white/50 text-sm font-bold uppercase tracking-widest">
+                                    <p className="text-white/50 text-xs lg:text-sm font-bold uppercase tracking-widest">
                                         {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                                     </p>
 
@@ -2683,10 +2695,10 @@ const Dashboard = () => {
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12 lg:mb-16">
                                     <div
                                         onClick={() => navigate('/dashboard/medications')}
-                                        className="dashboard-card bg-[#FFDE59]/10 border border-[#FFDE59]/40 rounded-3xl p-6 cursor-pointer hover:scale-[1.02] transition-transform"
+                                        className="dashboard-card bg-[#FFDE59]/10 border border-[#FFDE59]/40 rounded-[24px] lg:rounded-3xl p-5 lg:p-6 cursor-pointer hover:scale-[1.02] transition-transform"
                                     >
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="w-12 h-12 rounded-full bg-[#FFDE59]/30 flex items-center justify-center">
@@ -2696,13 +2708,13 @@ const Dashboard = () => {
                                             </div>
                                             <span className="text-xs font-black uppercase tracking-widest text-white/50">Active</span>
                                         </div>
-                                        <p className="text-3xl font-black text-white mb-1">{approvedSubmissions.length}</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Your Medications</p>
+                                        <p className="text-2xl lg:text-3xl font-black text-white mb-1">{approvedSubmissions.length}</p>
+                                        <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/50">Your Medications</p>
                                     </div>
 
                                     <div
                                         onClick={() => navigate('/dashboard/assessments')}
-                                        className="dashboard-card bg-white/5 border border-white/10 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all font-sans relative overflow-hidden group"
+                                        className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-3xl p-5 lg:p-6 cursor-pointer hover:border-white/20 transition-all font-sans relative overflow-hidden group"
                                     >
                                         {submissions.length > 0 ? (
                                             <>
@@ -2733,34 +2745,34 @@ const Dashboard = () => {
                                                             (submissions[0].approval_status === 'pending' || submissions[0].approval_status === 'under_review') ? 'In Review' : 'Attention'}
                                                     </span>
                                                 </div>
-                                                <p className="text-3xl font-black text-white mb-1 relative z-10 truncate max-w-[90%] uppercase">
+                                                <p className="text-2xl lg:text-3xl font-black text-white mb-1 relative z-10 truncate max-w-[90%] uppercase">
                                                     {(() => {
                                                         const cat = getMedicationCategory(submissions[0].selected_drug || submissions[0].dosage_preference);
                                                         const matchingOrder = orders?.find(o => getMedicationCategory(o.drug_name) === cat);
                                                         return matchingOrder?.drug_name || submissions[0].selected_drug?.replace(/-/g, ' ') || 'Protocol';
                                                     })()}
                                                 </p>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Latest Assessment</p>
+                                                <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Latest Assessment</p>
                                             </>
                                         ) : (
                                             <>
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/30">
-                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 flex items-center justify-center text-white/30">
+                                                        <svg width="20" height="20" lg-width="24" lg-height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="lg:w-6 lg:h-6">
                                                             <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                     </div>
-                                                    <span className="text-xs font-black uppercase tracking-widest text-white/30">Empty</span>
+                                                    <span className="text-[10px] lg:text-xs font-black uppercase tracking-widest text-white/30">Empty</span>
                                                 </div>
-                                                <p className="text-3xl font-black text-white/50 mb-1">0</p>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-white/50">No History</p>
+                                                <p className="text-2xl lg:text-3xl font-black text-white/50 mb-1">0</p>
+                                                <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/50">No History</p>
                                             </>
                                         )}
                                     </div>
 
                                     <div
                                         onClick={() => navigate('/dashboard/orders')}
-                                        className="dashboard-card bg-white/5 border border-white/10 rounded-3xl p-6 cursor-pointer hover:border-white/20 transition-all group overflow-hidden relative"
+                                        className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-3xl p-5 lg:p-6 cursor-pointer hover:border-white/20 transition-all group overflow-hidden relative"
                                     >
                                         <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 blur-3xl transition-opacity group-hover:opacity-20 opacity-0"></div>
                                         <div className="flex items-center justify-between mb-4 relative z-10">
@@ -2771,21 +2783,21 @@ const Dashboard = () => {
                                             </div>
                                             <span className="text-xs font-black uppercase tracking-widest text-blue-400/60">Live</span>
                                         </div>
-                                        <p className="text-3xl font-black text-white mb-1 relative z-10">{orders.length}</p>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Active Orders</p>
+                                        <p className="text-2xl lg:text-3xl font-black text-white mb-1 relative z-10">{orders.length}</p>
+                                        <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/50 relative z-10">Active Orders</p>
                                     </div>
                                 </div>
                                 {/* Active Protocol Banner */}
                                 {hasActiveProtocol && (
-                                    <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] overflow-hidden relative group mb-12">
+                                    <div className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-[32px] overflow-hidden relative group mb-8 lg:mb-12">
                                         <div className="flex flex-col lg:flex-row items-center">
-                                            <div className="w-full lg:w-1/2 p-10 md:p-14 order-2 lg:order-1 relative z-10">
+                                            <div className="w-full lg:w-1/2 p-6 md:p-10 lg:p-12 xl:p-14 order-2 lg:order-1 relative z-10">
                                                 <div className="flex items-center gap-3 mb-6">
                                                     <div className="w-2 h-2 rounded-full bg-[#FFDE59] animate-pulse"></div>
                                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Protocol Status: Active</span>
                                                 </div>
 
-                                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-4 leading-none">
+                                                <h2 className="text-2xl md:text-3xl lg:text-2xl xl:text-4xl font-black uppercase tracking-tighter mb-4 leading-none">
                                                     Congratulations <br />
                                                     <span className="text-white/50">
                                                         {activeCategories.length === 1
@@ -2828,13 +2840,13 @@ const Dashboard = () => {
                                 )}
 
                                 {/* Product Recommendations Carousel */}
-                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden relative group mb-20">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-[32px] p-6 lg:p-8 overflow-hidden relative group mb-12 lg:mb-20">
                                     <div className="flex items-center justify-between mb-8">
                                         <div>
-                                            <h2 className="text-2xl font-black uppercase tracking-tighter  mb-1">
+                                            <h2 className="text-xl lg:text-2xl font-black uppercase tracking-tighter  mb-1">
                                                 {approvedSubmissions.length > 0 ? "Explore Other Treatments" : "Explore Treatments"}
                                             </h2>
-                                            <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Enhanced wellness solutions</p>
+                                            <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">Enhanced wellness solutions</p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button className="p-2 rounded-full bg-white/5 hover:bg-white/5 text-white transition-all">
@@ -2915,7 +2927,7 @@ const Dashboard = () => {
                                                             navigate(product.path);
                                                         }
                                                     }}
-                                                    className={`min-w-[240px] h-[320px] rounded-3xl relative overflow-hidden transition-all snap-start ${product.id !== 'skin-care' && isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer group/card hover:scale-[0.98]'}`}
+                                                    className={`min-w-[200px] lg:min-w-[240px] h-[280px] lg:h-[320px] rounded-[24px] lg:rounded-3xl relative overflow-hidden transition-all snap-start ${product.id !== 'skin-care' && isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer group/card hover:scale-[0.98]'}`}
                                                 >
                                                     <img
                                                         src={product.image}
@@ -2934,7 +2946,7 @@ const Dashboard = () => {
                                                                 </svg>
                                                             )}
                                                         </div>
-                                                        <h3 className="text-lg font-black uppercase tracking-tighter  mb-1 leading-tight">{product.title}</h3>
+                                                        <h3 className="text-base lg:text-lg font-black uppercase tracking-tighter  mb-1 leading-tight">{product.title}</h3>
                                                         <p className={`text-[10px] font-black uppercase tracking-widest ${isPending ? 'text-orange-400' : (isApproved || desc === "Retake Assessment") ? 'text-white' : 'text-white/60'}`}>
                                                             {desc}
                                                         </p>
@@ -2947,19 +2959,19 @@ const Dashboard = () => {
 
 
                                 {/* Upcoming Products Section */}
-                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[40px] p-10 md:p-14 overflow-hidden relative group mb-12">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] lg:rounded-[40px] p-6 lg:p-10 xl:p-14 overflow-hidden relative group mb-8 lg:mb-12">
                                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFDE59]/5 blur-[120px] -mr-32 -mt-32 rounded-full"></div>
-                                    <div className="flex flex-col lg:flex-row items-center gap-12 relative z-10">
+                                    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 relative z-10">
                                         <div className="w-full lg:w-1/2 text-left">
-                                            <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#FFDE59]/10 border border-[#FFDE59]/20 rounded-full mb-8">
+                                            <div className="inline-flex items-center gap-3 px-3 lg:px-4 py-1.5 lg:py-2 bg-[#FFDE59]/10 border border-[#FFDE59]/20 rounded-full mb-6 lg:mb-8">
                                                 <div className="w-1.5 h-1.5 bg-[#FFDE59] rounded-full animate-pulse shadow-[0_0_10px_#FFDE59]"></div>
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-[#FFDE59]">Upcoming Innovation</span>
+                                                <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-[#FFDE59]">Upcoming Innovation</span>
                                             </div>
-                                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">
+                                            <h2 className="text-3xl lg:text-4xl xl:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">
                                                 Retatrutide <br />
                                                 <span className="text-white/40">(New Subq Injection)</span>
                                             </h2>
-                                            <p className="text-sm text-white/50 mb-10 font-bold uppercase tracking-widest">The Next Generation of Weight Loss Biology</p>
+                                            <p className="text-[12px] lg:text-sm text-white/50 mb-8 lg:mb-10 font-bold uppercase tracking-widest">The Next Generation of Weight Loss Biology</p>
 
 
 
@@ -2990,13 +3002,13 @@ const Dashboard = () => {
 
 
                                 {/* Recent Assessments in Overview */}
-                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
+                                <div className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-[32px] p-6 lg:p-12">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter  mb-2">Recent Records</h2>
-                                            <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Your clinical journey history</p>
+                                            <h2 className="text-xl lg:text-3xl font-black uppercase tracking-tighter  mb-2">Recent Records</h2>
+                                            <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">Your clinical journey history</p>
                                         </div>
-                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-white/5 border border-white/20 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black hover:text-black transition-all">
+                                        <button onClick={() => navigate('/dashboard/assessments')} className="hidden md:block px-6 py-3 bg-white/5 border border-white/20 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-[#FFDE59] hover:text-black transition-all">
                                             View All
                                         </button>
                                     </div>
@@ -3047,17 +3059,17 @@ const Dashboard = () => {
                         } />
 
                         <Route path="medications" element={
-                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
+                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-[32px] p-6 lg:p-12">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
-                                        <h2 className="text-3xl font-black uppercase tracking-tighter  mb-2">
+                                        <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter  mb-2">
                                             {activeCategories.length === 1
                                                 ? activeCategories[0]
                                                 : activeCategories.length > 1
                                                     ? 'Active medication'
                                                     : 'Active medication'}
                                         </h2>
-                                        <p className="text-xs text-white/50 font-bold uppercase tracking-widest">
+                                        <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">
                                             {activeCategories.length === 1
                                                 ? `Managing your active ${activeCategories[0]} protocol`
                                                 : activeCategories.length > 1
@@ -3219,11 +3231,11 @@ const Dashboard = () => {
                         } />
 
                         <Route path="assessments" element={
-                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-12">
+                            <div className="dashboard-card bg-white/5 border border-white/10 rounded-[24px] lg:rounded-[32px] p-6 lg:p-12">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 md:gap-0">
                                     <div>
-                                        <h2 className="text-3xl font-black uppercase tracking-tighter  mb-2">Assessment History</h2>
-                                        <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Complete clinical log</p>
+                                        <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter  mb-2">Assessment History</h2>
+                                        <p className="text-[10px] lg:text-xs text-white/50 font-bold uppercase tracking-widest">Complete clinical log</p>
                                     </div>
                                     {submissions.length === 0 ? (
                                         <button onClick={() => navigate('/assessment/weight-loss')} className="px-8 py-4 bg-[#FFDE59] text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all">

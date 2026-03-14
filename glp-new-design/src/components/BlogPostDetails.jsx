@@ -6,6 +6,7 @@ import Footer from './Footer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import DOMPurify from 'dompurify';
 
 const BlogPostDetails = () => {
     const { id } = useParams();
@@ -114,7 +115,7 @@ const BlogPostDetails = () => {
                             In a real app, you might use a Markdown renderer like react-markdown.
                         */}
                         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                            {post.content}
+                            {DOMPurify.sanitize(post.content)}
                         </ReactMarkdown>
                     </div>
 
