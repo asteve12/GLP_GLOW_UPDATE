@@ -58,6 +58,17 @@ const NewLandingPage = () => {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            if (video) {
+                video.muted = true;
+                video.defaultMuted = true;
+                video.play().catch(err => console.log('Autoplay prevented by browser:', err));
+            }
+        });
+    }, []);
+
     const [scrollProgress, setScrollProgress] = useState(0);
     const [hoveredCategory, setHoveredCategory] = useState(null);
     const stepsRef = useRef(null);
