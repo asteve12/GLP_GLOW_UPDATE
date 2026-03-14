@@ -177,7 +177,7 @@ const NewLandingPage = () => {
                                                 </span>
                                                 {item.label === 'LAB TESTING' && (
                                                     <span className="mt-3 px-4 py-1.5 bg-red-600 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:bg-white group-hover:text-red-600 transition-all duration-300">
-                                                        Coming March 15
+                                                        Coming soon
                                                     </span>
                                                 )}
                                             </div>
