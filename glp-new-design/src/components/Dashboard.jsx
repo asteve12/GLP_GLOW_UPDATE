@@ -2477,13 +2477,13 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white font-sans flex flex-col lg:flex-row">
             {/* Sidebar Navigation */}
-            <aside className="w-72 bg-[#1a1a1a] border-r border-white/10 p-6 hidden lg:flex flex-col lg:sticky lg:top-0 h-screen z-50">
-                <div className="flex-shrink-0 mb-4">
+            <aside className="w-72 bg-[#1a1a1a] border-r border-white/10 p-6 pt-[0px] pb-[0px] hidden lg:flex flex-col lg:sticky lg:top-0 h-screen z-50">
+                <div className="flex-shrink-0 mb-[50px] ">
                     <button
                         onClick={() => navigate('/')}
-                        className="text-2xl font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
+                        className="text-2xl h-[100px] font-black uppercase tracking-tighter text-white hover:text-[#FFDE59] transition-colors"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-[150px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[190px]  w-auto inline-block brightness-0 invert object-cover" />
                     </button>
                 </div>
 
@@ -2550,7 +2550,7 @@ const Dashboard = () => {
                         onClick={() => navigate('/')}
                         className="text-xl font-black uppercase tracking-tighter flex items-center h-full"
                     >
-                        <img src={logo} alt="uGlowMD" className="h-[100px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[130px] w-auto inline-block brightness-0 invert" />
                     </button>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#FFDE59]/20 border-2 border-[#FFDE59]/40 flex items-center justify-center font-black text-white">
