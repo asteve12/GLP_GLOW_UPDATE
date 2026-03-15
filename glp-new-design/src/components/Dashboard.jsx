@@ -2441,9 +2441,10 @@ const Dashboard = () => {
         setHasAnimated(true);
     }, [loading, loadingSubmissions, submissions, profile, hasAnimated, signupDate]);
 
-    const handleSignOut = async () => {
-        await signOut();
-        navigate('/login');
+    const handleSignOut = () => {
+        signOut();
+        toast.success('Signed out successfully');
+        navigate('/login', { replace: true });
     };
 
     if (!user || loading) {
@@ -2524,7 +2525,7 @@ const Dashboard = () => {
                         </div>
                         <button
                             onClick={handleSignOut}
-                            className="p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded-lg text-red-400"
+                            className="p-2 opacity-40 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 rounded-lg text-red-400"
                             title="Sign Out"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
