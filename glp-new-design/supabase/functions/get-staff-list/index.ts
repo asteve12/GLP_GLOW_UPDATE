@@ -46,7 +46,7 @@ serve(async (req: Request) => {
         let staffQuery = supabaseAdmin
             .from("staff_with_owners")
             .select("user_id, role, email, first_name, last_name, created_at, owner_id, owner_first_name, owner_last_name")
-            .in("role", ["admin", "back_office", "physician", "nurse_practitioner", "physician_assistant", "marketing_rep"]);
+            .in("role", ["admin", "back_office", "sub_admin", "physician", "nurse_practitioner", "physician_assistant", "marketing_rep"]);
 
         // Marketing reps only see doctors they added
         if (isMarketingRep) {
@@ -62,7 +62,7 @@ serve(async (req: Request) => {
             let rolesQuery = supabaseAdmin
                 .from("user_roles")
                 .select("user_id, role, added_by")
-                .in("role", ["admin", "back_office", "physician", "nurse_practitioner", "physician_assistant", "marketing_rep"]);
+                .in("role", ["admin", "back_office", "sub_admin", "physician", "nurse_practitioner", "physician_assistant", "marketing_rep"]);
 
             if (isMarketingRep) {
                 rolesQuery = rolesQuery.eq("added_by", user.id);

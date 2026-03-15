@@ -110,7 +110,10 @@ const getMasterProductMap = () => {
 const MASTER_PRODUCT_MAP = getMasterProductMap();
 const MASTER_DRUGS_CATALOG = Object.entries(MASTER_PRODUCT_MAP).map(([id, data]) => ({
     name: `${data.name} ${data.dosage === 'TBA' ? '' : data.dosage} ${data.plan}`.replace(/\s+/g, ' ').trim(),
-    dosage: `$${data.price}`,
+    productName: data.name,
+    dosage: data.dosage === 'TBA' ? '' : data.dosage,
+    plan: data.plan,
+    price: `$${data.price}`,
     category: data.category
 }));
 
@@ -174,6 +177,7 @@ const AdminOverview = () => {
         gross: null,
         net: null,
         fees: null,
+        refunds: null,
         transactionCount: 0,
         loading: true,
         error: null,
@@ -216,7 +220,15 @@ const AdminOverview = () => {
                 }
 
                 const data = await res.json();
-                setEarnings({ gross: data.gross, net: data.net, fees: data.fees, transactionCount: data.transactionCount, loading: false, error: null });
+                setEarnings({
+                    gross: data.gross ?? 0,
+                    net: data.net ?? 0,
+                    fees: data.fees ?? 0,
+                    refunds: data.refunds ?? 0,
+                    transactionCount: data.transactionCount ?? 0,
+                    loading: false,
+                    error: null
+                });
 
                 // Always update chart ? use the returned chart data or build a single-point fallback
                 const chartArray = data.monthlyChart || data.dailyChart || data.chart || [];
@@ -237,7 +249,12 @@ const AdminOverview = () => {
         fetchStripeEarnings();
     }, [period]);
 
-    const fmtMoney = (val) => val === null ? '?' : `$${Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const fmtMoney = (val) => {
+        if (val === null || val === undefined) return '?';
+        const num = Number(val);
+        if (isNaN(num)) return '?';
+        return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
     const stripeRate = (earnings.gross && earnings.gross > 0) ? ((earnings.fees / earnings.gross) * 100).toFixed(1) : '2.9';
 
     return (
@@ -285,7 +302,7 @@ const AdminOverview = () => {
             </div>
 
             {/* Earnings Cards ? Live Stripe Data */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {/* Gross Earnings */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-6 lg:p-10 relative overflow-hidden hover:border-white/20 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-[#bfff00]/5 to-transparent pointer-events-none rounded-3xl" />
@@ -349,6 +366,26 @@ const AdminOverview = () => {
                     )}
                     <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/40">Net Earnings</p>
                     <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase tracking-wider">After all Stripe charges</p>
+                </div>
+
+                {/* Refunds */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl lg:rounded-3xl p-6 lg:p-10 relative overflow-hidden hover:border-white/20 transition-all">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none rounded-3xl" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-red-500/10 flex items-center justify-center">
+                            <svg width="18" height="18" lg-width="20" lg-height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" className="lg:w-5 lg:h-5">
+                                <path d="M16 15v4M12 19h4m4 0h-4M16 19v-4M4 4h16v16H4V4zm4 4h8M8 12h8" />
+                            </svg>
+                        </div>
+                        <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest text-red-400 px-3 py-1 bg-red-500/10 rounded-full">Returned</span>
+                    </div>
+                    {earnings.loading ? (
+                        <div className="w-6 h-6 lg:w-7 lg:h-7 border-2 border-red-500/30 border-t-red-400 rounded-full animate-spin mb-4" />
+                    ) : (
+                        <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-red-500 mb-2">{fmtMoney(earnings.refunds)}</p>
+                    )}
+                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-white/40">Total Refunds</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase tracking-wider">Total amount refunded to patients</p>
                 </div>
             </div>
 
@@ -4073,6 +4110,8 @@ const ClinicalQueue = ({ user, role }) => {
     const itemsPerPage = 15;
 
     const [pendingCounts, setPendingCounts] = useState({});
+    const [dateRange, setDateRange] = useState({ start: '', end: '' });
+    const [paymentFilter, setPaymentFilter] = useState('all');
 
     const categories = [
         { id: 'all', name: 'All Submissions', color: 'white' },
@@ -4185,9 +4224,19 @@ const ClinicalQueue = ({ user, role }) => {
             // Base query for all pending submissions of this status
             let queryBuilder = supabase
                 .from('form_submissions')
-                .select('*, assigned_provider:assigned_provider_id(id, first_name, last_name)')
-                .eq('approval_status', statusFilter)
-                .order('submitted_at', { ascending: true });
+                .select('*, assigned_provider:assigned_provider_id(id, first_name, last_name), profile:user_id(stripe_customer_id)')
+                .eq('approval_status', statusFilter);
+
+            // Date Range Filter
+            if (dateRange.start) {
+                queryBuilder = queryBuilder.gte('submitted_at', `${dateRange.start}T00:00:00`);
+            }
+            if (dateRange.end) {
+                queryBuilder = queryBuilder.lte('submitted_at', `${dateRange.end}T23:59:59`);
+            }
+
+            // Order by most recent first
+            queryBuilder = queryBuilder.order('submitted_at', { ascending: false });
 
             // If not admin, the database must enforce visibility via assigned_provider_id
             // Even if RLS exists, explicitly adding the filter makes the query intention clear and helps avoid edge cases
@@ -4229,7 +4278,7 @@ const ClinicalQueue = ({ user, role }) => {
         } else {
             console.log('[ClinicalQueue] Waiting for user/role before fetching queue...', { userId: user?.id, role });
         }
-    }, [statusFilter, user?.id, role]); // Add user.id and role to dependencies
+    }, [statusFilter, user?.id, role, dateRange.start, dateRange.end]); // Add user.id and role to dependencies
 
     useEffect(() => {
         if (user?.id && role) {
@@ -4255,12 +4304,11 @@ const ClinicalQueue = ({ user, role }) => {
     useEffect(() => {
         if (!queue) return;
 
-        if (filter === 'all') {
-            setFilteredQueue(queue);
-        } else {
-            // Fix: Category filtering was matching 'weight-loss' ID against 'Semaglutide' drug name.
-            // We need to use the same logic that fetchPendingCounts uses to determine the category.
-            setFilteredQueue(queue.filter(q => {
+        let filtered = queue;
+
+        // 1. Category Filter
+        if (filter !== 'all') {
+            filtered = filtered.filter(q => {
                 const drug = (q.selected_drug || '').toLowerCase();
                 let category = 'unknown';
 
@@ -4279,9 +4327,19 @@ const ClinicalQueue = ({ user, role }) => {
                 }
 
                 return category === filter;
-            }));
+            });
         }
-    }, [filter, queue, user]);
+
+        // 2. Payment Filter
+        if (paymentFilter !== 'all') {
+            filtered = filtered.filter(q => {
+                const hasPayment = !!(q.profile?.stripe_customer_id);
+                return paymentFilter === 'paid' ? hasPayment : !hasPayment;
+            });
+        }
+
+        setFilteredQueue(filtered);
+    }, [filter, paymentFilter, queue, user]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -4328,20 +4386,68 @@ const ClinicalQueue = ({ user, role }) => {
                 })}
             </div>
 
-            {/* Status Tabs */}
-            <div className="flex gap-1 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
-                {['pending', 'approved', 'rejected'].map(status => (
-                    <button
-                        key={status}
-                        onClick={() => setStatusFilter(status)}
-                        className={`px-8 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${statusFilter === status
-                            ? 'bg-[#111111] text-white shadow-lg shadow-white/5'
-                            : 'text-white/30 hover:text-white/60'
-                            }`}
-                    >
-                        {status}
-                    </button>
-                ))}
+            {/* Status Tabs & Date Filter */}
+            <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex gap-1 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
+                        {['pending', 'approved', 'rejected'].map(status => (
+                            <button
+                                key={status}
+                                onClick={() => setStatusFilter(status)}
+                                className={`px-8 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${statusFilter === status
+                                    ? 'bg-[#111111] text-white shadow-lg shadow-white/5'
+                                    : 'text-white/30 hover:text-white/60'
+                                    }`}
+                            >
+                                {status}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="flex gap-1 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit">
+                        {['all', 'paid', 'unpaid'].map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setPaymentFilter(p)}
+                                className={`px-5 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all ${paymentFilter === p
+                                    ? 'bg-accent-black text-white'
+                                    : 'text-white/30 hover:text-white/60'
+                                    }`}
+                            >
+                                {p === 'all' ? 'All Payments' : p === 'paid' ? 'Payment Added' : 'No Payment'}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-4 py-2">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30">From</span>
+                        <input
+                            type="date"
+                            value={dateRange.start}
+                            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                            className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 cursor-pointer [color-scheme:dark]"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-4 py-2">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-white/30">To</span>
+                        <input
+                            type="date"
+                            value={dateRange.end}
+                            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                            className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 cursor-pointer [color-scheme:dark]"
+                        />
+                    </div>
+                    {(dateRange.start || dateRange.end) && (
+                        <button
+                            onClick={() => setDateRange({ start: '', end: '' })}
+                            className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-all ml-2"
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="space-y-4">
@@ -4389,6 +4495,16 @@ const ClinicalQueue = ({ user, role }) => {
                                                     {item.additional_health_info && item.additional_health_info.includes('[MEDICATION CHANGE REQUEST]') && (
                                                         <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-blue-500/40 text-blue-400 bg-blue-500/10">
                                                             Medication Change
+                                                        </span>
+                                                    )}
+                                                    {/* Payment Status Indicator */}
+                                                    {item.profile?.stripe_customer_id ? (
+                                                        <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-green-500/40 text-green-400 bg-green-500/10">
+                                                            Payment Added
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border border-red-500/40 text-red-500 bg-red-500/10">
+                                                            No Payment
                                                         </span>
                                                     )}
                                                 </div>
@@ -5009,7 +5125,7 @@ const PatientExpressEntry = () => {
     };
 
     const categories = [
-        { id: 'weight-loss', label: 'Weight Loss', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
+        { id: 'weight-loss', label: 'Weight Loss', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
         { id: 'hair-restoration', label: 'Hair Restoration', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
         { id: 'sexual-health', label: 'Sexual Health', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
         { id: 'longevity', label: 'Longevity', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
@@ -5963,6 +6079,16 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
     const [creating, setCreating] = useState(false);
     const [ownerFilter, setOwnerFilter] = useState('all');
 
+    // Editing State
+    const [editingMember, setEditingMember] = useState(null);
+    const [showEditOwnerModal, setShowEditOwnerModal] = useState(false);
+    const [newOwnerId, setNewOwnerId] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
+
     const [providerForm, setProviderForm] = useState({
         firstName: '',
         lastName: '',
@@ -5975,7 +6101,8 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
         licenseNumber: '',
         npiNumber: '',
         deaNumber: '',
-        deaCertFile: null
+        deaCertFile: null,
+        addedByOverride: ''
     });
 
     const [backOfficeForm, setBackOfficeForm] = useState({
@@ -6020,7 +6147,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                 let query = supabase
                     .from('user_roles')
                     .select('user_id, role, added_by')
-                    .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
+                    .in('role', ['admin', 'back_office', 'sub_admin', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
 
                 if (currentUserRole === 'marketing_rep') {
                     query = query.eq('added_by', user?.id);
@@ -6049,7 +6176,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                 let query = supabase
                     .from('user_roles')
                     .select('user_id, role, added_by')
-                    .in('role', ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
+                    .in('role', ['admin', 'back_office', 'sub_admin', 'physician', 'nurse_practitioner', 'physician_assistant', 'marketing_rep']);
                 if (currentUserRole === 'marketing_rep') {
                     query = query.eq('added_by', user?.id);
                 }
@@ -6102,6 +6229,53 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
         };
     }, [currentUserRole, user?.id]);
 
+    const handleUpdateOwner = async (e) => {
+        e.preventDefault();
+        if (!editingMember) return;
+        setIsUpdating(true);
+
+        try {
+            // Update user_roles table
+            const { error: roleError } = await supabase
+                .from('user_roles')
+                .update({ added_by: newOwnerId || null })
+                .eq('user_id', editingMember.id);
+
+            if (roleError) throw roleError;
+
+            // Also update profiles table added_by for consistency
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ added_by: newOwnerId || null })
+                .eq('id', editingMember.id);
+
+            if (profileError) throw profileError;
+
+            toast.success('Owner updated successfully');
+            setShowEditOwnerModal(false);
+            fetchStaff();
+        } catch (err) {
+            console.error('Error updating owner:', err);
+            toast.error('Failed to update owner: ' + (err.message || 'Unknown error'));
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    // Calculate Paginated Staff
+    const filteredStaff = staff.filter(member => {
+        if (ownerFilter === 'all') return true;
+        if (ownerFilter === 'internal') return !member.added_by && ['physician', 'doctor', 'nurse_practitioner', 'physician_assistant'].includes(member.role);
+        return member.added_by === ownerFilter || member.id === ownerFilter;
+    });
+    const totalPages = Math.ceil(filteredStaff.length / ITEMS_PER_PAGE);
+    const paginatedStaff = filteredStaff.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+    // Reset page when filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [ownerFilter]);
+
     const handleProviderSubmit = async (e) => {
         e.preventDefault();
         setCreating(true);
@@ -6134,7 +6308,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                     phone: providerForm.phone,
                     dob: providerForm.dob,
                     address: providerForm.address,
-                    role: providerForm.licenseType === 'MD' || providerForm.licenseType === 'DO' ? 'physician' :
+                    role: providerForm.licenseType === 'MD' ? 'physician' :
                         providerForm.licenseType === 'NP' ? 'nurse_practitioner' : 'physician_assistant',
                     providerData: {
                         licenseNumber: providerForm.licenseNumber,
@@ -6143,7 +6317,8 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                         deaNumber: providerForm.deaNumber,
                         supervisingPhysician: null
                     },
-                    deaFile: deaFileData
+                    deaFile: deaFileData,
+                    addedByOverride: providerForm.addedByOverride || null
                 }
             });
 
@@ -6163,7 +6338,8 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                 licenseNumber: '',
                 npiNumber: '',
                 deaNumber: '',
-                deaCertFile: null
+                deaCertFile: null,
+                addedByOverride: ''
             });
             fetchStaff();
         } catch (err) {
@@ -6237,7 +6413,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
 
             if (error) throw error;
 
-            toast.success('Marketing Rep created successfully!');
+            toast.success('Marketing company created successfully!');
             setShowMarketingRepModal(false);
             setMarketingRepForm({
                 firstName: '',
@@ -6302,13 +6478,12 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
             case 'physician':
             case 'doctor':
                 if (licenseType === 'MD') return 'Doctor (MD)';
-                if (licenseType === 'DO') return 'Doctor (DO)';
                 return 'Physician';
             case 'nurse_practitioner': return 'Nurse Practitioner';
             case 'physician_assistant': return 'Physician Assistant';
             case 'back_office': return 'Back Office';
             case 'sub_admin': return 'Sub Admin';
-            case 'marketing_rep': return 'Marketing Rep';
+            case 'marketing_rep': return 'Marketing company';
             case 'admin': return 'Admin';
             default: return role || 'Unknown';
         }
@@ -6338,7 +6513,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                             onClick={() => setShowMarketingRepModal(true)}
                             className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
                         >
-                            + Add Marketing Rep
+                            + Add Marketing company
                         </button>
                         <button
                             onClick={() => setShowBackOfficeModal(true)}
@@ -6357,42 +6532,43 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                             onChange={(e) => setOwnerFilter(e.target.value)}
                             className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase text-white focus:outline-none focus:border-accent-black"
                         >
-                            <option value="all" className="bg-[#111111]">All Owners</option>
-                            {Array.from(new Set(staff.map(s => s.added_by).filter(Boolean))).map(ownerId => {
-                                const owner = staff.find(s => s.id === ownerId);
-                                return (
-                                    <option key={ownerId} value={ownerId} className="bg-[#111111]">
-                                        {owner ? `${owner.first_name} ${owner.last_name}` : 'Unknown Owner'}
+                            <option value="all" className="bg-[#111111]">All Staff</option>
+                            {/* Explicit option for Internal/Admin doctors if any exist */}
+                            {staff.some(s => !s.added_by && ['physician', 'doctor', 'nurse_practitioner', 'physician_assistant'].includes(s.role)) && (
+                                <option value="internal" className="bg-[#111111]">Internal Doctors (Admin)</option>
+                            )}
+                            {/* List all Marketing Companies found in staff list */}
+                            {staff
+                                .filter(s => s.role === 'marketing_rep')
+                                .map(rep => (
+                                    <option key={rep.id} value={rep.id} className="bg-[#111111]">
+                                        {rep.first_name} {rep.last_name} (Marketing Co)
                                     </option>
-                                );
-                            })}
+                                ))
+                            }
                         </select>
                     </div>
                 )}
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Total Staff</p>
-                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">{staff.length}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Total Admin Staff</p>
+                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">
+                        {staff.filter(s => s.role === 'admin' || s.role === 'back_office' || s.role === 'sub_admin').length}
+                    </p>
                 </div>
                 <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Providers</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Marketing Companies</p>
+                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">
+                        {staff.filter(s => s.role === 'marketing_rep').length}
+                    </p>
+                </div>
+                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Total Providers</p>
                     <p className="text-4xl font-black uppercase  tracking-tighter text-white">
                         {staff.filter(s => ['physician', 'nurse_practitioner', 'physician_assistant'].includes(s.role)).length}
-                    </p>
-                </div>
-                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Admin Staff</p>
-                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">
-                        {staff.filter(s => s.role === 'back_office').length}
-                    </p>
-                </div>
-                <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] p-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Active Today</p>
-                    <p className="text-4xl font-black uppercase  tracking-tighter text-white">
-                        {staff.filter(s => s.last_sign_in_at && new Date(s.last_sign_in_at).toDateString() === new Date().toDateString()).length}
                     </p>
                 </div>
             </div>
@@ -6401,57 +6577,68 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
             <div className="bg-[#111111]/[0.03] border border-white/10 rounded-[32px] overflow-hidden">
                 {/* Mobile Card View for Staff */}
                 <div className="md:hidden divide-y divide-white/5">
-                    {staff.length === 0 ? (
+                    {filteredStaff.length === 0 ? (
                         <div className="text-center py-20">
                             <p className="text-white/30 font-black uppercase tracking-widest text-xs">No staff members found</p>
                         </div>
                     ) : (
-                        staff
-                            .filter(member => ownerFilter === 'all' || member.added_by === ownerFilter || member.id === ownerFilter)
-                            .map(member => {
-                                const owner = staff.find(s => s.id === member.added_by);
-                                return (
-                                    <div key={member.id} className="p-6 space-y-4">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="font-bold text-white uppercase tracking-tighter text-base">
-                                                    {member.first_name || member.last_name
-                                                        ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
-                                                        : member.email || member.id?.substring(0, 8) + '...'}
-                                                </p>
-                                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">{member.email || 'N/A'}</p>
-                                            </div>
-                                            <span className={`px-3 py-1 rounded-xl border text-[8px] font-black uppercase tracking-widest ${getRoleBadge(member.role)}`}>
-                                                {getRoleLabel(member.role, member)}
-                                            </span>
+                        paginatedStaff.map(member => {
+                            const owner = staff.find(s => s.id === member.added_by);
+                            return (
+                                <div key={member.id} className="p-6 space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="font-bold text-white uppercase tracking-tighter text-base">
+                                                {member.first_name || member.last_name
+                                                    ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
+                                                    : member.email || member.id?.substring(0, 8) + '...'}
+                                            </p>
+                                            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">{member.email || 'N/A'}</p>
                                         </div>
-                                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                                            <div className="space-y-1">
-                                                <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">Owner</p>
-                                                <p className="text-[9px] font-black text-white/50 uppercase tracking-widest">
-                                                    {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
-                                                </p>
+                                        <span className={`px-3 py-1 rounded-xl border text-[8px] font-black uppercase tracking-widest ${getRoleBadge(member.role)}`}>
+                                            {getRoleLabel(member.role, member)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                        <div className="space-y-1">
+                                            <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">Owner</p>
+                                            <p className="text-[9px] font-black text-white/50 uppercase tracking-widest">
+                                                {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
+                                            </p>
+                                        </div>
+                                        <div className="text-right flex items-center gap-2">
+                                            <div className="space-y-1 mr-4">
+                                                <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">OTP</p>
+                                                <span className={`px-2 py-0.5 rounded-lg border text-[8px] font-black uppercase tracking-widest ${member.otp_verified ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}`}>
+                                                    {member.otp_verified ? 'Verified' : 'Pending'}
+                                                </span>
                                             </div>
-                                            <div className="text-right flex items-center gap-4">
-                                                <div className="space-y-1 mr-4">
-                                                    <p className="text-[8px] font-black text-white/30 uppercase tracking-widest">OTP</p>
-                                                    <span className={`px-2 py-0.5 rounded-lg border text-[8px] font-black uppercase tracking-widest ${member.otp_verified ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}`}>
-                                                        {member.otp_verified ? 'Verified' : 'Pending'}
-                                                    </span>
-                                                </div>
-                                                {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
-                                                    <button
-                                                        onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
-                                                        className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
-                                                    >
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                                    </button>
-                                                )}
-                                            </div>
+                                            {(currentUserRole === 'admin' || currentUserRole === 'sub_admin') && ['physician', 'doctor', 'nurse_practitioner', 'physician_assistant', 'nurse'].includes(member.role) && (
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingMember(member);
+                                                        setNewOwnerId(member.added_by || '');
+                                                        setShowEditOwnerModal(true);
+                                                    }}
+                                                    className="p-2.5 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white hover:text-black transition-all group"
+                                                    title="Edit Owner"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                                </button>
+                                            )}
+                                            {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
+                                                <button
+                                                    onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
+                                                    className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-                                );
-                            })
+                                </div>
+                            );
+                        })
                     )}
                 </div>
 
@@ -6469,72 +6656,119 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {staff.length === 0 ? (
+                            {filteredStaff.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="text-center py-20">
                                         <p className="text-white/30 font-black uppercase tracking-widest text-xs">No staff members found</p>
                                     </td>
                                 </tr>
                             ) : (
-                                staff
-                                    .filter(member => ownerFilter === 'all' || member.added_by === ownerFilter || member.id === ownerFilter)
-                                    .map(member => {
-                                        const owner = staff.find(s => s.id === member.added_by);
-                                        return (
-                                            <tr key={member.id} className="border-b border-white/10 hover:bg-[#111111]/[0.02] transition-colors">
-                                                <td className="p-6">
-                                                    <p className="font-bold text-white uppercase tracking-tighter">
-                                                        {member.first_name || member.last_name
-                                                            ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
-                                                            : member.email || member.id?.substring(0, 8) + '...'}
-                                                    </p>
-                                                </td>
-                                                <td className="p-6">
-                                                    <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{member.email || 'N/A'}</p>
-                                                </td>
-                                                <td className="p-6 whitespace-nowrap">
-                                                    <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getRoleBadge(member.role)}`}>
-                                                        {getRoleLabel(member.role, member)}
-                                                    </span>
-                                                </td>
-                                                <td className="p-6">
-                                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">
-                                                        {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
-                                                    </p>
-                                                </td>
-                                                <td className="p-6">
-                                                    <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest ${member.otp_verified ? 'bg-accent-black/20 text-white border-accent-black/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
-                                                        {member.otp_verified ? 'Verified' : 'Pending'}
-                                                    </span>
-                                                </td>
-                                                <td className="p-6">
-                                                    <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
-                                                        {new Date(member.created_at).toLocaleDateString()}
-                                                    </p>
-                                                </td>
-                                                <td className="p-6">
-                                                    <div className="flex items-center gap-2">
-                                                        {/* Admin can delete anyone; marketing rep can only delete their own doctors */}
-                                                        {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
-                                                            <button
-                                                                onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
-                                                                className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
-                                                                title="Delete Staff"
-                                                            >
-                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
-                                                                </svg>
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
+                                paginatedStaff.map(member => {
+                                    const owner = staff.find(s => s.id === member.added_by);
+                                    return (
+                                        <tr key={member.id} className="border-b border-white/10 hover:bg-[#111111]/[0.02] transition-colors">
+                                            <td className="p-6">
+                                                <p className="font-bold text-white uppercase tracking-tighter">
+                                                    {member.first_name || member.last_name
+                                                        ? `${member.first_name || ''} ${member.last_name || ''}`.trim()
+                                                        : member.email || member.id?.substring(0, 8) + '...'}
+                                                </p>
+                                            </td>
+                                            <td className="p-6">
+                                                <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">{member.email || 'N/A'}</p>
+                                            </td>
+                                            <td className="p-6 whitespace-nowrap">
+                                                <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest whitespace-nowrap ${getRoleBadge(member.role)}`}>
+                                                    {getRoleLabel(member.role, member)}
+                                                </span>
+                                            </td>
+                                            <td className="p-6">
+                                                <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">
+                                                    {owner ? `${owner.first_name} ${owner.last_name}` : member.added_by ? 'Staff Entry' : 'Main Admin'}
+                                                </p>
+                                            </td>
+                                            <td className="p-6">
+                                                <span className={`px-3 py-1 rounded-xl border text-[9px] font-black uppercase tracking-widest ${member.otp_verified ? 'bg-accent-black/20 text-white border-accent-black/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                                    {member.otp_verified ? 'Verified' : 'Pending'}
+                                                </span>
+                                            </td>
+                                            <td className="p-6">
+                                                <p className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+                                                    {member.created_at ? new Date(member.created_at).toLocaleDateString() : 'N/A'}
+                                                </p>
+                                            </td>
+                                            <td className="p-6">
+                                                <div className="flex items-center gap-2">
+                                                    {/* Admin/Sub-Admin can edit owner for providers */}
+                                                    {(currentUserRole === 'admin' || currentUserRole === 'sub_admin') && ['physician', 'doctor', 'nurse_practitioner', 'physician_assistant', 'nurse'].includes(member.role) && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingMember(member);
+                                                                setNewOwnerId(member.added_by || '');
+                                                                setShowEditOwnerModal(true);
+                                                            }}
+                                                            className="p-2.5 bg-white/10 border border-white/20 text-white rounded-xl hover:bg-white hover:text-black transition-all group"
+                                                            title="Edit Owner"
+                                                        >
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                                        </button>
+                                                    )}
+                                                    {/* Admin can delete anyone; marketing rep can only delete their own doctors */}
+                                                    {(currentUserRole === 'admin' || (currentUserRole === 'marketing_rep' && member.added_by === user?.id)) && (
+                                                        <button
+                                                            onClick={() => handleDeleteStaff(member.id, `${member.first_name} ${member.last_name}`)}
+                                                            className="p-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
+                                                            title="Delete Staff"
+                                                        >
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
                 </div>
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="p-6 border-t border-white/10 flex items-center justify-between">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">
+                            Showing <span className="text-white">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="text-white">{Math.min(currentPage * ITEMS_PER_PAGE, filteredStaff.length)}</span> of <span className="text-white">{filteredStaff.length}</span>
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white uppercase tracking-widest disabled:opacity-30 hover:bg-white/10 transition-all"
+                            >
+                                Previous
+                            </button>
+                            <div className="flex gap-1 flex-wrap">
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                        className={`w-8 h-8 rounded-xl text-[10px] font-black transition-all ${currentPage === i + 1 ? 'bg-accent-black text-white' : 'bg-white/5 text-white/40 hover:bg-white/10'}`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-white uppercase tracking-widest disabled:opacity-30 hover:bg-white/10 transition-all"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Provider Modal */}
@@ -6634,11 +6868,33 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                                 >
                                     <option value="">Select license type</option>
                                     <option value="MD">MD - Medical Doctor</option>
-                                    <option value="DO">DO - Doctor of Osteopathic Medicine</option>
                                     <option value="NP">NP - Nurse Practitioner</option>
                                     <option value="PA">PA - Physician Assistant</option>
                                 </select>
                             </div>
+                            
+                            {/* Doctor Owner Dropdown (Admin Only) */}
+                            {currentUserRole === 'admin' && (
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Doctor Owner *</label>
+                                    <select
+                                        value={providerForm.addedByOverride}
+                                        onChange={(e) => setProviderForm({ ...providerForm, addedByOverride: e.target.value })}
+                                        className="w-full bg-white border border-white/10 rounded-xl p-4 text-black font-bold focus:outline-none focus:border-accent-black"
+                                    >
+                                        <option value="">Internal Doctor (Admin Owned)</option>
+                                        {staff
+                                            .filter(s => s.role === 'marketing_rep')
+                                            .map(rep => (
+                                                <option key={rep.id} value={rep.id}>
+                                                    {rep.first_name} {rep.last_name} (Marketing company)
+                                                </option>
+                                            ))
+                                        }
+                                    </select>
+                                    <p className="mt-2 text-[9px] text-white/30 uppercase font-black tracking-widest">Select who this doctor belongs to for compensation tracking</p>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
@@ -6830,7 +7086,7 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-6" onClick={() => setShowMarketingRepModal(false)}>
                     <div className="bg-[#111111] border border-white/10 rounded-[40px] p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <h3 className="text-3xl font-black uppercase  tracking-tighter mb-8">
-                            Add Marketing <span className="text-white">Rep</span>
+                            Add Marketing <span className="text-white">company</span>
                         </h3>
 
                         <form onSubmit={handleMarketingRepSubmit} className="space-y-6">
@@ -6933,13 +7189,65 @@ const StaffManagement = ({ user, role: currentUserRole }) => {
                     </div>
                 </div>
             )}
+
+            {/* Edit Owner Modal */}
+            {showEditOwnerModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-6" onClick={() => setShowEditOwnerModal(false)}>
+                    <div className="bg-[#111111] border border-white/10 rounded-[40px] p-10 max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-8">
+                            Change <span className="text-white">Doctor Owner</span>
+                        </h3>
+                        <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-8 leading-relaxed">
+                            Updating owner for: <span className="text-white">{editingMember?.first_name} {editingMember?.last_name}</span>
+                        </p>
+
+                        <form onSubmit={handleUpdateOwner} className="space-y-6">
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">Select New Owner</label>
+                                <select
+                                    value={newOwnerId}
+                                    onChange={(e) => setNewOwnerId(e.target.value)}
+                                    className="w-full bg-white border border-white/10 rounded-xl p-4 text-black font-bold focus:outline-none focus:border-accent-black"
+                                >
+                                    <option value="">Internal Doctor (Admin Owned)</option>
+                                    {staff
+                                        .filter(s => s.role === 'marketing_rep')
+                                        .map(rep => (
+                                            <option key={rep.id} value={rep.id} className="text-black">
+                                                {rep.first_name} {rep.last_name} (Marketing company)
+                                            </option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+
+                            <div className="flex gap-4 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditOwnerModal(false)}
+                                    className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isUpdating}
+                                    className="flex-1 py-4 bg-accent-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#111111] transition-all disabled:opacity-50"
+                                >
+                                    {isUpdating ? 'Updating...' : 'Update Owner'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 // --- Settings View ---
-const SettingsView = ({ user, role }) => {
-    const [activeTab, setActiveTab] = useState('profile');
+const SettingsView = ({ user, role, mfaRequired, setMfaRequired }) => {
+    const [activeTab, setActiveTab] = useState(mfaRequired ? 'security' : 'profile');
     const [profile, setProfile] = useState(null);
     const [providerProfile, setProviderProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -7001,6 +7309,7 @@ const SettingsView = ({ user, role }) => {
             toast.success('Google Authenticator enabled successfully!');
             setMfaData(null);
             setMfaCode('');
+            if (setMfaRequired) setMfaRequired(false);
         } catch (err) {
             toast.error(err.message);
         } finally {
@@ -7127,8 +7436,9 @@ const SettingsView = ({ user, role }) => {
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
+                        disabled={mfaRequired && tab.id !== 'security'}
                         onClick={() => { setActiveTab(tab.id); setMsg(null); }}
-                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white/60'}`}
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white/60'} ${(mfaRequired && tab.id !== 'security') ? 'opacity-20 cursor-not-allowed' : ''}`}
                     >
                         {tab.label}
                     </button>
@@ -7322,20 +7632,6 @@ const SettingsView = ({ user, role }) => {
                                     </div>
                                 </div>
                             )}
-                        </div>
-
-                        <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-8 flex items-start gap-5">
-                            <div className="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5">
-                                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-black uppercase tracking-widest text-green-400 mb-2">OTP Automatically Managed</p>
-                                <p className="text-[10px] text-white/40 font-bold leading-relaxed">
-                                    One-time password (OTP) authentication is automatically configured and managed for your account. You will be prompted for OTP verification each time you sign in to the admin portal. No manual setup is required.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 )}
@@ -7812,8 +8108,6 @@ const ProfitTrackerView = () => {
         drug_name: '',
         pharmacy_name: '',
         cost_per_unit: '',
-        quantity: '',
-        selling_price: '',
         purchase_date: new Date().toISOString().split('T')[0],
         notes: '',
     });
@@ -7826,35 +8120,90 @@ const ProfitTrackerView = () => {
     const fetchPurchases = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            // 1. Fetch Purchase Records
+            const { data: purchaseData, error: pError } = await supabase
                 .from('pharmacy_purchases')
                 .select('*')
                 .order('purchase_date', { ascending: false });
-            if (error) throw error;
-            setPurchases(data || []);
+            if (pError) throw pError;
+            setPurchases(purchaseData || []);
+
+            // 2. Fetch All Orders to calculate actual revenue
+            const { data: orderData, error: oError } = await supabase
+                .from('orders')
+                .select('drug_name, drug_price');
+            if (oError) throw oError;
+
+            // Group order revenue and fees by drug
+            const revenueMap = {};
+            (orderData || []).forEach(o => {
+                // Normalize name for matching
+                const name = (o.drug_name || 'Unknown Drug').toLowerCase().replace(/\s+/g, ' ').trim();
+                if (!revenueMap[name]) revenueMap[name] = { revenue: 0, fees: 0, count: 0 };
+                const price = parseFloat(o.drug_price) || 0;
+                revenueMap[name].revenue += price;
+                revenueMap[name].count += 1;
+                if (price > 0) {
+                    revenueMap[name].fees += (price * 0.029) + 0.30;
+                }
+            });
 
             // Build profit summary per drug
             const summary = {};
-            (data || []).forEach(p => {
-                if (!summary[p.drug_name]) summary[p.drug_name] = { totalCost: 0, totalUnits: 0, totalRevenue: 0, totalProfit: 0 };
-                summary[p.drug_name].totalCost += Number(p.total_cost) || 0;
-                summary[p.drug_name].totalUnits += Number(p.quantity) || 0;
-                summary[p.drug_name].totalRevenue += Number(p.selling_price) || 0;
-                summary[p.drug_name].totalProfit += Number(p.profit) || 0;
+            (purchaseData || []).forEach(p => {
+                let name = p.drug_name || 'Unknown Drug';
+                // Clean up any legacy "undefined" suffix from drug names in DB
+                name = name.replace(/\s+undefined/g, '').trim();
+
+                if (!summary[name]) summary[name] = { totalCost: 0, totalUnits: 0, pharmacy: p.pharmacy_name, date: p.purchase_date };
+                summary[name].totalCost += Number(p.total_cost) || 0;
+                summary[name].totalUnits += Number(p.quantity) || 0;
+
+                // Keep the most recent pharmacy/date
+                if (new Date(p.purchase_date) > new Date(summary[name].date)) {
+                    summary[name].pharmacy = p.pharmacy_name;
+                    summary[name].date = p.purchase_date;
+                }
             });
 
+            // ONLY show drugs that have a purchase log entered
             const drugNames = Object.keys(summary);
-            const summaryArr = drugNames.map(drugName => ({
-                drug: drugName,
-                totalCost: summary[drugName].totalCost,
-                totalUnits: summary[drugName].totalUnits,
-                avgCostPerUnit: summary[drugName].totalUnits > 0 ? summary[drugName].totalCost / summary[drugName].totalUnits : 0,
-                revenue: summary[drugName].totalRevenue,
-                profit: summary[drugName].totalProfit,
-                margin: summary[drugName].totalRevenue > 0
-                    ? ((summary[drugName].totalProfit / summary[drugName].totalRevenue) * 100).toFixed(1)
-                    : 'N/A'
-            })).sort((a, b) => b.profit - a.profit);
+            const summaryArr = drugNames.map(drugName => {
+                const pData = summary[drugName];
+
+                // Robust matching between logged drug name and order drug names
+                const normName = drugName.toLowerCase().replace(/\s+/g, ' ').trim();
+                let rData = revenueMap[normName];
+
+                if (!rData) {
+                    // Try partial matching if exact match fails
+                    const matchKey = Object.keys(revenueMap).find(k =>
+                        normName.includes(k) || k.includes(normName)
+                    );
+                    if (matchKey) rData = revenueMap[matchKey];
+                }
+
+                if (!rData) rData = { revenue: 0, fees: 0, count: 0 };
+
+                const grossProfit = rData.revenue - pData.totalCost;
+                const netProfit = grossProfit - rData.fees;
+
+                return {
+                    drug: drugName,
+                    pharmacy: pData.pharmacy,
+                    date: pData.date,
+                    totalCost: pData.totalCost,
+                    totalUnits: pData.totalUnits,
+                    amountSold: rData.count,
+                    revenue: rData.revenue,
+                    fees: rData.fees,
+                    grossProfit: grossProfit,
+                    netProfit: netProfit,
+                    margin: rData.revenue > 0
+                        ? ((netProfit / rData.revenue) * 100).toFixed(1)
+                        : 'N/A'
+                };
+            }).sort((a, b) => b.netProfit - a.netProfit);
 
             setProfitSummary(summaryArr);
         } catch (err) {
@@ -7871,26 +8220,20 @@ const ProfitTrackerView = () => {
         if (!form.drug_name) return setMsg({ type: 'error', text: 'Please select a drug.' });
         setSaving(true); setMsg(null);
         try {
-            const totalCost = parseFloat(form.cost_per_unit) * parseInt(form.quantity);
-            const sellingPrice = parseFloat(form.selling_price) || 0;
-            const stripeFee = sellingPrice > 0 ? (sellingPrice * 0.029 + 0.30) : 0;
-            const profit = sellingPrice - stripeFee - totalCost;
+            const totalCost = parseFloat(form.cost_per_unit) || 0;
 
             const { error } = await supabase.from('pharmacy_purchases').insert([{
                 drug_name: form.drug_name,
                 pharmacy_name: form.pharmacy_name,
-                cost_per_unit: parseFloat(form.cost_per_unit),
-                quantity: parseInt(form.quantity),
+                cost_per_unit: totalCost,
+                quantity: 1,
                 total_cost: totalCost,
-                selling_price: sellingPrice,
-                stripe_fee: stripeFee,
-                profit: profit,
                 purchase_date: form.purchase_date,
                 notes: form.notes,
             }]);
             if (error) throw error;
             setMsg({ type: 'success', text: 'Purchase recorded successfully!' });
-            setForm({ drug_name: '', pharmacy_name: '', cost_per_unit: '', quantity: '', selling_price: '', purchase_date: new Date().toISOString().split('T')[0], notes: '' });
+            setForm({ drug_name: '', pharmacy_name: '', cost_per_unit: '', purchase_date: new Date().toISOString().split('T')[0], notes: '' });
             setDrugSearch('');
             setShowForm(false);
             fetchPurchases();
@@ -7904,7 +8247,9 @@ const ProfitTrackerView = () => {
     const fmtMoney = (v) => `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const totalCostAll = purchases.reduce((s, p) => s + (Number(p.total_cost) || 0), 0);
     const totalRevAll = profitSummary.reduce((s, p) => s + p.revenue, 0);
-    const totalProfitAll = totalRevAll - totalCostAll;
+    const totalFeesAll = profitSummary.reduce((s, p) => s + p.fees, 0);
+    const totalGrossProfitAll = totalRevAll - totalCostAll;
+    const totalNetProfitAll = totalGrossProfitAll - totalFeesAll;
 
     const inputStyle = {
         width: '100%', boxSizing: 'border-box',
@@ -7924,23 +8269,30 @@ const ProfitTrackerView = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div className="bg-white/5 border border-[#bfff00]/20 rounded-2xl lg:rounded-3xl p-5 lg:p-8">
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Revenue</p>
+                    <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-[#bfff00]">{fmtMoney(totalRevAll)}</p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">All drug orders</p>
+                </div>
                 <div className="bg-white/5 border border-red-500/20 rounded-2xl lg:rounded-3xl p-5 lg:p-8">
-                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Purchase Cost</p>
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Cost</p>
                     <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-red-500">{fmtMoney(totalCostAll)}</p>
                     <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">Pharmacy spend</p>
                 </div>
-                <div className="bg-white/5 border border-[#bfff00]/20 rounded-2xl lg:rounded-3xl p-5 lg:p-8">
-                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Total Drug Revenue</p>
-                    <p className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter text-[#bfff00]">{fmtMoney(totalRevAll)}</p>
-                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">From billing records</p>
-                </div>
-                <div className={`bg-white/5 border rounded-2xl lg:rounded-3xl p-5 lg:p-8 ${totalProfitAll >= 0 ? 'border-[#FFDE59]/30' : 'border-red-500/30'}`}>
-                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Estimated Profit</p>
-                    <p className={`text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter ${totalProfitAll >= 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>
-                        {totalProfitAll >= 0 ? '' : '-'}{fmtMoney(Math.abs(totalProfitAll))}
+                <div className={`bg-white/5 border rounded-2xl lg:rounded-3xl p-5 lg:p-8 ${totalGrossProfitAll >= 0 ? 'border-blue-500/30' : 'border-red-500/30'}`}>
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Gross Profit</p>
+                    <p className={`text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter ${totalGrossProfitAll >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
+                        {totalGrossProfitAll >= 0 ? '' : '-'}{fmtMoney(Math.abs(totalGrossProfitAll))}
                     </p>
                     <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">Revenue minus cost</p>
+                </div>
+                <div className={`bg-white/5 border rounded-2xl lg:rounded-3xl p-5 lg:p-8 ${totalNetProfitAll >= 0 ? 'border-[#FFDE59]/30' : 'border-red-500/30'}`}>
+                    <p className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-white/40 mb-3 underline decoration-white/10 underline-offset-4">Net Profit</p>
+                    <p className={`text-2xl lg:text-3xl xl:text-4xl font-black tracking-tighter ${totalNetProfitAll >= 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>
+                        {totalNetProfitAll >= 0 ? '' : '-'}{fmtMoney(Math.abs(totalNetProfitAll))}
+                    </p>
+                    <p className="text-[8px] lg:text-[9px] text-white/25 mt-1 uppercase leading-tight">After subtracting fees</p>
                 </div>
             </div>
 
@@ -8016,12 +8368,12 @@ const ProfitTrackerView = () => {
                                                         {category}
                                                     </div>
                                                     {drugList.map((drugItem, idx) => {
-                                                        const formattedDisplay = `${drugItem.name}${drugItem.dosage ? ' ' + drugItem.dosage : ''} ${drugItem.price}`;
+                                                        const formattedDisplay = drugItem.name;
                                                         const isSelected = form.drug_name === formattedDisplay;
 
                                                         return (
                                                             <button
-                                                                key={`${drugItem.name}-${drugItem.dosage}-${idx}`}
+                                                                key={`${drugItem.name}-${idx}`}
                                                                 type="button"
                                                                 onMouseDown={() => {
                                                                     setForm(f => ({ ...f, drug_name: formattedDisplay }));
@@ -8041,8 +8393,8 @@ const ProfitTrackerView = () => {
                                                             >
                                                                 <div className="flex justify-between items-center">
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-white font-bold">{drugItem.name}</span>
-                                                                        <span className="text-[10px] text-white/40 uppercase tracking-widest">{drugItem.dosage}</span>
+                                                                        <span className="text-white font-bold">{drugItem.productName}</span>
+                                                                        <span className="text-[10px] text-white/40 uppercase tracking-widest">{drugItem.dosage} {drugItem.plan}</span>
                                                                     </div>
                                                                     <span className="text-[#FFDE59] font-black">{drugItem.price}</span>
                                                                 </div>
@@ -8091,33 +8443,9 @@ const ProfitTrackerView = () => {
                         </div>
 
                         <div>
-                            <label style={labelStyle}>Cost Per Unit ($) *</label>
-                            <input type="number" step="0.01" min="0" value={form.cost_per_unit} onChange={e => setForm(f => ({ ...f, cost_per_unit: e.target.value }))} placeholder="e.g. 45.00" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                            <label style={labelStyle}>Purchase Cost ($) *</label>
+                            <input type="number" step="0.01" min="0" value={form.cost_per_unit} onChange={e => setForm(f => ({ ...f, cost_per_unit: e.target.value }))} placeholder="e.g. 1500.00" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                         </div>
-
-                        <div>
-                            <label style={labelStyle}>Quantity *</label>
-                            <input type="number" min="1" value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))} placeholder="e.g. 50" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
-                        </div>
-
-                        <div>
-                            <label style={labelStyle}>Expected Selling Price ($) *</label>
-                            <input type="number" step="0.01" min="0" value={form.selling_price} onChange={e => setForm(f => ({ ...f, selling_price: e.target.value }))} placeholder="e.g. 15000.00" style={inputStyle} required onFocus={e => e.target.style.borderColor = '#FFDE59'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
-                        </div>
-
-                        {form.cost_per_unit && form.quantity && (
-                            <div className="md:col-span-2 bg-[#FFDE59]/10 border border-[#FFDE59]/20 rounded-2xl p-4 flex items-center gap-4">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                                </svg>
-                                <div>
-                                    <p style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.25em', color: 'rgba(255,222,89,0.7)', marginBottom: '2px' }}>Total Purchase Cost</p>
-                                    <p style={{ fontSize: '22px', fontWeight: '900', color: '#FFDE59', letterSpacing: '-0.03em' }}>
-                                        ${(parseFloat(form.cost_per_unit || 0) * parseInt(form.quantity || 0)).toFixed(2)}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
 
                         <div className="md:col-span-2">
                             <label style={labelStyle}>Notes (Optional)</label>
@@ -8139,27 +8467,30 @@ const ProfitTrackerView = () => {
                         <table className="w-full text-left min-w-[800px]">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    {['Drug / Product', 'Units Purchased', 'Total Cost', 'Gross Revenue', 'Stripe Fees (Est)', 'Net Profit', 'Margin'].map(h => (
+                                    {['Drug / Product', 'Pharmacy', 'P. Date', 'Cost', 'Sold', 'Gross Profit', 'Net Profit'].map(h => (
                                         <th key={h} className="p-6 text-[9px] font-black uppercase tracking-widest text-white/40">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {profitSummary.map((row, i) => {
-                                    const totalStripeFees = row.revenue * 0.029 + (row.totalUnits > 0 ? (row.revenue / (row.revenue / 100) * 0.3) : 0); // rough est
-                                    // Actually we stored profit in the DB now, but for retrospective or consistency:
                                     return (
                                         <tr key={i} className="hover:bg-white/[0.02] transition-all">
                                             <td className="p-6">
                                                 <p className="text-sm font-bold text-white">{row.drug}</p>
                                             </td>
-                                            <td className="p-6 text-xs font-bold text-white/60">{row.totalUnits.toLocaleString()}</td>
+                                            <td className="p-6 text-xs text-white/40 font-bold uppercase tracking-tighter">{row.pharmacy}</td>
+                                            <td className="p-6 text-xs text-white/20 font-medium whitespace-nowrap">{row.date}</td>
                                             <td className="p-6 text-xs font-bold text-red-500">{fmtMoney(row.totalCost)}</td>
-                                            <td className="p-6 text-xs font-bold text-[#bfff00]">{fmtMoney(row.revenue)}</td>
-                                            <td className="p-6 text-xs font-bold text-red-400/60">{fmtMoney(row.revenue * 0.029 + (row.revenue > 0 ? 0.30 : 0))}</td>
+                                            <td className="p-6 text-xs font-black text-[#FFDE59]">{row.amountSold} orders</td>
                                             <td className="p-6">
-                                                <span className={`text-sm font-black ${row.profit > 0 ? 'text-[#FFDE59]' : row.profit < 0 ? 'text-red-400' : 'text-white/30'}`}>
-                                                    {row.profit !== 0 ? `${row.profit > 0 ? '+' : ''}${fmtMoney(row.profit)}` : '$0.00'}
+                                                <span className={`text-xs font-black ${row.grossProfit > 0 ? 'text-blue-400' : 'text-red-400'}`}>
+                                                    {row.grossProfit !== 0 ? `${row.grossProfit > 0 ? '+' : ''}${fmtMoney(row.grossProfit)}` : '$0.00'}
+                                                </span>
+                                            </td>
+                                            <td className="p-6">
+                                                <span className={`text-sm font-black ${row.netProfit > 0 ? 'text-[#FFDE59]' : 'text-red-400'}`}>
+                                                    {row.netProfit !== 0 ? `${row.netProfit > 0 ? '+' : ''}${fmtMoney(row.netProfit)}` : '$0.00'}
                                                 </span>
                                             </td>
                                             <td className="p-6">
@@ -8222,11 +8553,17 @@ const StatementDocument = ({ stmt, rates }) => {
                         <div style={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#888', marginBottom: '6px' }}>PROVIDER COMPENSATION STATEMENT</div>
                         <div style={{ fontSize: '28px', fontWeight: '900', color: '#111', letterSpacing: '-0.03em' }}>{periodLabel}</div>
                         <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>Statement #{stmt.statement_number || stmt.id?.slice(0, 8).toUpperCase()}</div>
+                        {stmt.provider_name && (
+                            <div style={{ marginTop: '16px', padding: '12px 18px', backgroundColor: '#f3f4f6', borderRadius: '12px', display: 'inline-block' }}>
+                                <div style={{ fontSize: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#999', marginBottom: '2px' }}>FOR SUB-ADMIN / PROVIDER</div>
+                                <div style={{ fontSize: '14px', fontWeight: '900', color: '#111' }}>{stmt.provider_name}</div>
+                            </div>
+                        )}
                     </div>
                     {/* uGlowMD Logo — top right, large */}
                     <div style={{ textAlign: 'right' }}>
-                        <img src={logo} alt="uGlowMD" style={{ height: '128px', width: 'auto', display: 'inline-block', filter: 'brightness(0)' }} />
-                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '36px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Portal</div>
+                        <img src={logo} alt="uGlowMD" style={{ height: '154px', width: 'auto', display: 'inline-block', filter: 'brightness(0)' }} />
+                        <div style={{ fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.35em', color: '#999', marginTop: '4px' }}><img src={logo} alt="uGlowMD" style={{ height: '44px', width: 'auto', display: 'inline-block', verticalAlign: 'middle', filter: 'brightness(0) opacity(0.5)' }} /> · Provider Portal</div>
                     </div>
                 </div>
 
@@ -8418,6 +8755,7 @@ const StatementsAdminView = () => {
     const [ratesMsg, setRatesMsg] = useState(null);
 
     const [editForm, setEditForm] = useState({});
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -8470,72 +8808,113 @@ const StatementsAdminView = () => {
             const month = selectedMonth;
             const month_name = MONTHS[month];
 
-            // Build date range for the full selected calendar month (local midnight to end of day)
+            // Build date range for the full selected calendar month
             const start = new Date(year, month, 1);
             const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
             const startISO = start.toISOString();
             const endISO = end.toISOString();
 
-            console.log(`[Statements] Generating for ${month_name} ${year}`);
-            console.log(`[Statements] Date range: ${startISO} → ${endISO}`);
+            console.log(`[Statements] Generating for each sub-admin for ${month_name} ${year}`);
 
-            // Check if already exists
-            const { data: existing } = await supabase
-                .from('provider_statements')
-                .select('id')
-                .eq('year', year)
-                .eq('month', month)
-                .maybeSingle();
-            if (existing) {
-                setMsg({ type: 'error', text: `Statement for ${month_name} ${year} already exists. Delete it first to regenerate.` });
+            // 1. Fetch all staff members (potential sub-admins)
+            // Use the established edge function to ensure we get the correct list regardless of RLS
+            const { data: staffData, error: staffErr } = await supabase.functions.invoke('get-staff-list');
+            if (staffErr) throw staffErr;
+
+            const staffList = staffData?.staff || [];
+
+            // Filter for sub-admins only (exclude main admins if they don't get payouts, or include all staff)
+            // Typically statements are for non-owner staff.
+            const subAdmins = staffList.filter(s =>
+                ['marketing_rep', 'physician', 'physician_assistant', 'provider', 'nurse_practitioner', 'back_office'].includes(s.role)
+            );
+
+            if (subAdmins.length === 0) {
+                // If the edge function is empty or filtered out everyone, try a fallback to include everyone EXCEPT the current user if they are the only admin
+                if (staffList.length > 0) {
+                    setMsg({ type: 'info', text: "No staff members with sub-admin roles found (Marketing, Physician, etc)." });
+                } else {
+                    throw new Error("No staff members found in the system. Ensure you have added staff in the Staff Management section.");
+                }
                 setGenerating(false);
                 return;
             }
 
-            // New patients: profiles created within the selected month
-            const { data: newPatients, error: newErr } = await supabase
+            // 2. Fetch all new patients for this month
+            const { data: allNewPatients } = await supabase
                 .from('profiles')
-                .select('id, first_name, last_name, email, created_at')
+                .select('id, first_name, last_name, email, created_at, added_by')
                 .gte('created_at', startISO)
                 .lte('created_at', endISO);
-            if (newErr) console.error('[Statements] New patients query error:', newErr);
-            console.log(`[Statements] New patients found: ${(newPatients || []).length}`, newPatients);
+            // Note: We don't filter by added_by here because we'll group them below
 
-            // Recurring: active subscribers who joined BEFORE this month (not new this month)
-            const { data: recurringPatients, error: recErr } = await supabase
+            // 3. Fetch all active recurring patients (joined before this month)
+            const { data: allRecurringPatients } = await supabase
                 .from('profiles')
-                .select('id, first_name, last_name, email, created_at')
+                .select('id, first_name, last_name, email, created_at, added_by')
                 .eq('subscribe_status', true)
                 .lt('created_at', startISO);
-            if (recErr) console.error('[Statements] Recurring query error:', recErr);
-            console.log(`[Statements] Recurring patients found: ${(recurringPatients || []).length}`, recurringPatients);
 
-            const newCount = (newPatients || []).length;
-            const recurringCount = (recurringPatients || []).length;
             const newRate = rates.new_patient_rate;
             const recurringRate = rates.recurring_patient_rate;
-            const totalPayout = (newCount * newRate) + (recurringCount * recurringRate);
-
             const releaseDate = new Date(year, month + 1, 5).toISOString();
 
-            const newStmt = {
-                year, month, month_name,
-                period_label: `${month_name} ${year}`,
-                statement_number: `STMT-${year}${String(month + 1).padStart(2, '0')}-001`,
-                new_patient_count: newCount,
-                recurring_patient_count: recurringCount,
-                new_patient_rate: newRate,
-                recurring_patient_rate: recurringRate,
-                total_payout: totalPayout,
-                status: 'pending_review',
-                release_date: releaseDate,
-                new_patients_list: (newPatients || []).map(p => ({ name: `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(), email: p.email, joined: p.created_at })),
-                recurring_patients_list: (recurringPatients || []).map(p => ({ name: `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(), email: p.email })),
-            };
+            let generatedCount = 0;
+            const statementsToInsert = [];
 
-            const { error } = await supabase.from('provider_statements').insert([newStmt]);
-            if (error) throw error;
-            setMsg({ type: 'success', text: `Statement for ${month_name} ${year} generated — ${newCount} new + ${recurringCount} recurring = ${fmtMoney(totalPayout)}` });
+            // 4. Generate a statement for EACH sub-admin
+            for (const admin of subAdmins) {
+                const sName = `${admin.first_name ?? ''} ${admin.last_name ?? ''}`.trim() || 'Unknown Staff';
+                const adminId = admin.id || admin.user_id;
+
+                // Filter patients for this specific sub-admin
+                const myNewPatients = (allNewPatients || []).filter(p => p.added_by === adminId);
+                const myRecurringPatients = (allRecurringPatients || []).filter(p => p.added_by === adminId);
+
+                const nBtn = myNewPatients.length;
+                const rBtn = myRecurringPatients.length;
+                const totalPayout = (nBtn * newRate) + (rBtn * recurringRate);
+
+                // Check if already exists for this specific user/month
+                const { data: existing } = await supabase
+                    .from('provider_statements')
+                    .select('id')
+                    .eq('year', year)
+                    .eq('month', month)
+                    .eq('provider_id', adminId)
+                    .maybeSingle();
+
+                if (existing) continue;
+
+                const newStmt = {
+                    year, month, month_name,
+                    provider_id: adminId,
+                    provider_name: sName,
+                    period_label: `${month_name} ${year}`,
+                    statement_number: `STMT-${year}${String(month + 1).padStart(2, '0')}-${adminId.slice(0, 4).toUpperCase()}`,
+                    new_patient_count: nBtn,
+                    recurring_patient_count: rBtn,
+                    new_patient_rate: newRate,
+                    recurring_patient_rate: recurringRate,
+                    total_payout: totalPayout,
+                    status: 'pending_review',
+                    release_date: releaseDate,
+                    new_patients_list: myNewPatients.map(p => ({ name: `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(), email: p.email, joined: p.created_at })),
+                    recurring_patients_list: myRecurringPatients.map(p => ({ name: `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(), email: p.email })),
+                };
+
+                statementsToInsert.push(newStmt);
+                generatedCount++;
+            }
+
+            if (statementsToInsert.length > 0) {
+                const { error } = await supabase.from('provider_statements').insert(statementsToInsert);
+                if (error) throw error;
+                setMsg({ type: 'success', text: `Generated ${generatedCount} individual statements for ${month_name} ${year}.` });
+            } else {
+                setMsg({ type: 'info', text: `No new statements needed for ${month_name} ${year} (already exist or no sub-admins).` });
+            }
+
             fetchStatements();
         } catch (err) {
             setMsg({ type: 'error', text: err.message });
@@ -8594,6 +8973,31 @@ const StatementsAdminView = () => {
             setRatesMsg({ type: 'error', text: err.message });
         } finally {
             setRatesSaving(false);
+        }
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === statements.length) setSelectedIds([]);
+        else setSelectedIds(statements.map(s => s.id));
+    };
+
+    const handleMassDelete = async () => {
+        if (!window.confirm(`Are you sure you want to permanently delete ${selectedIds.length} statements? This cannot be undone.`)) return;
+        setSaving(true);
+        try {
+            const { error } = await supabase.from('provider_statements').delete().in('id', selectedIds);
+            if (error) throw error;
+            setMsg({ type: 'success', text: `${selectedIds.length} statements deleted successfully.` });
+            setSelectedIds([]);
+            fetchStatements();
+        } catch (err) {
+            setMsg({ type: 'error', text: err.message });
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -8737,15 +9141,50 @@ const StatementsAdminView = () => {
                 </div>
             ) : (
                 <div className="space-y-3">
+                    <div className="flex items-center justify-between px-5 py-2">
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={toggleSelectAll}
+                                className="w-5 h-5 rounded border border-white/20 flex items-center justify-center hover:border-white/40 transition-all bg-white/5"
+                            >
+                                {selectedIds.length === statements.length && statements.length > 0 && (
+                                    <div className="w-2.5 h-2.5 bg-[#FFDE59] rounded-sm" />
+                                )}
+                            </button>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                                {selectedIds.length > 0 ? `${selectedIds.length} Selected` : 'Select All'}
+                            </span>
+                        </div>
+                        {selectedIds.length > 0 && (
+                            <button
+                                onClick={handleMassDelete}
+                                disabled={saving}
+                                className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                            >
+                                {saving ? 'Deleting...' : `Delete Selected (${selectedIds.length})`}
+                            </button>
+                        )}
+                    </div>
                     {statements.map(stmt => (
-                        <div key={stmt.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all">
+                        <div key={stmt.id} className={`bg-white/5 border ${selectedIds.includes(stmt.id) ? 'border-[#FFDE59]/50' : 'border-white/10'} rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all`}>
                             <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => toggleSelect(stmt.id)}
+                                    className={`w-5 h-5 rounded border ${selectedIds.includes(stmt.id) ? 'border-[#FFDE59] bg-[#FFDE59]/10' : 'border-white/20 bg-white/5'} flex items-center justify-center transition-all`}
+                                >
+                                    {selectedIds.includes(stmt.id) && (
+                                        <div className="w-2.5 h-2.5 bg-[#FFDE59] rounded-sm" />
+                                    )}
+                                </button>
                                 <div className="w-12 h-12 rounded-xl bg-[#FFDE59]/10 flex items-center justify-center shrink-0">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFDE59" strokeWidth="2.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 </div>
                                 <div>
                                     <p className="text-sm font-black text-white">{stmt.period_label || `${stmt.month_name} ${stmt.year}`}</p>
-                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">{stmt.statement_number} ? {stmt.new_patient_count ?? 0} new ? {stmt.recurring_patient_count ?? 0} recurring</p>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-wider">
+                                        {stmt.provider_name ? `${stmt.provider_name} \u00B7 ` : ''}
+                                        {stmt.statement_number} \u00B7 {stmt.new_patient_count ?? 0} new \u00B7 {stmt.recurring_patient_count ?? 0} recurring
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 flex-wrap">
@@ -8906,6 +9345,7 @@ const StatementsProviderView = () => {
                 .from('provider_statements')
                 .select('*')
                 .eq('status', 'approved')
+                .eq('provider_id', user?.id)
                 .order('year', { ascending: false })
                 .order('month', { ascending: false });
             if (error) {
@@ -9486,6 +9926,7 @@ const AdminDashboard = () => {
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const [mfaRequired, setMfaRequired] = useState(false);
 
     const [pendingCount, setPendingCount] = useState(0);
 
@@ -9494,11 +9935,26 @@ const AdminDashboard = () => {
             try {
                 const { data, error } = await supabase.from('user_roles').select('role').eq('user_id', user?.id).single();
                 if (error) console.error('[AdminDashboard] Role check error:', error);
+                
+                let currentRole = null;
                 if (data) {
                     console.log('[AdminDashboard] Current user role:', data.role);
                     setRole(data.role);
+                    currentRole = data.role;
                 } else {
                     console.warn('[AdminDashboard] No role data found for UID:', user?.id);
+                }
+
+                // Check MFA for Admin/Sub-Admin
+                if (currentRole === 'admin' || currentRole === 'sub_admin') {
+                    const { data: mfa, error: mfaError } = await supabase.auth.mfa.listFactors();
+                    if (mfaError) console.error('[AdminDashboard] MFA check error:', mfaError);
+                    
+                    const hasVerifiedMFA = mfa?.all?.some(f => f.status === 'verified');
+                    if (!hasVerifiedMFA) {
+                        console.warn('[AdminDashboard] MFA Required for role:', currentRole);
+                        setMfaRequired(true);
+                    }
                 }
             } catch (err) {
                 console.error('[AdminDashboard] Role check exception:', err);
@@ -9560,6 +10016,14 @@ const AdminDashboard = () => {
     }, [user, role]);
 
     const currentTab = location.pathname.split('/').pop() || 'overview';
+
+    // Force redirect to settings if MFA is required
+    useEffect(() => {
+        if (mfaRequired && currentTab !== 'settings' && !loading) {
+            navigate('/admin/settings');
+            toast.error('MFA setup is required for your account security.', { id: 'mfa-required' });
+        }
+    }, [mfaRequired, currentTab, loading, navigate]);
 
     if (loading) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-accent-black">LOADING OS...</div>;
     const isSubAdmin = ['admin', 'back_office', 'physician', 'nurse_practitioner', 'physician_assistant', 'provider', 'marketing_rep'].includes(role);
@@ -9625,7 +10089,7 @@ const AdminDashboard = () => {
             {/* Mobile Header */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10 px-4 py-3 flex items-center justify-between">
                 <h1 className="text-xl font-black uppercase tracking-tighter" onClick={() => navigate('/')}>
-                    <img src={logo} alt="uGlowMD" className="h-[64px] w-auto inline-block brightness-0 invert" />
+                    <img src={logo} alt="uGlowMD" className="h-[84px] w-auto inline-block brightness-0 invert" />
                 </h1>
                 <button
                     onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -9638,21 +10102,22 @@ const AdminDashboard = () => {
             </div>
 
             {/* Sidebar - Desktop and Mobile */}
-            <aside className={`w-64 xl:w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 lg:p-10 xl:p-12 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
-                <div className="mb-8 lg:mb-12">
+            <aside className={`w-64 xl:w-72 border-r border-white/10 bg-[#0A0A0A] lg:sticky lg:top-0 fixed h-screen p-6 pt-[0px] lg:p-10  lg:pt-[0px]  xl:p-12 z-40 transition-transform duration-300 lg:translate-x-0 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
+                <div className="">
                     <h1 className="text-2xl font-black uppercase tracking-tighter cursor-pointer" onClick={() => navigate('/')}>
-                        <img src={logo} alt="uGlowMD" className="h-[80px] lg:h-[100px] xl:h-[112px] w-auto inline-block brightness-0 invert" />
+                        <img src={logo} alt="uGlowMD" className="h-[104px] lg:h-[100px] xl:h-[146px] w-auto inline-block brightness-0 invert" />
                     </h1>
                 </div>
                 <nav className="space-y-1">
                     {navItems.map(item => (
                         <button
                             key={item.id}
+                            disabled={mfaRequired && item.id !== 'settings'}
                             onClick={() => {
                                 navigate(`/admin/${item.id}`);
                                 setMobileSidebarOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all ${currentTab === item.id ? 'bg-white/10 text-white shadow-[0_4px_20px_rgba(0,0,0,0.2)]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all ${currentTab === item.id ? 'bg-white/10 text-white shadow-[0_4px_20px_rgba(0,0,0,0.2)]' : 'text-white/50 hover:text-white hover:bg-white/5'} ${(mfaRequired && item.id !== 'settings') ? 'opacity-20 cursor-not-allowed filter grayscale' : ''}`}
                         >
                             <div className="flex items-center gap-2 md:gap-3">
                                 <svg width="16" height="16" className="md:w-[18px] md:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d={item.icon} /></svg>
@@ -9668,11 +10133,12 @@ const AdminDashboard = () => {
 
                     <div className="pt-6 md:pt-8 mt-6 md:mt-8 border-t border-white/10">
                         <button
+                            disabled={mfaRequired}
                             onClick={() => {
                                 navigate('/dashboard');
                                 setMobileSidebarOpen(false);
                             }}
-                            className="w-full flex items-center gap-2 md:gap-3 px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black/10 transition-all"
+                            className={`w-full flex items-center gap-2 md:gap-3 px-4 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-accent-black hover:bg-accent-black/10 transition-all ${mfaRequired ? 'opacity-20 cursor-not-allowed' : ''}`}
                         >
                             <svg width="16" height="16" className="md:w-[18px] md:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -9739,7 +10205,7 @@ const AdminDashboard = () => {
                         {(role === 'admin' || role === 'marketing_rep' || isSubAdmin) && <Route path="statements" element={role === 'admin' ? <StatementsAdminView /> : <StatementsProviderView />} />}
                         {(role === 'admin' || role === 'marketing_rep') && <Route path="waitlist" element={<WaitlistView />} />}
                         {role === 'admin' && <Route path="blog" element={<BlogManagement />} />}
-                        <Route path="settings" element={<SettingsView user={user} role={role} />} />
+                        <Route path="settings" element={<SettingsView user={user} role={role} mfaRequired={mfaRequired} setMfaRequired={setMfaRequired} />} />
                     </Routes>
                 </div>
             </main>

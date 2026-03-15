@@ -61,7 +61,6 @@ serve(async (req) => {
 
         while (hasMore) {
             const params: Stripe.BalanceTransactionListParams = {
-                type: "charge",
                 limit: 100,
                 ...(Object.keys(createdFilter).length > 0 && { created: createdFilter }),
                 ...(startingAfter && { starting_after: startingAfter }),
@@ -84,6 +83,7 @@ serve(async (req) => {
         let grossCents = 0;
         let feesCents = 0;
         let netCents = 0;
+        let refundsCents = 0;
         const toDollars = (cents: number) => parseFloat((cents / 100).toFixed(2));
 
         const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -93,26 +93,38 @@ serve(async (req) => {
 
         if (period === "day") {
             // Hourly breakdown for the last 24 hours
-            const hourlyMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const hourlyMap: Record<string, { gross: number; net: number; fees: number; refunds: number }> = {};
             for (let h = 23; h >= 0; h--) {
                 const d = new Date();
                 d.setHours(d.getHours() - h, 0, 0, 0);
                 const label = d.toLocaleTimeString('en-US', { hour: '2-digit', hour12: true });
-                hourlyMap[label] = { gross: 0, net: 0, fees: 0 };
+                hourlyMap[label] = { gross: 0, net: 0, fees: 0, refunds: 0 };
             }
 
             for (const txn of allTransactions) {
-                grossCents += txn.amount;
-                feesCents += txn.fee;
-                netCents += txn.net;
+                if (txn.type === 'charge') {
+                    grossCents += txn.amount;
+                    feesCents += txn.fee;
+                    netCents += txn.net;
+                } else if (txn.type === 'refund') {
+                    refundsCents += Math.abs(txn.amount);
+                    netCents += txn.net;
+                } else {
+                    continue;
+                }
 
                 const d = new Date(txn.created * 1000);
                 d.setMinutes(0, 0, 0);
                 const label = d.toLocaleTimeString('en-US', { hour: '2-digit', hour12: true });
                 if (hourlyMap[label] !== undefined) {
-                    hourlyMap[label].gross += txn.amount;
-                    hourlyMap[label].net += txn.net;
-                    hourlyMap[label].fees += txn.fee;
+                    if (txn.type === 'charge') {
+                        hourlyMap[label].gross += txn.amount;
+                        hourlyMap[label].net += txn.net;
+                        hourlyMap[label].fees += txn.fee;
+                    } else if (txn.type === 'refund') {
+                        hourlyMap[label].refunds += Math.abs(txn.amount);
+                        hourlyMap[label].net += txn.net;
+                    }
                 }
             }
 
@@ -122,30 +134,43 @@ serve(async (req) => {
                 amount: toDollars(vals.gross),
                 net: toDollars(vals.net),
                 fees: toDollars(vals.fees),
+                refunds: toDollars(vals.refunds),
             }));
 
         } else if (period === "week") {
             // Daily breakdown for last 7 days
-            const dayMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const dayMap: Record<string, { gross: number; net: number; fees: number; refunds: number }> = {};
             const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 const label = `${dayLabels[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
-                dayMap[label] = { gross: 0, net: 0, fees: 0 };
+                dayMap[label] = { gross: 0, net: 0, fees: 0, refunds: 0 };
             }
 
             for (const txn of allTransactions) {
-                grossCents += txn.amount;
-                feesCents += txn.fee;
-                netCents += txn.net;
+                if (txn.type === 'charge') {
+                    grossCents += txn.amount;
+                    feesCents += txn.fee;
+                    netCents += txn.net;
+                } else if (txn.type === 'refund') {
+                    refundsCents += Math.abs(txn.amount);
+                    netCents += txn.net;
+                } else {
+                    continue;
+                }
 
                 const d = new Date(txn.created * 1000);
                 const label = `${dayLabels[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
                 if (dayMap[label] !== undefined) {
-                    dayMap[label].gross += txn.amount;
-                    dayMap[label].net += txn.net;
-                    dayMap[label].fees += txn.fee;
+                    if (txn.type === 'charge') {
+                        dayMap[label].gross += txn.amount;
+                        dayMap[label].net += txn.net;
+                        dayMap[label].fees += txn.fee;
+                    } else if (txn.type === 'refund') {
+                        dayMap[label].refunds += Math.abs(txn.amount);
+                        dayMap[label].net += txn.net;
+                    }
                 }
             }
 
@@ -155,29 +180,42 @@ serve(async (req) => {
                 amount: toDollars(vals.gross),
                 net: toDollars(vals.net),
                 fees: toDollars(vals.fees),
+                refunds: toDollars(vals.refunds),
             }));
 
         } else if (period === "30_days") {
             // Daily breakdown for last 30 days (grouped by date label)
-            const dayMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const dayMap: Record<string, { gross: number; net: number; fees: number; refunds: number }> = {};
             for (let i = 29; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 const label = `${monthNames[d.getMonth()]} ${d.getDate()}`;
-                dayMap[label] = { gross: 0, net: 0, fees: 0 };
+                dayMap[label] = { gross: 0, net: 0, fees: 0, refunds: 0 };
             }
 
             for (const txn of allTransactions) {
-                grossCents += txn.amount;
-                feesCents += txn.fee;
-                netCents += txn.net;
+                if (txn.type === 'charge') {
+                    grossCents += txn.amount;
+                    feesCents += txn.fee;
+                    netCents += txn.net;
+                } else if (txn.type === 'refund') {
+                    refundsCents += Math.abs(txn.amount);
+                    netCents += txn.net;
+                } else {
+                    continue;
+                }
 
                 const d = new Date(txn.created * 1000);
                 const label = `${monthNames[d.getMonth()]} ${d.getDate()}`;
                 if (dayMap[label] !== undefined) {
-                    dayMap[label].gross += txn.amount;
-                    dayMap[label].net += txn.net;
-                    dayMap[label].fees += txn.fee;
+                    if (txn.type === 'charge') {
+                        dayMap[label].gross += txn.amount;
+                        dayMap[label].net += txn.net;
+                        dayMap[label].fees += txn.fee;
+                    } else if (txn.type === 'refund') {
+                        dayMap[label].refunds += Math.abs(txn.amount);
+                        dayMap[label].net += txn.net;
+                    }
                 }
             }
 
@@ -187,30 +225,43 @@ serve(async (req) => {
                 amount: toDollars(vals.gross),
                 net: toDollars(vals.net),
                 fees: toDollars(vals.fees),
+                refunds: toDollars(vals.refunds),
             }));
 
         } else {
             // year & all_time → monthly breakdown
-            const monthlyMap: Record<string, { gross: number; net: number; fees: number }> = {};
+            const monthlyMap: Record<string, { gross: number; net: number; fees: number; refunds: number }> = {};
             const months = period === "year" ? 12 : 6;
             for (let i = months - 1; i >= 0; i--) {
                 const d = new Date();
                 d.setMonth(d.getMonth() - i);
                 const key = monthNames[d.getMonth()];
-                monthlyMap[key] = { gross: 0, net: 0, fees: 0 };
+                monthlyMap[key] = { gross: 0, net: 0, fees: 0, refunds: 0 };
             }
 
             for (const txn of allTransactions) {
-                grossCents += txn.amount;
-                feesCents += txn.fee;
-                netCents += txn.net;
+                if (txn.type === 'charge') {
+                    grossCents += txn.amount;
+                    feesCents += txn.fee;
+                    netCents += txn.net;
+                } else if (txn.type === 'refund') {
+                    refundsCents += Math.abs(txn.amount);
+                    netCents += txn.net;
+                } else {
+                    continue;
+                }
 
                 const d = new Date(txn.created * 1000);
                 const key = monthNames[d.getMonth()];
                 if (monthlyMap[key] !== undefined) {
-                    monthlyMap[key].gross += txn.amount;
-                    monthlyMap[key].net += txn.net;
-                    monthlyMap[key].fees += txn.fee;
+                    if (txn.type === 'charge') {
+                        monthlyMap[key].gross += txn.amount;
+                        monthlyMap[key].net += txn.net;
+                        monthlyMap[key].fees += txn.fee;
+                    } else if (txn.type === 'refund') {
+                        monthlyMap[key].refunds += Math.abs(txn.amount);
+                        monthlyMap[key].net += txn.net;
+                    }
                 }
             }
 
@@ -219,6 +270,7 @@ serve(async (req) => {
                 amount: toDollars(vals.gross),
                 net: toDollars(vals.net),
                 fees: toDollars(vals.fees),
+                refunds: toDollars(vals.refunds),
             }));
         }
 
@@ -226,6 +278,7 @@ serve(async (req) => {
             gross: toDollars(grossCents),
             fees: toDollars(feesCents),
             net: toDollars(netCents),
+            refunds: toDollars(refundsCents),
             transactionCount: allTransactions.length,
             monthlyChart: chartData,  // kept as "monthlyChart" for backwards compat
             chart: chartData,

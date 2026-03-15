@@ -68,7 +68,7 @@ import antiAgingImg from '../assets/ant-aging.webp';
 import faceSpotImg from '../assets/face-spot.webp';
 import acneCleanserImg from '../assets/Acne-Cleanser-Cream.webp';
 import rosaceaCareImg from '../assets/rosacea_care_set.webp';
-import eyeSerumImg from '../assets/Eye-Serum-prd-image.webp';
+import eyeSerumImg from '../assets/Eye-Serum-prd-image.png';
 import bodyAcneCreamImg from '../assets/Body-Acne-Spots-Cream.webp';
 import bpc157VialImg from '../assets/BPC-157-vial.webp';
 import bpc157Tb500VialImg from '../assets/BPC-157-TB-500--vial.webp';
@@ -76,7 +76,7 @@ import semaglutideVialImg from '../assets/semaglutide_vial.webp';
 import tirzepatideVialImg from '../assets/tirzepatide_vial.webp';
 import threeInOneHairVialImg from '../assets/3-in-1 Hair Growth Tabs---vial.webp';
 import estradiolTabsVialImg from '../assets/Estradiol Tabs---vial.webp';
-import glutathioneVialImg from '../assets/Glutathione--vial.webp';
+import glutathioneVialImg from '../assets/Glutathione--vial.png';
 import growTabsTadalafilVialImg from '../assets/GrowTabs-Tadalafil-vial.webp';
 import growTabsSildenafilVialImg from '../assets/GrowTabs-sildenafil-vial.webp';
 import loverSprayVialImg from '../assets/LoverSpray-vial.webp';
@@ -1986,32 +1986,34 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Bottom Signature Banner - EXCEED EXPECTATIONS CARD */}
-                <div className="signature-banner mt-24 md:mt-40 bg-black rounded-[32px] md:rounded-[60px] overflow-hidden p-8 md:p-20 flex flex-col lg:flex-row items-center gap-12 md:gap-16 relative shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] mx-0">
-                    <div className="w-full lg:w-5/12 flex justify-center items-center relative order-first lg:order-last mb-8 lg:mb-0">
-                        <img
-                            src={product.signatureImage || product.image}
-                            className="w-full max-w-[320px] md:max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 lg:-rotate-12 hover:rotate-0 transition-transform duration-1000"
-                            alt="Signature Medication"
-                        />
-                        <span className="absolute -bottom-16 md:-bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[280px] md:max-w-[400px] text-center text-[8px] md:text-[10px] text-white/70 font-bold uppercase tracking-[0.15em] whitespace-normal leading-relaxed">
-                            We do not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
-                        </span>
+                {!productId.includes('testosterone') && (
+                    <div className="signature-banner mt-24 md:mt-40 bg-black rounded-[32px] md:rounded-[60px] overflow-hidden p-8 md:p-20 flex flex-col lg:flex-row items-center gap-12 md:gap-16 relative shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] mx-0">
+                        <div className="w-full lg:w-5/12 flex justify-center items-center relative order-first lg:order-last mb-8 lg:mb-0">
+                            <img
+                                src={product.signatureImage || product.image}
+                                className="w-full max-w-[320px] md:max-w-[450px] h-auto object-contain drop-shadow-[0_45px_45px_rgba(0,0,0,0.5)] transform -rotate-12 lg:-rotate-12 hover:rotate-0 transition-transform duration-1000"
+                                alt="Signature Medication"
+                            />
+                            <span className="absolute -bottom-16 md:-bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[280px] md:max-w-[400px] text-center text-[8px] md:text-[10px] text-white/70 font-bold uppercase tracking-[0.15em] whitespace-normal leading-relaxed">
+                                We do not compound, label, and/or manufacture the compounding prescription(s), the compounding prescription(s) are manufactured by FDA registered facilities only.
+                            </span>
+                        </div>
+
+                        <div className="w-full lg:w-7/12 relative z-10 text-center lg:text-left flex flex-col items-center lg:items-start">
+                            <h3 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
+                                The <br className="hidden lg:block" /> Signature <br className="hidden lg:block" /> Series
+                            </h3>
+
+                            <p className="text-white/80 text-lg md:text-xl font-medium mb-12 leading-snug max-w-lg">
+                                Our Signature Series represents a <span className="text-white font-extrabold">new era of clinical care</span>. <br /> Combining high-grade compounding with personalized protocols.
+                            </p>
+
+                            <Link to={qualifyLink} className="bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
+                                Get started
+                            </Link>
+                        </div>
                     </div>
-
-                    <div className="w-full lg:w-7/12 relative z-10 text-center lg:text-left flex flex-col items-center lg:items-start">
-                        <h3 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
-                            The <br className="hidden lg:block" /> Signature <br className="hidden lg:block" /> Series
-                        </h3>
-
-                        <p className="text-white/80 text-lg md:text-xl font-medium mb-12 leading-snug max-w-lg">
-                            Our Signature Series represents a <span className="text-white font-extrabold">new era of clinical care</span>. <br /> Combining high-grade compounding with personalized protocols.
-                        </p>
-
-                        <Link to={qualifyLink} className="bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-xl text-lg transform hover:scale-105 inline-block">
-                            Get started
-                        </Link>
-                    </div>
-                </div>
+                )}
 
                 <style dangerouslySetInnerHTML={{
                     __html: `
